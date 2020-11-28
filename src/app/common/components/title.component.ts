@@ -86,7 +86,7 @@ import {
         letter-spacing: -0.45px;
       }
       p {
-        margin: 0 0 2px;
+        margin-bottom: 2px;
         font-size: 16px;
         line-height: 19px;
         font-weight: 400;
