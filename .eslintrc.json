@@ -2,7 +2,8 @@
   "root": true,
   "ignorePatterns": [
     "projects/**/*",
-    "src/stories/**/*"
+    "src/stories/**/*",
+    "src/**/*.stories.ts"
   ],
   "overrides": [
     {

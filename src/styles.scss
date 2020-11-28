@@ -12,21 +12,46 @@
 // Define the palettes for your theme using the Material Design palettes available in palette.scss
 // (imported above). For each palette, you can optionally specify a default, lighter, and darker
 // hue. Available color palettes: https://material.io/design/color/
-$musicsource-primary: mat-palette($mat-indigo);
-$musicsource-accent: mat-palette($mat-pink, A200, A100, A400);
+//$musicsource-primary: mat-palette($mat-indigo);
+//$musicsource-accent: mat-palette($mat-pink, A200, A100, A400);
 
 // The warn palette is optional (defaults to red).
-$musicsource-warn: mat-palette($mat-red);
+//$musicsource-warn: mat-palette($mat-red);
 
 // Create the theme object. A theme consists of configurations for individual
 // theming systems such as "color" or "typography".
-$musicsource-theme: mat-light-theme((
-  color: (
-    primary: $musicsource-primary,
-    accent: $musicsource-accent,
-    warn: $musicsource-warn,
-  )
-));
+//$musicsource-theme: mat-dark-theme((
+//  color: (
+//    primary: $musicsource-primary,
+//    accent: $musicsource-accent,
+//    warn: $musicsource-warn,
+//  )
+//));
+
+$musicsource-theme: (
+  primary: mat-palette($mat-light-green, A400),
+  accent: mat-palette($mat-light-blue, A400),
+  warn: mat-palette($mat-deep-orange, A200),
+  is-dark: true,
+  foreground: $mat-dark-theme-foreground,
+  background: (
+    status-bar: black,
+    app-bar: map_get($mat-grey, 900),
+    background: black,
+    hover: rgba(white, 0.04),
+    card: map_get($mat-grey, 900),
+    dialog: map_get($mat-grey, 900),
+    disabled-button: rgba(white, 0.12),
+    raised-button: map-get($mat-grey, 800),
+    focused-button: $light-focused,
+    selected-button: map_get($mat-grey, 900),
+    selected-disabled-button: map_get($mat-grey, 800),
+    disabled-button-toggle: black,
+    unselected-chip: map_get($mat-grey, 700),
+    disabled-list-option: black,
+    tooltip: map_get($mat-grey, 700),
+  ),
+);
 
 // Include theme styles for core and each component used in your app.
 // Alternatively, you can import and @include the theme mixins for each component
@@ -35,5 +60,105 @@ $musicsource-theme: mat-light-theme((
 
 /* You can add global styles to this file, and also import other style files */
 
+// Fonts
+
+/* roboto-300 - latin */
+@font-face {
+  font-family: 'YT Sans';
+  font-style: normal;
+  font-weight: 700;
+  src: local('YouTube Sans'),
+  url('/assets/fonts/youtube-sans-bold.ttf') format('truetype');
+  font-display: swap;
+}
+
+/* roboto-300 - latin */
+@font-face {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 300;
+  src: local('Roboto Light'), local('Roboto-Light'),
+  url('/assets/fonts/roboto-v19-latin-300.woff2') format('woff2'),
+    /* Chrome 26+, Opera 23+, Firefox 39+ */
+  url('/assets/fonts/roboto-v19-latin-300.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+  font-display: swap;
+}
+
+/* roboto-regular - latin */
+@font-face {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Roboto'), local('Roboto-Regular'),
+  url('/assets/fonts/roboto-v19-latin-regular.woff2') format('woff2'),
+    /* Chrome 26+, Opera 23+, Firefox 39+ */
+  url('/assets/fonts/roboto-v19-latin-regular.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+  font-display: swap;
+}
+
+/* roboto-500 - latin */
+@font-face {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 500;
+  src: local('Roboto Medium'), local('Roboto-Medium'),
+  url('/assets/fonts/roboto-v19-latin-500.woff2') format('woff2'),
+    /* Chrome 26+, Opera 23+, Firefox 39+ */
+  url('/assets/fonts/roboto-v19-latin-500.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+  font-display: swap;
+}
+
+/* roboto-700 - latin */
+@font-face {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 700;
+  src: local('Roboto Bold'), local('Roboto-Bold'),
+  url('/assets/fonts/roboto-v19-latin-700.woff2') format('woff2'),
+    /* Chrome 26+, Opera 23+, Firefox 39+ */
+  url('/assets/fonts/roboto-v19-latin-700.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Material Icons';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Material Icons'), local('MaterialIcons-Regular'),
+  url('/assets/fonts/MaterialIcons-Regular.woff2') format('woff2'),
+  url('/assets/fonts/MaterialIcons-Regular.woff') format('woff');
+  font-display: block;
+}
+
+.material-icons {
+  font-family: 'Material Icons';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px; /* Preferred icon size */
+  display: inline-block;
+  line-height: 1;
+  text-transform: none;
+  letter-spacing: normal;
+  word-wrap: normal;
+  white-space: nowrap;
+  direction: ltr;
+  /* Support for all WebKit browsers. */
+  -webkit-font-smoothing: antialiased;
+  /* Support for Safari and Chrome. */
+  text-rendering: optimizeLegibility;
+  /* Support for Firefox. */
+  -moz-osx-font-smoothing: grayscale;
+  /* Support for IE. */
+  font-feature-settings: 'liga';
+}
+
+$text-color: mat-color(map-get($musicsource-theme, foreground), text);
+$background-color: mat-color(map-get($musicsource-theme, background), background);
+
 html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  color: $text-color;
+  background-color: $background-color;
+}
