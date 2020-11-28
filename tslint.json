@@ -3,6 +3,9 @@
   "rulesDirectory": [
     "codelyzer"
   ],
+  "linterOptions": {
+    "exclude": ["src/stories/**/*"]
+  },
   "rules": {
     "align": {
       "options": [
