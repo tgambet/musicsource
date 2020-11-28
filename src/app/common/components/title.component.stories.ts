@@ -31,8 +31,8 @@ Simple.args = {
 export const WithLink = Template.bind({});
 WithLink.args = {
   title: 'New releases',
-  link: '/',
-  moreLink: 'See all',
+  routerLink: '/',
+  extraLinkLabel: 'See all',
 };
 
 export const WithHead = Template.bind({});
@@ -45,7 +45,7 @@ export const WithAvatar = Template.bind({});
 WithAvatar.args = {
   head: 'Similar to',
   title: 'Keny Arkana',
-  avatar: '/assets/tests/keny_arkana_small.jpg',
+  avatarSrc: '/assets/tests/keny_arkana_small.jpg',
   avatarStyle: 'round',
-  link: '/',
+  routerLink: '/',
 };

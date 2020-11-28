@@ -8,31 +8,31 @@ import {
 @Component({
   selector: 'app-title',
   template: `
-    <ng-container *ngIf="link">
+    <ng-container *ngIf="routerLink">
       <a
-        *ngIf="avatar"
+        *ngIf="avatarSrc"
         class="avatar"
         [ngClass]="avatarStyle"
-        [routerLink]="link"
+        [routerLink]="routerLink"
       >
-        <img [src]="avatar" alt="avatar" aria-hidden="true" height="56" />
+        <img [src]="avatarSrc" alt="avatar" aria-hidden="true" height="56" />
       </a>
     </ng-container>
-    <ng-container *ngIf="!link">
-      <div class="avatar" *ngIf="avatar" [ngClass]="avatarStyle">
-        <img [src]="avatar" alt="avatar" aria-hidden="true" height="56" />
+    <ng-container *ngIf="!routerLink">
+      <div class="avatar" *ngIf="avatarSrc" [ngClass]="avatarStyle">
+        <img [src]="avatarSrc" alt="avatar" aria-hidden="true" height="56" />
       </div>
     </ng-container>
     <div class="label">
       <p *ngIf="head">{{ head }}</p>
       <h1>
-        <ng-container *ngIf="link">
-          <a [routerLink]="link">{{ title }}</a>
-          <a class="more" *ngIf="moreLink" [routerLink]="link">{{
-            moreLink
+        <ng-container *ngIf="routerLink">
+          <a [routerLink]="routerLink">{{ title }}</a>
+          <a class="more" *ngIf="extraLinkLabel" [routerLink]="routerLink">{{
+            extraLinkLabel
           }}</a>
         </ng-container>
-        <ng-container *ngIf="!link">
+        <ng-container *ngIf="!routerLink">
           {{ title }}
         </ng-container>
       </h1>
@@ -114,11 +114,11 @@ export class TitleComponent {
 
   @Input() head?: string;
 
-  @Input() link?: any[] | string | null | undefined;
+  @Input() routerLink?: any[] | string | null | undefined;
 
-  @Input() moreLink?: string;
+  @Input() extraLinkLabel?: string;
 
-  @Input() avatar?: string;
+  @Input() avatarSrc?: string;
 
   @Input() avatarStyle: 'round' | 'square' = 'square';
 
