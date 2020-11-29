@@ -15,12 +15,24 @@ import {
         [ngClass]="avatarStyle"
         [routerLink]="routerLink"
       >
-        <img [src]="avatarSrc" alt="avatar" aria-hidden="true" height="56" />
+        <img
+          [src]="avatarSrc"
+          alt="avatar"
+          aria-hidden="true"
+          height="56"
+          width="56"
+        />
       </a>
     </ng-container>
     <ng-container *ngIf="!routerLink">
       <div class="avatar" *ngIf="avatarSrc" [ngClass]="avatarStyle">
-        <img [src]="avatarSrc" alt="avatar" aria-hidden="true" height="56" />
+        <img
+          [src]="avatarSrc"
+          alt="avatar"
+          aria-hidden="true"
+          height="56"
+          width="56"
+        />
       </div>
     </ng-container>
     <div class="label">
