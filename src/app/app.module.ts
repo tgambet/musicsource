@@ -11,9 +11,11 @@ import { LabelComponent } from './common/components/label.component';
 import { ArtistComponent } from './common/components/artist.component';
 import { MatRippleModule } from '@angular/material/core';
 import { AlbumComponent } from './common/components/album.component';
-import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { GenreComponent } from './common/components/genre.component';
+import { MenuComponent } from './common/components/menu.component';
+import { MatMenuModule } from '@angular/material/menu';
+import { IconComponent } from './common/components/icon.component';
 
 @NgModule({
   declarations: [
@@ -23,6 +25,8 @@ import { GenreComponent } from './common/components/genre.component';
     ArtistComponent,
     AlbumComponent,
     GenreComponent,
+    MenuComponent,
+    IconComponent,
   ],
   imports: [
     BrowserModule,
@@ -32,8 +36,8 @@ import { GenreComponent } from './common/components/genre.component';
       enabled: environment.production,
     }),
     MatRippleModule,
-    MatIconModule,
     MatButtonModule,
+    MatMenuModule,
   ],
   providers: [],
   bootstrap: [AppComponent],

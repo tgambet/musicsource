@@ -1,9 +1,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
-import { AlbumComponent } from './album.component';
-import { MatIconModule } from '@angular/material/icon';
 import { RouterTestingModule } from '@angular/router/testing';
+import { MatMenuModule } from '@angular/material/menu';
+import { AlbumComponent } from './album.component';
 import { LabelComponent } from './label.component';
+import { IconComponent } from './icon.component';
+import { MenuComponent } from './menu.component';
 
 describe('AlbumComponent', () => {
   let component: AlbumComponent;
@@ -11,8 +12,13 @@ describe('AlbumComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [MatIconModule, RouterTestingModule],
-      declarations: [AlbumComponent, LabelComponent],
+      imports: [RouterTestingModule, MatMenuModule],
+      declarations: [
+        AlbumComponent,
+        LabelComponent,
+        IconComponent,
+        MenuComponent,
+      ],
     }).compileComponents();
   });
 

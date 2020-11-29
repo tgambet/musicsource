@@ -4,8 +4,11 @@ import { APP_BASE_HREF } from '@angular/common';
 import { AlbumComponent } from './album.component';
 import { LabelComponent } from './label.component';
 import { MatRippleModule } from '@angular/material/core';
-import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { IconComponent } from './icon.component';
+import { MenuComponent } from './menu.component';
+import { MatMenuModule } from '@angular/material/menu';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 export default {
   title: 'Components/Album',
@@ -16,10 +19,11 @@ export default {
       imports: [
         RouterModule.forRoot([], { useHash: true }),
         MatRippleModule,
-        MatIconModule,
         MatButtonModule,
+        MatMenuModule,
+        BrowserAnimationsModule,
       ],
-      declarations: [LabelComponent],
+      declarations: [LabelComponent, IconComponent, MenuComponent],
       providers: [
         {
           provide: APP_BASE_HREF,

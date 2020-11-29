@@ -1,12 +1,15 @@
 import { Component, ChangeDetectionStrategy, Input } from '@angular/core';
+import { Icons } from '../icons';
 
 @Component({
   selector: 'app-album',
   template: `
     <div class="image">
       <!-- TODO mini player -->
+      <app-menu [triggerIcon]="icons.dotsVertical" [menuItems]="menuItems">
+      </app-menu>
       <button mat-icon-button>
-        <mat-icon>play_arrow</mat-icon>
+        <app-icon [path]="icons.play"></app-icon>
       </button>
       <a [routerLink]="routerLink" matRipple>
         <img
@@ -48,6 +51,12 @@ import { Component, ChangeDetectionStrategy, Input } from '@angular/core';
         border: 4px solid black;
         box-sizing: content-box;
       }
+      app-menu {
+        position: absolute;
+        right: 8px;
+        top: 8px;
+        z-index: 1;
+      }
     `,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -58,4 +67,33 @@ export class AlbumComponent {
   @Input() cover!: string;
   @Input() routerLink!: any[] | string;
   @Input() artistRouterLink!: any[] | string;
+  icons = Icons;
+  menuItems = [
+    {
+      icon: Icons.shuffle,
+      text: 'Shuffle play',
+      click: () => alert('clicked'),
+    },
+    {
+      icon: Icons.radio,
+      text: 'Start radio',
+    },
+    {
+      icon: Icons.playlistPlay,
+      text: 'Play next',
+      // click: () => (menuItems[0].icon = Icons.heartOutline),
+    },
+    {
+      icon: Icons.playlistMusic,
+      text: 'Add to queue',
+    },
+    {
+      icon: Icons.heartOutline,
+      text: 'Add to favorites',
+    },
+    {
+      icon: Icons.accountMusic,
+      text: 'Go to artist',
+    },
+  ];
 }
