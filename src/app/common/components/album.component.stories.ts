@@ -1,17 +1,24 @@
 import { Meta, moduleMetadata, Story } from '@storybook/angular';
 import { RouterModule } from '@angular/router';
 import { APP_BASE_HREF } from '@angular/common';
-import { ArtistComponent } from './artist.component';
+import { AlbumComponent } from './album.component';
 import { LabelComponent } from './label.component';
 import { MatRippleModule } from '@angular/material/core';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
 
 export default {
-  title: 'Components/Artist',
-  component: ArtistComponent,
+  title: 'Components/Album',
+  component: AlbumComponent,
   argTypes: {},
   decorators: [
     moduleMetadata({
-      imports: [RouterModule.forRoot([], { useHash: true }), MatRippleModule],
+      imports: [
+        RouterModule.forRoot([], { useHash: true }),
+        MatRippleModule,
+        MatIconModule,
+        MatButtonModule,
+      ],
       declarations: [LabelComponent],
       providers: [
         {
@@ -23,15 +30,16 @@ export default {
   ],
 } as Meta;
 
-const Template: Story<ArtistComponent> = (args: ArtistComponent) => ({
-  component: ArtistComponent,
+const Template: Story<AlbumComponent> = (args: AlbumComponent) => ({
+  component: AlbumComponent,
   props: args,
 });
 
 export const Simple = Template.bind({});
 Simple.args = {
-  name: 'Muse',
-  legend: '130 songs',
+  name: 'Outrun',
+  artist: 'Kavinsky',
   routerLink: './',
-  cover: '/assets/tests/muse.jpg',
+  artistRouterLink: './',
+  cover: '/assets/tests/kavinsky_outrun.jpg',
 };

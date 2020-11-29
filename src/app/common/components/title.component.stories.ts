@@ -1,4 +1,4 @@
-import { Meta, Story } from '@storybook/angular';
+import { Meta, moduleMetadata, Story } from '@storybook/angular';
 import { TitleComponent } from './title.component';
 import { RouterModule } from '@angular/router';
 import { APP_BASE_HREF } from '@angular/common';
@@ -7,20 +7,22 @@ export default {
   title: 'Components/Title',
   component: TitleComponent,
   argTypes: {},
+  decorators: [
+    moduleMetadata({
+      imports: [RouterModule.forRoot([], { useHash: true })],
+      providers: [
+        {
+          provide: APP_BASE_HREF,
+          useValue: '/',
+        },
+      ],
+    }),
+  ],
 } as Meta;
 
 const Template: Story<TitleComponent> = (args: TitleComponent) => ({
   component: TitleComponent,
   props: args,
-  moduleMetadata: {
-    imports: [RouterModule.forRoot([], { useHash: true })],
-    providers: [
-      {
-        provide: APP_BASE_HREF,
-        useValue: '/',
-      },
-    ],
-  },
 });
 
 export const Simple = Template.bind({});

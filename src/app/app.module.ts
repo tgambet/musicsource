@@ -10,9 +10,18 @@ import { TitleComponent } from './common/components/title.component';
 import { LabelComponent } from './common/components/label.component';
 import { ArtistComponent } from './common/components/artist.component';
 import { MatRippleModule } from '@angular/material/core';
+import { AlbumComponent } from './common/components/album.component';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
 
 @NgModule({
-  declarations: [AppComponent, TitleComponent, LabelComponent, ArtistComponent],
+  declarations: [
+    AppComponent,
+    TitleComponent,
+    LabelComponent,
+    ArtistComponent,
+    AlbumComponent,
+  ],
   imports: [
     BrowserModule,
     AppRoutingModule,
@@ -21,6 +30,8 @@ import { MatRippleModule } from '@angular/material/core';
       enabled: environment.production,
     }),
     MatRippleModule,
+    MatIconModule,
+    MatButtonModule,
   ],
   providers: [],
   bootstrap: [AppComponent],
