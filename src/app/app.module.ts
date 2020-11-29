@@ -13,6 +13,7 @@ import { MatRippleModule } from '@angular/material/core';
 import { AlbumComponent } from './common/components/album.component';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { GenreComponent } from './common/components/genre.component';
 
 @NgModule({
   declarations: [
@@ -21,6 +22,7 @@ import { MatButtonModule } from '@angular/material/button';
     LabelComponent,
     ArtistComponent,
     AlbumComponent,
+    GenreComponent,
   ],
   imports: [
     BrowserModule,
