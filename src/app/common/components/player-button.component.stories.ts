@@ -2,37 +2,43 @@ import { Meta, moduleMetadata, Story } from '@storybook/angular';
 import { IconComponent } from './icon.component';
 import { PlayerButtonComponent } from './player-button.component';
 import { MatRippleModule } from '@angular/material/core';
-import { Component, Input } from '@angular/core';
+import { Component } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 // noinspection AngularMissingOrInvalidDeclarationInModule
 @Component({
-  selector: '',
+  selector: 'test',
   template: `
     <app-player-button
-      [playing]="playing"
+      [state]="state"
       (playClicked)="playClicked()"
-      (pauseClicked)="playClicked()"
+      (pauseClicked)="pauseClicked()"
     >
     </app-player-button>
   `,
   styles: [
     `
       :host {
-        display: block;
-        width: 226px;
-        height: 226px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 126px;
+        height: 126px;
         padding: 16px;
-        background-color: #333333;
+        background-color: cadetblue;
       }
     `,
   ],
 })
 class TestComponent {
-  @Input() playing!: boolean;
+  state: 'stopped' | 'playing' | 'loading' = 'stopped';
   playClicked() {
-    this.playing = !this.playing;
+    this.state = 'loading';
+    setTimeout(() => (this.state = 'playing'), 1000);
+  }
+  pauseClicked() {
+    this.state = 'stopped';
   }
 }
 
@@ -52,27 +58,35 @@ export default {
         options: ['playing', 'loading', 'stopped'],
       },
     },
-    playClicked: { action: 'playClicked' },
-    pauseClicked: { action: 'pauseClicked' },
+    // playClicked: { action: 'playClicked' },
+    // pauseClicked: { action: 'pauseClicked' },
   },
   decorators: [
     moduleMetadata({
-      declarations: [IconComponent],
+      declarations: [PlayerButtonComponent, IconComponent],
       imports: [MatRippleModule, MatButtonModule, MatProgressSpinnerModule],
       providers: [],
     }),
   ],
 } as Meta;
 
-const Template: Story<PlayerButtonComponent> = (
+const Template1: Story<PlayerButtonComponent> = (
   args: PlayerButtonComponent
 ) => ({
   component: PlayerButtonComponent,
   props: args,
 });
 
-export const Simple = Template.bind({});
+const Template2: Story<TestComponent> = (args: TestComponent) => ({
+  component: TestComponent,
+  props: args,
+});
+
+export const Simple = Template1.bind({});
 Simple.args = {
   size: 'large',
   state: 'stopped',
 };
+
+export const Mocked = Template2.bind({});
+Mocked.args = {};

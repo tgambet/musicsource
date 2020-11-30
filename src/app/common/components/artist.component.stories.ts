@@ -6,7 +6,7 @@ import { LabelComponent } from './label.component';
 import { MatRippleModule } from '@angular/material/core';
 
 export default {
-  title: 'Components/Artist',
+  title: 'Home/Artist',
   component: ArtistComponent,
   argTypes: {},
   decorators: [

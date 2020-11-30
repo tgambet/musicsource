@@ -6,7 +6,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { GenreComponent } from './genre.component';
 
 export default {
-  title: 'Components/Genre',
+  title: 'Home/Genre',
   component: GenreComponent,
   argTypes: {},
   decorators: [

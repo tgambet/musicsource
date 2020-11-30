@@ -10,10 +10,15 @@ import { Icons } from '../icons';
 @Component({
   selector: 'app-album',
   template: `
-    <div class="image">
-      <app-menu [triggerIcon]="icons.dotsVertical" [menuItems]="menuItems">
+    <div class="image" [ngClass]="state">
+      <app-menu
+        cdkMonitorSubtreeFocus
+        [triggerIcon]="icons.dotsVertical"
+        [menuItems]="menuItems"
+      >
       </app-menu>
       <app-player-button
+        cdkMonitorSubtreeFocus
         [state]="state"
         size="small"
         (playClicked)="play()"
@@ -51,11 +56,14 @@ import { Icons } from '../icons';
         border-radius: 4px;
         position: relative;
       }
-      app-menu {
+      app-menu,
+      .stopped app-player-button:not(.cdk-focused) {
         opacity: 0;
-        transition: opacity 0.2s ease;
       }
-      .image:hover app-menu {
+      .image:hover app-menu,
+      .image:hover app-player-button,
+      app-menu.cdk-focused,
+      app-player-button.cdk-focused {
         opacity: 1;
       }
       app-player-button {
@@ -64,16 +72,21 @@ import { Icons } from '../icons';
         bottom: 16px;
         z-index: 1;
         transform: scale(0.8);
-        transition: transform 0.2s ease;
+        transition: transform 0.2s ease, opacity 0.2s ease;
+        border: 4px solid rgba(0, 0, 0, 0.25);
       }
-      app-player-button:hover {
+      app-player-button:hover,
+      app-player-button.cdk-focused {
         transform: scale(1);
+        border: 4px solid rgba(0, 0, 0, 1);
+        background-color: rgba(0, 0, 0, 0.75);
       }
       app-menu {
         position: absolute;
         right: 8px;
         top: 8px;
         z-index: 1;
+        transition: opacity 0.2s ease;
       }
       .link {
         position: relative;
@@ -88,7 +101,7 @@ import { Icons } from '../icons';
         left: 0;
         background: linear-gradient(
           to bottom,
-          black,
+          rgba(0, 0, 0, 0.5),
           transparent 50%,
           transparent
         );

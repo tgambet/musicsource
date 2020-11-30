@@ -18,6 +18,9 @@ import { MatMenuModule } from '@angular/material/menu';
 import { IconComponent } from './common/components/icon.component';
 import { PlayerButtonComponent } from './common/components/player-button.component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { SongComponent } from './common/components/song.component';
+import { PlaylistComponent } from './common/components/playlist.component';
+import { A11yModule } from '@angular/cdk/a11y';
 
 @NgModule({
   declarations: [
@@ -30,6 +33,8 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     MenuComponent,
     IconComponent,
     PlayerButtonComponent,
+    SongComponent,
+    PlaylistComponent,
   ],
   imports: [
     BrowserModule,
@@ -42,6 +47,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     MatButtonModule,
     MatMenuModule,
     MatProgressSpinnerModule,
+    A11yModule,
   ],
   providers: [],
   bootstrap: [AppComponent],

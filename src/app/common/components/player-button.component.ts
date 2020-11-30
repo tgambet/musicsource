@@ -2,7 +2,6 @@ import {
   ChangeDetectionStrategy,
   Component,
   EventEmitter,
-  HostBinding,
   Input,
   Output,
 } from '@angular/core';
@@ -12,35 +11,21 @@ import { Icons } from '../icons';
 @Component({
   selector: 'app-player-button',
   template: `
-    <button
-      class="play"
-      mat-icon-button
-      (click)="playClicked.emit()"
-      *ngIf="state === 'stopped' || state === 'loading'"
-      [disabled]="state === 'loading'"
-    >
+    <button mat-icon-button [ngClass]="[size, state]" (click)="toggle()">
       <app-icon
-        [path]="icons.play"
+        class="play-pause"
+        [path]="
+          state === 'stopped' || state === 'loading' ? icons.play : icons.pause
+        "
+        [size]="size === 'large' ? 48 : 24"
+      ></app-icon>
+      <app-icon
+        class="volume"
+        *ngIf="state === 'playing'"
+        [path]="icons.volumeHigh"
         [size]="size === 'large' ? 48 : 24"
       ></app-icon>
     </button>
-    <button
-      class="pause"
-      mat-icon-button
-      *ngIf="state === 'playing'"
-      (click)="pauseClicked.emit()"
-    >
-      <app-icon
-        [path]="icons.pause"
-        [size]="size === 'large' ? 48 : 24"
-      ></app-icon>
-    </button>
-    <app-icon
-      class="volume"
-      *ngIf="state === 'playing'"
-      [path]="icons.volumeHigh"
-      [size]="size === 'large' ? 48 : 24"
-    ></app-icon>
     <mat-spinner
       *ngIf="state === 'loading'"
       [diameter]="size === 'large' ? 70 : 46"
@@ -50,39 +35,35 @@ import { Icons } from '../icons';
   styles: [
     `
       :host {
-        position: relative;
-        height: 100%;
         display: block;
-        border: 4px solid black;
+        position: relative;
         border-radius: 50%;
         background-color: rgba(0, 0, 0, 0.5);
       }
-      :host.large {
+      .large {
         width: 64px;
         height: 64px;
       }
-      :host.small {
+      .small {
         width: 40px;
         height: 40px;
       }
-      button:not([disabled]):hover {
+      button:not(.disabled):hover {
         background-color: rgba(0, 0, 0, 0.33);
       }
-      .pause {
+      button.loading {
+        color: #999;
+      }
+      button.playing .play-pause {
         display: none;
       }
-      .volume {
-        padding: 8px;
+      button.playing:hover .play-pause,
+      button.playing:focus .play-pause {
+        display: inline-flex;
       }
-      :host:hover .pause {
-        display: inline-block;
-      }
-      :host:hover .volume {
+      button.playing:hover .volume,
+      button.playing:focus .volume {
         display: none;
-      }
-      :host button {
-        width: 100%;
-        height: 100%;
       }
       .mat-spinner {
         top: -3px;
@@ -94,7 +75,6 @@ import { Icons } from '../icons';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PlayerButtonComponent {
-  @HostBinding('class')
   @Input()
   size: 'small' | 'large' = 'small';
   @Input()
@@ -102,4 +82,12 @@ export class PlayerButtonComponent {
   @Output() playClicked = new EventEmitter<void>();
   @Output() pauseClicked = new EventEmitter<void>();
   icons = Icons;
+
+  toggle(): void {
+    return this.state === 'playing'
+      ? this.pauseClicked.emit()
+      : this.state !== 'loading'
+      ? this.playClicked.emit()
+      : void 0;
+  }
 }

@@ -11,9 +11,10 @@ import { MatMenuModule } from '@angular/material/menu';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { PlayerButtonComponent } from './player-button.component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { A11yModule } from '@angular/cdk/a11y';
 
 export default {
-  title: 'Components/Album',
+  title: 'Home/Album',
   component: AlbumComponent,
   argTypes: {},
   decorators: [
@@ -25,6 +26,7 @@ export default {
         MatMenuModule,
         BrowserAnimationsModule,
         MatProgressSpinnerModule,
+        A11yModule,
       ],
       declarations: [
         LabelComponent,
@@ -49,9 +51,9 @@ const Template: Story<AlbumComponent> = (args: AlbumComponent) => ({
 
 export const Simple = Template.bind({});
 Simple.args = {
-  name: 'Outrun',
-  artist: 'Kavinsky',
+  name: 'Machine Messiah',
+  artist: 'Sepultura',
   routerLink: './',
   artistRouterLink: './',
-  cover: '/assets/tests/kavinsky_outrun.jpg',
+  cover: '/assets/tests/sepultura_machine_messiah.jpg',
 };
