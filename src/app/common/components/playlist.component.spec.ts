@@ -1,33 +1,34 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { RouterTestingModule } from '@angular/router/testing';
-import { MatMenuModule } from '@angular/material/menu';
-import { AlbumComponent } from './album.component';
-import { LabelComponent } from './label.component';
-import { IconComponent } from './icon.component';
-import { MenuComponent } from './menu.component';
-import { PlayerButtonComponent } from './player-button.component';
-import { CoverComponent } from './cover.component';
 
-describe('AlbumComponent', () => {
-  let component: AlbumComponent;
-  let fixture: ComponentFixture<AlbumComponent>;
+import { PlaylistComponent } from './playlist.component';
+import { CoverComponent } from './cover.component';
+import { LabelComponent } from './label.component';
+import { MenuComponent } from './menu.component';
+import { MatMenuModule } from '@angular/material/menu';
+import { IconComponent } from './icon.component';
+import { PlayerButtonComponent } from './player-button.component';
+import { RouterTestingModule } from '@angular/router/testing';
+
+describe('PlaylistComponent', () => {
+  let component: PlaylistComponent;
+  let fixture: ComponentFixture<PlaylistComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [RouterTestingModule, MatMenuModule],
+      imports: [MatMenuModule, RouterTestingModule],
       declarations: [
-        AlbumComponent,
-        LabelComponent,
         IconComponent,
+        PlaylistComponent,
+        CoverComponent,
+        LabelComponent,
         MenuComponent,
         PlayerButtonComponent,
-        CoverComponent,
       ],
     }).compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(AlbumComponent);
+    fixture = TestBed.createComponent(PlaylistComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

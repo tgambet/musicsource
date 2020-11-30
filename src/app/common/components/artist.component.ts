@@ -4,14 +4,8 @@ import { Component, ChangeDetectionStrategy, Input } from '@angular/core';
   selector: 'app-artist',
   template: `
     <div class="image">
-      <a [routerLink]="routerLink" matRipple>
-        <img
-          [src]="cover"
-          [alt]="name"
-          aria-hidden="true"
-          height="226"
-          width="226"
-        />
+      <a [routerLink]="routerLink" matRipple [title]="name">
+        <img [src]="cover" [alt]="name" height="226" width="226" />
       </a>
     </div>
     <app-label

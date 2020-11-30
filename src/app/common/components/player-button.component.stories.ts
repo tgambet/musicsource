@@ -12,6 +12,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
   template: `
     <app-player-button
       [state]="state"
+      [size]="size"
       (playClicked)="playClicked()"
       (pauseClicked)="pauseClicked()"
     >
@@ -32,6 +33,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
   ],
 })
 class TestComponent {
+  size: 'small' | 'large' = 'large';
   state: 'stopped' | 'playing' | 'loading' = 'stopped';
   playClicked() {
     this.state = 'loading';
@@ -89,4 +91,6 @@ Simple.args = {
 };
 
 export const Mocked = Template2.bind({});
-Mocked.args = {};
+Mocked.args = {
+  size: 'large',
+};

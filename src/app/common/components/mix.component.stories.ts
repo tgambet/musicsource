@@ -1,22 +1,22 @@
 import { Meta, moduleMetadata, Story } from '@storybook/angular';
 import { RouterModule } from '@angular/router';
-import { APP_BASE_HREF } from '@angular/common';
-import { AlbumComponent } from './album.component';
-import { LabelComponent } from './label.component';
 import { MatRippleModule } from '@angular/material/core';
 import { MatButtonModule } from '@angular/material/button';
-import { IconComponent } from './icon.component';
-import { MenuComponent } from './menu.component';
 import { MatMenuModule } from '@angular/material/menu';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { PlayerButtonComponent } from './player-button.component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { A11yModule } from '@angular/cdk/a11y';
+import { LabelComponent } from './label.component';
+import { IconComponent } from './icon.component';
+import { MenuComponent } from './menu.component';
+import { PlayerButtonComponent } from './player-button.component';
 import { CoverComponent } from './cover.component';
+import { APP_BASE_HREF } from '@angular/common';
+import { MixComponent } from './mix.component';
 
 export default {
-  title: 'Home/Album',
-  component: AlbumComponent,
+  title: 'Home/Mix',
+  component: MixComponent,
   argTypes: {},
   decorators: [
     moduleMetadata({
@@ -46,16 +46,13 @@ export default {
   ],
 } as Meta;
 
-const Template: Story<AlbumComponent> = (args: AlbumComponent) => ({
-  component: AlbumComponent,
+const Template: Story<MixComponent> = (args: MixComponent) => ({
+  component: MixComponent,
   props: args,
 });
 
 export const Simple = Template.bind({});
 Simple.args = {
-  name: 'Machine Messiah',
-  artist: 'Sepultura',
-  routerLink: './',
-  artistRouterLink: './',
-  cover: '/assets/tests/sepultura_machine_messiah.jpg',
+  name: 'My Mix 2',
+  label: 'Megadeth, Black Sabbath, Metallica, Sepultura',
 };

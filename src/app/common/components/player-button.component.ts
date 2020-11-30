@@ -7,6 +7,8 @@ import {
 } from '@angular/core';
 import { Icons } from '../icons';
 
+export type PlayerState = 'playing' | 'loading' | 'stopped';
+
 // https://github.com/angular/angular/issues/8785
 @Component({
   selector: 'app-player-button',
@@ -78,7 +80,7 @@ export class PlayerButtonComponent {
   @Input()
   size: 'small' | 'large' = 'small';
   @Input()
-  state: 'playing' | 'loading' | 'stopped' = 'stopped';
+  state: PlayerState = 'stopped';
   @Output() playClicked = new EventEmitter<void>();
   @Output() pauseClicked = new EventEmitter<void>();
   icons = Icons;

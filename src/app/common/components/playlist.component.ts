@@ -1,15 +1,15 @@
 import {
-  Component,
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
   Input,
   Optional,
-  ChangeDetectorRef,
 } from '@angular/core';
 import { Icons } from '../icons';
 import { PlayerState } from './player-button.component';
 
 @Component({
-  selector: 'app-album',
+  selector: 'app-playlist',
   template: `
     <app-cover
       [title]="name"
@@ -20,11 +20,11 @@ import { PlayerState } from './player-button.component';
       (pauseClicked)="pause()"
       tabindex="-1"
     >
-      <img [src]="cover" [alt]="name" height="226" width="226" />
+      <img [src]="cover" height="226" width="226" alt="cover" />
     </app-cover>
     <app-label
       [topLabel]="{ text: name, routerLink: routerLink }"
-      [bottomLabel]="['Album', { text: artist, routerLink: artistRouterLink }]"
+      [bottomLabel]="label"
     ></app-label>
   `,
   styles: [
@@ -32,18 +32,40 @@ import { PlayerState } from './player-button.component';
       :host,
       img {
         display: block;
+        max-width: 226px;
       }
       app-cover {
         margin-bottom: 16px;
+        background-color: #333;
+      }
+      app-icon {
+        color: #66bf3c;
+      }
+      .my-mix,
+      .number {
+        font-family: Arial, sans-serif;
+        font-weight: 400;
+        font-size: 32px;
+        letter-spacing: 1px;
+        position: absolute;
+        bottom: 4px;
+        left: 10px;
+      }
+      .number {
+        top: 0;
+        right: 8px;
+        bottom: initial;
+        left: initial;
+        font-size: 78px;
       }
     `,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AlbumComponent {
-  @Input() name!: string;
-  @Input() artist!: string;
+export class PlaylistComponent {
   @Input() cover!: string;
+  @Input() name!: string;
+  @Input() label!: string;
   @Input() routerLink!: any[] | string;
   @Input() artistRouterLink!: any[] | string;
   icons = Icons;
@@ -71,8 +93,8 @@ export class AlbumComponent {
       text: 'Add to favorites',
     },
     {
-      icon: Icons.accountMusic,
-      text: 'Go to artist',
+      icon: Icons.playlistPlus,
+      text: 'Add to playlist',
     },
   ];
   state: PlayerState = 'stopped';

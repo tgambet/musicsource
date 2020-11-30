@@ -21,6 +21,8 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { SongComponent } from './common/components/song.component';
 import { PlaylistComponent } from './common/components/playlist.component';
 import { A11yModule } from '@angular/cdk/a11y';
+import { CoverComponent } from './common/components/cover.component';
+import { MixComponent } from './common/components/mix.component';
 
 @NgModule({
   declarations: [
@@ -35,6 +37,8 @@ import { A11yModule } from '@angular/cdk/a11y';
     PlayerButtonComponent,
     SongComponent,
     PlaylistComponent,
+    CoverComponent,
+    MixComponent,
   ],
   imports: [
     BrowserModule,
