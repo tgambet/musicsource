@@ -1,17 +1,26 @@
-import { Component, ChangeDetectionStrategy, Input } from '@angular/core';
+import {
+  Component,
+  ChangeDetectionStrategy,
+  Input,
+  Optional,
+  ChangeDetectorRef,
+} from '@angular/core';
 import { Icons } from '../icons';
 
 @Component({
   selector: 'app-album',
   template: `
     <div class="image">
-      <!-- TODO mini player -->
       <app-menu [triggerIcon]="icons.dotsVertical" [menuItems]="menuItems">
       </app-menu>
-      <button mat-icon-button>
-        <app-icon [path]="icons.play"></app-icon>
-      </button>
-      <a [routerLink]="routerLink" matRipple>
+      <app-player-button
+        [state]="state"
+        size="small"
+        (playClicked)="play()"
+        (pauseClicked)="pause()"
+      ></app-player-button>
+      <a class="link" [routerLink]="routerLink" matRipple [title]="name">
+        <div class="shadow"></div>
         <img
           [src]="cover"
           [alt]="name"
@@ -42,20 +51,51 @@ import { Icons } from '../icons';
         border-radius: 4px;
         position: relative;
       }
-      button {
+      app-menu {
+        opacity: 0;
+        transition: opacity 0.2s ease;
+      }
+      .image:hover app-menu {
+        opacity: 1;
+      }
+      app-player-button {
         position: absolute;
         right: 16px;
         bottom: 16px;
         z-index: 1;
-        background-color: black;
-        border: 4px solid black;
-        box-sizing: content-box;
+        transform: scale(0.8);
+        transition: transform 0.2s ease;
+      }
+      app-player-button:hover {
+        transform: scale(1);
       }
       app-menu {
         position: absolute;
         right: 8px;
         top: 8px;
         z-index: 1;
+      }
+      .link {
+        position: relative;
+      }
+      .shadow {
+        opacity: 0;
+        position: absolute;
+        z-index: 1;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        background: linear-gradient(
+          to bottom,
+          black,
+          transparent 50%,
+          transparent
+        );
+        transition: opacity 0.2s ease;
+      }
+      .image:hover .shadow {
+        opacity: 1;
       }
     `,
   ],
@@ -96,4 +136,19 @@ export class AlbumComponent {
       text: 'Go to artist',
     },
   ];
+  state: 'playing' | 'loading' | 'stopped' = 'stopped';
+
+  constructor(@Optional() private cdr: ChangeDetectorRef) {}
+
+  play() {
+    this.state = 'loading';
+    setTimeout(() => {
+      this.state = 'playing';
+      this.cdr.markForCheck();
+    }, 1000);
+  }
+
+  pause() {
+    this.state = 'stopped';
+  }
 }

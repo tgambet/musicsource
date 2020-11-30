@@ -9,6 +9,8 @@ import { IconComponent } from './icon.component';
 import { MenuComponent } from './menu.component';
 import { MatMenuModule } from '@angular/material/menu';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { PlayerButtonComponent } from './player-button.component';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 export default {
   title: 'Components/Album',
@@ -22,8 +24,14 @@ export default {
         MatButtonModule,
         MatMenuModule,
         BrowserAnimationsModule,
+        MatProgressSpinnerModule,
       ],
-      declarations: [LabelComponent, IconComponent, MenuComponent],
+      declarations: [
+        LabelComponent,
+        IconComponent,
+        MenuComponent,
+        PlayerButtonComponent,
+      ],
       providers: [
         {
           provide: APP_BASE_HREF,

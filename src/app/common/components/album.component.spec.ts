@@ -5,6 +5,7 @@ import { AlbumComponent } from './album.component';
 import { LabelComponent } from './label.component';
 import { IconComponent } from './icon.component';
 import { MenuComponent } from './menu.component';
+import { PlayerButtonComponent } from './player-button.component';
 
 describe('AlbumComponent', () => {
   let component: AlbumComponent;
@@ -18,6 +19,7 @@ describe('AlbumComponent', () => {
         LabelComponent,
         IconComponent,
         MenuComponent,
+        PlayerButtonComponent,
       ],
     }).compileComponents();
   });

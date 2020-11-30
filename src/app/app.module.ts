@@ -16,6 +16,8 @@ import { GenreComponent } from './common/components/genre.component';
 import { MenuComponent } from './common/components/menu.component';
 import { MatMenuModule } from '@angular/material/menu';
 import { IconComponent } from './common/components/icon.component';
+import { PlayerButtonComponent } from './common/components/player-button.component';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @NgModule({
   declarations: [
@@ -27,6 +29,7 @@ import { IconComponent } from './common/components/icon.component';
     GenreComponent,
     MenuComponent,
     IconComponent,
+    PlayerButtonComponent,
   ],
   imports: [
     BrowserModule,
@@ -38,6 +41,7 @@ import { IconComponent } from './common/components/icon.component';
     MatRippleModule,
     MatButtonModule,
     MatMenuModule,
+    MatProgressSpinnerModule,
   ],
   providers: [],
   bootstrap: [AppComponent],
