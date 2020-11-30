@@ -11,12 +11,6 @@ import { Icons } from '../icons';
   selector: 'app-album',
   template: `
     <div class="image" [ngClass]="state">
-      <app-menu
-        cdkMonitorSubtreeFocus
-        [triggerIcon]="icons.dotsVertical"
-        [menuItems]="menuItems"
-      >
-      </app-menu>
       <app-player-button
         cdkMonitorSubtreeFocus
         [state]="state"
@@ -24,7 +18,19 @@ import { Icons } from '../icons';
         (playClicked)="play()"
         (pauseClicked)="pause()"
       ></app-player-button>
-      <a class="link" [routerLink]="routerLink" matRipple [title]="name">
+      <app-menu
+        cdkMonitorSubtreeFocus
+        [triggerIcon]="icons.dotsVertical"
+        [menuItems]="menuItems"
+      >
+      </app-menu>
+      <a
+        class="link"
+        [routerLink]="routerLink"
+        matRipple
+        [title]="name"
+        tabindex="-1"
+      >
         <div class="shadow"></div>
         <img
           [src]="cover"
@@ -91,6 +97,10 @@ import { Icons } from '../icons';
       .link {
         position: relative;
       }
+      /*.link:focus {*/
+      /*  outline: 2px solid white;*/
+      /*  outline-offset: -2px;*/
+      /*}*/
       .shadow {
         opacity: 0;
         position: absolute;
