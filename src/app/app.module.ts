@@ -23,6 +23,7 @@ import { PlaylistComponent } from './common/components/playlist.component';
 import { A11yModule } from '@angular/cdk/a11y';
 import { CoverComponent } from './common/components/cover.component';
 import { MixComponent } from './common/components/mix.component';
+import { TopBarComponent } from './common/components/top-bar.component';
 
 @NgModule({
   declarations: [
@@ -39,6 +40,7 @@ import { MixComponent } from './common/components/mix.component';
     PlaylistComponent,
     CoverComponent,
     MixComponent,
+    TopBarComponent,
   ],
   imports: [
     BrowserModule,

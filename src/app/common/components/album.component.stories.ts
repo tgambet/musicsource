@@ -57,5 +57,5 @@ Simple.args = {
   artist: 'Sepultura',
   routerLink: './',
   artistRouterLink: './',
-  cover: '/assets/tests/sepultura_machine_messiah.jpg',
+  cover: '/sepultura_machine_messiah.jpg',
 };

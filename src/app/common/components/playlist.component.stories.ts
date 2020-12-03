@@ -55,5 +55,5 @@ export const Simple = Template.bind({});
 Simple.args = {
   name: 'Nu-Metal Rage',
   label: 'Korn, Linkin Park, Limp Bizkit, Rage Against the Machine',
-  cover: '/assets/tests/playlist_nu_metal.jpg',
+  cover: '/playlist_nu_metal.jpg',
 };

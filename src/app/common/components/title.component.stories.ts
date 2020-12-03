@@ -47,7 +47,7 @@ export const WithAvatar = Template.bind({});
 WithAvatar.args = {
   head: 'Similar to',
   title: 'Keny Arkana',
-  avatarSrc: '/assets/tests/keny_arkana_small.jpg',
+  avatarSrc: '/keny_arkana_small.jpg',
   avatarStyle: 'round',
   routerLink: '/',
 };

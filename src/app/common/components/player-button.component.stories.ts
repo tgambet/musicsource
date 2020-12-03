@@ -45,7 +45,7 @@ class TestComponent {
 }
 
 export default {
-  title: 'Components/PlayerButton',
+  title: 'Components/Player Button',
   component: PlayerButtonComponent,
   argTypes: {
     size: {

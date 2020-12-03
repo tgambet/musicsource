@@ -33,5 +33,5 @@ Simple.args = {
   name: 'Muse',
   legend: '130 songs',
   routerLink: './',
-  cover: '/assets/tests/muse.jpg',
+  cover: '/muse.jpg',
 };

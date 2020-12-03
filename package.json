@@ -10,7 +10,7 @@
     "e2e": "ng e2e",
     "docs": "compodoc -p ./tsconfig.json",
     "docs:json": "compodoc -p ./tsconfig.json -e json -d .",
-    "storybook": "yarn docs:json && start-storybook -p 6006",
+    "storybook": "yarn docs:json && start-storybook -s ./.storybook/assets -p 6006",
     "build-storybook": "yarn docs:json && build-storybook"
   },
   "private": true,

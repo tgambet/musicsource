@@ -16,7 +16,10 @@ import { Component, ChangeDetectionStrategy, Input } from '@angular/core';
   `,
   styles: [
     `
-      :host,
+      :host {
+        display: block;
+        max-width: 226px;
+      }
       a,
       img {
         display: block;
