@@ -2,6 +2,8 @@ import {
   mdiAccessPoint,
   mdiAccountMusic,
   mdiAlbum,
+  mdiChevronLeft,
+  mdiChevronRight,
   mdiCog,
   mdiCurrencyUsd,
   mdiDotsVertical,
@@ -46,4 +48,6 @@ export class Icons {
   static security = mdiSecurity;
   static shuffle = mdiShuffleVariant;
   static volumeHigh = mdiVolumeHigh;
+  static chevronLeft = mdiChevronLeft;
+  static chevronRight = mdiChevronRight;
 }

@@ -24,6 +24,10 @@ import { A11yModule } from '@angular/cdk/a11y';
 import { CoverComponent } from './common/components/cover.component';
 import { MixComponent } from './common/components/mix.component';
 import { TopBarComponent } from './common/components/top-bar.component';
+import {
+  HListComponent,
+  HListItemDirective,
+} from './common/components/h-list.component';
 
 @NgModule({
   declarations: [
@@ -41,6 +45,8 @@ import { TopBarComponent } from './common/components/top-bar.component';
     CoverComponent,
     MixComponent,
     TopBarComponent,
+    HListItemDirective,
+    HListComponent,
   ],
   imports: [
     BrowserModule,
