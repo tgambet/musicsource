@@ -1,7 +1,6 @@
-
 // Custom Theming for Angular Material
 // For more information: https://material.angular.io/guide/theming
-@import '~@angular/material/theming';
+@import "~@angular/material/theming";
 // Plus imports for other components in your app.
 
 // Include the common styles for Angular Material. We include this here so that you only
@@ -64,66 +63,72 @@ $musicsource-theme: (
 
 /* roboto-300 - latin */
 @font-face {
-  font-family: 'YT Sans';
+  font-family: "YT Sans";
   font-style: normal;
   font-weight: 700;
-  src: local('YouTube Sans'),
-  url('/assets/fonts/youtube-sans-bold.ttf') format('truetype');
+  src: local("YouTube Sans"),
+    url("/assets/fonts/youtube-sans-bold.ttf") format("truetype");
   font-display: swap;
 }
 
 /* roboto-300 - latin */
 @font-face {
-  font-family: 'Roboto';
+  font-family: "Roboto";
   font-style: normal;
   font-weight: 300;
-  src: local('Roboto Light'), local('Roboto-Light'),
-  url('/assets/fonts/roboto-v19-latin-300.woff2') format('woff2'),
+  src: local("Roboto Light"), local("Roboto-Light"),
+    url("/assets/fonts/roboto-v19-latin-300.woff2") format("woff2"),
     /* Chrome 26+, Opera 23+, Firefox 39+ */
-  url('/assets/fonts/roboto-v19-latin-300.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+      url("/assets/fonts/roboto-v19-latin-300.woff") format("woff"); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
   font-display: swap;
 }
 
 /* roboto-regular - latin */
 @font-face {
-  font-family: 'Roboto';
+  font-family: "Roboto";
   font-style: normal;
   font-weight: 400;
-  src: local('Roboto'), local('Roboto-Regular'),
-  url('/assets/fonts/roboto-v19-latin-regular.woff2') format('woff2'),
+  src: local("Roboto"), local("Roboto-Regular"),
+    url("/assets/fonts/roboto-v19-latin-regular.woff2") format("woff2"),
     /* Chrome 26+, Opera 23+, Firefox 39+ */
-  url('/assets/fonts/roboto-v19-latin-regular.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+      url("/assets/fonts/roboto-v19-latin-regular.woff") format("woff"); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
   font-display: swap;
 }
 
 /* roboto-500 - latin */
 @font-face {
-  font-family: 'Roboto';
+  font-family: "Roboto";
   font-style: normal;
   font-weight: 500;
-  src: local('Roboto Medium'), local('Roboto-Medium'),
-  url('/assets/fonts/roboto-v19-latin-500.woff2') format('woff2'),
+  src: local("Roboto Medium"), local("Roboto-Medium"),
+    url("/assets/fonts/roboto-v19-latin-500.woff2") format("woff2"),
     /* Chrome 26+, Opera 23+, Firefox 39+ */
-  url('/assets/fonts/roboto-v19-latin-500.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+      url("/assets/fonts/roboto-v19-latin-500.woff") format("woff"); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
   font-display: swap;
 }
 
 /* roboto-700 - latin */
 @font-face {
-  font-family: 'Roboto';
+  font-family: "Roboto";
   font-style: normal;
   font-weight: 700;
-  src: local('Roboto Bold'), local('Roboto-Bold'),
-  url('/assets/fonts/roboto-v19-latin-700.woff2') format('woff2'),
+  src: local("Roboto Bold"), local("Roboto-Bold"),
+    url("/assets/fonts/roboto-v19-latin-700.woff2") format("woff2"),
     /* Chrome 26+, Opera 23+, Firefox 39+ */
-  url('/assets/fonts/roboto-v19-latin-700.woff') format('woff'); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
+      url("/assets/fonts/roboto-v19-latin-700.woff") format("woff"); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
   font-display: swap;
 }
 
 $text-color: mat-color(map-get($musicsource-theme, foreground), text);
-$background-color: mat-color(map-get($musicsource-theme, background), background);
+$background-color: mat-color(
+  map-get($musicsource-theme, background),
+  background
+);
 
-html, body { height: 100%; }
+html,
+body {
+  height: 100%;
+}
 body {
   margin: 0;
   font-family: Roboto, "Helvetica Neue", sans-serif;
@@ -137,6 +142,11 @@ a,
 a:visited {
   color: inherit;
 }
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   margin: 0;
 }

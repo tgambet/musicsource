@@ -32,7 +32,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     `,
   ],
 })
-class TestComponent {
+class PlayerButtonTestComponent {
   size: 'small' | 'large' = 'large';
   state: 'stopped' | 'playing' | 'loading' = 'stopped';
   playClicked() {
@@ -79,8 +79,10 @@ const Template1: Story<PlayerButtonComponent> = (
   props: args,
 });
 
-const Template2: Story<TestComponent> = (args: TestComponent) => ({
-  component: TestComponent,
+const Template2: Story<PlayerButtonTestComponent> = (
+  args: PlayerButtonTestComponent
+) => ({
+  component: PlayerButtonTestComponent,
   props: args,
 });
 

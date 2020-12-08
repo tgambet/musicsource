@@ -16,6 +16,7 @@ import { A11yModule } from '@angular/cdk/a11y';
       <div appHListItem>4</div>
       <div appHListItem>5</div>
       <div appHListItem>6</div>
+      <div appHListItem>7</div>
     </app-h-list>
   `,
   styles: [
@@ -30,8 +31,7 @@ import { A11yModule } from '@angular/cdk/a11y';
       div {
         width: 150px;
         height: 100%;
-        box-sizing: border-box;
-        padding: 8px;
+        outline: 1px solid brown;
         background-color: bisque;
         display: flex;
         align-items: center;
@@ -41,11 +41,11 @@ import { A11yModule } from '@angular/cdk/a11y';
     `,
   ],
 })
-class TestComponent {}
+class HListTestComponent {}
 
 export default {
   title: 'Components/Horizontal List',
-  component: TestComponent,
+  component: HListTestComponent,
   argTypes: {},
   decorators: [
     moduleMetadata({
@@ -56,8 +56,8 @@ export default {
   ],
 } as Meta;
 
-const Template: Story<TestComponent> = (args: TestComponent) => ({
-  component: TestComponent,
+const Template: Story<HListTestComponent> = (args: HListTestComponent) => ({
+  component: HListTestComponent,
   props: args,
 });
 

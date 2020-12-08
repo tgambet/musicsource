@@ -45,7 +45,7 @@ import { Component, Input } from '@angular/core';
     `,
   ],
 })
-class TestComponent {
+class CoverTestComponent {
   @Input() title!: string;
   @Input() playerState!: PlayerState;
   @Input() routerLink!: any[] | string;
@@ -55,7 +55,7 @@ class TestComponent {
 
 export default {
   title: 'Components/Cover',
-  component: TestComponent,
+  component: CoverTestComponent,
   argTypes: {},
   decorators: [
     moduleMetadata({
@@ -79,8 +79,8 @@ export default {
   ],
 } as Meta;
 
-const Template: Story<TestComponent> = (args: TestComponent) => ({
-  component: TestComponent,
+const Template: Story<CoverTestComponent> = (args: CoverTestComponent) => ({
+  component: CoverTestComponent,
   props: args,
 });
 
