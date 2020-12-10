@@ -19,7 +19,7 @@ import {
 } from '@angular/core';
 import { MatButton } from '@angular/material/button';
 import { Subscription } from 'rxjs';
-import { Icons } from '../icons';
+import { Icons } from '../utils/icons.util';
 import { InteractivityChecker } from '@angular/cdk/a11y';
 import { DOCUMENT } from '@angular/common';
 

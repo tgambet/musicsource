@@ -5,7 +5,7 @@ import {
   Input,
   Output,
 } from '@angular/core';
-import { Icons } from '../icons';
+import { Icons } from '../utils/icons.util';
 
 export type PlayerState = 'playing' | 'loading' | 'stopped';
 

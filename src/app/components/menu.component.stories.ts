@@ -4,7 +4,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatButtonModule } from '@angular/material/button';
 import { IconComponent } from './icon.component';
-import { Icons } from '../icons';
+import { Icons } from '../utils/icons.util';
 
 export default {
   title: 'Components/Menu',

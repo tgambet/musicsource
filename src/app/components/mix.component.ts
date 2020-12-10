@@ -5,7 +5,7 @@ import {
   Input,
   Optional,
 } from '@angular/core';
-import { Icons } from '../icons';
+import { Icons } from '../utils/icons.util';
 import { PlayerState } from './player-button.component';
 
 @Component({

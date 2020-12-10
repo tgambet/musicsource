@@ -6,7 +6,7 @@ import {
   Output,
 } from '@angular/core';
 import { PlayerState } from './player-button.component';
-import { Icons } from '../icons';
+import { Icons } from '../utils/icons.util';
 import { MenuItem } from './menu.component';
 
 @Component({

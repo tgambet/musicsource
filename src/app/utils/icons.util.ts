@@ -2,14 +2,21 @@ import {
   mdiAccessPoint,
   mdiAccountMusic,
   mdiAlbum,
+  mdiChevronDown,
   mdiChevronLeft,
   mdiChevronRight,
   mdiCog,
   mdiCurrencyUsd,
   mdiDotsVertical,
+  mdiFileMusicOutline,
+  mdiFolderCogOutline,
+  mdiFolderMusicOutline,
+  mdiFolderOpenOutline,
   mdiFolderOutline,
+  mdiFolderPlusOutline,
+  mdiFolderSearchOutline,
   mdiHeartOutline,
-  mdiHelpBox,
+  mdiHelpCircle,
   mdiHistory,
   mdiHome,
   mdiMagnify,
@@ -33,7 +40,7 @@ export class Icons {
   static dotsVertical = mdiDotsVertical;
   static folderOutline = mdiFolderOutline;
   static heartOutline = mdiHeartOutline;
-  static helpBox = mdiHelpBox;
+  static helpCircle = mdiHelpCircle;
   static history = mdiHistory;
   static home = mdiHome;
   static library = mdiMusicBoxMultiple;
@@ -50,4 +57,12 @@ export class Icons {
   static volumeHigh = mdiVolumeHigh;
   static chevronLeft = mdiChevronLeft;
   static chevronRight = mdiChevronRight;
+  static chevronDown = mdiChevronDown;
+  static fileMusic = mdiFileMusicOutline;
+  static folder = mdiFolderOutline;
+  static folderOpen = mdiFolderOpenOutline;
+  static folderPlus = mdiFolderPlusOutline;
+  static folderMusic = mdiFolderMusicOutline;
+  static folderCog = mdiFolderCogOutline;
+  static folderSearch = mdiFolderSearchOutline;
 }

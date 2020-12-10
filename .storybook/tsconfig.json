@@ -2,8 +2,9 @@
   "extends": "../tsconfig.app.json",
   "compilerOptions": {
     "types": [
-      "node"
-    ]
+      "node",
+      "wicg-file-system-access"
+    ],
   },
   "exclude": [
     "../src/test.ts",

@@ -1,6 +1,6 @@
 import { Meta, moduleMetadata, Story } from '@storybook/angular';
 import { IconComponent } from './icon.component';
-import { Icons } from '../icons';
+import { Icons } from '../utils/icons.util';
 
 export default {
   title: 'Components/Icon',

@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { Icons } from '../icons';
+import { Icons } from '../utils/icons.util';
 
 @Component({
   selector: 'app-menu',

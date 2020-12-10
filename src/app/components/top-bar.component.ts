@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { Icons } from '../icons';
+import { Icons } from '../utils/icons.util';
 import { MenuItem } from './menu.component';
 
 @Component({
@@ -113,11 +113,12 @@ import { MenuItem } from './menu.component';
 export class TopBarComponent {
   icons = Icons;
   menuItems: MenuItem[] = [
-    { text: 'Scan a folder', icon: Icons.folderOutline },
+    { text: 'Quick scan a folder', icon: Icons.folderSearch },
+    { text: 'Library settings', icon: Icons.folderCog },
     { text: 'History', icon: Icons.history },
     { text: 'Settings', icon: Icons.cog },
     { text: 'Privacy policy', icon: Icons.security },
-    { text: 'Help', icon: Icons.helpBox },
+    { text: 'Help', icon: Icons.helpCircle },
     { text: 'Send feedback', icon: Icons.messageAlert },
     { text: 'Offer me a job or a beer', icon: Icons.currencyUsd },
   ];
