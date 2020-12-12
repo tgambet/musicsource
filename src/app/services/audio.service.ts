@@ -24,7 +24,7 @@ export class AudioService {
             return;
           }
           body.appendChild(audio);
-          audio.setAttribute('controls', 'true');
+          // audio.setAttribute('controls', 'true');
           source./*connect(gain).*/ connect(context.destination);
           this.audio = audio;
           // this.audio.load();

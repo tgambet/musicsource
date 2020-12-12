@@ -14,6 +14,7 @@ import { Icons } from '../utils/icons.util';
           *ngFor="let item of menuItems"
           (click)="item.click ? item.click() : undefined"
           [disabled]="item.disabled"
+          [routerLink]="item.routerLink"
         >
           <app-icon *ngIf="item.icon" [path]="item.icon"></app-icon>
           <span>{{ item.text }}</span>
@@ -44,4 +45,5 @@ export interface MenuItem {
   text: string;
   disabled?: boolean;
   click?: () => void;
+  routerLink?: string | any[];
 }

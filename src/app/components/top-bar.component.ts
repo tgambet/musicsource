@@ -10,11 +10,7 @@ import { MenuItem } from './menu.component';
       <span>MusicSource</span>
     </h1>
     <nav>
-      <a
-        routerLink="/"
-        routerLinkActive="active"
-        [routerLinkActiveOptions]="{ exact: true }"
-      >
+      <a routerLink="/home" routerLinkActive="active">
         <app-icon [path]="icons.home"></app-icon>
         <span>Home</span>
       </a>
@@ -80,7 +76,7 @@ import { MenuItem } from './menu.component';
         color: rgba(255, 255, 255, 0.5);
       }
       a:hover,
-      a:active {
+      a.active {
         color: white;
         text-decoration: none;
       }
@@ -114,7 +110,11 @@ export class TopBarComponent {
   icons = Icons;
   menuItems: MenuItem[] = [
     { text: 'Quick scan a folder', icon: Icons.folderSearch },
-    { text: 'Library settings', icon: Icons.folderCog },
+    {
+      text: 'Library settings',
+      icon: Icons.folderCog,
+      routerLink: [{ outlets: { dialog: ['settings'] } }],
+    },
     { text: 'History', icon: Icons.history },
     { text: 'Settings', icon: Icons.cog },
     { text: 'Privacy policy', icon: Icons.security },

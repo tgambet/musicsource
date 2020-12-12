@@ -3,24 +3,21 @@ import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 @Component({
   selector: 'app-home',
   template: `
-    <p>
+    <a [routerLink]="[{ outlets: { dialog: ['settings'] } }]">
       home works!
-    </p>
+    </a>
   `,
   styles: [
     `
       :host {
         display: block;
       }
-    `
+    `,
   ],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HomeComponent implements OnInit {
+  constructor() {}
 
-  constructor() { }
-
-  ngOnInit(): void {
-  }
-
+  ngOnInit(): void {}
 }

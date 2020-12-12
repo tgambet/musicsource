@@ -34,6 +34,12 @@ import { HomeComponent } from './pages/home.component';
 import { LibraryComponent } from './pages/library.component';
 import { SearchComponent } from './pages/search.component';
 import { HistoryComponent } from './pages/history.component';
+import { ExplorerComponent } from './pages/explorer.component';
+import { RoutedDialogDirective } from '@app/directives/routed-dialog.directive';
+import { LibrarySettingsComponent } from './dialogs/library-settings.component';
+import { MatDialogModule } from '@angular/material/dialog';
+import { SettingsComponent } from './dialogs/settings.component';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 
 @NgModule({
   declarations: [
@@ -57,6 +63,10 @@ import { HistoryComponent } from './pages/history.component';
     LibraryComponent,
     SearchComponent,
     HistoryComponent,
+    ExplorerComponent,
+    RoutedDialogDirective,
+    LibrarySettingsComponent,
+    SettingsComponent,
   ],
   imports: [
     BrowserModule,
@@ -71,7 +81,9 @@ import { HistoryComponent } from './pages/history.component';
     MatProgressSpinnerModule,
     MatSnackBarModule,
     CdkTreeModule,
+    DragDropModule,
     A11yModule,
+    MatDialogModule,
   ],
   providers: [],
   bootstrap: [AppComponent],

@@ -2,19 +2,22 @@ import {
   mdiAccessPoint,
   mdiAccountMusic,
   mdiAlbum,
+  mdiAlertCircleOutline,
   mdiChevronDown,
   mdiChevronLeft,
   mdiChevronRight,
+  mdiClose,
   mdiCog,
   mdiCurrencyUsd,
   mdiDotsVertical,
-  mdiFileMusicOutline,
+  mdiFolderAlertOutline,
   mdiFolderCogOutline,
   mdiFolderMusicOutline,
   mdiFolderOpenOutline,
   mdiFolderOutline,
   mdiFolderPlusOutline,
   mdiFolderSearchOutline,
+  mdiFolderSyncOutline,
   mdiHeartOutline,
   mdiHelpCircle,
   mdiHistory,
@@ -22,6 +25,7 @@ import {
   mdiMagnify,
   mdiMessageAlert,
   mdiMusicBoxMultiple,
+  mdiMusicNote,
   mdiPause,
   mdiPlay,
   mdiPlaylistMusic,
@@ -29,6 +33,7 @@ import {
   mdiPlaylistPlus,
   mdiSecurity,
   mdiShuffleVariant,
+  mdiSync,
   mdiVolumeHigh,
 } from '@mdi/js';
 
@@ -58,11 +63,16 @@ export class Icons {
   static chevronLeft = mdiChevronLeft;
   static chevronRight = mdiChevronRight;
   static chevronDown = mdiChevronDown;
-  static fileMusic = mdiFileMusicOutline;
+  static fileMusic = mdiMusicNote;
   static folder = mdiFolderOutline;
   static folderOpen = mdiFolderOpenOutline;
   static folderPlus = mdiFolderPlusOutline;
   static folderMusic = mdiFolderMusicOutline;
   static folderCog = mdiFolderCogOutline;
   static folderSearch = mdiFolderSearchOutline;
+  static folderRefresh = mdiFolderSyncOutline;
+  static folderAlert = mdiFolderAlertOutline;
+  static sync = mdiSync;
+  static alertCircle = mdiAlertCircleOutline;
+  static close = mdiClose;
 }
