@@ -2,8 +2,8 @@ import { Inject, Injectable } from '@angular/core';
 import { defer, from, Observable, of } from 'rxjs';
 import { catchError, concatMap, map } from 'rxjs/operators';
 import { Either, left, right } from '@app/utils/either.util';
-import { FileEntry } from '@app/services/file.service';
 import { DOCUMENT } from '@angular/common';
+import { FileEntry } from '@app/utils/entry.util';
 
 export interface ParseResult {
   entry: FileEntry;
@@ -40,7 +40,7 @@ export class ExtractorService {
   }
 
   extract(entry: FileEntry): Observable<Either<ParseResult>> {
-    return defer(() => from(entry.getFile())).pipe(
+    return defer(() => from(entry.handle.getFile())).pipe(
       // filter(file => this.supportedTypes.includes(file.type)),
       concatMap((file) =>
         import('music-metadata-browser').then((musicMetadata) =>

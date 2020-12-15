@@ -36,8 +36,6 @@ export class AppComponent {
   @HostBinding('class.scrolled-top')
   scrolledTop = true;
 
-  constructor() {}
-
   @HostListener('window:scroll', ['$event'])
   setScrolledTop(event: any) {
     this.scrolledTop = event.target.scrollingElement.scrollTop === 0;

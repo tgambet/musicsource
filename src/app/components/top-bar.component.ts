@@ -1,6 +1,9 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { Icons } from '../utils/icons.util';
 import { MenuItem } from './menu.component';
+import { Router } from '@angular/router';
+import { Store } from '@ngrx/store';
+import { openDirectory } from '@app/store/scanner/scanner.actions';
 
 @Component({
   selector: 'app-top-bar',
@@ -109,7 +112,11 @@ import { MenuItem } from './menu.component';
 export class TopBarComponent {
   icons = Icons;
   menuItems: MenuItem[] = [
-    { text: 'Quick scan a folder', icon: Icons.folderSearch },
+    {
+      text: 'Quick scan a folder',
+      icon: Icons.folderSearch,
+      click: () => this.scan(),
+    },
     {
       text: 'Library settings',
       icon: Icons.folderCog,
@@ -122,4 +129,15 @@ export class TopBarComponent {
     { text: 'Send feedback', icon: Icons.messageAlert },
     { text: 'Offer me a job or a beer', icon: Icons.currencyUsd },
   ];
+
+  constructor(private router: Router, private store: Store) {}
+
+  private scan() {
+    this.store.dispatch(openDirectory());
+    // this.router
+    //   .navigate([{ outlets: { dialog: ['scan'] } }], {
+    //     skipLocationChange: true,
+    //   })
+    //   .then(() => this.store.dispatch(openDirectory()));
+  }
 }

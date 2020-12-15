@@ -5,7 +5,7 @@ import {
   HostListener,
 } from '@angular/core';
 import { ExtractorService } from '@app/services/extractor.service';
-import { FileService, isDirectory, isFile } from '@app/services/file.service';
+import { FileService } from '@app/services/file.service';
 import {
   concatMap,
   filter,
@@ -20,6 +20,7 @@ import { AudioService } from '@app/services/audio.service';
 import { merge, ReplaySubject, Subject } from 'rxjs';
 import { NestedTreeControl } from '@angular/cdk/tree';
 import { Icons } from '@app/utils/icons.util';
+import { isDirectory, isFile } from '@app/utils/entry.util';
 
 interface FileSystemTreeNode {
   name: string;
@@ -118,8 +119,7 @@ export class ExplorerComponent {
 
   constructor(
     private files: FileService,
-    private extractor: ExtractorService,
-    private audio: AudioService
+    private extractor: ExtractorService // private audio: AudioService
   ) {}
 
   @HostListener('window:scroll', ['$event'])
@@ -157,7 +157,7 @@ export class ExplorerComponent {
               concatMap((entry) => this.extractor.extract(entry)),
               collectRight(),
               first(),
-              concatMap((e) => e.entry.getFile())
+              concatMap((e) => e.entry.handle.getFile())
               // concatMap((file) => this.audio.play(file))
             )
           )

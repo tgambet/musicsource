@@ -2,21 +2,14 @@ import { Injectable } from '@angular/core';
 import { defer, merge, Observable, of } from 'rxjs';
 import { concatMap, map } from 'rxjs/operators';
 import { tapError } from '@app/utils/tap-error.util';
-
-export type FileEntry = FileSystemFileHandle & { path: string };
-export type DirectoryEntry = FileSystemDirectoryHandle & { path: string };
-export type FileSystemEntry = FileEntry | DirectoryEntry;
-export const isFile = (entry: FileSystemEntry): entry is FileEntry =>
-  entry.kind === 'file';
-export const isDirectory = (entry: FileSystemEntry): entry is DirectoryEntry =>
-  entry.kind === 'directory';
+import { DirectoryEntry, Entry } from '@app/utils/entry.util';
 
 @Injectable()
 export class FileService {
   /**
    * Opens and walks a user-selected directory
    */
-  scan(): Observable<FileSystemEntry> {
+  scan(): Observable<Entry> {
     return this.open().pipe(concatMap((directory) => this.walk(directory)));
   }
 
@@ -37,12 +30,12 @@ export class FileService {
    *
    * @param directory The directory to walk
    */
-  walk(directory: DirectoryEntry): Observable<FileSystemEntry> {
+  walk(directory: DirectoryEntry): Observable<Entry> {
     return merge(
       of(directory),
       this.getHandles(directory).pipe(
         map((handle) => this.entryFromHandle(handle, directory.path)),
-        concatMap((entry: FileSystemEntry) =>
+        concatMap((entry: Entry) =>
           entry.kind === 'directory' ? this.walk(entry) : of(entry)
         )
       )
@@ -56,7 +49,7 @@ export class FileService {
       (observer) =>
         void (async () => {
           try {
-            for await (const entry of directory.values()) {
+            for await (const entry of directory.handle.values()) {
               if (observer.closed) {
                 return;
               }
@@ -71,9 +64,12 @@ export class FileService {
 
   private entryFromHandle = (
     handle: FileSystemHandle,
-    parentPath: string = ''
-  ): FileSystemEntry =>
-    Object.assign(handle, {
-      path: parentPath ? `${parentPath}/${handle.name}` : handle.name,
-    });
+    parent?: string
+  ): Entry => ({
+    kind: handle.kind,
+    name: handle.name,
+    parent,
+    path: parent ? `${parent}/${handle.name}` : handle.name,
+    handle: handle as any,
+  });
 }

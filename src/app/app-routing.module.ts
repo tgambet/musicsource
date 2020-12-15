@@ -7,6 +7,7 @@ import { HistoryComponent } from '@app/pages/history.component';
 import { ExplorerComponent } from '@app/pages/explorer.component';
 import { LibrarySettingsComponent } from '@app/dialogs/library-settings.component';
 import { SettingsComponent } from '@app/dialogs/settings.component';
+import { ScanComponent } from '@app/dialogs/scan.component';
 
 const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -23,6 +24,11 @@ const routes: Routes = [
       { path: '', redirectTo: 'library', pathMatch: 'full' },
       { path: 'library', component: LibrarySettingsComponent },
     ],
+  },
+  {
+    path: 'scan',
+    outlet: 'dialog',
+    component: ScanComponent,
   },
 ];
 

@@ -3,6 +3,7 @@ import {
   mdiAccountMusic,
   mdiAlbum,
   mdiAlertCircleOutline,
+  mdiCheck,
   mdiChevronDown,
   mdiChevronLeft,
   mdiChevronRight,
@@ -75,4 +76,5 @@ export class Icons {
   static sync = mdiSync;
   static alertCircle = mdiAlertCircleOutline;
   static close = mdiClose;
+  static check = mdiCheck;
 }

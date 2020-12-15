@@ -7,54 +7,41 @@ import { Router } from '@angular/router';
 import { SettingsComponent } from '@app/dialogs/settings.component';
 import { Icons } from '@app/utils/icons.util';
 import { NestedTreeControl } from '@angular/cdk/tree';
-import { first, map, publish, scan, tap } from 'rxjs/operators';
-import { merge, Observable, ReplaySubject, Subject } from 'rxjs';
-import { FileService, isDirectory } from '@app/services/file.service';
-
-interface FileSystemTreeNode {
-  name: string;
-  path: string;
-  hasChild: boolean;
-}
-
-const isDirectChild = (
-  parent: { path: string },
-  child: { path: string }
-): boolean =>
-  parent.path !== child.path &&
-  child.path.replace(/\/[^\/]+$/, '') === parent.path;
-
-const isChild = (parent: { path: string }, child: { path: string }): boolean =>
-  parent.path !== child.path && child.path.startsWith(parent.path + '/');
+import { EMPTY, Observable } from 'rxjs';
+import { FileService } from '@app/services/file.service';
+import { Store } from '@ngrx/store';
+import {
+  selectDirectChildrenEntries,
+  selectEntries,
+  selectRootFolders,
+} from '@app/store/library';
+import { DirectoryEntry, Entry } from '@app/utils/entry.util';
 
 @Component({
   selector: 'app-library-settings',
   template: `
     <div class="folders">
-      <!--      <button mat-button title="Synchronize Linkin Park">
-        <app-icon [path]="icons.chevronRight" class="status"></app-icon>
-        <span>Linkin Park</span>
-        <app-icon [path]="icons.sync" class="refresh"></app-icon>
-      </button>-->
-      <div class="folder" *ngFor="let folder of folders">
+      <div class="folder" *ngFor="let folder of libFolders$ | async">
         <button
           mat-button
-          (click)="folder.expanded = !folder.expanded"
+          (click)="isExpanded[folder.path] = !!!isExpanded[folder.path]"
           class="folder-button"
-          [class.expanded]="folder.expanded"
+          [class.expanded]="isExpanded[folder.path]"
         >
           <app-icon
-            [path]="folder.expanded ? icons.chevronDown : icons.chevronRight"
+            [path]="
+              isExpanded[folder.path] ? icons.chevronDown : icons.chevronRight
+            "
             class="status alert"
             title="No access"
           ></app-icon>
           <span>
-            {{ folder.name }} {{ getChildrenCount(folder) | async }}
+            {{ folder.name }}
           </span>
           <app-icon [path]="icons.sync" class="refresh"></app-icon>
         </button>
         <cdk-tree
-          *ngIf="folder.expanded"
+          *ngIf="isExpanded[folder.path]"
           [dataSource]="getDirectChildren(folder)"
           [treeControl]="treeControl"
           [trackBy]="trackByFn"
@@ -175,7 +162,7 @@ const isChild = (parent: { path: string }, child: { path: string }): boolean =>
         flex-direction: column;
       }
       cdk-nested-tree-node cdk-nested-tree-node {
-        padding-left: 52px;
+        padding-left: 40px;
       }
       button {
         text-align: left;
@@ -193,86 +180,54 @@ const isChild = (parent: { path: string }, child: { path: string }): boolean =>
 export class LibrarySettingsComponent {
   icons = Icons;
 
-  folders: { name: string; path: string; expanded: boolean }[] = [];
-  nodes$: Subject<FileSystemTreeNode[]> = new ReplaySubject(1);
+  isExpanded: { [key: string]: boolean } = {};
+  libFolders$: Observable<DirectoryEntry[]>;
+  entries$: Observable<Entry[]>;
 
-  treeControl = new NestedTreeControl<FileSystemTreeNode>(
-    // (node) => this.nodes.filter((n) => isDirectChild(node, n))
-    (node) =>
-      this.nodes$.pipe(
-        map((nodes) => nodes.filter((n) => isDirectChild(node, n)))
-      )
+  treeControl = new NestedTreeControl<Entry>((node) =>
+    node.kind === 'directory' ? this.getDirectChildren(node) : EMPTY
   );
 
   constructor(
     private cdr: ChangeDetectorRef,
     private files: FileService,
     private router: Router,
-    private parent: SettingsComponent
-  ) {}
+    private parent: SettingsComponent,
+    private store: Store
+  ) {
+    this.libFolders$ = this.store.select(selectRootFolders);
+    this.entries$ = this.store.select(selectEntries);
+  }
 
-  hasChild = (_: number, node: FileSystemTreeNode): boolean => node.hasChild;
+  hasChild = (_: number, entry: Entry): boolean => entry.kind === 'directory';
 
-  trackByFn = (index: number, node: FileSystemTreeNode): string => node.path;
+  trackByFn = (index: number, entry: Entry): string => entry.path;
 
   navigate() {
     this.parent.close().then(() => this.router.navigate(['/', 'explorer']));
   }
 
-  getDirectChildren(folder: {
-    path: string;
-  }): Observable<FileSystemTreeNode[]> {
-    return this.nodes$.pipe(
-      map((nodes) => nodes.filter((n) => isDirectChild(folder, n)))
-    );
+  getDirectChildren(folder: DirectoryEntry): Observable<Entry[]> {
+    return this.store.select(selectDirectChildrenEntries, folder);
+    // return this.nodes$.pipe(
+    //   map((nodes) => nodes.filter((n) => isDirectChild(folder, n)))
+    // );
   }
 
-  getChildrenCount(folder: {
-    name: string;
-    path: string;
-    expanded: boolean;
-  }): Observable<number> {
-    return this.nodes$.pipe(
-      map((nodes) => nodes.filter((n) => isChild(folder, n)).length)
-    );
-  }
+  // getChildrenCount(folder: { name: string; path: string }): Observable<number> {
+  //   return of(0);
+  //   // return this.nodes$.pipe(
+  //   //   map((nodes) => nodes.filter((n) => isChild(folder, n)).length)
+  //   // );
+  // }
 
   test() {
-    this.files
-      .scan()
-      .pipe(
-        publish((m$) =>
-          merge(
-            m$.pipe(
-              first(),
-              tap((dir) => {
-                this.folders.push({
-                  path: dir.path,
-                  name: dir.name,
-                  expanded: false,
-                });
-                this.cdr.markForCheck();
-              })
-            ),
-            m$.pipe(
-              scan(
-                (acc, val) => [
-                  ...acc,
-                  {
-                    name: val.name,
-                    path: val.path,
-                    hasChild: isDirectory(val),
-                  },
-                ],
-                [] as FileSystemTreeNode[]
-              ),
-              tap((l) => {
-                this.nodes$.next(l);
-              })
-            )
-          )
-        )
-      )
-      .subscribe();
+    // this.files
+    //   .open()
+    //   .pipe(
+    //     tap((directory) => this.store.dispatch(addEntry({ entry: directory })))
+    //   )
+    //   .subscribe();
+    // this.store.dispatch(());
   }
 }

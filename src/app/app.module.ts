@@ -40,6 +40,15 @@ import { LibrarySettingsComponent } from './dialogs/library-settings.component';
 import { MatDialogModule } from '@angular/material/dialog';
 import { SettingsComponent } from './dialogs/settings.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
+import { StoreModule } from '@ngrx/store';
+import { reducers } from '@app/store';
+import { EffectsModule } from '@ngrx/effects';
+import { LibraryEffects } from '@app/store/library';
+import { FileService } from '@app/services/file.service';
+import { ScanComponent } from '@app/dialogs/scan.component';
+import { ScannerEffects } from '@app/store/scanner';
+import { ExtractorService } from '@app/services/extractor.service';
+import { ResizerService } from '@app/services/resizer.service';
 
 @NgModule({
   declarations: [
@@ -67,6 +76,7 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
     RoutedDialogDirective,
     LibrarySettingsComponent,
     SettingsComponent,
+    ScanComponent,
   ],
   imports: [
     BrowserModule,
@@ -84,8 +94,20 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
     DragDropModule,
     A11yModule,
     MatDialogModule,
+    StoreModule.forRoot(reducers, {
+      runtimeChecks: {
+        strictStateSerializability: false,
+        strictActionSerializability: false,
+        strictStateImmutability: true,
+        strictActionImmutability: true,
+        strictActionWithinNgZone: true,
+        strictActionTypeUniqueness: true,
+      },
+    }),
+    EffectsModule.forRoot([LibraryEffects, ScannerEffects]),
+    // StoreDevtoolsModule.instrument({ maxAge: 100, logOnly: true }),
   ],
-  providers: [],
+  providers: [FileService, ExtractorService, ResizerService],
   bootstrap: [AppComponent],
 })
 export class AppModule {}
