@@ -2,21 +2,11 @@ import { ChangeDetectionStrategy, Component, ViewChild } from '@angular/core';
 import { MatDialogConfig } from '@angular/material/dialog';
 import { NoopScrollStrategy } from '@angular/cdk/overlay';
 import { asapScheduler, Observable } from 'rxjs';
-import {
-  ScannerStateEnum,
-  selectError,
-  selectLatestParsed,
-  selectLatestScanned,
-  selectParsedCount,
-  selectProgressRatio,
-  selectScannedCount,
-  selectScannerState,
-} from '@app/store/scanner';
-import { Store } from '@ngrx/store';
-import { map, throttleTime } from 'rxjs/operators';
+import { ScannerStateEnum } from '@app/store/scanner';
+import { throttleTime } from 'rxjs/operators';
 import { RoutedDialogDirective } from '@app/directives/routed-dialog.directive';
-import { abortScan } from '@app/store/scanner/scanner.actions';
 import { Icons } from '@app/utils/icons.util';
+import { ScannerFacade } from '@app/store/scanner/scanner.facade';
 
 @Component({
   selector: 'app-scan',
@@ -72,7 +62,7 @@ import { Icons } from '@app/utils/icons.util';
             </div>
           </div>
           <p>Library built</p>
-          <p class="log">You can close this window</p>
+          <p class="log">You can close this dialog</p>
         </ng-container>
 
         <ng-container *ngIf="(scannerState$ | async) === error">
@@ -186,25 +176,20 @@ export class ScanComponent {
   latestParsed$: Observable<string | null>;
   error$: Observable<any | null>;
 
-  constructor(private store: Store) {
+  constructor(private scanner: ScannerFacade) {
     const throttle = <T>() =>
       throttleTime<T>(32, asapScheduler, {
         leading: true,
         trailing: true,
       });
 
-    this.scannerState$ = this.store.select(selectScannerState);
-    this.scanned$ = this.store.select(selectScannedCount).pipe(throttle());
-    this.parsed$ = this.store.select(selectParsedCount).pipe(throttle());
-    this.progress$ = this.store.select(selectProgressRatio).pipe(
-      map((ratio) => Math.ceil(ratio * 100)),
-      throttle()
-    );
-    this.latestScanned$ = this.store
-      .select(selectLatestScanned)
-      .pipe(throttle());
-    this.latestParsed$ = this.store.select(selectLatestParsed).pipe(throttle());
-    this.error$ = this.store.select(selectError);
+    this.scannerState$ = scanner.state$;
+    this.scanned$ = scanner.scannedCount$.pipe(throttle());
+    this.parsed$ = scanner.parsedCount$.pipe(throttle());
+    this.progress$ = scanner.progress$.pipe(throttle());
+    this.latestScanned$ = scanner.latestScanned$.pipe(throttle());
+    this.latestParsed$ = scanner.latestParsed$.pipe(throttle());
+    this.error$ = scanner.error$;
   }
 
   async close() {
@@ -212,6 +197,6 @@ export class ScanComponent {
   }
 
   abort(): void {
-    this.store.dispatch(abortScan());
+    this.scanner.abort();
   }
 }

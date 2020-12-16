@@ -1,5 +1,4 @@
 import { ApplicationRef, Injectable } from '@angular/core';
-import { Store } from '@ngrx/store';
 import {
   act,
   Actions,
@@ -39,9 +38,9 @@ import {
   scanSucceeded,
   startParsing,
 } from '@app/store/scanner/scanner.actions';
-import { findDirectory, selectChildrenEntries } from '@app/store/library';
 import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { LibraryFacade } from '@app/store/library/library.facade';
 
 @Injectable()
 export class ScannerEffects implements OnRunEffects {
@@ -68,14 +67,11 @@ export class ScannerEffects implements OnRunEffects {
       ),
       act({
         project: ({ directory }) =>
-          this.store.select(findDirectory, directory).pipe(
+          this.library.findDirectory(directory).pipe(
             first(),
-            concatMap((promise) => promise),
             concatMap((same) =>
               same
-                ? throwError(
-                    new Error('exists already: ' + directory.name + same.name)
-                  )
+                ? throwError(new Error('Exists already: ' + directory.name))
                 : this.fileService.walk(directory)
             ),
             takeUntil(this.actions$.pipe(ofType(abortScan))),
@@ -108,7 +104,7 @@ export class ScannerEffects implements OnRunEffects {
         project: ({ directory }) =>
           concat(
             of(startParsing()),
-            this.store.select(selectChildrenEntries, directory).pipe(
+            this.library.getChildrenEntries(directory).pipe(
               first(),
               concatMap((entries) => of(...entries.filter(isFile))),
               concatMap((entry) => this.extractorService.extract(entry)),
@@ -411,7 +407,6 @@ export class ScannerEffects implements OnRunEffects {
     ), {dispatch: false});*/
 
   constructor(
-    private store: Store,
     private actions$: Actions,
     private fileService: FileService,
     private extractorService: ExtractorService,
@@ -419,7 +414,8 @@ export class ScannerEffects implements OnRunEffects {
     private storageService: StorageService,
     private appRef: ApplicationRef,
     private router: Router,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private library: LibraryFacade
   ) {}
 
   ngrxOnRunEffects(

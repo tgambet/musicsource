@@ -27,6 +27,10 @@ export const selectProgressRatio = createSelector(selectCoreState, (state) =>
   state.scannedCount === 0 ? 0 : state.parsedCount / state.scannedCount
 );
 
+export const selectProgress = createSelector(selectProgressRatio, (ratio) =>
+  Math.ceil(ratio * 100)
+);
+
 export const selectScannerState = createSelector(
   selectCoreState,
   (state) => state.state

@@ -49,6 +49,8 @@ import { ScanComponent } from '@app/dialogs/scan.component';
 import { ScannerEffects } from '@app/store/scanner';
 import { ExtractorService } from '@app/services/extractor.service';
 import { ResizerService } from '@app/services/resizer.service';
+import { LibraryFacade } from '@app/store/library/library.facade';
+import { ScannerFacade } from '@app/store/scanner/scanner.facade';
 
 @NgModule({
   declarations: [
@@ -107,7 +109,13 @@ import { ResizerService } from '@app/services/resizer.service';
     EffectsModule.forRoot([LibraryEffects, ScannerEffects]),
     // StoreDevtoolsModule.instrument({ maxAge: 100, logOnly: true }),
   ],
-  providers: [FileService, ExtractorService, ResizerService],
+  providers: [
+    FileService,
+    ExtractorService,
+    ResizerService,
+    LibraryFacade,
+    ScannerFacade,
+  ],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

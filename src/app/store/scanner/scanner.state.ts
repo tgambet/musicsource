@@ -1,12 +1,12 @@
 // eslint-disable-next-line no-shadow
 export enum ScannerStateEnum {
-  idle,
-  prompted,
-  scanning,
-  parsing,
-  aborted,
-  success,
-  error,
+  idle = 'idle',
+  prompted = 'prompted',
+  scanning = 'scanning',
+  parsing = 'parsing',
+  aborted = 'aborted',
+  success = 'success',
+  error = 'error',
 }
 
 export interface ScannerState {

@@ -2,8 +2,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { Icons } from '../utils/icons.util';
 import { MenuItem } from './menu.component';
 import { Router } from '@angular/router';
-import { Store } from '@ngrx/store';
-import { openDirectory } from '@app/store/scanner/scanner.actions';
+import { ScannerFacade } from '@app/store/scanner/scanner.facade';
 
 @Component({
   selector: 'app-top-bar',
@@ -130,10 +129,10 @@ export class TopBarComponent {
     { text: 'Offer me a job or a beer', icon: Icons.currencyUsd },
   ];
 
-  constructor(private router: Router, private store: Store) {}
+  constructor(private router: Router, private scanner: ScannerFacade) {}
 
-  private scan() {
-    this.store.dispatch(openDirectory());
+  scan() {
+    this.scanner.openDirectory();
     // this.router
     //   .navigate([{ outlets: { dialog: ['scan'] } }], {
     //     skipLocationChange: true,
