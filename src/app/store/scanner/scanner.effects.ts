@@ -19,7 +19,7 @@ import {
   tap,
 } from 'rxjs/operators';
 import { FileService } from '@app/services/file.service';
-import { ExtractorService } from '@app/services/extractor.service';
+import { ExtractorService, Picture } from '@app/services/extractor.service';
 import { ResizerService } from '@app/services/resizer.service';
 import { StorageService } from '@app/services/storage.service';
 import { Entry, isFile } from '@app/utils/entry.util';
@@ -41,6 +41,7 @@ import {
 import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { LibraryFacade } from '@app/store/library/library.facade';
+import { tapError } from '@app/utils/tap-error.util';
 
 @Injectable()
 export class ScannerEffects implements OnRunEffects {
@@ -111,7 +112,7 @@ export class ScannerEffects implements OnRunEffects {
               map((either) =>
                 either.tag === 'left'
                   ? parseEntryFailed(either.error)
-                  : parseEntrySucceeded({ result: either.result })
+                  : parseEntrySucceeded(either.result)
               ),
               takeUntil(
                 this.actions$.pipe(
@@ -134,6 +135,57 @@ export class ScannerEffects implements OnRunEffects {
         ofType(scanAborted),
         tap(() => this.router.navigate([{ outlets: { dialog: null } }])),
         tap(() => this.snackBar.open(`Scan aborted`, '', { duration: 2000 }))
+      ),
+    { dispatch: false }
+  );
+
+  saveSongs$ = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(parseEntrySucceeded),
+        concatMap(({ song, pictures }) => {
+          const action$ =
+            pictures && pictures.length > 0
+              ? this.storageService.getDb().pipe(
+                  this.storageService.openTransaction(
+                    ['pictures', 'songs'],
+                    'readwrite'
+                  ),
+                  concatMap((transaction) =>
+                    this.storageService
+                      .findOne<Picture>(
+                        transaction,
+                        'pictures',
+                        (picture) => picture.data === pictures[0].data
+                      )
+                      .pipe(
+                        concatMap((picture) => {
+                          const saveSong = (key: IDBValidKey) =>
+                            this.storageService.wrap((trans) =>
+                              trans.objectStore('songs').add({
+                                ...song,
+                                pictureKey: key,
+                              })
+                            )(transaction);
+
+                          if (!picture) {
+                            return this.storageService
+                              .wrap((trans) =>
+                                trans.objectStore('pictures').add(pictures[0])
+                              )(transaction)
+                              .pipe(concatMap((key) => saveSong(key)));
+                          }
+                          return saveSong(picture.key);
+                        })
+                      )
+                  )
+                )
+              : this.storageService.addOne('songs', song);
+          return action$.pipe(
+            tapError((err) => console.log(err)),
+            catchError(() => EMPTY)
+          );
+        })
       ),
     { dispatch: false }
   );
@@ -183,6 +235,7 @@ export class ScannerEffects implements OnRunEffects {
   //   )
   // );
   //
+
   // build$: Observable<Action> = createEffect(() =>
   //   this.actions$.pipe(
   //     ofType(parseEntrySucceeded),

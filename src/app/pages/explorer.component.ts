@@ -6,21 +6,12 @@ import {
 } from '@angular/core';
 import { ExtractorService } from '@app/services/extractor.service';
 import { FileService } from '@app/services/file.service';
-import {
-  concatMap,
-  filter,
-  first,
-  map,
-  publish,
-  scan,
-  tap,
-} from 'rxjs/operators';
-import { collectRight } from '@app/utils/either.util';
+import { filter, map, publish, scan, tap } from 'rxjs/operators';
 import { AudioService } from '@app/services/audio.service';
 import { merge, ReplaySubject, Subject } from 'rxjs';
 import { NestedTreeControl } from '@angular/cdk/tree';
 import { Icons } from '@app/utils/icons.util';
-import { isDirectory, isFile } from '@app/utils/entry.util';
+import { isDirectory } from '@app/utils/entry.util';
 
 interface FileSystemTreeNode {
   name: string;
@@ -118,9 +109,9 @@ export class ExplorerComponent {
   icons = Icons;
 
   constructor(
-    private files: FileService,
-    private extractor: ExtractorService // private audio: AudioService
-  ) {}
+    private files: FileService
+  ) // private extractor: ExtractorService // private audio: AudioService
+  {}
 
   @HostListener('window:scroll', ['$event'])
   setScrolledTop(event: any) {
@@ -151,15 +142,15 @@ export class ExplorerComponent {
               ),
               tap((l) => this.subject.next(l))
             ),
-            m$.pipe(filter(isDirectory)),
-            m$.pipe(
-              filter(isFile),
-              concatMap((entry) => this.extractor.extract(entry)),
-              collectRight(),
-              first(),
-              concatMap((e) => e.entry.handle.getFile())
-              // concatMap((file) => this.audio.play(file))
-            )
+            m$.pipe(filter(isDirectory))
+            // m$.pipe(
+            //   filter(isFile),
+            //   concatMap((entry) => this.extractor.extract(entry)),
+            //   collectRight(),
+            //   first(),
+            //   concatMap((e) => e.entry.handle.getFile())
+            //   // concatMap((file) => this.audio.play(file))
+            // )
           )
         )
       )

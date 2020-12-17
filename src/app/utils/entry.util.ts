@@ -26,4 +26,4 @@ export const isDirectChild = (parent: DirectoryEntry, child: Entry): boolean =>
   parent.path === child.parent;
 
 export const isChild = (parent: DirectoryEntry, child: Entry): boolean =>
-  !!child.parent?.startsWith(parent.path + '/');
+  !!child.path?.startsWith(parent.path + '/');

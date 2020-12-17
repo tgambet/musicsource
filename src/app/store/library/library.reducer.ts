@@ -1,12 +1,24 @@
 import { ActionReducer, createReducer, on } from '@ngrx/store';
-import { initialState, entryAdapter, LibraryState } from './library.state';
-import { scannedFile } from '@app/store/scanner/scanner.actions';
+import {
+  initialState,
+  entryAdapter,
+  LibraryState,
+  songAdapter,
+} from './library.state';
+import {
+  parseEntrySucceeded,
+  scannedFile,
+} from '@app/store/scanner/scanner.actions';
 
 export const libraryReducer: ActionReducer<LibraryState> = createReducer(
   initialState,
   on(scannedFile, (state, { entry }) => ({
     ...state,
-    entries: entryAdapter.addOne(entry, state.entries),
+    entries: entryAdapter.setOne(entry, state.entries),
+  })),
+  on(parseEntrySucceeded, (state, { song }) => ({
+    ...state,
+    songs: songAdapter.setOne(song, state.songs),
   }))
   // on(Actions.addSong, (state, { song }) => ({
   //   ...state,

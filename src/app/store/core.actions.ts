@@ -1,12 +1,9 @@
-import { createAction, props } from '@ngrx/store';
-import { Song } from '@app/models/song.model';
-import { Album } from '@app/models/album.model';
-import { Artist } from '@app/models/artist.model';
+// import { Song } from '@app/models/song.model';
 
-export const saveToDB = createAction(
-  '[Core] Save to db',
-  props<{ songs: Song[]; albums: Album[]; artists: Artist[] }>()
-);
+// export const saveToDB = createAction(
+//   '[Core] Save to db',
+//   props<{ songs: Song[]; albums: Album[]; artists: Artist[] }>()
+// );
 
 // export const getArtists = createAction('[Core] Get Artists');
 //

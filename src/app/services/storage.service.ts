@@ -16,6 +16,8 @@ export class StorageService {
     }
     return this.openDB((db) => {
       db.createObjectStore('entries', { keyPath: 'path' });
+      db.createObjectStore('songs', { keyPath: 'entryPath' });
+      db.createObjectStore('pictures', { autoIncrement: true });
       // db.createObjectStore('songs');
       // db.createObjectStore('albums');
       // db.createObjectStore('artists');
@@ -113,6 +115,49 @@ export class StorageService {
         };
         request.onerror = (ev) => observer.error(ev);
       });
+  }
+
+  walkAll<T>(transaction: IDBTransaction, store: string): Observable<T> {
+    return new Observable((observer) => {
+      const request = transaction.objectStore(store).openCursor();
+      request.onsuccess = (event: any) => {
+        const cursor: IDBCursorWithValue = event.target.result;
+        if (cursor && !observer.closed) {
+          observer.next(cursor.value);
+          cursor.continue();
+        } else {
+          observer.complete();
+        }
+      };
+      request.onerror = (ev) => observer.error(ev);
+    });
+  }
+
+  findOne<T>(
+    transaction: IDBTransaction,
+    store: string,
+    predicate: (_: T) => boolean
+  ): Observable<(T & { key: IDBValidKey }) | undefined> {
+    return new Observable((observer) => {
+      const request = transaction.objectStore(store).openCursor();
+      request.onsuccess = (event: any) => {
+        const cursor: IDBCursorWithValue = event.target.result;
+        if (cursor && cursor.value && !observer.closed) {
+          if (predicate(cursor.value)) {
+            observer.next({
+              ...(cursor.value as T),
+              key: cursor.key,
+            });
+            observer.complete();
+          }
+          cursor.continue();
+        } else {
+          observer.next(undefined);
+          observer.complete();
+        }
+      };
+      request.onerror = (ev) => observer.error(ev);
+    });
   }
 
   addOne(

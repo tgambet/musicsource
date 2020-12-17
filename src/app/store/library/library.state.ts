@@ -1,5 +1,6 @@
 import { createEntityAdapter, EntityAdapter, EntityState } from '@ngrx/entity';
 import { Entry } from '@app/utils/entry.util';
+import { Song } from '@app/services/extractor.service';
 
 // eslint-disable-next-line no-shadow
 export enum ScannerStateEnum {
@@ -17,6 +18,7 @@ export enum ScannerStateEnum {
 // export type SongState = EntityState<Song>;
 // export type CoverState = EntityState<Cover>;
 export type EntryState = EntityState<Entry>;
+export type SongState = EntityState<Song>;
 
 // export const artistAdapter: EntityAdapter<Artist> = createEntityAdapter<Artist>(
 //   {
@@ -36,8 +38,13 @@ export const entryAdapter: EntityAdapter<Entry> = createEntityAdapter<Entry>({
   selectId: (model) => model.path,
 });
 
+export const songAdapter: EntityAdapter<Song> = createEntityAdapter<Song>({
+  selectId: (model) => model.entryPath,
+});
+
 export interface LibraryState {
   entries: EntryState;
+  songs: SongState;
   // artists: ArtistState;
   // albums: AlbumState;
   // songs: SongState;
@@ -46,6 +53,7 @@ export interface LibraryState {
 
 export const initialState: LibraryState = {
   entries: entryAdapter.getInitialState(),
+  songs: songAdapter.getInitialState(),
   // artists: artistAdapter.getInitialState(),
   // albums: albumAdapter.getInitialState(),
   // songs: songAdapter.getInitialState(),

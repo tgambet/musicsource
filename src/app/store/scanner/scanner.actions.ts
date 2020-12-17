@@ -1,6 +1,6 @@
 import { createAction, props } from '@ngrx/store';
 import { DirectoryEntry, Entry, FileEntry } from '@app/utils/entry.util';
-import { ParseResult } from '@app/services/extractor.service';
+import { Picture, Song } from '@app/services/extractor.service';
 
 export const openDirectory = createAction('[Scan] Open directory');
 export const openDirectoryFailure = createAction(
@@ -40,7 +40,7 @@ export const parseEntriesFailed = createAction(
 );
 export const parseEntrySucceeded = createAction(
   '[Scan] Parse Entry Succeeded',
-  props<{ result: ParseResult }>()
+  props<{ song: Song; pictures?: Picture[] }>()
 );
 export const parseEntryFailed = createAction(
   '[Scan] Parse Entry Failed',

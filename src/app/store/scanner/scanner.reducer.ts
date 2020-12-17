@@ -33,10 +33,10 @@ export const scannerReducer: ActionReducer<ScannerState> = createReducer(
     ...state,
     state: ScannerStateEnum.parsing,
   })),
-  on(Actions.parseEntrySucceeded, (state, { result }) => ({
+  on(Actions.parseEntrySucceeded, (state, { song }) => ({
     ...state,
     parsedCount: state.parsedCount + 1,
-    latestParsed: result.albumArtist + ' - ' + result.title,
+    latestParsed: (song.albumartist || song.artist) + ' - ' + song.title,
   })),
   on(Actions.parseEntryFailed, (state) => ({
     ...state,
