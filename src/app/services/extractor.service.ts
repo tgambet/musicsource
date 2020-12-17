@@ -24,8 +24,12 @@ import { ICommonTagsResult, IPicture } from 'music-metadata/lib/type';
 
 export type Song = Omit<ICommonTagsResult, 'picture'> & {
   entryPath: string;
+  pictureKey?: IDBValidKey;
 };
-export type Picture = Omit<IPicture, 'data'> & { data: string };
+export type Picture = Omit<IPicture, 'data'> & {
+  data: string;
+  key?: number;
+};
 
 @Injectable()
 export class ExtractorService {

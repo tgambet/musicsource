@@ -19,6 +19,7 @@ import { ScannerFacade } from '@app/store/scanner/scanner.facade';
     >
       <div class="container">
         <ng-container *ngIf="(scannerState$ | async) === scanning">
+          <span class="step">1/3</span>
           <div class="progress">
             <mat-spinner [diameter]="90"></mat-spinner>
             <div class="label">
@@ -31,6 +32,7 @@ import { ScannerFacade } from '@app/store/scanner/scanner.facade';
         </ng-container>
 
         <ng-container *ngIf="(scannerState$ | async) === parsing">
+          <span class="step">2/3</span>
           <div class="progress">
             <mat-progress-spinner
               [diameter]="90"
@@ -48,6 +50,21 @@ import { ScannerFacade } from '@app/store/scanner/scanner.facade';
           </div>
           <p>Building library...</p>
           <p class="log">{{ latestParsed$ | async }}</p>
+        </ng-container>
+
+        <ng-container *ngIf="(scannerState$ | async) === building">
+          <span class="step">3/3</span>
+          <div class="progress">
+            <mat-progress-spinner
+              [diameter]="90"
+              mode="indeterminate"
+            ></mat-progress-spinner>
+            <div class="label">
+              <app-icon [path]="icons.check" [size]="40"></app-icon>
+            </div>
+          </div>
+          <p>Saving to database...</p>
+          <p class="log"></p>
         </ng-container>
 
         <ng-container *ngIf="(scannerState$ | async) === success">
@@ -104,6 +121,14 @@ import { ScannerFacade } from '@app/store/scanner/scanner.facade';
         flex-direction: column;
         align-items: center;
         padding: 24px;
+        position: relative;
+      }
+      .step {
+        position: absolute;
+        top: 16px;
+        left: 16px;
+        font-size: 14px;
+        opacity: 0.5;
       }
       .actions {
         align-self: flex-end;
@@ -157,7 +182,8 @@ export class ScanComponent {
   error = ScannerStateEnum.error;
   parsing = ScannerStateEnum.parsing;
   scanning = ScannerStateEnum.scanning;
-  success = ScannerStateEnum.success;
+  building = ScannerStateEnum.building;
+  success = ScannerStateEnum.initial;
 
   config: MatDialogConfig = {
     width: '90%',

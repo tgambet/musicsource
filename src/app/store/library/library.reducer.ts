@@ -4,21 +4,42 @@ import {
   entryAdapter,
   LibraryState,
   songAdapter,
+  pictureAdapter,
 } from './library.state';
 import {
-  parseEntrySucceeded,
-  scannedFile,
-} from '@app/store/scanner/scanner.actions';
+  addEntry,
+  addPicture,
+  addSong,
+  setEntries,
+  setPictures,
+  setSongs,
+} from '@app/store/library/library.actions';
 
 export const libraryReducer: ActionReducer<LibraryState> = createReducer(
   initialState,
-  on(scannedFile, (state, { entry }) => ({
+  on(addEntry, (state, { entry }) => ({
     ...state,
-    entries: entryAdapter.setOne(entry, state.entries),
+    entries: entryAdapter.addOne(entry, state.entries),
   })),
-  on(parseEntrySucceeded, (state, { song }) => ({
+  on(addSong, (state, { song }) => ({
     ...state,
-    songs: songAdapter.setOne(song, state.songs),
+    songs: songAdapter.addOne(song, state.songs),
+  })),
+  on(addPicture, (state, { picture }) => ({
+    ...state,
+    pictures: pictureAdapter.addOne(picture, state.pictures),
+  })),
+  on(setEntries, (state, { entries }) => ({
+    ...state,
+    entries: entryAdapter.setAll(entries, state.entries),
+  })),
+  on(setSongs, (state, { songs }) => ({
+    ...state,
+    songs: songAdapter.setAll(songs, state.songs),
+  })),
+  on(setPictures, (state, { pictures }) => ({
+    ...state,
+    pictures: pictureAdapter.setAll(pictures, state.pictures),
   }))
   // on(Actions.addSong, (state, { song }) => ({
   //   ...state,

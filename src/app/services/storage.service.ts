@@ -39,6 +39,13 @@ export class StorageService {
     return concatMap(r);
   }
 
+  open(
+    stores: string[],
+    mode: IDBTransactionMode = 'readonly'
+  ): Observable<IDBTransaction> {
+    return this.getDb().pipe(this.openTransaction(stores, mode));
+  }
+
   execute<T>(
     stores: string[],
     mode: IDBTransactionMode,
@@ -115,6 +122,16 @@ export class StorageService {
         };
         request.onerror = (ev) => observer.error(ev);
       });
+  }
+
+  exec<T>(request: IDBRequest<T>): Observable<T> {
+    return new Observable((observer) => {
+      request.onsuccess = (_) => {
+        observer.next(request.result);
+        observer.complete();
+      };
+      request.onerror = (ev) => observer.error(ev);
+    });
   }
 
   walkAll<T>(transaction: IDBTransaction, store: string): Observable<T> {

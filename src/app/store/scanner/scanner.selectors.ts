@@ -40,3 +40,13 @@ export const selectError = createSelector(
   selectCoreState,
   (state) => state.error
 );
+
+export const selectScannedEntries = createSelector(
+  selectCoreState,
+  (state) => state.scannedEntries
+);
+
+export const selectParsedEntries = createSelector(
+  selectCoreState,
+  (state) => state.parsedEntries
+);

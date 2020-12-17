@@ -1,6 +1,10 @@
 import { Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { loadEntries } from '@app/store/library/library.actions';
+import {
+  loadEntries,
+  loadPictures,
+  loadSongs,
+} from '@app/store/library/library.actions';
 import {
   findDirectory,
   selectChildrenEntries,
@@ -19,8 +23,10 @@ export class LibraryFacade {
 
   constructor(private store: Store) {}
 
-  loadEntries(): void {
+  load(): void {
     this.store.dispatch(loadEntries());
+    this.store.dispatch(loadSongs());
+    this.store.dispatch(loadPictures());
   }
 
   getChildrenEntries = (directory: DirectoryEntry): Observable<Entry[]> =>

@@ -13,7 +13,7 @@ export const scanDirectory = createAction(
 );
 export const abortScan = createAction('[Scan] Scan directory abort');
 export const scanAborted = createAction('[Scan] Scan Aborted');
-export const scannedFile = createAction(
+export const scannedEntry = createAction(
   '[Scan] Scanned File',
   props<{ entry: Entry }>()
 );
@@ -25,7 +25,6 @@ export const scanFailed = createAction(
   '[Scan] Scan Failed',
   props<{ error: any }>()
 );
-export const startParsing = createAction('start parse');
 export const parseEntry = createAction(
   '[Scan] Parse entry',
   props<{ entry: FileEntry }>()
@@ -46,14 +45,22 @@ export const parseEntryFailed = createAction(
   '[Scan] Parse Entry Failed',
   props<{ error: any }>()
 );
-export const extractCover = createAction(
-  '[Scan] Extract cover',
-  props<{
-    id: string;
-    picture: { base64: string; format: string } | undefined;
-  }>()
+export const saveParsedEntriesSuccess = createAction(
+  'scan save songs and pictures',
+  props<{ count: number }>()
 );
-export const extractCoverFailed = createAction(
-  '[Scan] Extract cover failed',
+export const saveParsedEntriesFailure = createAction(
+  'scan save songs and pictures failure',
   props<{ error: any }>()
 );
+// export const extractCover = createAction(
+//   '[Scan] Extract cover',
+//   props<{
+//     id: string;
+//     picture: { base64: string; format: string } | undefined;
+//   }>()
+// );
+// export const extractCoverFailed = createAction(
+//   '[Scan] Extract cover failed',
+//   props<{ error: any }>()
+// );

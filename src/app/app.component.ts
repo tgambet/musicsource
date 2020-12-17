@@ -3,10 +3,12 @@ import {
   Component,
   HostBinding,
   HostListener,
+  OnInit,
 } from '@angular/core';
 import { ExtractorService } from '@app/services/extractor.service';
 import { FileService } from '@app/services/file.service';
 import { AudioService } from '@app/services/audio.service';
+import { LibraryFacade } from '@app/store/library/library.facade';
 
 @Component({
   selector: 'app-root',
@@ -32,12 +34,18 @@ import { AudioService } from '@app/services/audio.service';
   providers: [FileService, ExtractorService, AudioService],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   @HostBinding('class.scrolled-top')
   scrolledTop = true;
+
+  constructor(private library: LibraryFacade) {}
 
   @HostListener('window:scroll', ['$event'])
   setScrolledTop(event: any) {
     this.scrolledTop = event.target.scrollingElement.scrollTop === 0;
+  }
+
+  ngOnInit(): void {
+    this.library.load();
   }
 }

@@ -5,9 +5,11 @@ import {
   selectLatestParsed,
   selectLatestScanned,
   selectParsedCount,
+  selectParsedEntries,
   selectProgress,
   selectProgressRatio,
   selectScannedCount,
+  selectScannedEntries,
   selectScannerState,
 } from '@app/store/scanner/scanner.selectors';
 import { abortScan, openDirectory } from '@app/store/scanner/scanner.actions';
@@ -22,6 +24,8 @@ export class ScannerFacade {
   latestParsed$ = this.store.select(selectLatestParsed);
   progressRatio$ = this.store.select(selectProgressRatio);
   progress$ = this.store.select(selectProgress);
+  scannedEntries$ = this.store.select(selectScannedEntries);
+  parsedEntries$ = this.store.select(selectParsedEntries);
 
   constructor(private store: Store) {}
 
