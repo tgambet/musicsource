@@ -8,7 +8,6 @@ import {
 import { ExtractorService } from '@app/services/extractor.service';
 import { FileService } from '@app/services/file.service';
 import { AudioService } from '@app/services/audio.service';
-import { LibraryFacade } from '@app/store/library/library.facade';
 
 @Component({
   selector: 'app-root',
@@ -38,7 +37,7 @@ export class AppComponent implements OnInit {
   @HostBinding('class.scrolled-top')
   scrolledTop = true;
 
-  constructor(private library: LibraryFacade) {}
+  constructor() {}
 
   @HostListener('window:scroll', ['$event'])
   setScrolledTop(event: any) {
@@ -46,6 +45,6 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.library.load();
+    // this.library.load();
   }
 }

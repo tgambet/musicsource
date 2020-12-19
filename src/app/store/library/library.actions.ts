@@ -1,40 +1,36 @@
-import { createAction, props } from '@ngrx/store';
-import { Picture, Song } from '@app/services/extractor.service';
-import { Entry } from '@app/utils/entry.util';
-
-export const loadEntries = createAction('[Library] Load entries');
-export const loadSongs = createAction('[Library] Load songs');
-export const loadPictures = createAction('[Library] Load pictures');
-
-export const setEntries = createAction(
-  '[Library] Set entries',
-  props<{ entries: Entry[] }>()
-);
-
-export const setSongs = createAction(
-  '[Library] Set songs',
-  props<{ songs: Song[] }>()
-);
-
-export const setPictures = createAction(
-  '[Library] Set pictures',
-  props<{ pictures: Picture[] }>()
-);
-
-export const addEntry = createAction(
-  '[Library] Add entry',
-  props<{ entry: Entry }>()
-);
-
-export const addSong = createAction(
-  '[Library] Add song',
-  props<{ song: Song }>()
-);
-
-export const addPicture = createAction(
-  '[Library] Add picture',
-  props<{ picture: Picture }>()
-);
+// export const loadEntries = createAction('[Library] Load entries');
+// export const loadSongs = createAction('[Library] Load songs');
+// export const loadPictures = createAction('[Library] Load pictures');
+//
+// export const setEntries = createAction(
+//   '[Library] Set entries',
+//   props<{ entries: Entry[] }>()
+// );
+//
+// export const setSongs = createAction(
+//   '[Library] Set songs',
+//   props<{ songs: Song[] }>()
+// );
+//
+// export const setPictures = createAction(
+//   '[Library] Set pictures',
+//   props<{ pictures: Picture[] }>()
+// );
+//
+// export const addEntry = createAction(
+//   '[Library] Add entry',
+//   props<{ entry: Entry }>()
+// );
+//
+// export const addSong = createAction(
+//   '[Library] Add song',
+//   props<{ song: Song }>()
+// );
+//
+// export const addPicture = createAction(
+//   '[Library] Add picture',
+//   props<{ picture: Picture }>()
+// );
 
 //
 // export const addAlbum = createAction(

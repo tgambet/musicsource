@@ -1,44 +1,29 @@
 import { Injectable } from '@angular/core';
-import { Store } from '@ngrx/store';
-import {
-  loadEntries,
-  loadPictures,
-  loadSongs,
-} from '@app/store/library/library.actions';
-import {
-  findDirectory,
-  selectChildrenEntries,
-  selectDirectChildrenEntries,
-  selectEntries,
-  selectRootFolders,
-  selectSongs,
-} from '@app/store/library/library.selectors';
 import { DirectoryEntry, Entry } from '@app/utils/entry.util';
 import { Observable } from 'rxjs';
 import { concatMap } from 'rxjs/operators';
+import { StorageService } from '@app/services/storage.service';
 
 @Injectable()
 export class LibraryFacade {
-  entries$ = this.store.select(selectEntries);
-  rootFolders$ = this.store.select(selectRootFolders);
-  songs$ = this.store.select(selectSongs);
+  rootFolders$ = this.storage.getAll$<DirectoryEntry>('entries_root');
 
-  constructor(private store: Store) {}
+  constructor(private storage: StorageService) {}
 
-  load(): void {
-    this.store.dispatch(loadEntries());
-    this.store.dispatch(loadSongs());
-    this.store.dispatch(loadPictures());
-  }
+  getEntry = (path: string): Observable<Entry | undefined> =>
+    this.storage.getOne('entries', path);
+
+  getRootEntry = (path: string): Observable<Entry | undefined> =>
+    this.storage.getOne('entries_root', path);
 
   getChildrenEntries = (directory: DirectoryEntry): Observable<Entry[]> =>
-    this.store.select(selectChildrenEntries, directory);
-
-  getDirectChildrenEntries = (directory: DirectoryEntry): Observable<Entry[]> =>
-    this.store.select(selectDirectChildrenEntries, directory);
-
-  findDirectory = (
-    directory: DirectoryEntry
-  ): Observable<DirectoryEntry | undefined> =>
-    this.store.select(findDirectory, directory).pipe(concatMap((p) => p));
+    this.storage
+      .open(['entries'])
+      .pipe(
+        concatMap((t) =>
+          this.storage.exec(
+            t.objectStore('entries').index('parents').getAll(directory.path)
+          )
+        )
+      );
 }

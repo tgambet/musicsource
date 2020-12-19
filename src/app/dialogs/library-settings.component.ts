@@ -1,27 +1,17 @@
-import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { SettingsComponent } from '@app/dialogs/settings.component';
 import { Icons } from '@app/utils/icons.util';
 import { NestedTreeControl } from '@angular/cdk/tree';
 import { EMPTY, Observable } from 'rxjs';
-import { FileService } from '@app/services/file.service';
-import { Store } from '@ngrx/store';
-import {
-  selectDirectChildrenEntries,
-  selectEntries,
-  selectRootFolders,
-} from '@app/store/library';
 import { DirectoryEntry, Entry } from '@app/utils/entry.util';
+import { LibraryFacade } from '@app/store/library/library.facade';
 
 @Component({
   selector: 'app-library-settings',
   template: `
     <div class="folders">
-      <div class="folder" *ngFor="let folder of libFolders$ | async">
+      <div class="folder" *ngFor="let folder of rootFolders$ | async">
         <button
           mat-button
           (click)="isExpanded[folder.path] = !!!isExpanded[folder.path]"
@@ -42,7 +32,7 @@ import { DirectoryEntry, Entry } from '@app/utils/entry.util';
         </button>
         <cdk-tree
           *ngIf="isExpanded[folder.path]"
-          [dataSource]="getDirectChildren(folder)"
+          [dataSource]="getChildren(folder)"
           [treeControl]="treeControl"
           [trackBy]="trackByFn"
         >
@@ -181,22 +171,18 @@ export class LibrarySettingsComponent {
   icons = Icons;
 
   isExpanded: { [key: string]: boolean } = {};
-  libFolders$: Observable<DirectoryEntry[]>;
-  entries$: Observable<Entry[]>;
+  rootFolders$: Observable<DirectoryEntry[]>;
 
   treeControl = new NestedTreeControl<Entry>((node) =>
-    node.kind === 'directory' ? this.getDirectChildren(node) : EMPTY
+    node.kind === 'directory' ? this.getChildren(node) : EMPTY
   );
 
   constructor(
-    private cdr: ChangeDetectorRef,
-    private files: FileService,
-    private router: Router,
     private parent: SettingsComponent,
-    private store: Store
+    private router: Router,
+    private library: LibraryFacade
   ) {
-    this.libFolders$ = this.store.select(selectRootFolders);
-    this.entries$ = this.store.select(selectEntries);
+    this.rootFolders$ = this.library.rootFolders$;
   }
 
   hasChild = (_: number, entry: Entry): boolean => entry.kind === 'directory';
@@ -207,19 +193,8 @@ export class LibrarySettingsComponent {
     this.parent.close().then(() => this.router.navigate(['/', 'explorer']));
   }
 
-  getDirectChildren(folder: DirectoryEntry): Observable<Entry[]> {
-    return this.store.select(selectDirectChildrenEntries, folder);
-    // return this.nodes$.pipe(
-    //   map((nodes) => nodes.filter((n) => isDirectChild(folder, n)))
-    // );
-  }
-
-  // getChildrenCount(folder: { name: string; path: string }): Observable<number> {
-  //   return of(0);
-  //   // return this.nodes$.pipe(
-  //   //   map((nodes) => nodes.filter((n) => isChild(folder, n)).length)
-  //   // );
-  // }
+  getChildren = (folder: DirectoryEntry): Observable<Entry[]> =>
+    this.library.getChildrenEntries(folder);
 
   test() {
     // this.files

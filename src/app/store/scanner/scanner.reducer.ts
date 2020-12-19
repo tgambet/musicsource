@@ -31,6 +31,12 @@ export const scannerReducer: ActionReducer<ScannerState> = createReducer(
     error,
   })),
 
+  on(Actions.openDirectoryFailure, (state, { error }) => ({
+    ...state,
+    state: ScannerStateEnum.error,
+    error,
+  })),
+
   on(Actions.parseEntrySucceeded, (state, { song, pictures }) => ({
     ...state,
     parsedCount: state.parsedCount + 1,

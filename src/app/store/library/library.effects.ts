@@ -1,57 +1,38 @@
 import { Injectable } from '@angular/core';
-import {
-  Actions,
-  createEffect,
-  EffectNotification,
-  ofType,
-  OnRunEffects,
-} from '@ngrx/effects';
+import { EffectNotification, OnRunEffects } from '@ngrx/effects';
 import { Observable } from 'rxjs';
-import { StorageService } from '@app/services/storage.service';
-import { Store } from '@ngrx/store';
-import {
-  loadEntries,
-  loadPictures,
-  loadSongs,
-  setEntries,
-  setPictures,
-  setSongs,
-} from '@app/store/library/library.actions';
-import { concatMapTo, map } from 'rxjs/operators';
-import { Entry } from '@app/utils/entry.util';
-import { Picture, Song } from '@app/services/extractor.service';
 
 @Injectable()
 export class LibraryEffects implements OnRunEffects {
-  loadEntries$ = createEffect(() =>
-    this.actions$.pipe(
-      ofType(loadEntries),
-      concatMapTo(this.storageService.getDb()),
-      this.storageService.openTransaction(['entries']),
-      this.storageService.getAll<Entry>('entries'),
-      map((entries) => setEntries({ entries }))
-    )
-  );
-
-  loadSongs$ = createEffect(() =>
-    this.actions$.pipe(
-      ofType(loadSongs),
-      concatMapTo(this.storageService.getDb()),
-      this.storageService.openTransaction(['songs']),
-      this.storageService.getAll<Song>('songs'),
-      map((songs) => setSongs({ songs }))
-    )
-  );
-
-  loadPictures$ = createEffect(() =>
-    this.actions$.pipe(
-      ofType(loadPictures),
-      concatMapTo(this.storageService.getDb()),
-      this.storageService.openTransaction(['pictures']),
-      this.storageService.getAll<Picture>('pictures'),
-      map((pictures) => setPictures({ pictures }))
-    )
-  );
+  // loadEntries$ = createEffect(() =>
+  //   this.actions$.pipe(
+  //     ofType(loadEntries),
+  //     concatMapTo(this.storageService.getDb()),
+  //     this.storageService.openTransaction(['entries']),
+  //     this.storageService.getAll<Entry>('entries'),
+  //     map((entries) => setEntries({ entries }))
+  //   )
+  // );
+  //
+  // loadSongs$ = createEffect(() =>
+  //   this.actions$.pipe(
+  //     ofType(loadSongs),
+  //     concatMapTo(this.storageService.getDb()),
+  //     this.storageService.openTransaction(['songs']),
+  //     this.storageService.getAll<Song>('songs'),
+  //     map((songs) => setSongs({ songs }))
+  //   )
+  // );
+  //
+  // loadPictures$ = createEffect(() =>
+  //   this.actions$.pipe(
+  //     ofType(loadPictures),
+  //     concatMapTo(this.storageService.getDb()),
+  //     this.storageService.openTransaction(['pictures']),
+  //     this.storageService.getAll<Picture>('pictures'),
+  //     map((pictures) => setPictures({ pictures }))
+  //   )
+  // );
 
   // loadLibrary$ = createEffect(() =>
   //   this.actions$.pipe(
@@ -113,11 +94,7 @@ export class LibraryEffects implements OnRunEffects {
   //   )
   // );
 
-  constructor(
-    private store: Store,
-    private actions$: Actions, // private appRef: ApplicationRef,
-    private storageService: StorageService
-  ) {}
+  constructor() {}
 
   ngrxOnRunEffects(
     resolvedEffects$: Observable<EffectNotification>

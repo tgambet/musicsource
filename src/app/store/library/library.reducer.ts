@@ -1,46 +1,32 @@
-import { ActionReducer, createReducer, on } from '@ngrx/store';
-import {
-  initialState,
-  entryAdapter,
-  LibraryState,
-  songAdapter,
-  pictureAdapter,
-} from './library.state';
-import {
-  addEntry,
-  addPicture,
-  addSong,
-  setEntries,
-  setPictures,
-  setSongs,
-} from '@app/store/library/library.actions';
+import { ActionReducer, createReducer } from '@ngrx/store';
+import { initialState, LibraryState } from './library.state';
 
 export const libraryReducer: ActionReducer<LibraryState> = createReducer(
-  initialState,
-  on(addEntry, (state, { entry }) => ({
-    ...state,
-    entries: entryAdapter.addOne(entry, state.entries),
-  })),
-  on(addSong, (state, { song }) => ({
-    ...state,
-    songs: songAdapter.addOne(song, state.songs),
-  })),
-  on(addPicture, (state, { picture }) => ({
-    ...state,
-    pictures: pictureAdapter.addOne(picture, state.pictures),
-  })),
-  on(setEntries, (state, { entries }) => ({
-    ...state,
-    entries: entryAdapter.setAll(entries, state.entries),
-  })),
-  on(setSongs, (state, { songs }) => ({
-    ...state,
-    songs: songAdapter.setAll(songs, state.songs),
-  })),
-  on(setPictures, (state, { pictures }) => ({
-    ...state,
-    pictures: pictureAdapter.setAll(pictures, state.pictures),
-  }))
+  initialState
+  // on(addEntry, (state, { entry }) => ({
+  //   ...state,
+  //   entries: entryAdapter.addOne(entry, state.entries),
+  // })),
+  // on(addSong, (state, { song }) => ({
+  //   ...state,
+  //   songs: songAdapter.addOne(song, state.songs),
+  // })),
+  // on(addPicture, (state, { picture }) => ({
+  //   ...state,
+  //   pictures: pictureAdapter.addOne(picture, state.pictures),
+  // })),
+  // on(setEntries, (state, { entries }) => ({
+  //   ...state,
+  //   entries: entryAdapter.setAll(entries, state.entries),
+  // })),
+  // on(setSongs, (state, { songs }) => ({
+  //   ...state,
+  //   songs: songAdapter.setAll(songs, state.songs),
+  // })),
+  // on(setPictures, (state, { pictures }) => ({
+  //   ...state,
+  //   pictures: pictureAdapter.setAll(pictures, state.pictures),
+  // }))
   // on(Actions.addSong, (state, { song }) => ({
   //   ...state,
   //   songs: songAdapter.upsertOne(song, state.songs),

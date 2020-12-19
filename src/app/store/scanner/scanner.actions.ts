@@ -17,6 +17,10 @@ export const scannedEntry = createAction(
   '[Scan] Scanned File',
   props<{ entry: Entry }>()
 );
+export const entrySaved = createAction(
+  'scan/entry/saved',
+  props<{ entry: Entry }>()
+);
 export const scanSucceeded = createAction(
   '[Scan] Scan Succeeded',
   props<{ count: number; directory: DirectoryEntry }>()
@@ -40,6 +44,10 @@ export const parseEntriesFailed = createAction(
 export const parseEntrySucceeded = createAction(
   '[Scan] Parse Entry Succeeded',
   props<{ song: Song; pictures?: Picture[] }>()
+);
+export const savedSong = createAction(
+  'scan/song/saved',
+  props<{ song: Song }>()
 );
 export const parseEntryFailed = createAction(
   '[Scan] Parse Entry Failed',

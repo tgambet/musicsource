@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { merge, Observable, of, OperatorFunction } from 'rxjs';
+import { merge, Observable, of, OperatorFunction, throwError } from 'rxjs';
 import { concatMap, publish, tap } from 'rxjs/operators';
 
 @Injectable({
@@ -15,12 +15,14 @@ export class StorageService {
       return of(this.db);
     }
     return this.openDB((db) => {
-      const songs = db.createObjectStore('songs', { keyPath: 'entryPath' });
-      songs.createIndex('artists', 'artists', { multiEntry: true });
-      songs.createIndex('albums', 'album');
+      db.createObjectStore('entries_root', { keyPath: 'path' });
 
       const entries = db.createObjectStore('entries', { keyPath: 'path' });
       entries.createIndex('parents', 'parent');
+
+      const songs = db.createObjectStore('songs', { keyPath: 'entryPath' });
+      songs.createIndex('artists', 'artists', { multiEntry: true });
+      songs.createIndex('albums', 'album');
 
       const pictures = db.createObjectStore('pictures', {
         autoIncrement: true,
@@ -70,7 +72,10 @@ export class StorageService {
     );
   }
 
-  get<T>(store: string, key: IDBValidKey): OperatorFunction<IDBTransaction, T> {
+  get<T>(
+    store: string,
+    key: IDBValidKey
+  ): OperatorFunction<IDBTransaction, T | undefined> {
     return concatMap(
       this.wrap((transaction) => transaction.objectStore(store).get(key))
     );
@@ -104,7 +109,11 @@ export class StorageService {
     return (obs) =>
       obs.pipe(
         this.get<T>(store, key),
-        concatMap((obj: T) => this.put(store, { ...obj, ...value }, key))
+        concatMap((obj) =>
+          obj
+            ? this.put(store, { ...obj, ...value }, key)
+            : throwError('Could not find key: ' + key)
+        )
       );
   }
 
@@ -121,6 +130,10 @@ export class StorageService {
     return concatMap(
       this.wrap((transaction) => transaction.objectStore(store).getAll())
     );
+  }
+
+  getAll$<T>(store: string): Observable<T[]> {
+    return this.open([store]).pipe(this.getAll(store));
   }
 
   wrap<T>(
@@ -213,7 +226,7 @@ export class StorageService {
     );
   }
 
-  getOne<T>(store: string, key: IDBValidKey): Observable<T> {
+  getOne<T>(store: string, key: IDBValidKey): Observable<T | undefined> {
     return this.getDb().pipe(
       this.openTransaction([store], 'readonly'),
       this.get<T>(store, key)

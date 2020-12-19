@@ -25,12 +25,14 @@ import { StorageService } from '@app/services/storage.service';
 import { Entry, isFile } from '@app/utils/entry.util';
 import {
   abortScan,
+  entrySaved,
   openDirectory,
   openDirectoryFailure,
   parseEntriesFailed,
   parseEntriesSucceeded,
   parseEntryFailed,
   parseEntrySucceeded,
+  savedSong,
   saveParsedEntriesFailure,
   saveParsedEntriesSuccess,
   scanAborted,
@@ -43,7 +45,6 @@ import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { LibraryFacade } from '@app/store/library/library.facade';
 import { ScannerFacade } from '@app/store/scanner/scanner.facade';
-import { addEntry, addSong } from '@app/store/library';
 import { Action } from '@ngrx/store';
 
 @Injectable()
@@ -55,10 +56,42 @@ export class ScannerEffects implements OnRunEffects {
         project: () =>
           this.fileService
             .open()
-            .pipe(map((directory) => scanDirectory({ directory }))),
+            .pipe(
+              concatMap((directory) =>
+                this.library
+                  .getRootEntry(directory.path)
+                  .pipe(
+                    concatMap((same) =>
+                      same
+                        ? throwError(
+                            'A folder with that name already exists: ' +
+                              directory.name
+                          )
+                        : this.storageService
+                            .putOne('entries_root', directory)
+                            .pipe(mapTo(scanDirectory({ directory })))
+                    )
+                  )
+              )
+            ),
         error: (error) => openDirectoryFailure({ error }),
       })
     )
+  );
+
+  error$ = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(openDirectoryFailure),
+        tap(async ({ error }) => {
+          if (error.code !== 20) {
+            await this.router.navigate([{ outlets: { dialog: ['scan'] } }], {
+              skipLocationChange: true,
+            });
+          }
+        })
+      ),
+    { dispatch: false }
   );
 
   scanDirectory$ = createEffect(() =>
@@ -71,13 +104,7 @@ export class ScannerEffects implements OnRunEffects {
       ),
       act({
         project: ({ directory }) =>
-          this.library.findDirectory(directory).pipe(
-            first(),
-            concatMap((same) =>
-              same
-                ? throwError(new Error('Exists already: ' + directory.name))
-                : this.fileService.walk(directory)
-            ),
+          this.fileService.walk(directory).pipe(
             takeUntil(this.actions$.pipe(ofType(abortScan))),
             map((entry: Entry) => scannedEntry({ entry }))
           ),
@@ -94,7 +121,7 @@ export class ScannerEffects implements OnRunEffects {
       concatMap(({ entry }) =>
         this.storageService
           .addOne('entries', entry)
-          .pipe(mapTo(addEntry({ entry })))
+          .pipe(mapTo(entrySaved({ entry })))
       )
     )
   );
@@ -148,16 +175,13 @@ export class ScannerEffects implements OnRunEffects {
             concatMap(({ song, pictures }) =>
               this.storageService.open(['pictures', 'songs'], 'readwrite').pipe(
                 concatMap((transaction) => {
-                  // Retrieve parsed entries
-
-                  // For each parsed entry
                   const makeSong = (key?: IDBValidKey): Song => ({
                     ...song,
                     pictureKey: key,
                   });
 
-                  const addSongEvent = (key?: IDBValidKey): Action =>
-                    addSong({ song: makeSong(key) });
+                  const saveSongEvent = (key?: IDBValidKey): Action =>
+                    savedSong({ song: makeSong(key) });
 
                   const saveSong = (pictureKey?: IDBValidKey) =>
                     this.storageService
@@ -166,13 +190,12 @@ export class ScannerEffects implements OnRunEffects {
                           .objectStore('songs')
                           .put(makeSong(pictureKey))
                       )
-                      .pipe(mapTo(addSongEvent(pictureKey)));
+                      .pipe(mapTo(saveSongEvent(pictureKey)));
 
                   if (!pictures || pictures.length === 0) {
-                    // If there is no picture in tags save song as-is
                     return saveSong();
                   }
-                  // Otherwise try to find a corresponding picture in store
+
                   return this.storageService
                     .exec<IDBValidKey | undefined>(
                       transaction
