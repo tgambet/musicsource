@@ -11,6 +11,7 @@ import {
   selectDirectChildrenEntries,
   selectEntries,
   selectRootFolders,
+  selectSongs,
 } from '@app/store/library/library.selectors';
 import { DirectoryEntry, Entry } from '@app/utils/entry.util';
 import { Observable } from 'rxjs';
@@ -20,6 +21,7 @@ import { concatMap } from 'rxjs/operators';
 export class LibraryFacade {
   entries$ = this.store.select(selectEntries);
   rootFolders$ = this.store.select(selectRootFolders);
+  songs$ = this.store.select(selectSongs);
 
   constructor(private store: Store) {}
 

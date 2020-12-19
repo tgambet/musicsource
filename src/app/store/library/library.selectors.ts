@@ -1,5 +1,5 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
-import { entryAdapter, LibraryState } from './library.state';
+import { entryAdapter, LibraryState, songAdapter } from './library.state';
 import {
   DirectoryEntry,
   Entry,
@@ -56,9 +56,10 @@ export const findDirectory = createSelector(
     )
 );
 
-// export const selectSongs = createSelector(selectLibraryState, (state) =>
-//   songAdapter.getSelectors().selectAll(state.songs)
-// );
+export const selectSongs = createSelector(selectLibraryState, (state) =>
+  songAdapter.getSelectors().selectAll(state.songs)
+);
+
 //
 // export const selectAlbums = createSelector(selectLibraryState, (state) =>
 //   albumAdapter.getSelectors().selectAll(state.albums)

@@ -15,9 +15,21 @@ export class StorageService {
       return of(this.db);
     }
     return this.openDB((db) => {
-      db.createObjectStore('entries', { keyPath: 'path' });
-      db.createObjectStore('songs', { keyPath: 'entryPath' });
-      db.createObjectStore('pictures', { autoIncrement: true });
+      const songs = db.createObjectStore('songs', { keyPath: 'entryPath' });
+      songs.createIndex('artists', 'artists', { multiEntry: true });
+      songs.createIndex('albums', 'album');
+
+      const entries = db.createObjectStore('entries', { keyPath: 'path' });
+      entries.createIndex('parents', 'parent');
+
+      const pictures = db.createObjectStore('pictures', {
+        autoIncrement: true,
+      });
+      pictures.createIndex('data', 'data', { unique: true });
+
+      // const p = db.createObjectStore('artist_song', { autoIncrement: true });
+      // p.createIndex('artist', 'artist');
+      // p.createIndex('song', 'song');
       // db.createObjectStore('songs');
       // db.createObjectStore('albums');
       // db.createObjectStore('artists');
@@ -32,7 +44,8 @@ export class StorageService {
     const r = (db: IDBDatabase) =>
       new Observable<IDBTransaction>((subscriber) => {
         const transaction = db.transaction(stores, mode);
-        transaction.onerror = (ev) => subscriber.error(ev);
+        transaction.onerror = (ev) =>
+          subscriber.error((ev.target as IDBTransaction).error);
         transaction.oncomplete = (_) => subscriber.complete();
         subscriber.next(transaction);
       });
@@ -120,7 +133,8 @@ export class StorageService {
           observer.next(request.result);
           observer.complete();
         };
-        request.onerror = (ev) => observer.error(ev);
+        request.onerror = (ev) =>
+          observer.error((ev.target as IDBRequest).error);
       });
   }
 
@@ -130,7 +144,7 @@ export class StorageService {
         observer.next(request.result);
         observer.complete();
       };
-      request.onerror = (ev) => observer.error(ev);
+      request.onerror = (ev) => observer.error((ev.target as IDBRequest).error);
     });
   }
 
@@ -146,7 +160,7 @@ export class StorageService {
           observer.complete();
         }
       };
-      request.onerror = (ev) => observer.error(ev);
+      request.onerror = (ev) => observer.error((ev.target as IDBRequest).error);
     });
   }
 
@@ -173,7 +187,7 @@ export class StorageService {
           observer.complete();
         }
       };
-      request.onerror = (ev) => observer.error(ev);
+      request.onerror = (ev) => observer.error((ev.target as IDBRequest).error);
     });
   }
 
@@ -217,7 +231,8 @@ export class StorageService {
         subscriber.next(request.result);
         subscriber.complete();
       };
-      request.onerror = (ev) => subscriber.error(ev);
+      request.onerror = (ev) =>
+        subscriber.error((ev.target as IDBOpenDBRequest).error);
     });
   }
 }

@@ -19,11 +19,7 @@ import {
   tap,
 } from 'rxjs/operators';
 import { FileService } from '@app/services/file.service';
-import {
-  ExtractorService,
-  Picture,
-  Song,
-} from '@app/services/extractor.service';
+import { ExtractorService, Song } from '@app/services/extractor.service';
 import { ResizerService } from '@app/services/resizer.service';
 import { StorageService } from '@app/services/storage.service';
 import { Entry, isFile } from '@app/utils/entry.util';
@@ -47,7 +43,7 @@ import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { LibraryFacade } from '@app/store/library/library.facade';
 import { ScannerFacade } from '@app/store/scanner/scanner.facade';
-import { addEntry, addPicture, addSong } from '@app/store/library';
+import { addEntry, addSong } from '@app/store/library';
 import { Action } from '@ngrx/store';
 
 @Injectable()
@@ -146,74 +142,57 @@ export class ScannerEffects implements OnRunEffects {
       ofType(parseEntriesSucceeded),
       act({
         project: () =>
-          // Open stores
-          this.storageService.open(['pictures', 'songs'], 'readwrite').pipe(
-            concatMap((transaction) =>
-              // Retrieve parsed entries
-              this.scanner.parsedEntries$.pipe(
-                first(),
-                concatMap((e) => from(e)),
-                // For each parsed entry
-                concatMap(({ song, pictures }) => {
+          this.scanner.parsedEntries$.pipe(
+            first(),
+            concatMap((e) => from(e)),
+            concatMap(({ song, pictures }) =>
+              this.storageService.open(['pictures', 'songs'], 'readwrite').pipe(
+                concatMap((transaction) => {
+                  // Retrieve parsed entries
+
+                  // For each parsed entry
                   const makeSong = (key?: IDBValidKey): Song => ({
                     ...song,
                     pictureKey: key,
                   });
+
                   const addSongEvent = (key?: IDBValidKey): Action =>
                     addSong({ song: makeSong(key) });
-                  return !pictures || pictures.length === 0
-                    ? // If there is no picture in tags save song as-is
-                      this.storageService
-                        .exec(transaction.objectStore('songs').put(song))
-                        .pipe(mapTo(addSongEvent()))
-                    : // Otherwise try to find a corresponding picture in store
-                      this.storageService
-                        .findOne<Picture>(
-                          transaction,
-                          'pictures',
-                          (picture) => picture.data === pictures[0].data
-                        )
-                        .pipe(
-                          concatMap((picture) => {
-                            const saveSong = (key: IDBValidKey) =>
-                              this.storageService.exec(
-                                transaction
-                                  .objectStore('songs')
-                                  .put(makeSong(key))
-                              );
-                            // If there is a corresponding picture: save song with reference to it
-                            if (picture) {
-                              return saveSong(picture.key).pipe(
-                                mapTo(addSongEvent(picture.key))
-                              );
-                            }
 
-                            // Otherwise save both the first picture and the song referencing it
-                            return this.storageService
+                  const saveSong = (pictureKey?: IDBValidKey) =>
+                    this.storageService
+                      .exec(
+                        transaction
+                          .objectStore('songs')
+                          .put(makeSong(pictureKey))
+                      )
+                      .pipe(mapTo(addSongEvent(pictureKey)));
+
+                  if (!pictures || pictures.length === 0) {
+                    // If there is no picture in tags save song as-is
+                    return saveSong();
+                  }
+                  // Otherwise try to find a corresponding picture in store
+                  return this.storageService
+                    .exec<IDBValidKey | undefined>(
+                      transaction
+                        .objectStore('pictures')
+                        .index('data')
+                        .getKey(pictures[0].data)
+                    )
+                    .pipe(
+                      concatMap((key) =>
+                        key
+                          ? saveSong(key)
+                          : this.storageService
                               .exec(
                                 transaction
                                   .objectStore('pictures')
                                   .put(pictures[0])
                               )
-                              .pipe(
-                                concatMap((key) =>
-                                  saveSong(key).pipe(
-                                    concatMapTo(
-                                      from([
-                                        addPicture({
-                                          picture: {
-                                            ...pictures[0],
-                                            key: key as number,
-                                          },
-                                        }),
-                                        addSongEvent(key),
-                                      ])
-                                    )
-                                  )
-                                )
-                              );
-                          })
-                        );
+                              .pipe(concatMap((pictKey) => saveSong(pictKey)))
+                      )
+                    );
                 })
               )
             )
@@ -223,6 +202,51 @@ export class ScannerEffects implements OnRunEffects {
       })
     )
   );
+
+  // extractAlbums$ = createEffect(
+  //   () =>
+  //     this.actions$.pipe(
+  //       ofType(saveParsedEntriesSuccess),
+  //       concatMap(() =>
+  //         this.library.songs$.pipe(
+  //           filter((s) => !!s),
+  //           first(),
+  //           map((songs) =>
+  //             songs
+  //               .map((song) =>
+  //                 [song.artist, ...(song.artists || []), song.albumartist]
+  //                   .map((a) => a?.trim())
+  //                   .filter((a) => !!a)
+  //                   .filter((a, i, arr) => arr.indexOf(a) === i)
+  //                   .map((artist) => ({
+  //                     artist,
+  //                     song: song.entryPath,
+  //                   }))
+  //               )
+  //               .reduce((acc, curr) => [...acc, ...curr])
+  //           ),
+  //           concatMap((r) =>
+  //             this.storageService.execute<IDBValidKey>(
+  //               ['artist_song'],
+  //               'readwrite',
+  //               ...r.map((v) => this.storageService.put('artist_song', v))
+  //             )
+  //           ),
+  //           concatMapTo(this.storageService.open(['artist_song'])),
+  //           concatMap((t) =>
+  //             this.storageService.exec(
+  //               t
+  //                 .objectStore('artist_song')
+  //                 .index('artist')
+  //                 .getAll('Linkin Park')
+  //             )
+  //           ),
+  //           tap((r) => console.log(r))
+  //         )
+  //       )
+  //     ),
+  //   { dispatch: false }
+  // );
 
   // saveSongs$ = createEffect(
   //   () =>

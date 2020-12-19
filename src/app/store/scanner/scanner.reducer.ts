@@ -48,6 +48,12 @@ export const scannerReducer: ActionReducer<ScannerState> = createReducer(
     state: ScannerStateEnum.building,
   })),
 
+  on(Actions.parseEntriesFailed, (state, { error }) => ({
+    ...state,
+    state: ScannerStateEnum.error,
+    error,
+  })),
+
   on(Actions.saveParsedEntriesSuccess, (state) => ({
     ...state,
     ...initialState,
@@ -59,12 +65,6 @@ export const scannerReducer: ActionReducer<ScannerState> = createReducer(
   })),
 
   on(Actions.saveParsedEntriesFailure, (state, { error }) => ({
-    ...state,
-    state: ScannerStateEnum.error,
-    error,
-  })),
-
-  on(Actions.parseEntriesFailed, (state, { error }) => ({
     ...state,
     state: ScannerStateEnum.error,
     error,
