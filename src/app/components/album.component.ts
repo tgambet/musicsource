@@ -20,7 +20,8 @@ import { PlayerState } from './player-button.component';
       (pauseClicked)="pause()"
       tabindex="-1"
     >
-      <img [src]="cover" [alt]="name" height="226" width="226" />
+      <img *ngIf="cover" [src]="cover" [alt]="name" height="226" width="226" />
+      <app-icon *ngIf="!cover" [path]="icons.album" [size]="226"></app-icon>
     </app-cover>
     <app-label
       [topLabel]="{ text: name, routerLink: routerLink }"
@@ -35,6 +36,7 @@ import { PlayerState } from './player-button.component';
       }
       app-cover {
         margin-bottom: 16px;
+        background-color: rgba(255, 255, 255, 0.1);
       }
     `,
   ],
@@ -77,13 +79,13 @@ export class AlbumComponent {
   ];
   state: PlayerState = 'stopped';
 
-  constructor(@Optional() private cdr: ChangeDetectorRef) {}
+  constructor(@Optional() private cdr?: ChangeDetectorRef) {}
 
   play() {
     this.state = 'loading';
     setTimeout(() => {
       this.state = 'playing';
-      this.cdr.markForCheck();
+      this.cdr?.markForCheck();
     }, 1000);
   }
 

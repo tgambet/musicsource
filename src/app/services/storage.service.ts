@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { merge, Observable, of, OperatorFunction, throwError } from 'rxjs';
-import { concatMap, publish, tap } from 'rxjs/operators';
+import { Observable, of, OperatorFunction, throwError } from 'rxjs';
+import { concatMap, tap } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
@@ -15,31 +15,25 @@ export class StorageService {
       return of(this.db);
     }
     return this.openDB((db) => {
+      // Root entries
       db.createObjectStore('entries_root', { keyPath: 'path' });
-
+      // Entries
       const entries = db.createObjectStore('entries', { keyPath: 'path' });
       entries.createIndex('parents', 'parent');
-
+      // Songs
       const songs = db.createObjectStore('songs', { keyPath: 'entryPath' });
       songs.createIndex('artists', 'artists', { multiEntry: true });
+      songs.createIndex('genres', 'genre', { multiEntry: true });
       songs.createIndex('albums', 'album');
-
+      // Pictures
       const pictures = db.createObjectStore('pictures', {
         autoIncrement: true,
       });
       pictures.createIndex('data', 'data', { unique: true });
-
-      // const p = db.createObjectStore('artist_song', { autoIncrement: true });
-      // p.createIndex('artist', 'artist');
-      // p.createIndex('song', 'song');
-      // db.createObjectStore('songs');
-      // db.createObjectStore('albums');
-      // db.createObjectStore('artists');
-      // db.createObjectStore('covers');
     }).pipe(tap((db) => (this.db = db)));
   }
 
-  openTransaction(
+  open(
     stores: string[],
     mode: IDBTransactionMode = 'readonly'
   ): OperatorFunction<IDBDatabase, IDBTransaction> {
@@ -54,30 +48,35 @@ export class StorageService {
     return concatMap(r);
   }
 
-  open(
+  open$(
     stores: string[],
     mode: IDBTransactionMode = 'readonly'
   ): Observable<IDBTransaction> {
-    return this.getDb().pipe(this.openTransaction(stores, mode));
+    return this.getDb().pipe(this.open(stores, mode));
   }
 
-  execute<T>(
-    stores: string[],
-    mode: IDBTransactionMode,
-    ...transactions: OperatorFunction<IDBTransaction, T>[]
-  ): Observable<T> {
-    return this.getDb().pipe(
-      this.openTransaction(stores, mode),
-      publish((m$) => merge(...transactions.map((t) => m$.pipe(t))))
-    );
-  }
+  // execute$<T>(
+  //   stores: string[],
+  //   mode: IDBTransactionMode,
+  //   ...transactions: OperatorFunction<IDBTransaction, T>[]
+  // ): Observable<T> {
+  //   return this.getDb().pipe(
+  //     this.open(stores, mode),
+  //     publish((m$) => merge(...transactions.map((t) => m$.pipe(t))))
+  //   );
+  // }
 
   get<T>(
+    key: IDBValidKey,
     store: string,
-    key: IDBValidKey
+    index?: string
   ): OperatorFunction<IDBTransaction, T | undefined> {
     return concatMap(
-      this.wrap((transaction) => transaction.objectStore(store).get(key))
+      this.wrap((transaction) =>
+        index
+          ? transaction.objectStore(store).index(index).get(key)
+          : transaction.objectStore(store).get(key)
+      )
     );
   }
 
@@ -108,7 +107,7 @@ export class StorageService {
   ): OperatorFunction<IDBTransaction, IDBValidKey> {
     return (obs) =>
       obs.pipe(
-        this.get<T>(store, key),
+        this.get<T>(key, store),
         concatMap((obj) =>
           obj
             ? this.put(store, { ...obj, ...value }, key)
@@ -133,25 +132,10 @@ export class StorageService {
   }
 
   getAll$<T>(store: string): Observable<T[]> {
-    return this.open([store]).pipe(this.getAll(store));
+    return this.open$([store]).pipe(this.getAll(store));
   }
 
-  wrap<T>(
-    action: (_: IDBTransaction) => IDBRequest<T>
-  ): (_: IDBTransaction) => Observable<T> {
-    return (transaction: IDBTransaction) =>
-      new Observable((observer) => {
-        const request = action(transaction);
-        request.onsuccess = (_) => {
-          observer.next(request.result);
-          observer.complete();
-        };
-        request.onerror = (ev) =>
-          observer.error((ev.target as IDBRequest).error);
-      });
-  }
-
-  exec<T>(request: IDBRequest<T>): Observable<T> {
+  exec$<T>(request: IDBRequest<T>): Observable<T> {
     return new Observable((observer) => {
       request.onsuccess = (_) => {
         observer.next(request.result);
@@ -161,7 +145,17 @@ export class StorageService {
     });
   }
 
-  walkAll<T>(transaction: IDBTransaction, store: string): Observable<T> {
+  exec<T>(
+    action: (_: IDBTransaction) => IDBRequest<T>
+  ): OperatorFunction<IDBTransaction, T> {
+    return concatMap((t: IDBTransaction) => this.exec$(action(t)));
+  }
+
+  walk<T>(store: string): OperatorFunction<IDBTransaction, T> {
+    return concatMap((t) => this.walk$<T>(t, store));
+  }
+
+  walk$<T>(transaction: IDBTransaction, store: string): Observable<T> {
     return new Observable((observer) => {
       const request = transaction.objectStore(store).openCursor();
       request.onsuccess = (event: any) => {
@@ -177,7 +171,36 @@ export class StorageService {
     });
   }
 
-  findOne<T>(
+  walkKeys(
+    store: string,
+    index?: string
+  ): OperatorFunction<IDBTransaction, IDBValidKey> {
+    return concatMap((t) => this.walkKeys$(t, store, index));
+  }
+
+  walkKeys$(
+    transaction: IDBTransaction,
+    store: string,
+    index?: string
+  ): Observable<IDBValidKey> {
+    return new Observable((observer) => {
+      const request = index
+        ? transaction.objectStore(store).index(index).openKeyCursor()
+        : transaction.objectStore(store).openKeyCursor();
+      request.onsuccess = (event: any) => {
+        const cursor: IDBCursor = event.target.result;
+        if (cursor && !observer.closed) {
+          observer.next(cursor.key);
+          cursor.continue();
+        } else {
+          observer.complete();
+        }
+      };
+      request.onerror = (ev) => observer.error((ev.target as IDBRequest).error);
+    });
+  }
+
+  find$<T>(
     transaction: IDBTransaction,
     store: string,
     predicate: (_: T) => boolean
@@ -204,33 +227,40 @@ export class StorageService {
     });
   }
 
-  addOne(
-    store: string,
-    value: any,
-    key?: IDBValidKey
-  ): Observable<IDBValidKey> {
+  add$(store: string, value: any, key?: IDBValidKey): Observable<IDBValidKey> {
     return this.getDb().pipe(
-      this.openTransaction([store], 'readwrite'),
+      this.open([store], 'readwrite'),
       this.add(store, value, key)
     );
   }
 
-  putOne(
-    store: string,
-    value: any,
-    key?: IDBValidKey
-  ): Observable<IDBValidKey> {
+  put$(store: string, value: any, key?: IDBValidKey): Observable<IDBValidKey> {
     return this.getDb().pipe(
-      this.openTransaction([store], 'readwrite'),
+      this.open([store], 'readwrite'),
       this.put(store, value, key)
     );
   }
 
-  getOne<T>(store: string, key: IDBValidKey): Observable<T | undefined> {
+  get$<T>(store: string, key: IDBValidKey): Observable<T | undefined> {
     return this.getDb().pipe(
-      this.openTransaction([store], 'readonly'),
-      this.get<T>(store, key)
+      this.open([store], 'readonly'),
+      this.get<T>(key, store)
     );
+  }
+
+  private wrap<T>(
+    action: (_: IDBTransaction) => IDBRequest<T>
+  ): (_: IDBTransaction) => Observable<T> {
+    return (transaction: IDBTransaction) =>
+      new Observable((observer) => {
+        const request = action(transaction);
+        request.onsuccess = (_) => {
+          observer.next(request.result);
+          observer.complete();
+        };
+        request.onerror = (ev) =>
+          observer.error((ev.target as IDBRequest).error);
+      });
   }
 
   private openDB(

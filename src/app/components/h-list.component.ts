@@ -112,7 +112,7 @@ import { DOCUMENT } from '@angular/common';
 })
 export class HListComponent implements OnInit, OnDestroy, AfterContentInit {
   @Input()
-  buttonsTopPosition!: string;
+  buttonsTopPosition?: string;
 
   @ViewChild('prevButton', { static: true })
   prevButton!: MatButton;

@@ -68,7 +68,7 @@ export class ScannerEffects implements OnRunEffects {
                               directory.name
                           )
                         : this.storageService
-                            .putOne('entries_root', directory)
+                            .put$('entries_root', directory)
                             .pipe(mapTo(scanDirectory({ directory })))
                     )
                   )
@@ -120,7 +120,7 @@ export class ScannerEffects implements OnRunEffects {
       ofType(scannedEntry),
       concatMap(({ entry }) =>
         this.storageService
-          .addOne('entries', entry)
+          .add$('entries', entry)
           .pipe(mapTo(entrySaved({ entry })))
       )
     )
@@ -173,51 +173,53 @@ export class ScannerEffects implements OnRunEffects {
             first(),
             concatMap((e) => from(e)),
             concatMap(({ song, pictures }) =>
-              this.storageService.open(['pictures', 'songs'], 'readwrite').pipe(
-                concatMap((transaction) => {
-                  const makeSong = (key?: IDBValidKey): Song => ({
-                    ...song,
-                    pictureKey: key,
-                  });
+              this.storageService
+                .open$(['pictures', 'songs'], 'readwrite')
+                .pipe(
+                  concatMap((transaction) => {
+                    const makeSong = (key?: IDBValidKey): Song => ({
+                      ...song,
+                      pictureKey: key,
+                    });
 
-                  const saveSongEvent = (key?: IDBValidKey): Action =>
-                    savedSong({ song: makeSong(key) });
+                    const saveSongEvent = (key?: IDBValidKey): Action =>
+                      savedSong({ song: makeSong(key) });
 
-                  const saveSong = (pictureKey?: IDBValidKey) =>
-                    this.storageService
-                      .exec(
+                    const saveSong = (pictureKey?: IDBValidKey) =>
+                      this.storageService
+                        .exec$(
+                          transaction
+                            .objectStore('songs')
+                            .put(makeSong(pictureKey))
+                        )
+                        .pipe(mapTo(saveSongEvent(pictureKey)));
+
+                    if (!pictures || pictures.length === 0) {
+                      return saveSong();
+                    }
+
+                    return this.storageService
+                      .exec$<IDBValidKey | undefined>(
                         transaction
-                          .objectStore('songs')
-                          .put(makeSong(pictureKey))
+                          .objectStore('pictures')
+                          .index('data')
+                          .getKey(pictures[0].data)
                       )
-                      .pipe(mapTo(saveSongEvent(pictureKey)));
-
-                  if (!pictures || pictures.length === 0) {
-                    return saveSong();
-                  }
-
-                  return this.storageService
-                    .exec<IDBValidKey | undefined>(
-                      transaction
-                        .objectStore('pictures')
-                        .index('data')
-                        .getKey(pictures[0].data)
-                    )
-                    .pipe(
-                      concatMap((key) =>
-                        key
-                          ? saveSong(key)
-                          : this.storageService
-                              .exec(
-                                transaction
-                                  .objectStore('pictures')
-                                  .put(pictures[0])
-                              )
-                              .pipe(concatMap((pictKey) => saveSong(pictKey)))
-                      )
-                    );
-                })
-              )
+                      .pipe(
+                        concatMap((key) =>
+                          key
+                            ? saveSong(key)
+                            : this.storageService
+                                .exec$(
+                                  transaction
+                                    .objectStore('pictures')
+                                    .put(pictures[0])
+                                )
+                                .pipe(concatMap((pictKey) => saveSong(pictKey)))
+                        )
+                      );
+                  })
+                )
             )
           ),
         complete: (count) => saveParsedEntriesSuccess({ count }),

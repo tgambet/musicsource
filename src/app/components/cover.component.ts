@@ -49,6 +49,10 @@ import { MenuItem } from './menu.component';
         display: block;
         text-decoration: none;
       }
+      app-menu {
+        background-color: rgba(0, 0, 0, 0.5);
+        border-radius: 50%;
+      }
       app-menu,
       app-player-button.stopped:not(.cdk-focused) {
         opacity: 0;
@@ -64,7 +68,7 @@ import { MenuItem } from './menu.component';
         right: 16px;
         bottom: 16px;
         z-index: 1;
-        transform: scale(0.8);
+        transform: scale(0.833);
         transition: transform 0.2s ease, opacity 0.2s ease;
         border: 4px solid rgba(0, 0, 0, 0.25);
       }
