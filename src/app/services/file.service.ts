@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { defer, merge, Observable, of } from 'rxjs';
 import { concatMap, map } from 'rxjs/operators';
 import { tapError } from '@app/utils/tap-error.util';
-import { DirectoryEntry, Entry } from '@app/utils/entry.util';
+import { DirectoryEntry, Entry } from '@app/models/entry.model';
 
 @Injectable()
 export class FileService {

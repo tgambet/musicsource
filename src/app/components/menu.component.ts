@@ -4,7 +4,7 @@ import { Icons } from '../utils/icons.util';
 @Component({
   selector: 'app-menu',
   template: `
-    <button mat-icon-button [matMenuTriggerFor]="menu">
+    <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="menu">
       <app-icon [path]="triggerIcon"></app-icon>
     </button>
     <mat-menu #menu="matMenu">

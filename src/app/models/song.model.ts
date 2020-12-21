@@ -1,14 +1,6 @@
-//
-// export interface Song {
-//   id: string;
-//   entry: FileEntry;
-//   trackNumber: number | null;
-//   name?: string;
-//   artist?: string;
-//   artistId: string;
-//   albumArtist?: string;
-//   album?: string;
-//   albumId: string;
-//   genre?: string[];
-//   duration?: number;
-// }
+import { ICommonTagsResult } from 'music-metadata/lib/type';
+
+export type Song = Omit<ICommonTagsResult, 'picture'> & {
+  entryPath: string;
+  pictureKey?: IDBValidKey;
+};

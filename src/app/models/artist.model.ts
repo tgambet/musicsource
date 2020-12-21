@@ -1,11 +1,9 @@
+import { Except } from '@app/utils/types.util';
+
 export interface Artist {
   id: string;
-  name?: string;
-  images?: {
-    height: number;
-    width: number;
-    url: string;
-  }[];
-  thumbnail?: string;
-  spotifyId?: string;
+  name: string;
+  pictureKey?: IDBValidKey;
 }
+
+export type ArtistWithCover = Except<Artist, 'pictureKey'> & { cover?: string };

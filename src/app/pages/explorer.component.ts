@@ -11,7 +11,7 @@ import { AudioService } from '@app/services/audio.service';
 import { merge, ReplaySubject, Subject } from 'rxjs';
 import { NestedTreeControl } from '@angular/cdk/tree';
 import { Icons } from '@app/utils/icons.util';
-import { isDirectory } from '@app/utils/entry.util';
+import { isDirectory } from '@app/models/entry.model';
 
 interface FileSystemTreeNode {
   name: string;
@@ -109,9 +109,8 @@ export class ExplorerComponent {
   icons = Icons;
 
   constructor(
-    private files: FileService
-  ) // private extractor: ExtractorService // private audio: AudioService
-  {}
+    private files: FileService // private extractor: ExtractorService // private audio: AudioService
+  ) {}
 
   @HostListener('window:scroll', ['$event'])
   setScrolledTop(event: any) {

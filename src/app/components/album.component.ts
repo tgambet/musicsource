@@ -25,7 +25,10 @@ import { PlayerState } from './player-button.component';
     </app-cover>
     <app-label
       [topLabel]="{ text: name, routerLink: routerLink }"
-      [bottomLabel]="['Album', { text: artist, routerLink: artistRouterLink }]"
+      [bottomLabel]="[
+        'Album',
+        { text: artist || '', routerLink: artistRouterLink }
+      ]"
     ></app-label>
   `,
   styles: [
@@ -44,8 +47,8 @@ import { PlayerState } from './player-button.component';
 })
 export class AlbumComponent {
   @Input() name!: string;
-  @Input() artist!: string;
-  @Input() cover!: string;
+  @Input() artist?: string;
+  @Input() cover?: string;
   @Input() routerLink!: any[] | string;
   @Input() artistRouterLink!: any[] | string;
   icons = Icons;

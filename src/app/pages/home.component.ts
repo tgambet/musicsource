@@ -1,19 +1,27 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { LibraryFacade } from '@app/store/library/library.facade';
-import { Picture } from '@app/services/extractor.service';
-import { map } from 'rxjs/operators';
+import { filter, scan } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { AlbumWithCover } from '@app/models/album.model';
+import { ArtistWithCover } from '@app/models/artist.model';
 
 @Component({
   selector: 'app-home',
   template: `
-    <app-title title="Your favorites"></app-title>
+    <app-title title="Albums"></app-title>
     <app-h-list buttonsTopPosition="113px">
       <div class="album" appHListItem *ngFor="let album of albums$ | async">
         <app-album
           [name]="album.name"
           [artist]="album.artist"
-          [cover]="getCover(album.cover)"
+          [cover]="album.cover"
         ></app-album>
+      </div>
+    </app-h-list>
+    <app-title title="Artists"></app-title>
+    <app-h-list buttonsTopPosition="113px">
+      <div class="artist" appHListItem *ngFor="let artist of artists$ | async">
+        <app-artist [name]="artist.name" [cover]="artist.cover"></app-artist>
       </div>
     </app-h-list>
   `,
@@ -23,10 +31,13 @@ import { map } from 'rxjs/operators';
         display: block;
         padding: 32px;
       }
-      .album {
+      .album,
+      .artist {
         margin: 0 24px 0 0;
+        width: 226px;
       }
-      .album:last-child {
+      .album:last-child,
+      .artist:last-child {
         margin-right: 0;
       }
       app-title {
@@ -34,21 +45,25 @@ import { map } from 'rxjs/operators';
       }
       app-h-list {
         margin: 0 0;
+        min-height: 320px;
       }
     `,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HomeComponent implements OnInit {
-  albums$ = this.library.albums$.pipe(
-    map((albums) => albums.filter((a) => !!a.cover).slice(0, 10))
+  albums$: Observable<AlbumWithCover[]> = this.library.albums$.pipe(
+    filter((album) => !!album.cover),
+    // take(20),
+    scan((acc, cur) => [...acc, cur], [] as AlbumWithCover[])
+  );
+
+  artists$ = this.library.artists$.pipe(
+    // take(20),
+    scan((acc, cur) => [...acc, cur], [] as ArtistWithCover[])
   );
 
   constructor(private library: LibraryFacade) {}
 
   ngOnInit(): void {}
-
-  getCover(picture: Picture | undefined): string {
-    return picture ? `data:${picture.format};base64,${picture.data}` : '';
-  }
 }

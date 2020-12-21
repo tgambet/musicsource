@@ -4,7 +4,7 @@ import { SettingsComponent } from '@app/dialogs/settings.component';
 import { Icons } from '@app/utils/icons.util';
 import { NestedTreeControl } from '@angular/cdk/tree';
 import { EMPTY, Observable } from 'rxjs';
-import { DirectoryEntry, Entry } from '@app/utils/entry.util';
+import { DirectoryEntry, Entry } from '@app/models/entry.model';
 import { LibraryFacade } from '@app/store/library/library.facade';
 
 @Component({
@@ -182,7 +182,7 @@ export class LibrarySettingsComponent {
     private router: Router,
     private library: LibraryFacade
   ) {
-    this.rootFolders$ = this.library.rootFolders$;
+    this.rootFolders$ = EMPTY; //this.library.rootFolders$;
   }
 
   hasChild = (_: number, entry: Entry): boolean => entry.kind === 'directory';

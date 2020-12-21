@@ -9,10 +9,11 @@ import {
   selectScannerState,
 } from '@app/store/scanner/scanner.selectors';
 import { abortScan, openDirectory } from '@app/store/scanner/scanner.actions';
-import { Picture, Song } from '@app/services/extractor.service';
 import { concatMap, mapTo } from 'rxjs/operators';
 import { StorageService } from '@app/services/storage.service';
 import { Observable } from 'rxjs';
+import { Song } from '@app/models/song.model';
+import { Picture } from '@app/models/picture.model';
 
 @Injectable()
 export class ScannerFacade {

@@ -1,8 +1,8 @@
 import {
   mdiAccessPoint,
+  mdiAccount,
   mdiAccountMusic,
   mdiAlbum,
-  mdiAlertCircleOutline,
   mdiCheck,
   mdiChevronDown,
   mdiChevronLeft,
@@ -74,7 +74,7 @@ export class Icons {
   static folderRefresh = mdiFolderSyncOutline;
   static folderAlert = mdiFolderAlertOutline;
   static sync = mdiSync;
-  static alertCircle = mdiAlertCircleOutline;
   static close = mdiClose;
   static check = mdiCheck;
+  static account = mdiAccount;
 }

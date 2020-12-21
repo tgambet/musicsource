@@ -1,6 +1,8 @@
 import { createAction, props } from '@ngrx/store';
-import { DirectoryEntry, Entry } from '@app/utils/entry.util';
-import { Song } from '@app/services/extractor.service';
+import { DirectoryEntry, Entry } from '@app/models/entry.model';
+import { Album } from '@app/models/album.model';
+import { Artist } from '@app/models/artist.model';
+import { Song } from '@app/models/song.model';
 
 export const abortScan = createAction('scanner/abort');
 export const scanAborted = createAction('scanner/aborted');
@@ -25,9 +27,18 @@ export const scanEntrySuccess = createAction(
   'scanner/scan/entry/success',
   props<{ entry: Entry }>()
 );
-export const scanEntryFailure = createAction('scanner/scan/entry/failure');
-export const scanEntriesSuccess = createAction('scanner/scan/entries/success');
-export const scanEntriesFailure = createAction('scanner/scan/entries/failure');
+export const scanEntryFailure = createAction(
+  'scanner/scan/entry/failure',
+  props<{ error: any }>()
+);
+export const scanEntriesSuccess = createAction(
+  'scanner/scan/entries/success',
+  props<{ count: number }>()
+);
+export const scanEntriesFailure = createAction(
+  'scanner/scan/entries/failure',
+  props<{ error: any }>()
+);
 
 // Step 3
 export const extractEntries = createAction('scanner/extract/entries');
@@ -50,20 +61,40 @@ export const extractEntriesFailure = createAction(
 
 // Step 4
 export const buildAlbums = createAction('scanner/build/albums');
-export const buildAlbumSuccess = createAction('scanner/build/album/success');
-export const buildAlbumFailure = createAction('scanner/build/album/failure');
-export const buildAlbumsSuccess = createAction('scanner/build/albums/success');
-export const buildAlbumsFailure = createAction('scanner/build/albums/failure');
+export const buildAlbumSuccess = createAction(
+  'scanner/build/album/success',
+  props<{ album: Album }>()
+);
+export const buildAlbumFailure = createAction(
+  'scanner/build/album/failure',
+  props<{ error: any }>()
+);
+export const buildAlbumsSuccess = createAction(
+  'scanner/build/albums/success',
+  props<{ count: number }>()
+);
+export const buildAlbumsFailure = createAction(
+  'scanner/build/albums/failure',
+  props<{ error: any }>()
+);
 
 // Step 5
 export const buildArtists = createAction('scanner/build/artists');
-export const buildArtistSuccess = createAction('scanner/build/artist/success');
-export const buildArtistFailure = createAction('scanner/build/artist/failure');
+export const buildArtistSuccess = createAction(
+  'scanner/build/artist/success',
+  props<{ artist: Artist }>()
+);
+export const buildArtistFailure = createAction(
+  'scanner/build/artist/failure',
+  props<{ error: any }>()
+);
 export const buildArtistsSuccess = createAction(
-  'scanner/build/artists/success'
+  'scanner/build/artists/success',
+  props<{ count: number }>()
 );
 export const buildArtistsFailure = createAction(
-  'scanner/build/artists/failure'
+  'scanner/build/artists/failure',
+  props<{ error: any }>()
 );
 
 // Final

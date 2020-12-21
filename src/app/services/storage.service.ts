@@ -15,8 +15,6 @@ export class StorageService {
       return of(this.db);
     }
     return this.openDB((db) => {
-      // Root entries
-      db.createObjectStore('entries_root', { keyPath: 'path' });
       // Entries
       const entries = db.createObjectStore('entries', { keyPath: 'path' });
       entries.createIndex('parents', 'parent');
@@ -27,6 +25,11 @@ export class StorageService {
       songs.createIndex('albums', 'album');
       // Pictures
       db.createObjectStore('pictures', { keyPath: 'hash' });
+      // Albums
+      const albums = db.createObjectStore('albums', { keyPath: 'id' });
+      albums.createIndex('artists', 'artist');
+      // Artists
+      db.createObjectStore('artists', { keyPath: 'id' });
     }).pipe(tap((db) => (this.db = db)));
   }
 
@@ -122,14 +125,26 @@ export class StorageService {
     );
   }
 
-  getAll<T>(store: string): OperatorFunction<IDBTransaction, T[]> {
+  getAll<T>(
+    store: string,
+    index?: string,
+    query?: IDBValidKey | IDBKeyRange | null
+  ): OperatorFunction<IDBTransaction, T[]> {
     return concatMap(
-      this.wrap((transaction) => transaction.objectStore(store).getAll())
+      this.wrap((transaction) =>
+        index
+          ? transaction.objectStore(store).index(index).getAll(query)
+          : transaction.objectStore(store).getAll(query)
+      )
     );
   }
 
-  getAll$<T>(store: string): Observable<T[]> {
-    return this.open$([store]).pipe(this.getAll(store));
+  getAll$<T>(
+    store: string,
+    index?: string,
+    query?: IDBValidKey | IDBKeyRange | null
+  ): Observable<T[]> {
+    return this.open$([store]).pipe(this.getAll(store, index, query));
   }
 
   exec$<T>(request: IDBRequest<T>): Observable<T> {
@@ -155,12 +170,13 @@ export class StorageService {
   walk$<T>(
     transaction: IDBTransaction,
     store: string,
-    index?: string
+    index?: string,
+    query?: IDBValidKey | IDBKeyRange | null
   ): Observable<{ value: T; key: IDBValidKey; primaryKey: IDBValidKey }> {
     return new Observable((observer) => {
       const request = index
-        ? transaction.objectStore(store).index(index).openCursor()
-        : transaction.objectStore(store).openCursor();
+        ? transaction.objectStore(store).index(index).openCursor(query)
+        : transaction.objectStore(store).openCursor(query);
       request.onsuccess = (event: any) => {
         const cursor: IDBCursorWithValue = event.target.result;
         if (cursor && !observer.closed) {
@@ -274,7 +290,6 @@ export class StorageService {
     onUpgradeNeeded: (_: IDBDatabase) => void
   ): Observable<IDBDatabase> {
     return new Observable<IDBDatabase>((subscriber) => {
-      console.log('opening db');
       const request = indexedDB.open(this.dbName, this.dbVersion);
       request.onupgradeneeded = (_) => onUpgradeNeeded(request.result);
       request.onsuccess = (_) => {

@@ -1,11 +1,19 @@
 import { Component, ChangeDetectionStrategy, Input } from '@angular/core';
+import { Icons } from '@app/utils/icons.util';
 
 @Component({
   selector: 'app-artist',
   template: `
     <div class="image">
       <a [routerLink]="routerLink" matRipple [title]="name">
-        <img [src]="cover" [alt]="name" height="226" width="226" />
+        <img
+          *ngIf="cover"
+          [src]="cover"
+          [alt]="name"
+          height="226"
+          width="226"
+        />
+        <app-icon *ngIf="!cover" [path]="icons.account" [size]="200"></app-icon>
       </a>
     </div>
     <app-label
@@ -28,6 +36,16 @@ import { Component, ChangeDetectionStrategy, Input } from '@angular/core';
         margin-bottom: 16px;
         overflow: hidden;
         border-radius: 50%;
+        background-color: rgba(255, 255, 255, 0.1);
+        height: 226px;
+        width: 100%;
+      }
+      .image a {
+        height: 100%;
+        text-align: center;
+      }
+      app-icon {
+        color: rgba(255, 255, 255, 0.33);
       }
     `,
   ],
@@ -36,6 +54,8 @@ import { Component, ChangeDetectionStrategy, Input } from '@angular/core';
 export class ArtistComponent {
   @Input() name!: string;
   @Input() legend!: string;
-  @Input() cover!: string;
+  @Input() cover?: string;
   @Input() routerLink!: any[] | string;
+
+  icons = Icons;
 }

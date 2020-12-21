@@ -12,26 +12,34 @@ import {
   catchError,
   concatMap,
   concatMapTo,
+  distinct,
   filter,
   first,
+  groupBy,
   map,
   mapTo,
+  mergeMap,
   publish,
+  reduce,
   takeUntil,
   tap,
 } from 'rxjs/operators';
 import { FileService } from '@app/services/file.service';
 import { ExtractorService } from '@app/services/extractor.service';
 import { StorageService } from '@app/services/storage.service';
-import { Entry, isFile } from '@app/utils/entry.util';
+import { Entry, isFile } from '@app/models/entry.model';
 import {
   abortScan,
+  buildAlbumFailure,
   buildAlbums,
   buildAlbumsFailure,
   buildAlbumsSuccess,
+  buildAlbumSuccess,
+  buildArtistFailure,
   buildArtists,
   buildArtistsFailure,
   buildArtistsSuccess,
+  buildArtistSuccess,
   extractEntries,
   extractEntriesFailure,
   extractEntriesSuccess,
@@ -52,6 +60,10 @@ import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ScannerFacade } from '@app/store/scanner/scanner.facade';
 import { collectLeft, collectRight } from '@app/utils/either.util';
+import { hash } from '@app/utils/hash.util';
+import { Album } from '@app/models/album.model';
+import { SetRequired } from '@app/utils/types.util';
+import { Song } from '@app/models/song.model';
 
 @Injectable()
 export class ScannerEffects implements OnRunEffects {
@@ -95,7 +107,7 @@ export class ScannerEffects implements OnRunEffects {
       act({
         project: () =>
           this.files.open().pipe(
-            concatMap((directory) =>
+            map((directory) =>
               /*this.library
                   .getRootEntry(directory.path)
                   .pipe(
@@ -106,9 +118,7 @@ export class ScannerEffects implements OnRunEffects {
                               directory.name
                           )
                         :*/
-              this.storage
-                .put$('entries_root', directory)
-                .pipe(mapTo(openDirectorySuccess({ directory })))
+              openDirectorySuccess({ directory })
             )
           ),
         error: (error) => openDirectoryFailure({ error }),
@@ -142,13 +152,13 @@ export class ScannerEffects implements OnRunEffects {
                 concatMap(() =>
                   isFile(entry) ? of(scanEntrySuccess({ entry })) : EMPTY
                 ),
-                catchError((error) => of(scanEntryFailure()))
+                catchError((error) => of(scanEntryFailure({ error })))
               )
             ),
             takeUntil(this.actions$.pipe(ofType(abortScan)))
           ),
-        error: (error) => scanEntriesFailure(),
-        complete: (count, { directory }) => scanEntriesSuccess(),
+        error: (error) => scanEntriesFailure({ error }),
+        complete: (count) => scanEntriesSuccess({ count }),
       })
     )
   );
@@ -203,8 +213,41 @@ export class ScannerEffects implements OnRunEffects {
     this.actions$.pipe(
       ofType(buildAlbums),
       act({
-        project: (input) => of(buildAlbumsSuccess()),
-        error: (error) => buildAlbumsFailure(),
+        project: () =>
+          this.storage.open$(['songs']).pipe(
+            concatMap((transaction) =>
+              this.storage
+                .walk$<SetRequired<Song, 'album'>>(
+                  transaction,
+                  'songs',
+                  'albums'
+                )
+                .pipe(
+                  filter(({ key }) => !!key.toString().trim()), // Prevent empty strings
+                  distinct(
+                    ({ value: song }) =>
+                      `${song.albumartist || song.artist}||${song.album}`
+                  ),
+                  map(({ value: song }) => ({
+                    id: hash(
+                      `${song.albumartist || song.artist}||${song.album}`
+                    ),
+                    name: song.album,
+                    artist: song.albumartist || song.artist,
+                    year: song.year,
+                    pictureKey: song.pictureKey,
+                  }))
+                )
+            ),
+            concatMap((album) =>
+              this.storage.add$('albums', album).pipe(
+                mapTo(buildAlbumSuccess({ album })),
+                catchError((error) => of(buildAlbumFailure({ error })))
+              )
+            )
+          ),
+        complete: (count) => buildAlbumsSuccess({ count }),
+        error: (error) => buildAlbumsFailure({ error }),
       })
     )
   );
@@ -213,8 +256,53 @@ export class ScannerEffects implements OnRunEffects {
     this.actions$.pipe(
       ofType(buildArtists),
       act({
-        project: (input) => of(buildArtistsSuccess()),
-        error: (error) => buildArtistsFailure(),
+        project: () =>
+          this.storage.open$(['albums']).pipe(
+            concatMap((transaction) =>
+              this.storage
+                .walk$<SetRequired<Album, 'artist'>>(
+                  transaction,
+                  'albums',
+                  'artists'
+                )
+                .pipe(
+                  filter(({ key }) => !!key.toString().trim()), // Prevent empty strings
+                  groupBy(
+                    ({ value: album }) => album.artist,
+                    ({ value: album }) => album
+                  ),
+                  mergeMap((groups$) =>
+                    groups$.pipe(
+                      reduce((acc, cur) => [...acc, cur], [] as Album[]),
+                      map((albums) => ({
+                        artist: groups$.key,
+                        albums,
+                      }))
+                    )
+                  ),
+                  map(({ artist, albums }) => {
+                    const latestAlbum: Album | undefined = albums
+                      .filter((album) => album.pictureKey)
+                      .sort((a1, a2) => (a2.year || 0) - (a1.year || 0))[0];
+
+                    return {
+                      id: hash(artist),
+                      name: artist,
+                      pictureKey: latestAlbum?.pictureKey,
+                    };
+                  })
+                )
+            ),
+            concatMap((artist) =>
+              this.storage.add$('artists', artist).pipe(
+                mapTo(buildArtistSuccess({ artist })),
+                catchError((error) => of(buildArtistFailure({ error })))
+              )
+            )
+          ),
+
+        complete: (count) => buildArtistsSuccess({ count }),
+        error: (error) => buildArtistsFailure({ error }),
       })
     )
   );

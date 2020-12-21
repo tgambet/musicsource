@@ -3,19 +3,11 @@ import { defer, from, Observable, of } from 'rxjs';
 import { catchError, concatMap, map } from 'rxjs/operators';
 import { Either, left, right } from '@app/utils/either.util';
 import { DOCUMENT } from '@angular/common';
-import { FileEntry } from '@app/utils/entry.util';
-import { ICommonTagsResult, IPicture } from 'music-metadata/lib/type';
+import { FileEntry } from '@app/models/entry.model';
+import { IPicture } from 'music-metadata/lib/type';
 import { hash } from '@app/utils/hash.util';
-
-export type Song = Omit<ICommonTagsResult, 'picture'> & {
-  entryPath: string;
-  pictureKey?: IDBValidKey;
-};
-
-export type Picture = Omit<IPicture, 'data'> & {
-  data: string;
-  hash: string;
-};
+import { Song } from '@app/models/song.model';
+import { Picture } from '@app/models/picture.model';
 
 @Injectable()
 export class ExtractorService {
