@@ -5,6 +5,7 @@ import { Either, left, right } from '@app/utils/either.util';
 import { DOCUMENT } from '@angular/common';
 import { FileEntry } from '@app/utils/entry.util';
 import { ICommonTagsResult, IPicture } from 'music-metadata/lib/type';
+import { hash } from '@app/utils/hash.util';
 
 export type Song = Omit<ICommonTagsResult, 'picture'> & {
   entryPath: string;
@@ -13,7 +14,7 @@ export type Song = Omit<ICommonTagsResult, 'picture'> & {
 
 export type Picture = Omit<IPicture, 'data'> & {
   data: string;
-  key?: number;
+  hash: string;
 };
 
 @Injectable()
@@ -60,9 +61,13 @@ export class ExtractorService {
   }
 
   toPicture(pictures?: IPicture[]): Picture[] | undefined {
-    return pictures?.map((pict) => ({
-      ...pict,
-      data: pict.data.toString('base64'),
-    }));
+    return pictures?.map((pict) => {
+      const data = pict.data.toString('base64');
+      return {
+        ...pict,
+        data,
+        hash: hash(data),
+      };
+    });
   }
 }

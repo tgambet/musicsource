@@ -26,10 +26,7 @@ export class StorageService {
       songs.createIndex('genres', 'genre', { multiEntry: true });
       songs.createIndex('albums', 'album');
       // Pictures
-      const pictures = db.createObjectStore('pictures', {
-        autoIncrement: true,
-      });
-      pictures.createIndex('data', 'data', { unique: true });
+      db.createObjectStore('pictures', { keyPath: 'hash' });
     }).pipe(tap((db) => (this.db = db)));
   }
 

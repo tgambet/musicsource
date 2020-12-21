@@ -54,10 +54,7 @@ export class ScannerFacade {
 
         return this.storage
           .exec$<IDBValidKey | undefined>(
-            transaction
-              .objectStore('pictures')
-              .index('data')
-              .getKey(pictures[0].data)
+            transaction.objectStore('pictures').getKey(pictures[0].hash)
           )
           .pipe(
             concatMap((key) =>
