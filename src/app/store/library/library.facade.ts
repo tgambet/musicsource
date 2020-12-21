@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { DirectoryEntry, Entry } from '@app/utils/entry.util';
 import { Observable, of } from 'rxjs';
-import { concatMap, distinct, map, reduce } from 'rxjs/operators';
+import { concatMap, distinct, map, reduce, tap } from 'rxjs/operators';
 import { StorageService } from '@app/services/storage.service';
 import { Picture, Song } from '@app/services/extractor.service';
 
@@ -10,9 +10,11 @@ export class LibraryFacade {
   rootFolders$ = this.storage.getAll$<DirectoryEntry>('entries_root');
   albums$ = this.storage.open$(['songs', 'pictures']).pipe(
     concatMap((transaction) =>
-      this.storage.walkKeys$(transaction, 'songs', 'albums').pipe(
-        distinct(),
-        concatMap((key) =>
+      this.storage.walk$<Song>(transaction, 'songs', 'albums').pipe(
+        distinct(({ value }) => `${value.albumartist}${value.album}`),
+        tap((a) => console.log(a)),
+        concatMap(({ key }) =>
+          // Get the first song
           this.storage
             .get<Song>(
               key,

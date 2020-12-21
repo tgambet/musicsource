@@ -1,78 +1,72 @@
 import { ActionReducer, createReducer, on } from '@ngrx/store';
 import * as Actions from './scanner.actions';
 import { initialState, ScannerState, ScannerStateEnum } from './scanner.state';
-import { isFile } from '@app/utils/entry.util';
 
 export const scannerReducer: ActionReducer<ScannerState> = createReducer(
   initialState,
 
-  on(Actions.openDirectory, (state) => ({
-    ...state,
-    ...initialState,
-  })),
+  on(Actions.scanAborted, () => ({ ...initialState })),
+  on(Actions.scanSuccess, () => ({ ...initialState })),
 
-  on(Actions.scannedEntry, (state, { entry }) => ({
-    ...state,
-    state: ScannerStateEnum.scanning,
-    scannedCount: isFile(entry) ? state.scannedCount + 1 : state.scannedCount,
-    latestScanned: entry.path,
-    scannedEntries: [...state.scannedEntries, entry],
-  })),
-
-  on(Actions.scanSucceeded, (state) => ({
-    ...state,
-    state: ScannerStateEnum.parsing,
-    // scannedCount: count,
-  })),
-
-  on(Actions.scanFailed, (state, { error }) => ({
-    ...state,
-    state: ScannerStateEnum.error,
-    error,
-  })),
-
+  // Step 1
+  on(Actions.openDirectory, () => ({ ...initialState })),
+  on(Actions.openDirectorySuccess, (state) => ({ ...state })),
   on(Actions.openDirectoryFailure, (state, { error }) => ({
     ...state,
     state: ScannerStateEnum.error,
     error,
   })),
 
-  on(Actions.parseEntrySucceeded, (state, { song, pictures }) => ({
+  // Step 2
+  on(Actions.scanEntries, (state) => ({
     ...state,
-    parsedCount: state.parsedCount + 1,
-    latestParsed: (song.albumartist || song.artist) + ' - ' + song.title,
-    parsedEntries: [...state.parsedEntries, { song, pictures }],
+    state: ScannerStateEnum.scanning,
+  })),
+  on(Actions.scanEntrySuccess, (state, { entry }) => ({
+    ...state,
+    log: entry.path,
+    scannedCount: state.scannedCount + 1,
+  })),
+  on(Actions.scanEntryFailure, (state) => ({
+    ...state,
+    scannedCount: state.scannedCount + 1,
+    // TODO log, error
+  })),
+  on(Actions.scanEntriesSuccess, (state) => ({
+    ...state,
+    // TODO scannedCount
+    // TODO log
+  })),
+  on(Actions.scanEntriesFailure, (state) => ({
+    ...state,
+    state: ScannerStateEnum.error,
+    // TODO error,
   })),
 
-  on(Actions.parseEntryFailed, (state) => ({
+  // Step 3
+  on(Actions.extractEntries, (state) => ({
     ...state,
-    parsedCount: state.parsedCount + 1,
+    state: ScannerStateEnum.extracting,
   })),
-
-  on(Actions.parseEntriesSucceeded, (state) => ({
+  on(Actions.extractEntrySuccess, (state, { song }) => ({
     ...state,
-    state: ScannerStateEnum.building,
+    extractedCount: state.extractedCount + 1,
+    log: (song.albumartist || song.artist) + ' - ' + song.title,
   })),
-
-  on(Actions.parseEntriesFailed, (state, { error }) => ({
+  on(Actions.extractEntryFailure, (state) => ({
+    ...state,
+    extractedCount: state.extractedCount + 1,
+    // TODO error + log
+  })),
+  on(Actions.extractEntriesFailure, (state, { error }) => ({
     ...state,
     state: ScannerStateEnum.error,
     error,
   })),
-
-  on(Actions.saveParsedEntriesSuccess, (state) => ({
+  on(Actions.extractEntriesSuccess, (state) => ({
     ...state,
-    ...initialState,
-  })),
-
-  on(Actions.scanAborted, (state) => ({
-    ...state,
-    ...initialState,
-  })),
-
-  on(Actions.saveParsedEntriesFailure, (state, { error }) => ({
-    ...state,
-    state: ScannerStateEnum.error,
-    error,
+    // TODO log count
   }))
+
+  // Step 4
 );

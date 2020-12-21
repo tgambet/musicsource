@@ -3,34 +3,6 @@ import { ScannerState } from './scanner.state';
 
 export const selectCoreState = createFeatureSelector<ScannerState>('scanner');
 
-export const selectScannedCount = createSelector(
-  selectCoreState,
-  (state) => state.scannedCount
-);
-
-export const selectParsedCount = createSelector(
-  selectCoreState,
-  (state) => state.parsedCount
-);
-
-export const selectLatestScanned = createSelector(
-  selectCoreState,
-  (state) => state.latestScanned
-);
-
-export const selectLatestParsed = createSelector(
-  selectCoreState,
-  (state) => state.latestParsed
-);
-
-export const selectProgressRatio = createSelector(selectCoreState, (state) =>
-  state.scannedCount === 0 ? 0 : state.parsedCount / state.scannedCount
-);
-
-export const selectProgress = createSelector(selectProgressRatio, (ratio) =>
-  Math.ceil(ratio * 100)
-);
-
 export const selectScannerState = createSelector(
   selectCoreState,
   (state) => state.state
@@ -41,12 +13,25 @@ export const selectError = createSelector(
   (state) => state.error
 );
 
-export const selectScannedEntries = createSelector(
+export const selectLog = createSelector(selectCoreState, (state) => state.log);
+
+export const selectScannedCount = createSelector(
   selectCoreState,
-  (state) => state.scannedEntries
+  (state) => state.scannedCount
 );
 
-export const selectParsedEntries = createSelector(
+export const selectExtractedCount = createSelector(
   selectCoreState,
-  (state) => state.parsedEntries
+  (state) => state.extractedCount
+);
+
+export const selectProgressRatio = createSelector(
+  selectScannedCount,
+  selectExtractedCount,
+  (scannedCount, extractedCount) =>
+    scannedCount === 0 ? 0 : extractedCount / scannedCount
+);
+
+export const selectProgress = createSelector(selectProgressRatio, (ratio) =>
+  Math.ceil(ratio * 100)
 );

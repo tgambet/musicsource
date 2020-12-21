@@ -151,17 +151,27 @@ export class StorageService {
     return concatMap((t: IDBTransaction) => this.exec$(action(t)));
   }
 
-  walk<T>(store: string): OperatorFunction<IDBTransaction, T> {
-    return concatMap((t) => this.walk$<T>(t, store));
-  }
+  // walk<T>(store: string): OperatorFunction<IDBTransaction, T> {
+  //   return concatMap((t) => this.walk$<T>(t, store));
+  // }
 
-  walk$<T>(transaction: IDBTransaction, store: string): Observable<T> {
+  walk$<T>(
+    transaction: IDBTransaction,
+    store: string,
+    index?: string
+  ): Observable<{ value: T; key: IDBValidKey; primaryKey: IDBValidKey }> {
     return new Observable((observer) => {
-      const request = transaction.objectStore(store).openCursor();
+      const request = index
+        ? transaction.objectStore(store).index(index).openCursor()
+        : transaction.objectStore(store).openCursor();
       request.onsuccess = (event: any) => {
         const cursor: IDBCursorWithValue = event.target.result;
         if (cursor && !observer.closed) {
-          observer.next(cursor.value);
+          observer.next({
+            value: cursor.value,
+            key: cursor.key,
+            primaryKey: cursor.primaryKey,
+          });
           cursor.continue();
         } else {
           observer.complete();

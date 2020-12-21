@@ -107,7 +107,7 @@ import { ScannerFacade } from '@app/store/scanner/scanner.facade';
       },
     }),
     EffectsModule.forRoot([LibraryEffects, ScannerEffects]),
-    // StoreDevtoolsModule.instrument({ maxAge: 100, logOnly: true }),
+    // StoreDevtoolsModule.instrument({ maxAge: 150, logOnly: true }),
   ],
   providers: [
     FileService,

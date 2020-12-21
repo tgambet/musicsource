@@ -1,11 +1,8 @@
-import { Entry } from '@app/utils/entry.util';
-import { Picture, Song } from '@app/services/extractor.service';
-
 // eslint-disable-next-line no-shadow
 export enum ScannerStateEnum {
   initial = 'initial',
   scanning = 'scanning',
-  parsing = 'parsing',
+  extracting = 'extracting',
   building = 'building',
   error = 'error',
 }
@@ -13,21 +10,15 @@ export enum ScannerStateEnum {
 export interface ScannerState {
   state: ScannerStateEnum;
   error: any;
+  log: string | null;
   scannedCount: number;
-  parsedCount: number;
-  latestScanned: string | null;
-  latestParsed: string | null;
-  scannedEntries: Entry[];
-  parsedEntries: { song: Song; pictures?: Picture[] }[];
+  extractedCount: number;
 }
 
 export const initialState: ScannerState = {
   state: ScannerStateEnum.initial,
   error: null,
+  log: null,
   scannedCount: 0,
-  parsedCount: 0,
-  latestScanned: null,
-  latestParsed: null,
-  scannedEntries: [],
-  parsedEntries: [],
+  extractedCount: 0,
 };

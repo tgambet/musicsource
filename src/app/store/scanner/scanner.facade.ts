@@ -1,33 +1,29 @@
 import { Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
 import {
-  selectError,
-  selectLatestParsed,
-  selectLatestScanned,
-  selectParsedCount,
-  selectParsedEntries,
-  selectProgress,
-  selectProgressRatio,
   selectScannedCount,
-  selectScannedEntries,
+  selectError,
+  selectLog,
+  selectExtractedCount,
+  selectProgress,
   selectScannerState,
 } from '@app/store/scanner/scanner.selectors';
 import { abortScan, openDirectory } from '@app/store/scanner/scanner.actions';
+import { Picture, Song } from '@app/services/extractor.service';
+import { concatMap, mapTo } from 'rxjs/operators';
+import { StorageService } from '@app/services/storage.service';
+import { Observable } from 'rxjs';
 
 @Injectable()
 export class ScannerFacade {
   error$ = this.store.select(selectError);
   state$ = this.store.select(selectScannerState);
   scannedCount$ = this.store.select(selectScannedCount);
-  parsedCount$ = this.store.select(selectParsedCount);
-  latestScanned$ = this.store.select(selectLatestScanned);
-  latestParsed$ = this.store.select(selectLatestParsed);
-  progressRatio$ = this.store.select(selectProgressRatio);
+  extractedCount$ = this.store.select(selectExtractedCount);
+  log$ = this.store.select(selectLog);
   progress$ = this.store.select(selectProgress);
-  scannedEntries$ = this.store.select(selectScannedEntries);
-  parsedEntries$ = this.store.select(selectParsedEntries);
 
-  constructor(private store: Store) {}
+  constructor(private store: Store, private storage: StorageService) {}
 
   abort() {
     this.store.dispatch(abortScan());
@@ -35,5 +31,44 @@ export class ScannerFacade {
 
   openDirectory() {
     this.store.dispatch(openDirectory());
+  }
+
+  saveSong(song: Song, pictures?: Picture[]): Observable<Song> {
+    return this.storage.open$(['pictures', 'songs'], 'readwrite').pipe(
+      concatMap((transaction) => {
+        const makeSong = (key?: IDBValidKey): Song => ({
+          ...song,
+          pictureKey: key,
+        });
+
+        const saveSong = (pictureKey?: IDBValidKey) => {
+          const song1 = makeSong(pictureKey);
+          return this.storage
+            .exec$(transaction.objectStore('songs').add(song1))
+            .pipe(mapTo(song1));
+        };
+
+        if (!pictures || pictures.length === 0) {
+          return saveSong();
+        }
+
+        return this.storage
+          .exec$<IDBValidKey | undefined>(
+            transaction
+              .objectStore('pictures')
+              .index('data')
+              .getKey(pictures[0].data)
+          )
+          .pipe(
+            concatMap((key) =>
+              key
+                ? saveSong(key)
+                : this.storage
+                    .exec$(transaction.objectStore('pictures').add(pictures[0]))
+                    .pipe(concatMap((pictKey) => saveSong(pictKey)))
+            )
+          );
+      })
+    );
   }
 }

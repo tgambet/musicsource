@@ -7,151 +7,76 @@ import {
   ofType,
   OnRunEffects,
 } from '@ngrx/effects';
-import { from, Observable, of, throwError } from 'rxjs';
+import { EMPTY, merge, Observable, of, throwError } from 'rxjs';
 import {
+  catchError,
   concatMap,
   concatMapTo,
+  filter,
   first,
   map,
   mapTo,
-  mergeMap,
+  publish,
   takeUntil,
   tap,
 } from 'rxjs/operators';
 import { FileService } from '@app/services/file.service';
-import { ExtractorService, Song } from '@app/services/extractor.service';
-import { ResizerService } from '@app/services/resizer.service';
+import { ExtractorService } from '@app/services/extractor.service';
 import { StorageService } from '@app/services/storage.service';
 import { Entry, isFile } from '@app/utils/entry.util';
 import {
   abortScan,
-  entrySaved,
+  buildAlbums,
+  buildAlbumsFailure,
+  buildAlbumsSuccess,
+  buildArtists,
+  buildArtistsFailure,
+  buildArtistsSuccess,
+  extractEntries,
+  extractEntriesFailure,
+  extractEntriesSuccess,
+  extractEntryFailure,
+  extractEntrySuccess,
   openDirectory,
   openDirectoryFailure,
-  parseEntriesFailed,
-  parseEntriesSucceeded,
-  parseEntryFailed,
-  parseEntrySucceeded,
-  savedSong,
-  saveParsedEntriesFailure,
-  saveParsedEntriesSuccess,
+  openDirectorySuccess,
   scanAborted,
-  scanDirectory,
-  scanFailed,
-  scannedEntry,
-  scanSucceeded,
+  scanEntries,
+  scanEntriesFailure,
+  scanEntriesSuccess,
+  scanEntryFailure,
+  scanEntrySuccess,
+  scanSuccess,
 } from '@app/store/scanner/scanner.actions';
 import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { LibraryFacade } from '@app/store/library/library.facade';
 import { ScannerFacade } from '@app/store/scanner/scanner.facade';
-import { Action } from '@ngrx/store';
+import { collectLeft, collectRight } from '@app/utils/either.util';
 
 @Injectable()
 export class ScannerEffects implements OnRunEffects {
-  openDirectory$ = createEffect(() =>
+  step1$ = createEffect(() =>
     this.actions$.pipe(
-      ofType(openDirectory),
-      act({
-        project: () =>
-          this.fileService
-            .open()
-            .pipe(
-              concatMap((directory) =>
-                this.library
-                  .getRootEntry(directory.path)
-                  .pipe(
-                    concatMap((same) =>
-                      same
-                        ? throwError(
-                            'A folder with that name already exists: ' +
-                              directory.name
-                          )
-                        : this.storageService
-                            .put$('entries_root', directory)
-                            .pipe(mapTo(scanDirectory({ directory })))
-                    )
-                  )
-              )
-            ),
-        error: (error) => openDirectoryFailure({ error }),
-      })
-    )
-  );
-
-  error$ = createEffect(
-    () =>
-      this.actions$.pipe(
-        ofType(openDirectoryFailure),
-        tap(async ({ error }) => {
-          if (error.code !== 20) {
-            await this.router.navigate([{ outlets: { dialog: ['scan'] } }], {
-              skipLocationChange: true,
-            });
-          }
-        })
-      ),
-    { dispatch: false }
-  );
-
-  scanDirectory$ = createEffect(() =>
-    this.actions$.pipe(
-      ofType(scanDirectory),
-      tap(() =>
-        this.router.navigate([{ outlets: { dialog: ['scan'] } }], {
+      ofType(openDirectorySuccess),
+      tap(async () => {
+        await this.router.navigate([{ outlets: { dialog: ['scan'] } }], {
           skipLocationChange: true,
-        })
-      ),
-      act({
-        project: ({ directory }) =>
-          this.fileService.walk(directory).pipe(
-            takeUntil(this.actions$.pipe(ofType(abortScan))),
-            map((entry: Entry) => scannedEntry({ entry }))
-          ),
-        error: (error) => scanFailed({ error }),
-        complete: (count, { directory }) => scanSucceeded({ count, directory }),
-        operator: (project) => mergeMap(project),
-      })
+        });
+      }),
+      map((dir) => scanEntries(dir))
     )
   );
-
-  saveEntries$ = createEffect(() =>
-    this.actions$.pipe(
-      ofType(scannedEntry),
-      concatMap(({ entry }) =>
-        this.storageService
-          .add$('entries', entry)
-          .pipe(mapTo(entrySaved({ entry })))
-      )
-    )
+  step2$ = createEffect(() =>
+    this.actions$.pipe(ofType(scanEntriesSuccess), mapTo(extractEntries()))
   );
-
-  parseEntries$ = createEffect(() =>
-    this.actions$.pipe(
-      ofType(scanSucceeded),
-      act({
-        project: () =>
-          this.scanner.scannedEntries$.pipe(
-            first(),
-            concatMap((entries) => of(...entries.filter(isFile))),
-            concatMap((entry) => this.extractorService.extract(entry)),
-            map((either) =>
-              either.tag === 'left'
-                ? parseEntryFailed(either.error)
-                : parseEntrySucceeded(either.result)
-            ),
-            takeUntil(
-              this.actions$.pipe(
-                ofType(abortScan),
-                concatMapTo(throwError('aborted'))
-              )
-            )
-          ),
-        complete: (count) => parseEntriesSucceeded({ count }),
-        error: (error) =>
-          error === 'aborted' ? scanAborted() : parseEntriesFailed({ error }),
-      })
-    )
+  step3$ = createEffect(() =>
+    this.actions$.pipe(ofType(extractEntriesSuccess), mapTo(buildAlbums()))
+  );
+  step4$ = createEffect(() =>
+    this.actions$.pipe(ofType(buildAlbumsSuccess), mapTo(buildArtists()))
+  );
+  step5$ = createEffect(() =>
+    this.actions$.pipe(ofType(buildArtistsSuccess), mapTo(scanSuccess()))
   );
 
   onAbort$ = createEffect(
@@ -164,69 +89,210 @@ export class ScannerEffects implements OnRunEffects {
     { dispatch: false }
   );
 
-  saveParsedEntries = createEffect(() =>
+  openDirectory$ = createEffect(() =>
     this.actions$.pipe(
-      ofType(parseEntriesSucceeded),
+      ofType(openDirectory),
       act({
         project: () =>
-          this.scanner.parsedEntries$.pipe(
-            first(),
-            concatMap((e) => from(e)),
-            concatMap(({ song, pictures }) =>
-              this.storageService
-                .open$(['pictures', 'songs'], 'readwrite')
-                .pipe(
-                  concatMap((transaction) => {
-                    const makeSong = (key?: IDBValidKey): Song => ({
-                      ...song,
-                      pictureKey: key,
-                    });
-
-                    const saveSongEvent = (key?: IDBValidKey): Action =>
-                      savedSong({ song: makeSong(key) });
-
-                    const saveSong = (pictureKey?: IDBValidKey) =>
-                      this.storageService
-                        .exec$(
-                          transaction
-                            .objectStore('songs')
-                            .put(makeSong(pictureKey))
-                        )
-                        .pipe(mapTo(saveSongEvent(pictureKey)));
-
-                    if (!pictures || pictures.length === 0) {
-                      return saveSong();
-                    }
-
-                    return this.storageService
-                      .exec$<IDBValidKey | undefined>(
-                        transaction
-                          .objectStore('pictures')
-                          .index('data')
-                          .getKey(pictures[0].data)
-                      )
-                      .pipe(
-                        concatMap((key) =>
-                          key
-                            ? saveSong(key)
-                            : this.storageService
-                                .exec$(
-                                  transaction
-                                    .objectStore('pictures')
-                                    .put(pictures[0])
-                                )
-                                .pipe(concatMap((pictKey) => saveSong(pictKey)))
-                        )
-                      );
-                  })
-                )
+          this.files.open().pipe(
+            concatMap((directory) =>
+              /*this.library
+                  .getRootEntry(directory.path)
+                  .pipe(
+                    concatMap((same) =>
+                      same
+                        ? throwError(
+                            'A folder with that name already exists: ' +
+                              directory.name
+                          )
+                        :*/
+              this.storage
+                .put$('entries_root', directory)
+                .pipe(mapTo(openDirectorySuccess({ directory })))
             )
           ),
-        complete: (count) => saveParsedEntriesSuccess({ count }),
-        error: (error) => saveParsedEntriesFailure({ error }),
+        error: (error) => openDirectoryFailure({ error }),
       })
     )
   );
+
+  // error$ = createEffect(
+  //   () =>
+  //     this.actions$.pipe(
+  //       ofType(openDirectoryFailure),
+  //       tap(async ({ error }) => {
+  //         if (error.code !== 20) {
+  //           await this.router.navigate([{ outlets: { dialog: ['scan'] } }], {
+  //             skipLocationChange: true,
+  //           });
+  //         }
+  //       })
+  //     ),
+  //   { dispatch: false }
+  // );
+
+  scanDirectory$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(scanEntries),
+      act({
+        project: ({ directory }) =>
+          this.files.walk(directory).pipe(
+            concatMap((entry: Entry) =>
+              this.storage.add$('entries', entry).pipe(
+                concatMap(() =>
+                  isFile(entry) ? of(scanEntrySuccess({ entry })) : EMPTY
+                ),
+                catchError((error) => of(scanEntryFailure()))
+              )
+            ),
+            takeUntil(this.actions$.pipe(ofType(abortScan)))
+          ),
+        error: (error) => scanEntriesFailure(),
+        complete: (count, { directory }) => scanEntriesSuccess(),
+      })
+    )
+  );
+
+  parseEntries$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(extractEntries),
+      act({
+        project: () =>
+          this.storage.open$(['entries']).pipe(
+            concatMap((transaction) =>
+              this.storage.walk$<Entry>(transaction, 'entries')
+            ),
+            map(({ value }) => value),
+            filter(isFile),
+            // TODO perf: check in db before extracting
+            concatMap((entry) => this.extractor.extract(entry)),
+            publish((m$) =>
+              merge(
+                m$.pipe(
+                  collectRight(),
+                  concatMap(({ song, pictures }) =>
+                    this.scanner.saveSong(song, pictures).pipe(
+                      mapTo(extractEntrySuccess({ song })),
+                      catchError((error) => of(extractEntryFailure({ error })))
+                    )
+                  )
+                ),
+                m$.pipe(
+                  collectLeft(),
+                  map((error) => extractEntryFailure({ error }))
+                )
+              )
+            ),
+            takeUntil(
+              this.actions$.pipe(
+                ofType(abortScan),
+                concatMapTo(throwError('aborted'))
+              )
+            )
+          ),
+        complete: (count) => extractEntriesSuccess({ count }),
+        error: (error) =>
+          error === 'aborted'
+            ? scanAborted()
+            : extractEntriesFailure({ error }),
+      })
+    )
+  );
+
+  buildAlbums$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(buildAlbums),
+      act({
+        project: (input) => of(buildAlbumsSuccess()),
+        error: (error) => buildAlbumsFailure(),
+      })
+    )
+  );
+
+  buildArtists$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(buildArtists),
+      act({
+        project: (input) => of(buildArtistsSuccess()),
+        error: (error) => buildArtistsFailure(),
+      })
+    )
+  );
+
+  // saveEntries$ = createEffect(() =>
+  //   this.actions$.pipe(
+  //     ofType(scannedEntry),
+  //     concatMap(({ entry }) =>
+  //       this.storageService
+  //         .add$('entries', entry)
+  //         .pipe(mapTo(savedEntry({ entry })))
+  //     )
+  //   )
+  // );
+
+  // saveParsedEntries = createEffect(() =>
+  //   this.actions$.pipe(
+  //     ofType(parseEntriesSucceeded),
+  //     act({
+  //       project: () =>
+  //         this.scanner.parsedEntries$.pipe(
+  //           first(),
+  //           concatMap((e) => from(e)),
+  //           concatMap(({ song, pictures }) =>
+  //             this.storageService
+  //               .open$(['pictures', 'songs'], 'readwrite')
+  //               .pipe(
+  //                 concatMap((transaction) => {
+  //                   const makeSong = (key?: IDBValidKey): Song => ({
+  //                     ...song,
+  //                     pictureKey: key,
+  //                   });
+  //
+  //                   const saveSongEvent = (key?: IDBValidKey): Action =>
+  //                     savedSong({ song: makeSong(key) });
+  //
+  //                   const saveSong = (pictureKey?: IDBValidKey) =>
+  //                     this.storageService
+  //                       .exec$(
+  //                         transaction
+  //                           .objectStore('songs')
+  //                           .put(makeSong(pictureKey))
+  //                       )
+  //                       .pipe(mapTo(saveSongEvent(pictureKey)));
+  //
+  //                   if (!pictures || pictures.length === 0) {
+  //                     return saveSong();
+  //                   }
+  //
+  //                   return this.storageService
+  //                     .exec$<IDBValidKey | undefined>(
+  //                       transaction
+  //                         .objectStore('pictures')
+  //                         .index('data')
+  //                         .getKey(pictures[0].data)
+  //                     )
+  //                     .pipe(
+  //                       concatMap((key) =>
+  //                         key
+  //                           ? saveSong(key)
+  //                           : this.storageService
+  //                               .exec$(
+  //                                 transaction
+  //                                   .objectStore('pictures')
+  //                                   .put(pictures[0])
+  //                               )
+  //                               .pipe(concatMap((pictKey) => saveSong(pictKey)))
+  //                       )
+  //                     );
+  //                 })
+  //               )
+  //           )
+  //         ),
+  //       complete: (count) => saveParsedEntriesSuccess({ count }),
+  //       error: (error) => saveParsedEntriesFailure({ error }),
+  //     })
+  //   )
+  // );
 
   // extractAlbums$ = createEffect(
   //   () =>
@@ -595,14 +661,12 @@ export class ScannerEffects implements OnRunEffects {
 
   constructor(
     private actions$: Actions,
-    private fileService: FileService,
-    private extractorService: ExtractorService,
-    private resizerService: ResizerService,
-    private storageService: StorageService,
+    private files: FileService,
+    private extractor: ExtractorService,
+    private storage: StorageService,
     private appRef: ApplicationRef,
     private router: Router,
     private snackBar: MatSnackBar,
-    private library: LibraryFacade,
     private scanner: ScannerFacade
   ) {}
 
