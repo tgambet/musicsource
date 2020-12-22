@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
 import {
-  selectScannedCount,
   selectError,
-  selectLog,
-  selectExtractedCount,
   selectProgress,
-  selectScannerState,
+  selectProgressDisplay,
+  selectProgressDisplaySub,
+  selectState,
+  selectStep,
+  selectStepSub,
 } from '@app/store/scanner/scanner.selectors';
 import { abortScan, openDirectory } from '@app/store/scanner/scanner.actions';
 import { concatMap, mapTo } from 'rxjs/operators';
@@ -18,11 +19,12 @@ import { Picture } from '@app/models/picture.model';
 @Injectable()
 export class ScannerFacade {
   error$ = this.store.select(selectError);
-  state$ = this.store.select(selectScannerState);
-  scannedCount$ = this.store.select(selectScannedCount);
-  extractedCount$ = this.store.select(selectExtractedCount);
-  log$ = this.store.select(selectLog);
+  state$ = this.store.select(selectState);
+  step$ = this.store.select(selectStep);
+  stepSub$ = this.store.select(selectStepSub);
   progress$ = this.store.select(selectProgress);
+  progressDisplay$ = this.store.select(selectProgressDisplay);
+  progressDisplaySub$ = this.store.select(selectProgressDisplaySub);
 
   constructor(private store: Store, private storage: StorageService) {}
 

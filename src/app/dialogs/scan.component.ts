@@ -1,9 +1,8 @@
 import { ChangeDetectionStrategy, Component, ViewChild } from '@angular/core';
 import { MatDialogConfig } from '@angular/material/dialog';
 import { NoopScrollStrategy } from '@angular/cdk/overlay';
-import { asapScheduler, Observable } from 'rxjs';
-import { ScannerStateEnum } from '@app/store/scanner';
-import { throttleTime } from 'rxjs/operators';
+import { asapScheduler, combineLatest, Observable } from 'rxjs';
+import { map, throttleTime } from 'rxjs/operators';
 import { RoutedDialogDirective } from '@app/directives/routed-dialog.directive';
 import { Icons } from '@app/utils/icons.util';
 import { ScannerFacade } from '@app/store/scanner/scanner.facade';
@@ -17,100 +16,43 @@ import { ScannerFacade } from '@app/store/scanner/scanner.facade';
       [config]="config"
       #dialog="appRoutedDialog"
     >
-      <div class="container">
-        <ng-container *ngIf="(scannerState$ | async) === scanning">
-          <span class="step">1/3</span>
-          <div class="progress">
-            <mat-spinner [diameter]="90"></mat-spinner>
-            <div class="label">
-              <span>{{ scanned$ | async | number: '1.0-0' }}</span>
-              <span class="sub">files</span>
-            </div>
+      <div class="container" *ngIf="scanner$ | async as scanner">
+        <div class="progress">
+          <mat-spinner
+            [diameter]="95"
+            [strokeWidth]="8"
+            [value]="scanner.progress"
+            [mode]="scanner.progress === 0 ? 'indeterminate' : 'determinate'"
+          ></mat-spinner>
+          <div class="label" *ngIf="scanner.progressDisplay; else temp">
+            <span class="progress-display">
+              {{ scanner.progressDisplay }}
+            </span>
+            <span class="progress-display-sub">
+              {{ scanner.progressDisplaySub }}
+            </span>
           </div>
-          <p>Scanning...</p>
-          <p class="log">{{ log$ | async }}</p>
-        </ng-container>
-
-        <ng-container *ngIf="(scannerState$ | async) === parsing">
-          <span class="step">2/3</span>
-          <div class="progress">
-            <mat-progress-spinner
-              [diameter]="90"
-              mode="determinate"
-              [value]="progress$ | async"
-            ></mat-progress-spinner>
-            <div class="label">
-              <span>{{ progress$ | async | number: '1.0-0' }}%</span>
-              <span class="sub small">
-                {{ parsed$ | async | number: '1.0-0' }}/{{
-                  scanned$ | async | number: '1.0-0'
-                }}
-              </span>
-            </div>
-          </div>
-          <p>Building library...</p>
-          <p class="log">{{ log$ | async }}</p>
-        </ng-container>
-
-        <ng-container *ngIf="(scannerState$ | async) === building">
-          <span class="step">3/3</span>
-          <div class="progress">
-            <mat-progress-spinner
-              [diameter]="90"
-              mode="indeterminate"
-            ></mat-progress-spinner>
-            <div class="label">
+          <ng-template #temp>
+            <div class="label" *ngIf="scanner.state === 'success'">
               <app-icon [path]="icons.check" [size]="40"></app-icon>
             </div>
-          </div>
-          <p>Saving to database...</p>
-          <p class="log"></p>
-        </ng-container>
-
-        <ng-container *ngIf="(scannerState$ | async) === success">
-          <div class="progress">
-            <mat-progress-spinner
-              [diameter]="90"
-              mode="determinate"
-              [value]="100"
-            ></mat-progress-spinner>
-            <div class="label">
-              <app-icon [path]="icons.check" [size]="40"></app-icon>
-            </div>
-          </div>
-          <p>Library built</p>
-          <p class="log">You can close this dialog</p>
-        </ng-container>
-
-        <ng-container *ngIf="(scannerState$ | async) === error">
-          <div class="progress">
-            <mat-progress-spinner
-              [diameter]="90"
-              mode="determinate"
-              [value]="100"
-              color="warn"
-            ></mat-progress-spinner>
-            <div class="label">
+            <div class="label" *ngIf="scanner.state === 'error'">
               <app-icon [path]="icons.close" [size]="40"></app-icon>
             </div>
-          </div>
-          <p>An error occurred</p>
-          <p class="log" *ngIf="error$ | async as error">{{ error }}</p>
-        </ng-container>
+          </ng-template>
+        </div>
+        <p class="step">{{ scanner.step }}</p>
+        <p class="step-sub">{{ scanner.stepSub }}</p>
 
-        <ng-container *ngIf="scannerState$ | async; let status">
-          <div class="actions">
-            <button
-              mat-stroked-button
-              [color]="status === success ? 'primary' : 'warn'"
-              (click)="
-                status === success || status === error ? close() : abort()
-              "
-            >
-              {{ status === success || status === error ? 'Close' : 'Abort' }}
-            </button>
-          </div>
-        </ng-container>
+        <div class="actions">
+          <button
+            mat-stroked-button
+            [color]="scanner.state === 'success' ? 'primary' : 'warn'"
+            (click)="scanner.state === 'scanning' ? abort() : close()"
+          >
+            {{ scanner.state === 'scanning' ? 'Abort' : 'Close' }}
+          </button>
+        </div>
       </div>
     </ng-template>
   `,
@@ -121,29 +63,21 @@ import { ScannerFacade } from '@app/store/scanner/scanner.facade';
         flex-direction: column;
         align-items: center;
         padding: 32px 24px 24px;
-        position: relative;
-      }
-      .step {
-        position: absolute;
-        top: 16px;
-        left: 16px;
-        font-size: 14px;
-        opacity: 0.5;
       }
       .actions {
         align-self: flex-end;
         margin-top: 24px;
       }
-      p {
+      .step {
         margin: 24px 0 0 0;
       }
-      .log,
-      .sub {
+      .step-sub,
+      .progress-display-sub {
         font-size: 12px;
         line-height: 16px;
         height: 16px;
         opacity: 0.5;
-        margin-top: 4px;
+        margin-top: 2px;
         font-weight: 300;
         white-space: nowrap;
         overflow: hidden;
@@ -151,11 +85,8 @@ import { ScannerFacade } from '@app/store/scanner/scanner.facade';
         max-width: 100%;
         box-sizing: border-box;
       }
-      .small {
-        font-size: 10px;
-      }
-      .log {
-        margin-top: 8px;
+      .step-sub {
+        margin-top: 12px;
       }
       .progress {
         position: relative;
@@ -179,41 +110,54 @@ export class ScanComponent {
 
   icons = Icons;
 
-  error = ScannerStateEnum.error;
-  scanning = ScannerStateEnum.scanning;
-  parsing = ScannerStateEnum.extracting;
-  building = ScannerStateEnum.building;
-  success = ScannerStateEnum.initial;
-
   config: MatDialogConfig = {
     width: '90%',
-    maxWidth: '300px',
+    maxWidth: '325px',
     hasBackdrop: true,
     disableClose: true,
     scrollStrategy: new NoopScrollStrategy(),
     closeOnNavigation: false,
   };
 
-  scannerState$: Observable<ScannerStateEnum>;
-  scanned$: Observable<number>;
-  parsed$: Observable<number>;
-  progress$: Observable<number>;
-  log$: Observable<string | null>;
-  error$: Observable<any | null>;
+  scanner$: Observable<any>;
 
   constructor(private scanner: ScannerFacade) {
     const throttle = <T>() =>
-      throttleTime<T>(32, asapScheduler, {
+      throttleTime<T>(25, asapScheduler, {
         leading: true,
         trailing: true,
       });
 
-    this.scannerState$ = scanner.state$;
-    this.scanned$ = scanner.scannedCount$.pipe(throttle());
-    this.parsed$ = scanner.extractedCount$.pipe(throttle());
-    this.progress$ = scanner.progress$.pipe(throttle());
-    this.log$ = scanner.log$.pipe(throttle());
-    this.error$ = scanner.error$;
+    this.scanner$ = combineLatest([
+      scanner.state$,
+      scanner.error$,
+      scanner.step$,
+      scanner.stepSub$,
+      scanner.progress$,
+      scanner.progressDisplay$,
+      scanner.progressDisplaySub$,
+    ]).pipe(
+      throttle(),
+      map(
+        ([
+          state,
+          error,
+          step,
+          stepSub,
+          progress,
+          progressDisplay,
+          progressDisplaySub,
+        ]) => ({
+          state,
+          error,
+          step,
+          stepSub,
+          progress,
+          progressDisplay,
+          progressDisplaySub,
+        })
+      )
+    );
   }
 
   async close() {

@@ -1,24 +1,23 @@
-// eslint-disable-next-line no-shadow
-export enum ScannerStateEnum {
-  initial = 'initial',
-  scanning = 'scanning',
-  extracting = 'extracting',
-  building = 'building',
-  error = 'error',
-}
-
 export interface ScannerState {
-  state: ScannerStateEnum;
-  error: any;
-  log: string | null;
+  state?: 'scanning' | 'success' | 'error';
+  error?: any;
+  step?: string;
+  stepSub?: string;
+  progress: number;
+  progressDisplay?: string;
+  progressDisplaySub?: string;
   scannedCount: number;
   extractedCount: number;
+  songsCount: number;
+  albumsCount: number;
+  artistsCount: number;
 }
 
 export const initialState: ScannerState = {
-  state: ScannerStateEnum.initial,
-  error: null,
-  log: null,
+  progress: 0,
   scannedCount: 0,
   extractedCount: 0,
+  songsCount: 0,
+  albumsCount: 0,
+  artistsCount: 0,
 };

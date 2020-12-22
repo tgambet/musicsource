@@ -3,7 +3,12 @@ import { ScannerState } from './scanner.state';
 
 export const selectCoreState = createFeatureSelector<ScannerState>('scanner');
 
-export const selectScannerState = createSelector(
+// export const selectScannerState = createSelector(
+//   selectCoreState,
+//   (state) => state.state
+// );
+
+export const selectState = createSelector(
   selectCoreState,
   (state) => state.state
 );
@@ -13,25 +18,48 @@ export const selectError = createSelector(
   (state) => state.error
 );
 
-export const selectLog = createSelector(selectCoreState, (state) => state.log);
-
-export const selectScannedCount = createSelector(
+export const selectStep = createSelector(
   selectCoreState,
-  (state) => state.scannedCount
+  (state) => state.step
 );
 
-export const selectExtractedCount = createSelector(
+export const selectStepSub = createSelector(
   selectCoreState,
-  (state) => state.extractedCount
+  (state) => state.stepSub
 );
 
-export const selectProgressRatio = createSelector(
-  selectScannedCount,
-  selectExtractedCount,
-  (scannedCount, extractedCount) =>
-    scannedCount === 0 ? 0 : extractedCount / scannedCount
+export const selectProgress = createSelector(
+  selectCoreState,
+  (state) => state.progress
 );
 
-export const selectProgress = createSelector(selectProgressRatio, (ratio) =>
-  Math.ceil(ratio * 100)
+export const selectProgressDisplay = createSelector(
+  selectCoreState,
+  (state) => state.progressDisplay
 );
+
+export const selectProgressDisplaySub = createSelector(
+  selectCoreState,
+  (state) => state.progressDisplaySub
+);
+
+// export const selectScannedCount = createSelector(
+//   selectCoreState,
+//   (state) => state.scannedCount
+// );
+//
+// export const selectExtractedCount = createSelector(
+//   selectCoreState,
+//   (state) => state.extractedCount
+// );
+
+// export const selectProgressRatio = createSelector(
+//   selectScannedCount,
+//   selectExtractedCount,
+//   (scannedCount, extractedCount) =>
+//     scannedCount === 0 ? 0 : extractedCount / scannedCount
+// );
+//
+// export const selectProgress = createSelector(selectProgressRatio, (ratio) =>
+//   Math.ceil(ratio * 100)
+// );

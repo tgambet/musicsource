@@ -99,7 +99,6 @@ export const buildArtistsFailure = createAction(
 
 // Final
 export const scanSuccess = createAction('scanner/success');
-export const scanFailure = createAction('scanner/failure');
 
 // export const scanSucceeded = createAction(
 //   '[Scan] Scan Succeeded',
