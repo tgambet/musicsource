@@ -19,7 +19,7 @@ import { ScannerFacade } from '@app/store/scanner/scanner.facade';
       <div class="container" *ngIf="scanner$ | async as scanner">
         <div class="progress">
           <mat-spinner
-            [diameter]="95"
+            [diameter]="100"
             [strokeWidth]="8"
             [value]="scanner.progress"
             [mode]="scanner.progress === 0 ? 'indeterminate' : 'determinate'"
@@ -86,7 +86,7 @@ import { ScannerFacade } from '@app/store/scanner/scanner.facade';
         box-sizing: border-box;
       }
       .step-sub {
-        margin-top: 12px;
+        margin-top: 6px;
       }
       .progress {
         position: relative;

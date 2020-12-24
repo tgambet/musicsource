@@ -4,7 +4,12 @@ import { Icons } from '../utils/icons.util';
 @Component({
   selector: 'app-menu',
   template: `
-    <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="menu">
+    <button
+      mat-icon-button
+      [matMenuTriggerFor]="menu"
+      aria-label="menu"
+      [disableRipple]="disableRipple"
+    >
       <app-icon [path]="triggerIcon"></app-icon>
     </button>
     <mat-menu #menu="matMenu">
@@ -25,7 +30,7 @@ import { Icons } from '../utils/icons.util';
   styles: [
     `
       :host {
-        display: block;
+        display: inline-block;
       }
       .mat-menu-item app-icon {
         margin-right: 16px;
@@ -37,6 +42,7 @@ import { Icons } from '../utils/icons.util';
 export class MenuComponent {
   @Input() triggerIcon = Icons.dotsVertical;
   @Input() menuItems!: MenuItem[];
+  @Input() disableRipple = false;
   icons = Icons;
 }
 

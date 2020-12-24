@@ -51,6 +51,13 @@ import { ExtractorService } from '@app/services/extractor.service';
 import { ResizerService } from '@app/services/resizer.service';
 import { LibraryFacade } from '@app/store/library/library.facade';
 import { ScannerFacade } from '@app/store/scanner/scanner.facade';
+import { AlbumPageComponent } from './pages/album-page.component';
+import { ArtistPageComponent } from './pages/artist-page.component';
+import { ContainerComponent } from './components/container.component';
+import { ContainerHomeComponent } from './components/container-home.component';
+import { ContainerPageComponent } from './components/container-page.component';
+import { SongListComponent } from './components/song-list.component';
+import { DurationPipe } from '@app/pipes/duration.pipe';
 
 @NgModule({
   declarations: [
@@ -79,6 +86,13 @@ import { ScannerFacade } from '@app/store/scanner/scanner.facade';
     LibrarySettingsComponent,
     SettingsComponent,
     ScanComponent,
+    AlbumPageComponent,
+    ArtistPageComponent,
+    ContainerComponent,
+    ContainerHomeComponent,
+    ContainerPageComponent,
+    SongListComponent,
+    DurationPipe,
   ],
   imports: [
     BrowserModule,

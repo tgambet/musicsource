@@ -1,0 +1,18 @@
+$base-item-width: 246px;
+$container-margin: 24px;
+
+:host {
+  display: block;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+@for $n from 3 through 6 {
+  $width: $n * $base-item-width;
+  @media (min-width: $width + 2 * $container-margin) {
+    :host {
+      width: $width;
+    }
+  }
+}

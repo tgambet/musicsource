@@ -8,17 +8,27 @@ import { ExplorerComponent } from '@app/pages/explorer.component';
 import { LibrarySettingsComponent } from '@app/dialogs/library-settings.component';
 import { SettingsComponent } from '@app/dialogs/settings.component';
 import { ScanComponent } from '@app/dialogs/scan.component';
+import { AlbumPageComponent } from '@app/pages/album-page.component';
+import { AlbumPageResolverService } from '@app/pages/album-page-resolver.service';
 
 const routes: Routes = [
   { path: '', component: HomeComponent },
-  { path: 'home', component: HomeComponent },
-  { path: 'library', component: LibraryComponent },
-  { path: 'search', component: SearchComponent },
-  { path: 'history', component: HistoryComponent },
   { path: 'explorer', component: ExplorerComponent },
+  { path: 'history', component: HistoryComponent },
+  { path: 'home', component: HomeComponent },
+  { path: 'library', component: LibraryComponent }, // TODO children
+  { path: 'search', component: SearchComponent },
   {
-    path: 'settings',
+    path: 'album/:id',
+    component: AlbumPageComponent,
+    resolve: { info: AlbumPageResolverService },
+  },
+  { path: 'artist/:id', component: HistoryComponent },
+  { path: 'playlist/:id', component: HistoryComponent },
+  { path: 'listen', component: HistoryComponent },
+  {
     outlet: 'dialog',
+    path: 'settings',
     component: SettingsComponent,
     children: [
       { path: '', redirectTo: 'library', pathMatch: 'full' },
@@ -26,8 +36,8 @@ const routes: Routes = [
     ],
   },
   {
-    path: 'scan',
     outlet: 'dialog',
+    path: 'scan',
     component: ScanComponent,
   },
 ];

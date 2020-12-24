@@ -37,13 +37,14 @@ export class ExtractorService {
           musicMetadata.parseBlob(file /*{duration: true}*/)
         )
       ),
-      map(({ common }) => {
+      map(({ common, format }) => {
         const pictures = this.toPicture(common.picture);
         delete common.picture;
         return right({
           song: {
             ...common,
             entryPath: entry.path,
+            duration: format.duration,
           },
           pictures,
         });
