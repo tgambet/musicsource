@@ -5,13 +5,13 @@ import { Artist } from '@app/models/artist.model';
 import { ActivatedRoute } from '@angular/router';
 import { map } from 'rxjs/operators';
 import { AlbumWithCover } from '@app/models/album.model';
-import { Song } from '@app/models/song.model';
+import { SongWithCover } from '@app/models/song.model';
 
 export type ArtistPageInfo = {
   artist: Artist;
   cover: string | undefined;
   albums$: Observable<AlbumWithCover[]>;
-  songs$: Observable<Song[]>;
+  songs$: Observable<SongWithCover[]>;
 };
 
 @Component({
@@ -42,7 +42,7 @@ export type ArtistPageInfo = {
           </div>
         </app-container-page>
       </header>
-      <app-container-page>
+      <app-container-page class="content">
         <app-title [title]="'Songs'" size="small"></app-title>
         <ng-container *ngIf="info.songs$ | async as songs">
           <app-song-list [songs]="songs"></app-song-list>
@@ -75,13 +75,12 @@ export type ArtistPageInfo = {
         margin-bottom: 64px;
         padding-top: 64px;
         background-color: #1d1d1d;
-        height: 668px;
         box-sizing: border-box;
         position: relative;
         overflow: hidden;
       }
       .header-container {
-        margin-top: 64px;
+        padding-top: 332px;
         margin-bottom: 8px;
         display: flex;
         flex-direction: column;
@@ -115,6 +114,7 @@ export type ArtistPageInfo = {
         width: 100%;
       }
       app-title {
+        margin-top: 64px;
         margin-bottom: 16px;
       }
       button {
@@ -137,6 +137,9 @@ export type ArtistPageInfo = {
       }
       .album:last-of-type {
         margin-right: 0;
+      }
+      .content {
+        padding-bottom: 128px;
       }
     `,
   ],

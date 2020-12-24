@@ -62,13 +62,11 @@ import { DOCUMENT } from '@angular/common';
         display: block;
         position: relative;
       }
-
       .container {
         display: flex;
         overflow-x: hidden;
         height: 100%;
       }
-
       .content {
         display: flex;
         transition: transform ease 0.6s;
@@ -76,33 +74,28 @@ import { DOCUMENT } from '@angular/common';
         padding: 0;
         margin: 0;
       }
-
       .button {
         position: absolute;
         z-index: 1;
         opacity: 1;
         transition: opacity 300ms ease;
         transform: translateY(-50%);
+        background-color: #eee;
       }
-
       :host:hover .button,
       .button:hover,
       .button:focus {
         opacity: 1;
       }
-
       .button:focus {
         /*outline: 1px solid red;*/
       }
-
       button[disabled] {
         opacity: 0 !important;
       }
-
       .prev {
         left: -20px;
       }
-
       .next {
         right: -20px;
       }

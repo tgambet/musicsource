@@ -71,6 +71,7 @@ import { MenuItem } from './menu.component';
         transform: scale(0.833);
         transition: transform 0.2s ease, opacity 0.2s ease;
         border: 4px solid rgba(0, 0, 0, 0.25);
+        border-radius: 50%;
       }
       app-player-button:hover,
       app-player-button.cdk-focused {

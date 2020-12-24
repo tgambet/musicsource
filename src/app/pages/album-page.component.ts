@@ -51,7 +51,7 @@ export type AlbumPageInfo = {
         </app-container-page>
       </header>
       <app-container-page>
-        <app-song-list [songs]="info.songs"></app-song-list>
+        <app-track-list [songs]="info.songs"></app-track-list>
       </app-container-page>
     </ng-container>
   `,
@@ -90,6 +90,12 @@ export type AlbumPageInfo = {
       }
       .metadata p {
         color: #aaa;
+      }
+      .metadata p a {
+        text-decoration: none;
+      }
+      .metadata p a:hover {
+        text-decoration: underline;
       }
       .stats {
         margin-top: 4px;

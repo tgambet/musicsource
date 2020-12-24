@@ -8,7 +8,14 @@ import {
 import { ArtistPageInfo } from '@app/pages/artist-page.component';
 import { EMPTY, Observable, of, throwError } from 'rxjs';
 import { LibraryFacade } from '@app/store/library/library.facade';
-import { catchError, concatMap, map, reduce, take } from 'rxjs/operators';
+import {
+  catchError,
+  concatMap,
+  map,
+  mergeMap,
+  reduce,
+  take,
+} from 'rxjs/operators';
 import { getCover } from '@app/models/picture.model';
 import { AlbumWithCover } from '@app/models/album.model';
 import { Song } from '@app/models/song.model';
@@ -52,6 +59,14 @@ export class ArtistPageResolverService implements Resolve<ArtistPageInfo> {
             ),
             songs$: this.library.getArtistTitles(artist).pipe(
               take(5),
+              mergeMap((song) =>
+                this.library.getPicture(song.pictureKey).pipe(
+                  map((picture) => ({
+                    ...song,
+                    cover: picture ? getCover(picture) : undefined,
+                  }))
+                )
+              ),
               reduce((acc, cur) => [...acc, cur], [] as Song[])
             ),
           }))

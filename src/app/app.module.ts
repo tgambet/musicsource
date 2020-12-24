@@ -58,6 +58,7 @@ import { ContainerHomeComponent } from './components/container-home.component';
 import { ContainerPageComponent } from './components/container-page.component';
 import { SongListComponent } from './components/song-list.component';
 import { DurationPipe } from '@app/pipes/duration.pipe';
+import { TrackListComponent } from '@app/components/track-list.component';
 
 @NgModule({
   declarations: [
@@ -92,6 +93,7 @@ import { DurationPipe } from '@app/pipes/duration.pipe';
     ContainerHomeComponent,
     ContainerPageComponent,
     SongListComponent,
+    TrackListComponent,
     DurationPipe,
   ],
   imports: [

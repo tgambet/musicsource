@@ -13,7 +13,7 @@ export type PlayerState = 'playing' | 'loading' | 'stopped';
 @Component({
   selector: 'app-player-button',
   template: `
-    <button mat-icon-button [ngClass]="[size, state]" (click)="toggle()">
+    <button mat-icon-button [ngClass]="[size, state, shape]" (click)="toggle()">
       <app-icon
         class="play-pause"
         [path]="
@@ -39,7 +39,6 @@ export type PlayerState = 'playing' | 'loading' | 'stopped';
       :host {
         display: block;
         position: relative;
-        border-radius: 50%;
         background-color: rgba(0, 0, 0, 0.5);
       }
       .large {
@@ -49,6 +48,12 @@ export type PlayerState = 'playing' | 'loading' | 'stopped';
       .small {
         width: 40px;
         height: 40px;
+      }
+      .square {
+        border-radius: 0;
+      }
+      .round {
+        border-radius: 50%;
       }
       button:not(.disabled):hover {
         background-color: rgba(0, 0, 0, 0.33);
@@ -77,6 +82,8 @@ export type PlayerState = 'playing' | 'loading' | 'stopped';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PlayerButtonComponent {
+  @Input()
+  shape: 'round' | 'square' = 'round';
   @Input()
   size: 'small' | 'large' = 'small';
   @Input()
