@@ -30,7 +30,7 @@ import { MenuItem } from './menu.component';
       matRipple
       class="link"
       [title]="title"
-      [routerLink]="routerLink"
+      [routerLink]="coverRouterLink"
       tabindex="-1"
     >
       <div class="shadow"></div>
@@ -118,7 +118,7 @@ import { MenuItem } from './menu.component';
 export class CoverComponent {
   @Input() title!: string;
   @Input() playerState!: PlayerState;
-  @Input() routerLink!: any[] | string;
+  @Input() coverRouterLink!: any[] | string;
   @Input() menuItems!: MenuItem[];
   @Input() menuTriggerIcon = Icons.dotsVertical;
   @Output() playClicked = new EventEmitter<void>();

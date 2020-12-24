@@ -16,7 +16,8 @@ import { ArtistWithCover } from '@app/models/artist.model';
             [name]="album.name"
             [artist]="album.artist"
             [cover]="album.cover"
-            [routerLink]="['/', 'album', album.id]"
+            [albumRouterLink]="['/', 'album', album.id]"
+            [artistRouterLink]="['/', 'artist', album.artistId]"
           ></app-album>
         </div>
       </app-h-list>
@@ -27,7 +28,11 @@ import { ArtistWithCover } from '@app/models/artist.model';
           appHListItem
           *ngFor="let artist of artists$ | async"
         >
-          <app-artist [name]="artist.name" [cover]="artist.cover"></app-artist>
+          <app-artist
+            [name]="artist.name"
+            [cover]="artist.cover"
+            [artistRouterLink]="['/', 'artist', artist.id]"
+          ></app-artist>
         </div>
       </app-h-list>
     </app-container-home>

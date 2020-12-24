@@ -33,7 +33,7 @@ describe('ArtistComponent', () => {
 
   it('should display the artist name', () => {
     component.name = 'Artist';
-    component.routerLink = './';
+    component.artistRouterLink = './';
     fixture.detectChanges();
     expect(elem.querySelector('app-label').textContent).toContain('Artist');
   });
@@ -46,7 +46,7 @@ describe('ArtistComponent', () => {
 
   it('should contain two links', () => {
     component.name = 'Artist';
-    component.routerLink = 'link';
+    component.artistRouterLink = 'link';
     fixture.detectChanges();
     expect(elem.querySelectorAll('a')).toHaveSize(2);
     elem

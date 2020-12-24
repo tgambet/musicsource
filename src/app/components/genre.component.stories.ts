@@ -35,5 +35,5 @@ export const Simple = Template.bind({});
 Simple.args = {
   name: 'Rock & Metal',
   color: 'green',
-  routerLink: '/',
+  genreRouterLink: '/',
 };

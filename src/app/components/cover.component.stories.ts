@@ -19,7 +19,7 @@ import { Component, Input } from '@angular/core';
     <app-cover
       [title]="title"
       [menuItems]="menuItems"
-      [routerLink]="routerLink"
+      [coverRouterLink]="link"
       [playerState]="playerState"
       (playClicked)="noOp()"
       (pauseClicked)="noOp()"
@@ -48,7 +48,7 @@ import { Component, Input } from '@angular/core';
 class CoverTestComponent {
   @Input() title!: string;
   @Input() playerState!: PlayerState;
-  @Input() routerLink!: any[] | string;
+  @Input() link!: any[] | string;
   @Input() menuItems!: MenuItem[];
   noOp(): void {}
 }
@@ -87,7 +87,7 @@ const Template: Story<CoverTestComponent> = (args: CoverTestComponent) => ({
 export const Simple = Template.bind({});
 Simple.args = {
   title: 'Title',
-  routerLink: './',
+  link: './',
   menuItems: [
     { text: 'Menu Item 1' },
     { text: 'Menu Item 2' },

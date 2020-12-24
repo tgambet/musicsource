@@ -72,7 +72,7 @@ import { ScannerFacade } from '@app/store/scanner/scanner.facade';
       a {
         text-decoration: none;
         padding: 8px;
-        margin: 0 8px;
+        margin: 0 16px;
         display: flex;
         align-items: center;
         color: rgba(255, 255, 255, 0.5);

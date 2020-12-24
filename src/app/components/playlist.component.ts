@@ -14,7 +14,7 @@ import { PlayerState } from './player-button.component';
     <app-cover
       [title]="name"
       [menuItems]="menuItems"
-      [routerLink]="routerLink"
+      [coverRouterLink]="playlistRouterLink"
       [playerState]="state"
       (playClicked)="play()"
       (pauseClicked)="pause()"
@@ -23,7 +23,7 @@ import { PlayerState } from './player-button.component';
       <img [src]="cover" height="226" width="226" alt="cover" />
     </app-cover>
     <app-label
-      [topLabel]="{ text: name, routerLink: routerLink }"
+      [topLabel]="{ text: name, routerLink: playlistRouterLink }"
       [bottomLabel]="label"
     ></app-label>
   `,
@@ -66,7 +66,7 @@ export class PlaylistComponent {
   @Input() cover!: string;
   @Input() name!: string;
   @Input() label!: string;
-  @Input() routerLink!: any[] | string;
+  @Input() playlistRouterLink!: any[] | string;
   @Input() artistRouterLink!: any[] | string;
   icons = Icons;
   menuItems = [

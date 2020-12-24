@@ -5,7 +5,7 @@ import { Icons } from '@app/utils/icons.util';
   selector: 'app-artist',
   template: `
     <div class="image">
-      <a [routerLink]="routerLink" matRipple [title]="name">
+      <a [routerLink]="artistRouterLink" matRipple [title]="name">
         <img
           *ngIf="cover"
           [src]="cover"
@@ -18,7 +18,7 @@ import { Icons } from '@app/utils/icons.util';
     </div>
     <app-label
       align="center"
-      [topLabel]="{ text: name, routerLink: routerLink }"
+      [topLabel]="{ text: name, routerLink: artistRouterLink }"
       [bottomLabel]="legend"
     ></app-label>
   `,
@@ -55,7 +55,7 @@ export class ArtistComponent {
   @Input() name!: string;
   @Input() legend!: string;
   @Input() cover?: string;
-  @Input() routerLink!: any[] | string;
+  @Input() artistRouterLink!: any[] | string;
 
   icons = Icons;
 }

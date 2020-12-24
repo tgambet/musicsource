@@ -10,19 +10,12 @@ import { LibraryFacade } from '@app/store/library/library.facade';
 import { catchError, concatMap, map, reduce } from 'rxjs/operators';
 import { Song } from '@app/models/song.model';
 import { getCover } from '@app/models/picture.model';
-import { Album } from '@app/models/album.model';
 import { AlbumPageInfo } from '@app/pages/album-page.component';
 
 @Injectable({
   providedIn: 'root',
 })
-export class AlbumPageResolverService
-  implements
-    Resolve<{
-      album: Album;
-      songs: Song[];
-      cover: string | undefined;
-    }> {
+export class AlbumPageResolverService implements Resolve<AlbumPageInfo> {
   constructor(private library: LibraryFacade, private router: Router) {}
 
   resolve(

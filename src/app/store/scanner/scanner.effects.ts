@@ -239,6 +239,10 @@ export class ScannerEffects implements OnRunEffects {
                     ),
                     name: song.album,
                     artist: song.albumartist || song.artist,
+                    artistId:
+                      song.albumartist || song.artist
+                        ? hash((song.albumartist || song.artist) as string)
+                        : undefined,
                     year: song.year,
                     pictureKey: song.pictureKey,
                   }))

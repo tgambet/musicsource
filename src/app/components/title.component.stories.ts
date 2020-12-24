@@ -33,7 +33,7 @@ Simple.args = {
 export const WithLink = Template.bind({});
 WithLink.args = {
   title: 'New releases',
-  routerLink: '/',
+  titleRouterLink: '/',
   extraLinkLabel: 'See all',
 };
 
@@ -49,5 +49,5 @@ WithAvatar.args = {
   title: 'Keny Arkana',
   avatarSrc: '/keny_arkana_small.jpg',
   avatarStyle: 'round',
-  routerLink: '/',
+  titleRouterLink: '/',
 };

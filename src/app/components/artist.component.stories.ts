@@ -32,6 +32,6 @@ export const Simple = Template.bind({});
 Simple.args = {
   name: 'Muse',
   legend: '130 songs',
-  routerLink: './',
+  artistRouterLink: './',
   cover: '/muse.jpg',
 };

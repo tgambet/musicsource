@@ -10,6 +10,8 @@ import { SettingsComponent } from '@app/dialogs/settings.component';
 import { ScanComponent } from '@app/dialogs/scan.component';
 import { AlbumPageComponent } from '@app/pages/album-page.component';
 import { AlbumPageResolverService } from '@app/pages/album-page-resolver.service';
+import { ArtistPageComponent } from '@app/pages/artist-page.component';
+import { ArtistPageResolverService } from '@app/pages/artist-page-resolver.service';
 
 const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -23,7 +25,11 @@ const routes: Routes = [
     component: AlbumPageComponent,
     resolve: { info: AlbumPageResolverService },
   },
-  { path: 'artist/:id', component: HistoryComponent },
+  {
+    path: 'artist/:id',
+    component: ArtistPageComponent,
+    resolve: { info: ArtistPageResolverService },
+  },
   { path: 'playlist/:id', component: HistoryComponent },
   { path: 'listen', component: HistoryComponent },
   {
@@ -43,7 +49,12 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes)],
+  imports: [
+    RouterModule.forRoot(routes, {
+      relativeLinkResolution: 'corrected',
+      scrollPositionRestoration: 'enabled',
+    }),
+  ],
   exports: [RouterModule],
 })
 export class AppRoutingModule {}

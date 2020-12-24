@@ -17,14 +17,20 @@ export type AlbumPageInfo = {
   template: `
     <ng-container *ngIf="info$ | async as info">
       <header>
-        <app-container-page class="header">
+        <app-container-page class="header-container">
           <div class="info">
             <div class="cover" style="--aspect-ratio:1">
               <img [src]="info.cover" alt="cover" />
             </div>
             <div class="metadata">
               <app-title [title]="info.album.name"></app-title>
-              <p>Album • {{ info.album.artist }} • {{ info.album.year }}</p>
+              <p>
+                Album •
+                <a [routerLink]="['/', 'artist', info.album.artistId]">{{
+                  info.album.artist
+                }}</a>
+                • {{ info.album.year }}
+              </p>
               <p class="stats">
                 {{ info.songs.length }} titres •
                 {{ getLength(info.songs) }} minutes
@@ -62,7 +68,7 @@ export type AlbumPageInfo = {
         padding-top: 64px;
         background-color: #1d1d1d;
       }
-      .header {
+      .header-container {
         min-height: 264px;
         margin-top: 64px;
         margin-bottom: 64px;
@@ -95,7 +101,7 @@ export type AlbumPageInfo = {
         margin-top: 40px;
       }
       @media (min-width: 936px) {
-        .header {
+        .header-container {
           padding-left: 312px;
         }
         .cover {

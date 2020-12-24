@@ -55,7 +55,7 @@ export const Simple = Template.bind({});
 Simple.args = {
   name: 'Machine Messiah',
   artist: 'Sepultura',
-  routerLink: './',
+  albumRouterLink: './',
   artistRouterLink: './',
   cover: '/sepultura_machine_messiah.jpg',
 };

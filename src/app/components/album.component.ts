@@ -14,7 +14,7 @@ import { PlayerState } from './player-button.component';
     <app-cover
       [title]="name"
       [menuItems]="menuItems"
-      [routerLink]="routerLink"
+      [coverRouterLink]="albumRouterLink"
       [playerState]="state"
       (playClicked)="play()"
       (pauseClicked)="pause()"
@@ -24,7 +24,7 @@ import { PlayerState } from './player-button.component';
       <app-icon *ngIf="!cover" [path]="icons.album" [size]="226"></app-icon>
     </app-cover>
     <app-label
-      [topLabel]="{ text: name, routerLink: routerLink }"
+      [topLabel]="{ text: name, routerLink: albumRouterLink }"
       [bottomLabel]="[
         'Album',
         { text: artist || '', routerLink: artistRouterLink }
@@ -41,6 +41,9 @@ import { PlayerState } from './player-button.component';
         margin-bottom: 16px;
         background-color: rgba(255, 255, 255, 0.1);
       }
+      app-icon {
+        color: rgba(255, 255, 255, 0.5);
+      }
     `,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -49,7 +52,7 @@ export class AlbumComponent {
   @Input() name!: string;
   @Input() artist?: string;
   @Input() cover?: string;
-  @Input() routerLink!: any[] | string;
+  @Input() albumRouterLink!: any[] | string;
   @Input() artistRouterLink!: any[] | string;
   icons = Icons;
   menuItems = [

@@ -49,7 +49,7 @@ describe('TitleComponent', () => {
 
   it('should display a link if specified', () => {
     component.title = 'Title';
-    component.routerLink = 'destination';
+    component.titleRouterLink = 'destination';
     fixture.detectChanges();
     expect(fixture.nativeElement.querySelectorAll('a')).toHaveSize(1);
     expect(fixture.nativeElement.querySelector('a')).not.toBeNull();
@@ -60,7 +60,7 @@ describe('TitleComponent', () => {
 
   it('should display an additional link if specified', () => {
     component.title = 'Title';
-    component.routerLink = 'destination';
+    component.titleRouterLink = 'destination';
     component.extraLinkLabel = 'more content';
     fixture.detectChanges();
     expect(fixture.nativeElement.querySelectorAll('a')).toHaveSize(2);

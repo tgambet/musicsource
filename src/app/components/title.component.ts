@@ -8,12 +8,12 @@ import {
 @Component({
   selector: 'app-title',
   template: `
-    <ng-container *ngIf="routerLink">
+    <ng-container *ngIf="titleRouterLink">
       <a
         *ngIf="avatarSrc"
         class="avatar"
         [ngClass]="avatarStyle"
-        [routerLink]="routerLink"
+        [routerLink]="titleRouterLink"
       >
         <img
           [src]="avatarSrc"
@@ -24,7 +24,7 @@ import {
         />
       </a>
     </ng-container>
-    <ng-container *ngIf="!routerLink">
+    <ng-container *ngIf="!titleRouterLink">
       <div class="avatar" *ngIf="avatarSrc" [ngClass]="avatarStyle">
         <img
           [src]="avatarSrc"
@@ -38,13 +38,13 @@ import {
     <div class="label">
       <p *ngIf="head">{{ head }}</p>
       <h1>
-        <ng-container *ngIf="routerLink">
-          <a [routerLink]="routerLink">{{ title }}</a>
-          <a class="more" *ngIf="extraLinkLabel" [routerLink]="routerLink">{{
-            extraLinkLabel
-          }}</a>
+        <ng-container *ngIf="titleRouterLink">
+          <a [routerLink]="titleRouterLink">{{ title }}</a>
+          <a class="more" *ngIf="extraLinkLabel" [routerLink]="titleRouterLink">
+            {{ extraLinkLabel }}
+          </a>
         </ng-container>
-        <ng-container *ngIf="!routerLink">
+        <ng-container *ngIf="!titleRouterLink">
           {{ title }}
         </ng-container>
       </h1>
@@ -117,6 +117,10 @@ import {
       a:hover {
         text-decoration: underline;
       }
+      :host.small h1 {
+        font-size: 24px;
+        line-height: 28px;
+      }
     `,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -126,7 +130,7 @@ export class TitleComponent {
 
   @Input() head?: string;
 
-  @Input() routerLink?: any[] | string | null | undefined;
+  @Input() titleRouterLink?: any[] | string | null | undefined;
 
   @Input() extraLinkLabel?: string;
 

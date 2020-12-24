@@ -90,4 +90,39 @@ export class LibraryFacade {
           song.albumartist === album.artist || song.artist === album.artist
       )
     );
+
+  getArtistAlbums(artist: Artist): Observable<AlbumWithCover> {
+    return this.storage.open$(['albums', 'pictures']).pipe(
+      concatMap((transaction) =>
+        this.storage
+          .walk$<Album>(transaction, 'albums', 'artists', artist.name)
+          .pipe(
+            map(({ value }) => value),
+            concatMap((album) =>
+              album.pictureKey
+                ? this.storage
+                    .exec$<Picture>(
+                      transaction.objectStore('pictures').get(album.pictureKey)
+                    )
+                    .pipe(
+                      map((picture) => ({
+                        ...album,
+                        cover: picture ? getCover(picture) : undefined,
+                      }))
+                    )
+                : of(album)
+            )
+          )
+      )
+    );
+  }
+
+  getArtistTitles(artist: Artist): Observable<Song> {
+    return this.storage.open$(['songs']).pipe(
+      concatMap((transaction) =>
+        this.storage.walk$<Song>(transaction, 'songs', 'artists', artist.name)
+      ),
+      map(({ value }) => value)
+    );
+  }
 }

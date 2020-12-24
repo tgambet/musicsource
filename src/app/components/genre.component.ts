@@ -6,7 +6,7 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
     <button
       mat-button
       [ngStyle]="{ borderColor: color }"
-      [routerLink]="routerLink"
+      [routerLink]="genreRouterLink"
     >
       {{ name }}
     </button>
@@ -32,5 +32,5 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 export class GenreComponent {
   @Input() name!: string;
   @Input() color!: string;
-  @Input() routerLink!: any[] | string;
+  @Input() genreRouterLink!: any[] | string;
 }

@@ -14,7 +14,7 @@ import { PlayerState } from './player-button.component';
     <app-cover
       [title]="name"
       [menuItems]="menuItems"
-      [routerLink]="routerLink"
+      [coverRouterLink]="mixRouterLink"
       [playerState]="state"
       (playClicked)="play()"
       (pauseClicked)="pause()"
@@ -25,7 +25,7 @@ import { PlayerState } from './player-button.component';
       <app-icon [size]="226" [path]="icons.album"></app-icon>
     </app-cover>
     <app-label
-      [topLabel]="{ text: name, routerLink: routerLink }"
+      [topLabel]="{ text: name, routerLink: mixRouterLink }"
       [bottomLabel]="label"
     ></app-label>
   `,
@@ -67,7 +67,7 @@ import { PlayerState } from './player-button.component';
 export class MixComponent {
   @Input() name!: string;
   @Input() label!: string;
-  @Input() routerLink!: any[] | string;
+  @Input() mixRouterLink!: any[] | string;
   @Input() artistRouterLink!: any[] | string;
   icons = Icons;
   menuItems = [
