@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { DirectoryEntry, Entry } from '@app/models/entry.model';
-import { Observable, of } from 'rxjs';
+import { from, Observable, of, throwError } from 'rxjs';
 import { concatMap, filter, map } from 'rxjs/operators';
 import { StorageService } from '@app/services/storage.service';
 import { Album, AlbumWithCover } from '@app/models/album.model';
@@ -63,6 +63,20 @@ export class LibraryFacade {
   getEntry = (path: string): Observable<Entry | undefined> =>
     this.storage.get$('entries', path);
 
+  getRootEntry(): Observable<Entry | undefined> {
+    return this.storage
+      .open$(['entries'])
+      .pipe(
+        concatMap((t) =>
+          this.storage.find$<Entry>(
+            t,
+            'entries',
+            (entry) => entry.parent === undefined
+          )
+        )
+      );
+  }
+
   getChildrenEntries = (directory: DirectoryEntry): Observable<Entry[]> =>
     this.storage.open$(['entries']).pipe(
       this.storage.exec<Entry[]>((t) =>
@@ -123,6 +137,32 @@ export class LibraryFacade {
         this.storage.walk$<Song>(transaction, 'songs', 'artists', artist.name)
       ),
       map(({ value }) => value)
+    );
+  }
+
+  async requestPermissionPromise(
+    fileHandle: FileSystemHandle,
+    readWrite = false
+  ) {
+    let options = {};
+    if (readWrite) {
+      options = { mode: 'readwrite' };
+    }
+    // Check if permission was already granted. If so, return true.
+    if ((await fileHandle.queryPermission(options)) === 'granted') {
+      return true;
+    }
+    // Request permission. If the user grants permission, return true.
+    if ((await fileHandle.requestPermission(options)) === 'granted') {
+      return true;
+    }
+    // The user didn't grant permission, so return false.
+    return false;
+  }
+
+  requestPermission(handle: FileSystemHandle): Observable<void> {
+    return from(this.requestPermissionPromise(handle)).pipe(
+      concatMap((perm) => (perm ? of(void 0) : throwError('Permission denied')))
     );
   }
 }

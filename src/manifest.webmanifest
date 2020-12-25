@@ -1,9 +1,9 @@
 {
-  "name": "musicsource",
-  "short_name": "musicsource",
-  "theme_color": "#1976d2",
-  "background_color": "#fafafa",
-  "display": "standalone",
+  "name": "MusicSource",
+  "short_name": "MusicSource",
+  "theme_color": "#000000",
+  "background_color": "#000000",
+  "display": "minimal-ui",
   "scope": "./",
   "start_url": "./",
   "icons": [

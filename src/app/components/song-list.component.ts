@@ -1,6 +1,10 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { SongWithCover } from '@app/models/song.model';
+import { Song, SongWithCover } from '@app/models/song.model';
 import { Icons } from '@app/utils/icons.util';
+import { AudioService } from '@app/services/audio.service';
+import { LibraryFacade } from '@app/store/library/library.facade';
+import { concatMap, filter } from 'rxjs/operators';
+import { Entry, FileEntry } from '@app/models/entry.model';
 
 @Component({
   selector: 'app-song-list',
@@ -8,7 +12,11 @@ import { Icons } from '@app/utils/icons.util';
     <div class="song" *ngFor="let song of songs; let i = index">
       <span class="cover">
         <img [src]="song.cover" alt="cover" height="32" />
-        <app-player-button size="small" shape="square"></app-player-button>
+        <app-player-button
+          size="small"
+          shape="square"
+          (playClicked)="play(song)"
+        ></app-player-button>
       </span>
       <span class="title">{{ song.title }}</span>
       <span class="artist">{{ song.artist }}</span>
@@ -82,4 +90,25 @@ export class SongListComponent {
   @Input() songs!: SongWithCover[];
 
   icons = Icons;
+
+  constructor(private library: LibraryFacade, private audio: AudioService) {}
+
+  isFileEntry(entry: Entry | undefined): entry is FileEntry {
+    return !!entry && entry.kind === 'file';
+  }
+
+  play(song: Song) {
+    this.library
+      .getEntry(song.entryPath)
+      .pipe(
+        filter(this.isFileEntry),
+        concatMap((entry) =>
+          this.library.requestPermission(entry.handle).pipe(
+            concatMap(() => entry.handle.getFile()),
+            concatMap((file) => this.audio.play(file))
+          )
+        )
+      )
+      .subscribe();
+  }
 }
