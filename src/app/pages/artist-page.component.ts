@@ -105,10 +105,11 @@ export type ArtistPageInfo = {
       }
       .cover {
         position: absolute;
-        top: -50%;
+        top: 0;
         left: 0;
         width: 100%;
         filter: blur(2px);
+        transform: translateY(calc(-50% + 290px));
       }
       .cover img {
         width: 100%;

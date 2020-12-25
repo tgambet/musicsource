@@ -107,11 +107,17 @@ export class StorageService {
   ): OperatorFunction<IDBTransaction, IDBValidKey> {
     return (obs) =>
       obs.pipe(
-        this.get<T>(key, store),
-        concatMap((obj) =>
-          obj
-            ? this.put(store, { ...obj, ...value }, key)
-            : throwError('Could not find key: ' + key)
+        concatMap((t) =>
+          this.get<T>(
+            key,
+            store
+          )(of(t)).pipe(
+            concatMap((obj) =>
+              obj
+                ? this.put(store, { ...obj, ...value })(of(t))
+                : throwError('Could not find key: ' + key)
+            )
+          )
         )
       );
   }

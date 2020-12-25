@@ -6,7 +6,7 @@ import { Icons } from '@app/utils/icons.util';
   selector: 'app-song-list',
   template: `
     <div class="song" *ngFor="let song of songs; let i = index">
-      <span class="index">
+      <span class="cover">
         <img [src]="song.cover" alt="cover" height="32" />
         <app-player-button size="small" shape="square"></app-player-button>
       </span>
@@ -38,14 +38,13 @@ import { Icons } from '@app/utils/icons.util';
       .song:last-of-type {
         border: none;
       }
-      .index {
-        color: #aaa;
+      .cover {
         flex: 0 0 32px;
         margin-right: 24px;
         text-align: center;
         position: relative;
       }
-      .index app-player-button {
+      .cover app-player-button {
         position: absolute;
         top: -4px;
         left: -4px;

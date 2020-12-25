@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { LibraryFacade } from '@app/store/library/library.facade';
-import { filter, scan } from 'rxjs/operators';
+import { scan } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { AlbumWithCover } from '@app/models/album.model';
 import { ArtistWithCover } from '@app/models/artist.model';
@@ -65,7 +65,7 @@ import { ArtistWithCover } from '@app/models/artist.model';
 })
 export class HomeComponent implements OnInit {
   albums$: Observable<AlbumWithCover[]> = this.library.albums$.pipe(
-    filter((album) => !!album.cover),
+    // filter((album) => !!album.cover),
     // take(20),
     scan((acc, cur) => [...acc, cur], [] as AlbumWithCover[])
   );
