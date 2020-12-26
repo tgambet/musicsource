@@ -3,8 +3,8 @@ import { Song, SongWithCover } from '@app/models/song.model';
 import { Icons } from '@app/utils/icons.util';
 import { AudioService } from '@app/services/audio.service';
 import { LibraryFacade } from '@app/store/library/library.facade';
-import { concatMap, filter } from 'rxjs/operators';
-import { Entry, FileEntry } from '@app/models/entry.model';
+import { concatMap, filter, tap } from 'rxjs/operators';
+import { DirectoryEntry, Entry, FileEntry } from '@app/models/entry.model';
 
 @Component({
   selector: 'app-song-list',
@@ -51,13 +51,14 @@ import { Entry, FileEntry } from '@app/models/entry.model';
         margin-right: 24px;
         text-align: center;
         position: relative;
+        border-radius: 4px;
+        overflow: hidden;
       }
       .cover app-player-button {
         position: absolute;
         top: -4px;
         left: -4px;
       }
-
       .title {
         flex: 12 1 0;
       }
@@ -91,13 +92,28 @@ export class SongListComponent {
 
   icons = Icons;
 
+  // https://bugs.chromium.org/p/chromium/issues/detail?id=1146886&q=component%3ABlink%3EStorage%3EFileSystem&can=2
+  rootEntry?: DirectoryEntry;
+
   constructor(private library: LibraryFacade, private audio: AudioService) {}
 
   isFileEntry(entry: Entry | undefined): entry is FileEntry {
     return !!entry && entry.kind === 'file';
   }
 
+  isDirectoryEntry(entry: Entry | undefined): entry is DirectoryEntry {
+    return !!entry && entry.kind === 'directory';
+  }
+
   play(song: Song) {
+    this.library
+      .getRootEntry()
+      .pipe(
+        filter(this.isDirectoryEntry),
+        tap((root) => (this.rootEntry = root))
+      )
+      .subscribe();
+
     this.library
       .getEntry(song.entryPath)
       .pipe(
