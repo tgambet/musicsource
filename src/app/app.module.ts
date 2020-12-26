@@ -59,6 +59,8 @@ import { ContainerPageComponent } from './components/container-page.component';
 import { SongListComponent } from './components/song-list.component';
 import { DurationPipe } from '@app/pipes/duration.pipe';
 import { TrackListComponent } from '@app/components/track-list.component';
+import { MatTabsModule } from '@angular/material/tabs';
+import { LibraryAlbumsComponent } from './pages/library-albums.component';
 
 @NgModule({
   declarations: [
@@ -95,6 +97,7 @@ import { TrackListComponent } from '@app/components/track-list.component';
     SongListComponent,
     TrackListComponent,
     DurationPipe,
+    LibraryAlbumsComponent,
   ],
   imports: [
     BrowserModule,
@@ -112,6 +115,7 @@ import { TrackListComponent } from '@app/components/track-list.component';
     DragDropModule,
     A11yModule,
     MatDialogModule,
+    MatTabsModule,
     StoreModule.forRoot(reducers, {
       runtimeChecks: {
         strictStateSerializability: false,

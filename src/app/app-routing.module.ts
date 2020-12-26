@@ -9,16 +9,27 @@ import { LibrarySettingsComponent } from '@app/dialogs/library-settings.componen
 import { SettingsComponent } from '@app/dialogs/settings.component';
 import { ScanComponent } from '@app/dialogs/scan.component';
 import { AlbumPageComponent } from '@app/pages/album-page.component';
-import { AlbumPageResolverService } from '@app/pages/album-page-resolver.service';
+import { AlbumPageResolverService } from '@app/resolvers/album-page-resolver.service';
 import { ArtistPageComponent } from '@app/pages/artist-page.component';
-import { ArtistPageResolverService } from '@app/pages/artist-page-resolver.service';
+import { ArtistPageResolverService } from '@app/resolvers/artist-page-resolver.service';
+import { LibraryAlbumsComponent } from '@app/pages/library-albums.component';
 
 const routes: Routes = [
   { path: '', component: HomeComponent },
   { path: 'explorer', component: ExplorerComponent },
   { path: 'history', component: HistoryComponent },
   { path: 'home', component: HomeComponent },
-  { path: 'library', component: LibraryComponent }, // TODO children
+  {
+    path: 'library',
+    component: LibraryComponent,
+    children: [
+      { path: '', component: SearchComponent },
+      { path: 'playlists', component: SearchComponent },
+      { path: 'albums', component: LibraryAlbumsComponent },
+      { path: 'artists', component: SearchComponent },
+      { path: 'songs', component: SearchComponent },
+    ],
+  },
   { path: 'search', component: SearchComponent },
   {
     path: 'album/:id',

@@ -9,7 +9,7 @@ $container-margin: 24px;
 }
 
 @for $n from 3 through 9 {
-  $width: $n * $base-item-width;
+  $width: $n * $base-item-width - $container-margin;
   @media (min-width: $width + 2 * $container-margin) {
     :host {
       width: $width;

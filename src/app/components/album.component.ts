@@ -20,15 +20,21 @@ import { PlayerState } from './player-button.component';
       (pauseClicked)="pause()"
       tabindex="-1"
     >
-      <img *ngIf="cover" [src]="cover" [alt]="name" height="226" width="226" />
-      <app-icon *ngIf="!cover" [path]="icons.album" [size]="226"></app-icon>
+      <img *ngIf="cover" [src]="cover" [alt]="name" />
+      <app-icon
+        *ngIf="!cover"
+        [path]="icons.album"
+        [fullWidth]="true"
+      ></app-icon>
     </app-cover>
     <app-label
       [topLabel]="{ text: name, routerLink: albumRouterLink }"
       [bottomLabel]="[
         'Album',
-        { text: artist || '', routerLink: artistRouterLink }
+        artist ? { text: artist || '', routerLink: artistRouterLink } : '',
+        year ? year.toString(10) : ''
       ]"
+      [size]="size"
     ></app-label>
   `,
   styles: [
@@ -36,6 +42,7 @@ import { PlayerState } from './player-button.component';
       :host,
       img {
         display: block;
+        width: 100%;
       }
       app-cover {
         margin-bottom: 16px;
@@ -51,9 +58,11 @@ import { PlayerState } from './player-button.component';
 export class AlbumComponent {
   @Input() name!: string;
   @Input() artist?: string;
+  @Input() year?: number;
   @Input() cover?: string;
   @Input() albumRouterLink!: any[] | string;
   @Input() artistRouterLink!: any[] | string;
+  @Input() size: 'small' | 'large' = 'large';
   icons = Icons;
   menuItems = [
     {

@@ -13,7 +13,7 @@ export interface Link {
 @Component({
   selector: 'app-label',
   template: `
-    <p class="top">
+    <p class="top" [ngClass]="[size]">
       <a
         *ngIf="asLink(topLabel); let label; else: topText"
         [routerLink]="label.routerLink"
@@ -24,7 +24,7 @@ export interface Link {
         <span>{{ topLabel }}</span>
       </ng-template>
     </p>
-    <p class="bottom">
+    <p class="bottom" [ngClass]="[size]">
       <ng-container *ngIf="asArray(bottomLabel); let labels">
         <ng-container *ngFor="let label of labels; let last = last">
           <a
@@ -37,7 +37,7 @@ export interface Link {
             <span>{{ label }}</span>
           </ng-template>
           <ng-container *ngIf="!last">
-            <span class="separator">•</span>
+            <span class="separator"> • </span>
           </ng-container>
         </ng-container>
       </ng-container>
@@ -52,15 +52,23 @@ export interface Link {
       :host.center p {
         justify-content: center;
       }
-      p {
+      .large {
         font-size: 16px;
         line-height: 19px;
-        display: flex;
+      }
+      .small {
+        font-size: 14px;
+        line-height: 17px;
+      }
+      .large.top {
+        max-height: 38px;
+      }
+      .small.top {
+        max-height: 34px;
       }
       .top {
         margin-bottom: 3px;
         font-weight: 500;
-        max-height: 38px;
         overflow-y: hidden;
       }
       .bottom {
@@ -73,9 +81,6 @@ export interface Link {
       a:hover {
         text-decoration: underline;
       }
-      .separator {
-        margin: 0 4px;
-      }
     `,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -83,13 +88,14 @@ export interface Link {
 export class LabelComponent {
   @Input() topLabel!: string | Link;
   @Input() bottomLabel!: string | Link | (string | Link)[];
+  @Input() size: 'small' | 'large' = 'large';
 
   @HostBinding('class')
   @Input()
   align: 'left' | 'center' = 'left';
 
   asArray(val: string | Link | (string | Link)[]): (string | Link)[] {
-    return Array.isArray(val) ? (val as Link[]) : [val];
+    return Array.isArray(val) ? (val as Link[]).filter((a) => a) : [val];
   }
 
   asLink(val: string | Link): false | Link {

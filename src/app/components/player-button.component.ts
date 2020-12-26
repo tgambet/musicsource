@@ -30,7 +30,7 @@ export type PlayerState = 'playing' | 'loading' | 'stopped';
     </button>
     <mat-spinner
       *ngIf="state === 'loading'"
-      [diameter]="size === 'large' ? 70 : 46"
+      [diameter]="size === 'large' ? 70 : 38"
       strokeWidth="2"
     ></mat-spinner>
   `,
@@ -40,14 +40,17 @@ export type PlayerState = 'playing' | 'loading' | 'stopped';
         display: block;
         position: relative;
         background-color: rgba(0, 0, 0, 0.5);
+        border: 4px solid transparent;
+        box-sizing: border-box;
       }
       .large {
         width: 64px;
         height: 64px;
       }
       .small {
-        width: 40px;
-        height: 40px;
+        width: 32px;
+        height: 32px;
+        line-height: 32px;
       }
       .square {
         border-radius: 0;

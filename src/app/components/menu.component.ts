@@ -5,14 +5,18 @@ import { Icons } from '../utils/icons.util';
   selector: 'app-menu',
   template: `
     <button
-      mat-icon-button
+      class="trigger"
       [matMenuTriggerFor]="menu"
       aria-label="menu"
-      [disableRipple]="disableRipple"
+      title="Other actions"
+      matRipple
+      matRippleColor="rgba(0,0,0,0.2)"
+      [matRippleCentered]="true"
+      [matRippleDisabled]="disableRipple"
     >
-      <app-icon [path]="triggerIcon"></app-icon>
+      <app-icon [path]="triggerIcon" [size]="24"></app-icon>
     </button>
-    <mat-menu #menu="matMenu">
+    <mat-menu #menu="matMenu" [hasBackdrop]="true">
       <ng-template matMenuContent>
         <button
           mat-menu-item
@@ -21,7 +25,7 @@ import { Icons } from '../utils/icons.util';
           [disabled]="item.disabled"
           [routerLink]="item.routerLink"
         >
-          <app-icon *ngIf="item.icon" [path]="item.icon"></app-icon>
+          <app-icon *ngIf="item.icon" [path]="item.icon" [size]="24"></app-icon>
           <span>{{ item.text }}</span>
         </button>
       </ng-template>
@@ -31,6 +35,25 @@ import { Icons } from '../utils/icons.util';
     `
       :host {
         display: inline-block;
+      }
+      .trigger {
+        padding: 0;
+        width: 40px;
+        height: 40px;
+        min-width: initial;
+        border-radius: 50%;
+        overflow: hidden;
+        background: transparent;
+        border: none;
+        color: white;
+        cursor: pointer;
+      }
+      .trigger app-icon {
+        position: relative;
+        z-index: 1;
+      }
+      .trigger:focus {
+        outline: none;
       }
       .mat-menu-item app-icon {
         margin-right: 16px;

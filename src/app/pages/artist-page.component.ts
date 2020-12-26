@@ -19,9 +19,10 @@ export type ArtistPageInfo = {
   template: `
     <ng-container *ngIf="info$ | async as info">
       <header>
-        <div class="cover">
-          <img [src]="info.cover" alt="cover" />
-        </div>
+        <div
+          class="cover"
+          [style.backgroundImage]="'url(' + info.cover + ')'"
+        ></div>
         <div class="shadow"></div>
         <app-container-page class="header-container">
           <app-title [title]="info.artist.name"></app-title>
@@ -54,7 +55,7 @@ export type ArtistPageInfo = {
             class="album"
             *ngFor="let album of info.albums$ | async"
             [name]="album.name"
-            [artist]="album.year?.toString(10)"
+            [year]="album.year"
             [cover]="album.cover"
             [albumRouterLink]="['/', 'album', album.id]"
           >
@@ -107,9 +108,11 @@ export type ArtistPageInfo = {
         position: absolute;
         top: 0;
         left: 0;
-        width: 100%;
+        bottom: 0;
+        right: 0;
         filter: blur(2px);
-        transform: translateY(calc(-50% + 290px));
+        background-size: cover;
+        background-position: center center;
       }
       .cover img {
         width: 100%;

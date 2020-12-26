@@ -32,9 +32,12 @@ import { MenuItem } from './menu.component';
       [title]="title"
       [routerLink]="coverRouterLink"
       tabindex="-1"
+      style="--aspect-ratio:1"
     >
       <div class="shadow"></div>
-      <ng-content></ng-content>
+      <div class="content">
+        <ng-content></ng-content>
+      </div>
     </a>
   `,
   styles: [
@@ -50,7 +53,7 @@ import { MenuItem } from './menu.component';
         text-decoration: none;
       }
       app-menu {
-        background-color: rgba(0, 0, 0, 0.5);
+        /* background-color: rgba(0, 0, 0, 0.5); */
         border-radius: 50%;
       }
       app-menu,
@@ -68,16 +71,13 @@ import { MenuItem } from './menu.component';
         right: 16px;
         bottom: 16px;
         z-index: 1;
-        transform: scale(0.833);
         transition: transform 0.2s ease, opacity 0.2s ease;
-        border: 4px solid rgba(0, 0, 0, 0.25);
         border-radius: 50%;
       }
       app-player-button:hover,
       app-player-button.cdk-focused {
-        transform: scale(1);
-        border: 4px solid rgba(0, 0, 0, 1);
-        background-color: rgba(0, 0, 0, 0.75);
+        transform: scale(1.2);
+        background-color: rgba(0, 0, 0, 1);
       }
       app-menu {
         position: absolute;
@@ -111,6 +111,12 @@ import { MenuItem } from './menu.component';
       }
       :host:hover .shadow {
         opacity: 1;
+      }
+      .content {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 100%;
       }
     `,
   ],
