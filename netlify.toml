@@ -1,0 +1,8 @@
+[build]
+  command = "yarn build --prod"
+  publish = "dist/musicsource"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
