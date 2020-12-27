@@ -24,6 +24,7 @@ import {
   mdiHistory,
   mdiHome,
   mdiMagnify,
+  mdiMenuDown,
   mdiMessageAlert,
   mdiMusicBoxMultiple,
   mdiMusicNote,
@@ -77,4 +78,5 @@ export class Icons {
   static close = mdiClose;
   static check = mdiCheck;
   static account = mdiAccount;
+  static menuDown = mdiMenuDown;
 }

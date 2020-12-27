@@ -245,6 +245,7 @@ export class ScannerEffects implements OnRunEffects {
                         : undefined,
                     year: song.year,
                     pictureKey: song.pictureKey,
+                    addedOn: Date.now(),
                   }))
                 )
             ),

@@ -61,6 +61,7 @@ import { DurationPipe } from '@app/pipes/duration.pipe';
 import { TrackListComponent } from '@app/components/track-list.component';
 import { MatTabsModule } from '@angular/material/tabs';
 import { LibraryAlbumsComponent } from './pages/library-albums.component';
+import { SelectComponent } from './components/select.component';
 
 @NgModule({
   declarations: [
@@ -98,6 +99,7 @@ import { LibraryAlbumsComponent } from './pages/library-albums.component';
     TrackListComponent,
     DurationPipe,
     LibraryAlbumsComponent,
+    SelectComponent,
   ],
   imports: [
     BrowserModule,

@@ -7,6 +7,7 @@ export interface Album {
   artistId?: string;
   year?: number;
   pictureKey?: IDBValidKey;
+  addedOn: number;
 }
 
 export type AlbumWithCover = Except<Album, 'pictureKey'> & { cover?: string };

@@ -60,6 +60,36 @@ export class LibraryFacade {
 
   constructor(private storage: StorageService) {}
 
+  getAlbums(
+    index?: string,
+    query?: IDBValidKey | IDBKeyRange | null,
+    direction: IDBCursorDirection = 'next'
+  ): Observable<AlbumWithCover> {
+    return this.storage.open$(['albums', 'pictures']).pipe(
+      concatMap((transaction) =>
+        this.storage
+          .walk$<Album>(transaction, 'albums', index, query, direction)
+          .pipe(
+            map(({ value }) => value),
+            concatMap((album) =>
+              album.pictureKey
+                ? this.storage
+                    .exec$<Picture>(
+                      transaction.objectStore('pictures').get(album.pictureKey)
+                    )
+                    .pipe(
+                      map((picture) => ({
+                        ...album,
+                        cover: picture ? getCover(picture) : undefined,
+                      }))
+                    )
+                : of(album)
+            )
+          )
+      )
+    );
+  }
+
   getEntry = (path: string): Observable<Entry | undefined> =>
     this.storage.get$('entries', path);
 

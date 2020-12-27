@@ -13,7 +13,7 @@ import {
     <app-container class="recent">
       <app-title size="small" title="Recent activity"></app-title>
       <app-h-list buttonsTopPosition="80px">
-        <div class="recent">
+        <div class="recent" appHListItem>
           <!--          <app-album
             *ngFor="let album of albums$ | async"
           >
@@ -68,9 +68,7 @@ import {
         </nav>
       </app-container>
     </div>
-    <app-container>
-      <router-outlet></router-outlet>
-    </app-container>
+    <router-outlet></router-outlet>
   `,
   styles: [
     `
@@ -91,10 +89,9 @@ import {
       }
       .container.scrolled-top {
         background-color: #212121;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
       }
       .container.scrolled-top nav {
-        border-bottom: none;
+        /*border-bottom: none;*/
       }
       a {
         padding: 0 12px;

@@ -28,6 +28,9 @@ export class StorageService {
       // Albums
       const albums = db.createObjectStore('albums', { keyPath: 'id' });
       albums.createIndex('artists', 'artist');
+      albums.createIndex('name', 'name');
+      albums.createIndex('year', 'year');
+      albums.createIndex('addedOn', 'addedOn');
       // Artists
       db.createObjectStore('artists', { keyPath: 'id' });
     }).pipe(tap((db) => (this.db = db)));
@@ -177,12 +180,16 @@ export class StorageService {
     transaction: IDBTransaction,
     store: string,
     index?: string,
-    query?: IDBValidKey | IDBKeyRange | null
+    query?: IDBValidKey | IDBKeyRange | null,
+    direction: IDBCursorDirection = 'next'
   ): Observable<{ value: T; key: IDBValidKey; primaryKey: IDBValidKey }> {
     return new Observable((observer) => {
       const request = index
-        ? transaction.objectStore(store).index(index).openCursor(query)
-        : transaction.objectStore(store).openCursor(query);
+        ? transaction
+            .objectStore(store)
+            .index(index)
+            .openCursor(query, direction)
+        : transaction.objectStore(store).openCursor(query, direction);
       request.onsuccess = (event: any) => {
         const cursor: IDBCursorWithValue = event.target.result;
         if (cursor && !observer.closed) {
