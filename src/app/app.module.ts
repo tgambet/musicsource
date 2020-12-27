@@ -65,6 +65,7 @@ import { SelectComponent } from './components/select.component';
 import { LibraryArtistsComponent } from './pages/library-artists.component';
 import { LibraryPlaylistsComponent } from './pages/library-playlists.component';
 import { LibraryContentComponent } from './pages/library-content.component';
+import { UpdateService } from '@app/services/update.service';
 
 @NgModule({
   declarations: [
@@ -143,7 +144,12 @@ import { LibraryContentComponent } from './pages/library-content.component';
     ResizerService,
     LibraryFacade,
     ScannerFacade,
+    UpdateService,
   ],
   bootstrap: [AppComponent],
 })
-export class AppModule {}
+export class AppModule {
+  constructor(update: UpdateService) {
+    update.register();
+  }
+}

@@ -1,36 +1,38 @@
-import { ApplicationRef, Injectable } from '@angular/core';
+import { ApplicationRef, Inject, Injectable } from '@angular/core';
 import { SwUpdate } from '@angular/service-worker';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { concatMapTo, first, tap } from 'rxjs/operators';
 import { interval } from 'rxjs';
+import { DOCUMENT } from '@angular/common';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable()
 export class UpdateService {
   constructor(
-    appRef: ApplicationRef,
-    updates: SwUpdate,
-    snackBar: MatSnackBar
-  ) {
-    updates.available
+    private appRef: ApplicationRef,
+    private updates: SwUpdate,
+    private snackBar: MatSnackBar,
+    @Inject(DOCUMENT) private document: Document
+  ) {}
+
+  register() {
+    this.updates.available
       .pipe(
         concatMapTo(
-          snackBar
+          this.snackBar
             .open('A new version is available.', 'Reload')
             .afterDismissed()
         ),
         tap(() =>
-          updates.activateUpdate().then(() => document.location.reload())
+          this.updates.activateUpdate().then(() => document.location.reload())
         )
       )
       .subscribe();
 
-    appRef.isStable
+    this.appRef.isStable
       .pipe(
         first((isStable) => isStable),
         concatMapTo(interval(60 * 60 * 1000)), // 1 hour
-        tap(() => updates.checkForUpdate())
+        tap(() => this.updates.checkForUpdate())
       )
       .subscribe();
   }
