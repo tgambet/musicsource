@@ -27,11 +27,10 @@ import {
           <a
             mat-tab-link
             disableRipple
-            routerLink="./"
+            routerLink="playlists"
             fragment="top"
             routerLinkActive="active"
             #rla1="routerLinkActive"
-            [routerLinkActiveOptions]="{ exact: true }"
             [active]="rla1.isActive"
           >
             Playlists
@@ -90,6 +89,7 @@ import {
         top: 63px;
         z-index: 101;
         background: black;
+        transition: background-color ease 200ms;
       }
       .container.scrolled-top {
         background-color: #212121;
@@ -98,8 +98,8 @@ import {
         /*border-bottom: none;*/
       }
       a {
-        padding: 0 12px;
-        margin: 0 12px;
+        padding: 0;
+        margin: 0 16px;
         font-weight: 500;
         font-size: 14px;
         text-transform: uppercase;

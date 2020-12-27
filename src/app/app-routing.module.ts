@@ -16,6 +16,7 @@ import { LibraryAlbumsComponent } from '@app/pages/library-albums.component';
 import { LibraryArtistsComponent } from '@app/pages/library-artists.component';
 import { ViewportScroller } from '@angular/common';
 import { filter } from 'rxjs/operators';
+import { LibraryPlaylistsComponent } from '@app/pages/library-playlists.component';
 
 const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -26,8 +27,8 @@ const routes: Routes = [
     path: 'library',
     component: LibraryComponent,
     children: [
-      { path: '', component: SearchComponent },
-      { path: 'playlists', component: SearchComponent },
+      { path: '', redirectTo: 'playlists', pathMatch: 'full' },
+      { path: 'playlists', component: LibraryPlaylistsComponent },
       { path: 'albums', component: LibraryAlbumsComponent },
       { path: 'artists', component: LibraryArtistsComponent },
       { path: 'songs', component: SearchComponent },
@@ -84,7 +85,7 @@ export class AppRoutingModule {
           // anchor navigation
           viewportScroller.scrollToAnchor(e.anchor);
         } else {
-          const a = ['/library/albums', '/library/artists'];
+          const a = ['/library'];
           // forward navigation
           if (!a.find((l) => e.routerEvent.url.includes(l))) {
             viewportScroller.scrollToPosition([0, 0]);

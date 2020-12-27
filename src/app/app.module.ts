@@ -63,6 +63,8 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { LibraryAlbumsComponent } from './pages/library-albums.component';
 import { SelectComponent } from './components/select.component';
 import { LibraryArtistsComponent } from './pages/library-artists.component';
+import { LibraryPlaylistsComponent } from './pages/library-playlists.component';
+import { LibraryContentComponent } from './pages/library-content.component';
 
 @NgModule({
   declarations: [
@@ -102,6 +104,8 @@ import { LibraryArtistsComponent } from './pages/library-artists.component';
     LibraryAlbumsComponent,
     SelectComponent,
     LibraryArtistsComponent,
+    LibraryPlaylistsComponent,
+    LibraryContentComponent,
   ],
   imports: [
     BrowserModule,

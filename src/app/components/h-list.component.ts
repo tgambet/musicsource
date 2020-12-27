@@ -80,7 +80,6 @@ import { DOCUMENT } from '@angular/common';
         opacity: 1;
         transition: opacity 300ms ease;
         transform: translateY(-50%);
-        background-color: #eee;
       }
       :host:hover .button,
       .button:hover,

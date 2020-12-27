@@ -29,7 +29,7 @@
 
 $musicsource-theme: (
   primary: mat-palette($mat-light-green, A400),
-  accent: mat-palette($mat-light-blue, A400),
+  accent: mat-palette($mat-grey, 200),
   warn: mat-palette($mat-deep-orange, A200),
   is-dark: true,
   foreground: $mat-dark-theme-foreground,

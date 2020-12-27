@@ -36,7 +36,7 @@ import { ScannerFacade } from '@app/store/scanner/scanner.facade';
         flex-direction: row;
         align-items: center;
         /*flex: 0 0 64px;*/
-        padding: 8px 16px;
+        padding: 0 12px;
         box-sizing: border-box;
         width: 100%;
         white-space: nowrap;

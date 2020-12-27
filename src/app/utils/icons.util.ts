@@ -33,6 +33,7 @@ import {
   mdiPlaylistMusic,
   mdiPlaylistPlay,
   mdiPlaylistPlus,
+  mdiPlus,
   mdiSecurity,
   mdiShuffleVariant,
   mdiSync,
@@ -79,4 +80,5 @@ export class Icons {
   static check = mdiCheck;
   static account = mdiAccount;
   static menuDown = mdiMenuDown;
+  static plus = mdiPlus;
 }

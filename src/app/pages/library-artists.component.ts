@@ -1,13 +1,4 @@
-import {
-  Component,
-  OnInit,
-  ChangeDetectionStrategy,
-  ViewChild,
-  ElementRef,
-  HostListener,
-  AfterViewInit,
-  ChangeDetectorRef,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { SelectOption } from '@app/components/select.component';
 import { LibraryFacade } from '@app/store/library/library.facade';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -19,17 +10,10 @@ import { Icons } from '@app/utils/icons.util';
 @Component({
   selector: 'app-library-artists',
   template: `
-    <a id="top"></a>
-    <div class="filters" #filters [class.scrolled-top]="scrolledTop">
-      <app-container>
-        <app-select
-          [options]="sortOptions"
-          [selected]="selectedSortOption"
-          (selectionChange)="sort($event)"
-        ></app-select>
-      </app-container>
-    </div>
-    <app-container>
+    <app-library-content
+      [sortOptions]="sortOptions"
+      [selectedSortOption]="selectedSortOption"
+    >
       <div class="artists">
         <div
           *ngFor="let artist of artists$ | async; trackBy: trackBy"
@@ -48,7 +32,6 @@ import { Icons } from '@app/utils/icons.util';
             </div>
             <div class="meta">
               <span>{{ artist.name }}</span>
-              <span class="sub">30 songs</span>
             </div>
           </a>
           <div class="controls">
@@ -56,30 +39,13 @@ import { Icons } from '@app/utils/icons.util';
           </div>
         </div>
       </div>
-    </app-container>
+    </app-library-content>
   `,
   styles: [
     `
       :host {
         display: block;
         min-height: 1200px;
-      }
-      #top {
-        position: relative;
-        top: -112px;
-        display: block;
-      }
-      .filters {
-        position: sticky;
-        top: 112px;
-        z-index: 101;
-        display: flex;
-        align-items: center;
-        padding: 16px 0;
-      }
-      .filters.scrolled-top {
-        background-color: #212121;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
       }
       .artists {
         display: flex;
@@ -127,10 +93,7 @@ import { Icons } from '@app/utils/icons.util';
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class LibraryArtistsComponent implements OnInit, AfterViewInit {
-  @ViewChild('filters', { static: true })
-  filters!: ElementRef;
-
+export class LibraryArtistsComponent implements OnInit {
   icons = Icons;
 
   artists$!: Observable<ArtistWithCover$[]>;
@@ -141,25 +104,11 @@ export class LibraryArtistsComponent implements OnInit, AfterViewInit {
   ];
   selectedSortOption = this.sortOptions[0];
 
-  scrolledTop = true;
-
   constructor(
     private library: LibraryFacade,
     private router: Router,
-    private route: ActivatedRoute,
-    private cdr: ChangeDetectorRef
+    private route: ActivatedRoute
   ) {}
-
-  @HostListener('window:scroll')
-  update() {
-    this.scrolledTop =
-      this.filters.nativeElement.getBoundingClientRect().y <= 112;
-    this.cdr.markForCheck();
-  }
-
-  ngAfterViewInit() {
-    setTimeout(() => this.update());
-  }
 
   ngOnInit(): void {
     this.route.queryParamMap
@@ -194,12 +143,4 @@ export class LibraryArtistsComponent implements OnInit, AfterViewInit {
   }
 
   trackBy = (index: number, artist: ArtistWithCover$) => artist.id;
-
-  async sort(option: string) {
-    const [sort, dir] = option.split('_');
-    await this.router.navigate([], {
-      queryParams: { sort, dir },
-      preserveFragment: true,
-    });
-  }
 }
