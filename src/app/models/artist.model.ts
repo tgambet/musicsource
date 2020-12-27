@@ -1,4 +1,5 @@
 import { Except } from '@app/utils/types.util';
+import { Observable } from 'rxjs';
 
 export interface Artist {
   id: string;
@@ -7,3 +8,6 @@ export interface Artist {
 }
 
 export type ArtistWithCover = Except<Artist, 'pictureKey'> & { cover?: string };
+export type ArtistWithCover$ = Except<Artist, 'pictureKey'> & {
+  cover$: Observable<string>;
+};

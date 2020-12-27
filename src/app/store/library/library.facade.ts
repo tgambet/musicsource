@@ -1,10 +1,14 @@
 import { Injectable } from '@angular/core';
 import { DirectoryEntry, Entry } from '@app/models/entry.model';
-import { from, Observable, of, throwError } from 'rxjs';
+import { EMPTY, from, Observable, of, throwError } from 'rxjs';
 import { concatMap, filter, map } from 'rxjs/operators';
 import { StorageService } from '@app/services/storage.service';
 import { Album, AlbumWithCover } from '@app/models/album.model';
-import { Artist, ArtistWithCover } from '@app/models/artist.model';
+import {
+  Artist,
+  ArtistWithCover,
+  ArtistWithCover$,
+} from '@app/models/artist.model';
 import { getCover, Picture } from '@app/models/picture.model';
 import { Song } from '@app/models/song.model';
 
@@ -85,6 +89,30 @@ export class LibraryFacade {
                     )
                 : of(album)
             )
+          )
+      )
+    );
+  }
+
+  getArtists(
+    index?: string,
+    query?: IDBValidKey | IDBKeyRange | null,
+    direction: IDBCursorDirection = 'next'
+  ): Observable<ArtistWithCover$> {
+    return this.storage.open$(['artists']).pipe(
+      concatMap((transaction) =>
+        this.storage
+          .walk$<Artist>(transaction, 'artists', index, query, direction)
+          .pipe(
+            map(({ value }) => value),
+            map((artist) => ({
+              ...artist,
+              cover$: artist.pictureKey
+                ? this.storage
+                    .get$('pictures', artist.pictureKey)
+                    .pipe(map((picture) => getCover(picture as Picture)))
+                : EMPTY,
+            }))
           )
       )
     );

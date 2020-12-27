@@ -1,22 +1,23 @@
 import {
-  AfterViewInit,
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
+  OnInit,
+  ChangeDetectionStrategy,
+  ViewChild,
   ElementRef,
   HostListener,
-  OnInit,
-  ViewChild,
+  AfterViewInit,
+  ChangeDetectorRef,
 } from '@angular/core';
-import { LibraryFacade } from '@app/store/library/library.facade';
-import { Observable } from 'rxjs';
-import { AlbumWithCover } from '@app/models/album.model';
-import { map, scan, switchMap, take, tap } from 'rxjs/operators';
-import { ActivatedRoute, Router } from '@angular/router';
 import { SelectOption } from '@app/components/select.component';
+import { LibraryFacade } from '@app/store/library/library.facade';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Observable } from 'rxjs';
+import { ArtistWithCover$ } from '@app/models/artist.model';
+import { map, scan, switchMap, take, tap } from 'rxjs/operators';
+import { Icons } from '@app/utils/icons.util';
 
 @Component({
-  selector: 'app-library-albums',
+  selector: 'app-library-artists',
   template: `
     <a id="top"></a>
     <div class="filters" #filters [class.scrolled-top]="scrolledTop">
@@ -29,20 +30,30 @@ import { SelectOption } from '@app/components/select.component';
       </app-container>
     </div>
     <app-container>
-      <div class="albums">
+      <div class="artists">
         <div
-          class="album"
-          *ngFor="let album of albums$ | async; trackBy: trackBy"
+          *ngFor="let artist of artists$ | async; trackBy: trackBy"
+          class="artist"
         >
-          <app-album
-            [name]="album.name"
-            [cover]="album.cover"
-            [artist]="album.artist"
-            [year]="album.year"
-            [artistRouterLink]="['/', 'artist', album.artistId]"
-            [albumRouterLink]="['/', 'album', album.id]"
-            size="small"
-          ></app-album>
+          <a [routerLink]="['/', 'artist', artist.id]" matRipple>
+            <div class="cover" style="--aspect-ratio:1">
+              <img
+                [src]="cover"
+                [alt]="artist.name"
+                *ngIf="artist.cover$ | async as cover; else icon"
+              />
+              <ng-template #icon>
+                <app-icon [path]="icons.account" [size]="56"></app-icon>
+              </ng-template>
+            </div>
+            <div class="meta">
+              <span>{{ artist.name }}</span>
+              <span class="sub">30 songs</span>
+            </div>
+          </a>
+          <div class="controls">
+            <app-menu [disableRipple]="false"></app-menu>
+          </div>
         </div>
       </div>
     </app-container>
@@ -70,31 +81,61 @@ import { SelectOption } from '@app/components/select.component';
         background-color: #212121;
         border-bottom: 1px solid rgba(255, 255, 255, 0.1);
       }
-      .albums {
+      .artists {
         display: flex;
-        flex-wrap: wrap;
-        margin: 0 -12px;
+        flex-direction: column;
         padding: 0 0 64px;
       }
-      .album {
-        margin: 0 12px 32px;
+      .artist {
+        flex: 0 0 80px;
+        position: relative;
       }
-      app-album {
-        width: 160px;
+      .artist a {
+        display: flex;
+        align-items: center;
+        box-sizing: border-box;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 0 8px;
+        height: 80px;
+        text-decoration: none;
+      }
+      .cover {
+        width: 56px;
+        border-radius: 50%;
+        overflow: hidden;
+        margin-right: 16px;
+        position: relative;
+        z-index: 1;
+      }
+      app-icon {
+        opacity: 0.25;
+      }
+      .meta {
+        display: flex;
+        flex-direction: column;
+      }
+      .sub {
+        color: #aaa;
+      }
+      .controls {
+        position: absolute;
+        top: 50%;
+        right: 8px;
+        transform: translateY(-50%);
       }
     `,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class LibraryAlbumsComponent implements OnInit, AfterViewInit {
+export class LibraryArtistsComponent implements OnInit, AfterViewInit {
   @ViewChild('filters', { static: true })
   filters!: ElementRef;
 
-  albums$!: Observable<AlbumWithCover[]>;
+  icons = Icons;
+
+  artists$!: Observable<ArtistWithCover$[]>;
 
   sortOptions: SelectOption[] = [
-    { name: 'Latest releases', value: 'year_desc' },
-    { name: 'Oldest releases', value: 'year_asc' },
     { name: 'A to Z', value: 'name_asc' },
     { name: 'Z to A', value: 'name_desc' },
   ];
@@ -110,7 +151,7 @@ export class LibraryAlbumsComponent implements OnInit, AfterViewInit {
   ) {}
 
   @HostListener('window:scroll')
-  update(): void {
+  update() {
     this.scrolledTop =
       this.filters.nativeElement.getBoundingClientRect().y <= 112;
     this.cdr.markForCheck();
@@ -136,23 +177,23 @@ export class LibraryAlbumsComponent implements OnInit, AfterViewInit {
 
     const sort$ = this.route.queryParamMap.pipe(
       map((params) => ({
-        index: params.get('sort') || 'year',
-        direction: ((params.get('dir') || 'desc') === 'asc'
+        index: params.get('sort') || 'name',
+        direction: ((params.get('dir') || 'asc') === 'asc'
           ? 'next'
           : 'prev') as IDBCursorDirection,
       }))
     );
 
-    this.albums$ = sort$.pipe(
+    this.artists$ = sort$.pipe(
       switchMap((sort) =>
         this.library
-          .getAlbums(sort.index, null, sort.direction)
-          .pipe(scan((acc, cur) => [...acc, cur], [] as AlbumWithCover[]))
+          .getArtists(sort.index, null, sort.direction)
+          .pipe(scan((acc, cur) => [...acc, cur], [] as ArtistWithCover$[]))
       )
     );
   }
 
-  trackBy = (index: number, album: AlbumWithCover) => album.id;
+  trackBy = (index: number, artist: ArtistWithCover$) => artist.id;
 
   async sort(option: string) {
     const [sort, dir] = option.split('_');

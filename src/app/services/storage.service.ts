@@ -32,7 +32,8 @@ export class StorageService {
       albums.createIndex('year', 'year');
       albums.createIndex('addedOn', 'addedOn');
       // Artists
-      db.createObjectStore('artists', { keyPath: 'id' });
+      const artists = db.createObjectStore('artists', { keyPath: 'id' });
+      artists.createIndex('name', 'name');
     }).pipe(tap((db) => (this.db = db)));
   }
 

@@ -28,6 +28,7 @@ import {
             mat-tab-link
             disableRipple
             routerLink="./"
+            fragment="top"
             routerLinkActive="active"
             #rla1="routerLinkActive"
             [routerLinkActiveOptions]="{ exact: true }"
@@ -38,6 +39,7 @@ import {
           <a
             mat-tab-link
             disableRipple
+            fragment="top"
             routerLink="albums"
             routerLinkActive="active"
             #rla2="routerLinkActive"
@@ -49,6 +51,7 @@ import {
             mat-tab-link
             disableRipple
             routerLink="artists"
+            fragment="top"
             routerLinkActive="active"
             #rla4="routerLinkActive"
             [active]="rla4.isActive"
@@ -59,6 +62,7 @@ import {
             mat-tab-link
             disableRipple
             routerLink="liked"
+            fragment="top"
             routerLinkActive="active"
             #rla3="routerLinkActive"
             [active]="rla3.isActive"

@@ -125,6 +125,10 @@ $background-color: mat-color(
   background
 );
 
+html {
+  scroll-behavior: smooth;
+}
+
 html,
 body {
   height: 100%;

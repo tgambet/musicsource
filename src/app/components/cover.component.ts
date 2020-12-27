@@ -24,6 +24,7 @@ import { MenuItem } from './menu.component';
       cdkMonitorSubtreeFocus
       [triggerIcon]="menuTriggerIcon"
       [menuItems]="menuItems"
+      rippleColor="rgba(0,0,0,0.2)"
     >
     </app-menu>
     <a

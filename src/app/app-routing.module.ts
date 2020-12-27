@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { Routes, RouterModule } from '@angular/router';
+import { Routes, RouterModule, Router, Event, Scroll } from '@angular/router';
 import { HomeComponent } from '@app/pages/home.component';
 import { LibraryComponent } from '@app/pages/library.component';
 import { SearchComponent } from '@app/pages/search.component';
@@ -13,6 +13,9 @@ import { AlbumPageResolverService } from '@app/resolvers/album-page-resolver.ser
 import { ArtistPageComponent } from '@app/pages/artist-page.component';
 import { ArtistPageResolverService } from '@app/resolvers/artist-page-resolver.service';
 import { LibraryAlbumsComponent } from '@app/pages/library-albums.component';
+import { LibraryArtistsComponent } from '@app/pages/library-artists.component';
+import { ViewportScroller } from '@angular/common';
+import { filter } from 'rxjs/operators';
 
 const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -26,7 +29,7 @@ const routes: Routes = [
       { path: '', component: SearchComponent },
       { path: 'playlists', component: SearchComponent },
       { path: 'albums', component: LibraryAlbumsComponent },
-      { path: 'artists', component: SearchComponent },
+      { path: 'artists', component: LibraryArtistsComponent },
       { path: 'songs', component: SearchComponent },
     ],
   },
@@ -63,9 +66,30 @@ const routes: Routes = [
   imports: [
     RouterModule.forRoot(routes, {
       relativeLinkResolution: 'corrected',
-      scrollPositionRestoration: 'enabled',
+      scrollPositionRestoration: 'disabled',
+      anchorScrolling: 'enabled',
     }),
   ],
   exports: [RouterModule],
 })
-export class AppRoutingModule {}
+export class AppRoutingModule {
+  constructor(router: Router, viewportScroller: ViewportScroller) {
+    router.events
+      .pipe(filter((e: Event): e is Scroll => e instanceof Scroll))
+      .subscribe((e) => {
+        if (e.position) {
+          // backward navigation
+          viewportScroller.scrollToPosition(e.position);
+        } else if (e.anchor) {
+          // anchor navigation
+          viewportScroller.scrollToAnchor(e.anchor);
+        } else {
+          const a = ['/library/albums', '/library/artists'];
+          // forward navigation
+          if (!a.find((l) => e.routerEvent.url.includes(l))) {
+            viewportScroller.scrollToPosition([0, 0]);
+          }
+        }
+      });
+  }
+}

@@ -10,7 +10,7 @@ import { Icons } from '../utils/icons.util';
       aria-label="menu"
       title="Other actions"
       matRipple
-      matRippleColor="rgba(0,0,0,0.2)"
+      [matRippleColor]="rippleColor"
       [matRippleCentered]="true"
       [matRippleDisabled]="disableRipple"
     >
@@ -66,6 +66,7 @@ export class MenuComponent {
   @Input() triggerIcon = Icons.dotsVertical;
   @Input() menuItems!: MenuItem[];
   @Input() disableRipple = false;
+  @Input() rippleColor = 'rgba(255, 255, 255, 0.1)';
   icons = Icons;
 }
 
