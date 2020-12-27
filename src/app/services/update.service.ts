@@ -1,7 +1,7 @@
 import { ApplicationRef, Inject, Injectable } from '@angular/core';
 import { SwUpdate } from '@angular/service-worker';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { concatMapTo, first, tap } from 'rxjs/operators';
+import { concatMap, first, tap } from 'rxjs/operators';
 import { interval } from 'rxjs';
 import { DOCUMENT } from '@angular/common';
 
@@ -17,7 +17,7 @@ export class UpdateService {
   register() {
     this.updates.available
       .pipe(
-        concatMapTo(
+        concatMap(() =>
           this.snackBar
             .open('A new version is available.', 'Reload')
             .afterDismissed()
@@ -31,7 +31,7 @@ export class UpdateService {
     this.appRef.isStable
       .pipe(
         first((isStable) => isStable),
-        concatMapTo(interval(60 * 60 * 1000)), // 1 hour
+        concatMap(() => interval(60 * 60 * 1000)), // 1 hour
         tap(() => this.updates.checkForUpdate())
       )
       .subscribe();
