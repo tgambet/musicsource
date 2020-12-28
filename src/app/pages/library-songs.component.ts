@@ -2,16 +2,18 @@ import {
   ChangeDetectionStrategy,
   Component,
   HostListener,
+  OnDestroy,
   OnInit,
 } from '@angular/core';
 import { SelectOption } from '@app/components/select.component';
-import { EMPTY, merge, Observable } from 'rxjs';
+import { EMPTY, merge, Observable, Subscription } from 'rxjs';
 import { SongWithCover$ } from '@app/models/song.model';
 import { LibraryFacade } from '@app/store/library/library.facade';
 import {
   catchError,
   concatMap,
   last,
+  map,
   publish,
   scan,
   skip,
@@ -20,6 +22,7 @@ import {
 } from 'rxjs/operators';
 import { tapError } from '@app/utils/tap-error.util';
 import { Icons } from '@app/utils/icons.util';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-library-songs',
@@ -74,6 +77,7 @@ import { Icons } from '@app/utils/icons.util';
         border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         display: flex;
         align-items: center;
+        padding: 0 8px;
       }
       .cover {
         width: 32px;
@@ -93,6 +97,10 @@ import { Icons } from '@app/utils/icons.util';
       }
       .title {
         flex: 12 1 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        margin-right: 8px;
       }
       .artist,
       .album {
@@ -116,10 +124,10 @@ import { Icons } from '@app/utils/icons.util';
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class LibrarySongsComponent implements OnInit {
+export class LibrarySongsComponent implements OnInit, OnDestroy {
   sortOptions: SelectOption[] = [
-    { name: 'A to Z', value: 'name_asc' },
-    { name: 'Z to A', value: 'name_desc' },
+    { name: 'A to Z', value: 'title_asc' },
+    { name: 'Z to A', value: 'title_desc' },
   ];
   selectedSortOption: SelectOption = this.sortOptions[0];
 
@@ -127,34 +135,60 @@ export class LibrarySongsComponent implements OnInit {
 
   songsObs: Observable<SongWithCover$[]>[] = [];
 
+  sort!: { index: string; direction: IDBCursorDirection };
+
   lastSong?: SongWithCover$;
   loadMore = false;
 
-  constructor(private library: LibraryFacade) {}
+  subscription = new Subscription();
+
+  constructor(private library: LibraryFacade, private route: ActivatedRoute) {}
 
   @HostListener('window:scroll')
   update() {
     if (
       window.innerHeight + window.scrollY >= document.body.scrollHeight - 64 &&
-      this.loadMore
+      this.loadMore &&
+      this.sort
     ) {
-      this.pushSongs();
+      this.pushSongs(this.sort.index, this.sort.direction);
     }
   }
 
   ngOnInit(): void {
-    this.pushSongs();
+    this.subscription.add(
+      this.route.queryParamMap
+        .pipe(
+          map((params) => ({
+            index: params.get('sort') || 'title',
+            direction: ((params.get('dir') || 'asc') === 'asc'
+              ? 'next'
+              : 'prev') as IDBCursorDirection,
+          })),
+          tap((sort) => (this.sort = sort)),
+          tap(() => (this.songsObs = [])),
+          tap(() => (this.lastSong = undefined)),
+          tap(({ index, direction }) => this.pushSongs(index, direction))
+        )
+        .subscribe()
+    );
   }
 
-  pushSongs(): void {
+  ngOnDestroy(): void {
+    this.subscription.unsubscribe();
+  }
+
+  pushSongs(index: string, direction: IDBCursorDirection): void {
     this.loadMore = false;
 
-    const query: IDBKeyRange | null = this.lastSong
+    const query: IDBKeyRange | null = !this.lastSong
+      ? null
+      : direction === 'next'
       ? IDBKeyRange.lowerBound(this.lastSong.title, false)
-      : null;
+      : IDBKeyRange.upperBound(this.lastSong.title, false);
 
     this.songsObs.push(
-      this.library.getSongs('title', query).pipe(
+      this.library.getSongs(index, query, direction).pipe(
         skip(query ? 1 : 0),
         take(100),
         scan((acc, cur) => [...acc, cur], [] as SongWithCover$[]),
