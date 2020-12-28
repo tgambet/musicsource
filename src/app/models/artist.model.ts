@@ -8,6 +8,7 @@ export interface Artist {
 }
 
 export type ArtistWithCover = Except<Artist, 'pictureKey'> & { cover?: string };
+
 export type ArtistWithCover$ = Except<Artist, 'pictureKey'> & {
   cover$: Observable<string>;
 };

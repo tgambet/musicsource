@@ -25,9 +25,14 @@ import { Subscription } from 'rxjs';
         <app-select
           [options]="sortOptions"
           [selected]="selectedSortOption"
-          (selectionChange)="sort($event)"
+          (selectionChange)="this.sortValue = $event; sort()"
         ></app-select>
-        <mat-slide-toggle>Favorites only</mat-slide-toggle>
+        <mat-slide-toggle
+          [checked]="favorites"
+          (change)="this.favorites = $event.checked; sort()"
+        >
+          Favorites only
+        </mat-slide-toggle>
       </app-container>
     </div>
     <app-container>
@@ -63,7 +68,7 @@ import { Subscription } from 'rxjs';
         align-items: center;
       }
       mat-slide-toggle {
-        margin-left: auto;
+        margin-left: 16px;
       }
     `,
   ],
@@ -83,6 +88,9 @@ export class LibraryContentComponent
   scrolledTop = false;
 
   subscription = new Subscription();
+
+  sortValue!: string;
+  favorites = false;
 
   constructor(
     private library: LibraryFacade,
@@ -114,6 +122,8 @@ export class LibraryContentComponent
                     o.value === `${params.get('sort')}_${params.get('dir')}`
                 ) || this.sortOptions[0])
           ),
+          tap(() => (this.sortValue = this.selectedSortOption.value)),
+          tap((params) => (this.favorites = params.get('favorites') === '1')),
           tap(() => this.cdr.markForCheck())
         )
         .subscribe()
@@ -124,10 +134,10 @@ export class LibraryContentComponent
     this.subscription.unsubscribe();
   }
 
-  async sort(option: string) {
-    const [sort, dir] = option.split('_');
+  async sort() {
+    const [sort, dir] = this.sortValue.split('_');
     await this.router.navigate([], {
-      queryParams: { sort, dir },
+      queryParams: { sort, dir, favorites: this.favorites ? '1' : '0' },
       preserveFragment: true,
     });
   }

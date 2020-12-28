@@ -31,7 +31,9 @@ import { PlayerState } from './player-button.component';
       [topLabel]="{ text: name, routerLink: albumRouterLink }"
       [bottomLabel]="[
         'Album',
-        artist ? { text: artist || '', routerLink: artistRouterLink } : '',
+        artist && artistRouterLink
+          ? { text: artist, routerLink: artistRouterLink }
+          : artist,
         year ? year.toString(10) : ''
       ]"
       [size]="size"
@@ -61,7 +63,7 @@ export class AlbumComponent {
   @Input() year?: number;
   @Input() cover?: string;
   @Input() albumRouterLink!: any[] | string;
-  @Input() artistRouterLink!: any[] | string;
+  @Input() artistRouterLink!: any[] | string | undefined;
   @Input() size: 'small' | 'large' = 'large';
   icons = Icons;
   menuItems = [

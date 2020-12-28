@@ -65,6 +65,9 @@ import { Icons } from '@app/utils/icons.util';
         height: 80px;
         text-decoration: none;
       }
+      .artist:last-of-type a {
+        border: none;
+      }
       .cover {
         width: 56px;
         border-radius: 50%;

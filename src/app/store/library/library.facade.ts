@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { DirectoryEntry, Entry } from '@app/models/entry.model';
 import { EMPTY, from, Observable, of, throwError } from 'rxjs';
-import { concatMap, filter, map } from 'rxjs/operators';
+import { concatMap, map } from 'rxjs/operators';
 import { StorageService } from '@app/services/storage.service';
 import { Album, AlbumWithCover } from '@app/models/album.model';
 import {
@@ -121,12 +121,20 @@ export class LibraryFacade {
   getSongs(
     index?: string,
     query?: IDBValidKey | IDBKeyRange | null,
-    direction: IDBCursorDirection = 'next'
+    direction?: IDBCursorDirection,
+    predicate?: (song: Song) => boolean
   ): Observable<SongWithCover$> {
     return this.storage.open$(['songs']).pipe(
       concatMap((transaction) =>
         this.storage
-          .walk$<Song>(transaction, 'songs', index, query, direction)
+          .walk$<Song>(
+            transaction,
+            'songs',
+            index,
+            query,
+            direction || 'next',
+            predicate
+          )
           .pipe(
             map(({ value }) => value),
             map((song) => ({
@@ -180,18 +188,51 @@ export class LibraryFacade {
       concatMap((t) =>
         this.storage.walk$<Song>(t, 'songs', 'albums', album.name)
       ),
-      map(({ value }) => value),
-      filter(
-        (song) =>
-          song.albumartist === album.artist || song.artist === album.artist
-      )
+      map(({ value }) => value)
+      // filter(
+      //   (song) =>
+      //     song.albumartist === album.artist || song.artist === album.artist
+      // )
     );
 
   getArtistAlbums(artist: Artist): Observable<AlbumWithCover> {
     return this.storage.open$(['albums', 'pictures']).pipe(
       concatMap((transaction) =>
         this.storage
-          .walk$<Album>(transaction, 'albums', 'artists', artist.name)
+          .walk$<Album>(transaction, 'albums', 'albumArtist', artist.name)
+          .pipe(
+            map(({ value }) => value),
+            concatMap((album) =>
+              album.pictureKey
+                ? this.storage
+                    .exec$<Picture>(
+                      transaction.objectStore('pictures').get(album.pictureKey)
+                    )
+                    .pipe(
+                      map((picture) => ({
+                        ...album,
+                        cover: picture ? getCover(picture) : undefined,
+                      }))
+                    )
+                : of(album)
+            )
+          )
+      )
+    );
+  }
+
+  getAlbumsWithArtist(artist: Artist): Observable<AlbumWithCover> {
+    return this.storage.open$(['albums', 'pictures']).pipe(
+      concatMap((transaction) =>
+        this.storage
+          .walk$<Album>(
+            transaction,
+            'albums',
+            'artists',
+            artist.name,
+            'next',
+            (album) => album.albumArtist !== artist.name
+          )
           .pipe(
             map(({ value }) => value),
             concatMap((album) =>

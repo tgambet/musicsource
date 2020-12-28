@@ -13,7 +13,6 @@ import {
   concatMap,
   concatMapTo,
   delay,
-  distinct,
   filter,
   first,
   groupBy,
@@ -61,10 +60,10 @@ import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ScannerFacade } from '@app/store/scanner/scanner.facade';
 import { collectLeft, collectRight } from '@app/utils/either.util';
-import { hash } from '@app/utils/hash.util';
 import { Album } from '@app/models/album.model';
 import { SetRequired } from '@app/utils/types.util';
 import { Song } from '@app/models/song.model';
+import { hash } from '@app/utils/hash.util';
 
 @Injectable()
 export class ScannerEffects implements OnRunEffects {
@@ -229,24 +228,40 @@ export class ScannerEffects implements OnRunEffects {
                 )
                 .pipe(
                   filter(({ key }) => !!key.toString().trim()), // Prevent empty strings
-                  distinct(
-                    ({ value: song }) =>
-                      `${song.albumartist || song.artist}||${song.album}`
+                  groupBy(
+                    ({ value: song }) => song.album,
+                    ({ value: song }) => song
                   ),
-                  map(({ value: song }) => ({
-                    id: hash(
-                      `${song.albumartist || song.artist}||${song.album}`
-                    ),
-                    name: song.album,
-                    artist: song.albumartist || song.artist,
-                    artistId:
-                      song.albumartist || song.artist
-                        ? hash((song.albumartist || song.artist) as string)
-                        : undefined,
-                    year: song.year,
-                    pictureKey: song.pictureKey,
-                    addedOn: Date.now(),
-                  }))
+                  mergeMap((groups$) =>
+                    groups$.pipe(
+                      reduce((acc, cur) => [...acc, cur], [] as Song[]),
+                      map((songs) => ({
+                        album: groups$.key,
+                        songs,
+                      }))
+                    )
+                  ),
+                  map(({ album, songs }) => {
+                    const artists = songs
+                      .map((song) => song.artists || [])
+                      .reduce((acc, cur) => [...acc, ...cur], [] as string[])
+                      .filter((song, i, arr) => arr.indexOf(song) === i);
+
+                    return {
+                      id: hash(album),
+                      name: album,
+                      albumArtist:
+                        songs.find((song) => song.albumartist)?.albumartist ||
+                        artists.length === 1
+                          ? artists[0]
+                          : undefined,
+                      artists,
+                      year: songs[0].year,
+                      pictureKey: songs.find((song) => song.pictureKey)
+                        ?.pictureKey,
+                      addedOn: Date.now(),
+                    };
+                  })
                 )
             ),
             concatMap((album) =>
@@ -269,39 +284,32 @@ export class ScannerEffects implements OnRunEffects {
         project: () =>
           this.storage.open$(['albums']).pipe(
             concatMap((transaction) =>
-              this.storage
-                .walk$<SetRequired<Album, 'artist'>>(
-                  transaction,
-                  'albums',
-                  'artists'
-                )
-                .pipe(
-                  filter(({ key }) => !!key.toString().trim()), // Prevent empty strings
-                  groupBy(
-                    ({ value: album }) => album.artist,
-                    ({ value: album }) => album
-                  ),
-                  mergeMap((groups$) =>
-                    groups$.pipe(
-                      reduce((acc, cur) => [...acc, cur], [] as Album[]),
-                      map((albums) => ({
-                        artist: groups$.key,
-                        albums,
-                      }))
-                    )
-                  ),
-                  map(({ artist, albums }) => {
-                    const latestAlbum: Album | undefined = albums
-                      .filter((album) => album.pictureKey)
-                      .sort((a1, a2) => (a2.year || 0) - (a1.year || 0))[0];
-
-                    return {
-                      id: hash(artist),
-                      name: artist,
-                      pictureKey: latestAlbum?.pictureKey,
-                    };
-                  })
-                )
+              this.storage.walk$<Album>(transaction, 'albums', 'artists').pipe(
+                filter(({ key }) => !!key.toString().trim()), // Prevent empty strings
+                groupBy(
+                  ({ key }) => key,
+                  ({ value: album }) => album
+                ),
+                mergeMap((groups$) =>
+                  groups$.pipe(
+                    reduce((acc, cur) => [...acc, cur], [] as Album[]),
+                    map((albums) => ({
+                      artist: groups$.key,
+                      albums,
+                    }))
+                  )
+                ),
+                map(({ artist, albums }) => {
+                  const latestAlbum: Album | undefined = albums
+                    .filter((album) => album.pictureKey)
+                    .sort((a1, a2) => (a2.year || 0) - (a1.year || 0))[0];
+                  return {
+                    id: hash(artist.toString()),
+                    name: artist.toString(),
+                    pictureKey: latestAlbum?.pictureKey,
+                  };
+                })
+              )
             ),
             concatMap((artist) =>
               this.storage.add$('artists', artist).pipe(

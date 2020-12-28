@@ -6,11 +6,13 @@ import { ActivatedRoute } from '@angular/router';
 import { map } from 'rxjs/operators';
 import { AlbumWithCover } from '@app/models/album.model';
 import { SongWithCover } from '@app/models/song.model';
+import { hash } from '@app/utils/hash.util';
 
 export type ArtistPageInfo = {
   artist: Artist;
   cover: string | undefined;
   albums$: Observable<AlbumWithCover[]>;
+  foundOn$: Observable<AlbumWithCover[]>;
   songs$: Observable<SongWithCover[]>;
 };
 
@@ -22,6 +24,7 @@ export type ArtistPageInfo = {
         <div
           class="cover"
           [style.backgroundImage]="'url(' + info.cover + ')'"
+          *ngIf="info.cover"
         ></div>
         <div class="shadow"></div>
         <app-container-page class="header-container">
@@ -44,23 +47,57 @@ export type ArtistPageInfo = {
         </app-container-page>
       </header>
       <app-container-page class="content">
-        <app-title [title]="'Songs'" size="small"></app-title>
+        <app-title title="Songs" size="small"></app-title>
         <ng-container *ngIf="info.songs$ | async as songs">
           <app-song-list [songs]="songs"></app-song-list>
         </ng-container>
-        <app-title [title]="'Albums'" size="small"></app-title>
-        <app-h-list buttonsTopPosition="113px">
-          <app-album
-            appHListItem
-            class="album"
-            *ngFor="let album of info.albums$ | async"
-            [name]="album.name"
-            [year]="album.year"
-            [cover]="album.cover"
-            [albumRouterLink]="['/', 'album', album.id]"
-          >
-          </app-album>
-        </app-h-list>
+        <ng-container *ngIf="info.albums$ | async as albums">
+          <app-title
+            title="Albums"
+            size="small"
+            *ngIf="albums.length > 0"
+          ></app-title>
+          <app-h-list buttonsTopPosition="113px" *ngIf="albums.length > 0">
+            <app-album
+              appHListItem
+              class="album"
+              *ngFor="let album of albums"
+              [name]="album.name"
+              [year]="album.year"
+              [cover]="album.cover"
+              [albumRouterLink]="['/', 'album', album.id]"
+            >
+            </app-album>
+          </app-h-list>
+        </ng-container>
+        <ng-container *ngIf="info.foundOn$ | async as albums">
+          <app-title
+            title="Found in"
+            size="small"
+            *ngIf="albums.length > 0"
+          ></app-title>
+          <app-h-list buttonsTopPosition="113px" *ngIf="albums.length > 0">
+            <app-album
+              appHListItem
+              class="album"
+              *ngFor="let album of albums"
+              [name]="album.name"
+              [year]="album.year"
+              [cover]="album.cover"
+              [albumRouterLink]="['/', 'album', album.id]"
+              [artist]="
+                album.albumArtist ||
+                (album.artists.length > 1 ? 'Various artists' : undefined)
+              "
+              [artistRouterLink]="
+                album.albumArtist
+                  ? ['/', 'artist', getHash(album.albumArtist)]
+                  : undefined
+              "
+            >
+            </app-album>
+          </app-h-list>
+        </ng-container>
       </app-container-page>
     </ng-container>
   `,
@@ -157,5 +194,9 @@ export class ArtistPageComponent implements OnInit {
 
   ngOnInit(): void {
     this.info$ = this.route.data.pipe(map((data) => data.info));
+  }
+
+  getHash(albumArtist: string) {
+    return hash(albumArtist);
   }
 }

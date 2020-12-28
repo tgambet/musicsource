@@ -86,9 +86,9 @@ export class AppRoutingModule {
           // anchor navigation
           viewportScroller.scrollToAnchor(e.anchor);
         } else {
-          const a = ['/library'];
+          const a = [/library.+#top/];
           // forward navigation
-          if (!a.find((l) => e.routerEvent.url.includes(l))) {
+          if (!a.find((l) => l.test(e.routerEvent.url))) {
             viewportScroller.scrollToPosition([0, 0]);
           }
         }

@@ -5,6 +5,7 @@ import { AlbumWithCover } from '@app/models/album.model';
 import { map, scan, switchMap } from 'rxjs/operators';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SelectOption } from '@app/components/select.component';
+import { hash } from '@app/utils/hash.util';
 
 @Component({
   selector: 'app-library-albums',
@@ -21,9 +22,16 @@ import { SelectOption } from '@app/components/select.component';
           <app-album
             [name]="album.name"
             [cover]="album.cover"
-            [artist]="album.artist"
             [year]="album.year"
-            [artistRouterLink]="['/', 'artist', album.artistId]"
+            [artist]="
+              album.albumArtist ||
+              (album.artists.length > 1 ? 'Various artists' : undefined)
+            "
+            [artistRouterLink]="
+              album.albumArtist
+                ? ['/', 'artist', getHash(album.albumArtist)]
+                : undefined
+            "
             [albumRouterLink]="['/', 'album', album.id]"
             size="small"
           ></app-album>
@@ -90,4 +98,8 @@ export class LibraryAlbumsComponent implements OnInit {
   }
 
   trackBy = (index: number, album: AlbumWithCover) => album.id;
+
+  getHash(albumArtist: string) {
+    return hash(albumArtist);
+  }
 }

@@ -54,6 +54,9 @@ import { DirectoryEntry, Entry, FileEntry } from '@app/models/entry.model';
         border-radius: 4px;
         overflow: hidden;
       }
+      .cover img {
+        display: block;
+      }
       .cover app-player-button {
         position: absolute;
         top: -4px;

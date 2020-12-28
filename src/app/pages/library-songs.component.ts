@@ -7,7 +7,7 @@ import {
 } from '@angular/core';
 import { SelectOption } from '@app/components/select.component';
 import { EMPTY, merge, Observable, Subscription } from 'rxjs';
-import { SongWithCover$ } from '@app/models/song.model';
+import { Song, SongWithCover$ } from '@app/models/song.model';
 import { LibraryFacade } from '@app/store/library/library.facade';
 import {
   catchError,
@@ -23,6 +23,7 @@ import {
 import { tapError } from '@app/utils/tap-error.util';
 import { Icons } from '@app/utils/icons.util';
 import { ActivatedRoute } from '@angular/router';
+import { hash } from '@app/utils/hash.util';
 
 @Component({
   selector: 'app-library-songs',
@@ -32,10 +33,14 @@ import { ActivatedRoute } from '@angular/router';
       [selectedSortOption]="selectedSortOption"
     >
       <div class="songs">
-        <ng-container *ngFor="let songs$ of songsObs">
+        <ng-container *ngFor="let songs$ of songsObs; let i = index">
           <div
             class="song"
-            *ngFor="let song of songs$ | async; trackBy: trackBy"
+            *ngFor="
+              let song of songs$ | async;
+              trackBy: trackBy;
+              let count = count
+            "
           >
             <div class="cover" style="--aspect-ratio:1">
               <img
@@ -49,15 +54,30 @@ import { ActivatedRoute } from '@angular/router';
               ></app-player-button>
             </div>
             <span class="title">{{ song.title }}</span>
-            <span class="artist">{{ song.artist }}</span>
-            <span class="album">{{ song.album }}</span>
+            <span class="artists">
+              <ng-container
+                *ngFor="let artist of song.artists; let last = last"
+              >
+                <a [routerLink]="['/', 'artist', getHash(artist)]">{{
+                  artist
+                }}</a>
+                <span>{{ !last ? ', ' : '' }}</span>
+              </ng-container>
+            </span>
+            <span class="album">
+              <a [routerLink]="['/', 'album', getHash(song.album)]">
+                {{ song.album }}
+              </a>
+            </span>
             <span class="controls">
               <button mat-icon-button>
                 <app-icon [path]="icons.heartOutline"></app-icon>
               </button>
               <app-menu></app-menu>
             </span>
+            <span class="duration">{{ song.duration | duration }}</span>
           </div>
+          <p class="empty" *ngIf="i === 0">There is no song to display</p>
         </ng-container>
       </div>
     </app-library-content>
@@ -78,6 +98,9 @@ import { ActivatedRoute } from '@angular/router';
         display: flex;
         align-items: center;
         padding: 0 8px;
+      }
+      .song:last-of-type {
+        border: none;
       }
       .cover {
         width: 32px;
@@ -102,7 +125,10 @@ import { ActivatedRoute } from '@angular/router';
         text-overflow: ellipsis;
         margin-right: 8px;
       }
-      .artist,
+      .artists {
+        margin-right: 8px;
+      }
+      .artists,
       .album {
         color: #aaa;
         flex: 9 1 0;
@@ -113,12 +139,32 @@ import { ActivatedRoute } from '@angular/router';
       .controls {
         flex: 0 0 auto;
         visibility: hidden;
+        margin-left: 16px;
+      }
+      .duration {
+        color: #aaa;
+        flex: 0 0 54px;
+        margin-left: 16px;
       }
       .song:hover .controls {
         visibility: visible;
       }
       .controls button {
         margin-right: 8px;
+      }
+      .song ~ .empty {
+        display: none;
+      }
+      .empty {
+        color: #aaa;
+        padding: 24px 0;
+        text-align: center;
+      }
+      a[href] {
+        text-decoration: none;
+      }
+      a[href]:hover {
+        text-decoration: underline;
       }
     `,
   ],
@@ -135,7 +181,7 @@ export class LibrarySongsComponent implements OnInit, OnDestroy {
 
   songsObs: Observable<SongWithCover$[]>[] = [];
 
-  sort!: { index: string; direction: IDBCursorDirection };
+  sort!: { index: string; direction: IDBCursorDirection; favorites: boolean };
 
   lastSong?: SongWithCover$;
   loadMore = false;
@@ -151,7 +197,7 @@ export class LibrarySongsComponent implements OnInit, OnDestroy {
       this.loadMore &&
       this.sort
     ) {
-      this.pushSongs(this.sort.index, this.sort.direction);
+      this.pushSongs(this.sort.index, this.sort.direction, this.sort.favorites);
     }
   }
 
@@ -164,11 +210,14 @@ export class LibrarySongsComponent implements OnInit, OnDestroy {
             direction: ((params.get('dir') || 'asc') === 'asc'
               ? 'next'
               : 'prev') as IDBCursorDirection,
+            favorites: params.get('favorites') === '1',
           })),
           tap((sort) => (this.sort = sort)),
           tap(() => (this.songsObs = [])),
           tap(() => (this.lastSong = undefined)),
-          tap(({ index, direction }) => this.pushSongs(index, direction))
+          tap(({ index, direction, favorites }) =>
+            this.pushSongs(index, direction, favorites)
+          )
         )
         .subscribe()
     );
@@ -178,7 +227,11 @@ export class LibrarySongsComponent implements OnInit, OnDestroy {
     this.subscription.unsubscribe();
   }
 
-  pushSongs(index: string, direction: IDBCursorDirection): void {
+  pushSongs(
+    index: string,
+    direction: IDBCursorDirection,
+    favorites: boolean
+  ): void {
     this.loadMore = false;
 
     const query: IDBKeyRange | null = !this.lastSong
@@ -187,8 +240,12 @@ export class LibrarySongsComponent implements OnInit, OnDestroy {
       ? IDBKeyRange.lowerBound(this.lastSong.title, false)
       : IDBKeyRange.upperBound(this.lastSong.title, false);
 
+    const predicate: ((song: Song) => boolean) | undefined = favorites
+      ? (song) => song.album?.includes('Sup') || false
+      : undefined;
+
     this.songsObs.push(
-      this.library.getSongs(index, query, direction).pipe(
+      this.library.getSongs(index, query, direction, predicate).pipe(
         skip(query ? 1 : 0),
         take(100),
         scan((acc, cur) => [...acc, cur], [] as SongWithCover$[]),
@@ -212,5 +269,9 @@ export class LibrarySongsComponent implements OnInit, OnDestroy {
 
   trackBy(index: number, song: SongWithCover$): string {
     return song.entryPath;
+  }
+
+  getHash(s: string): string {
+    return hash(s);
   }
 }

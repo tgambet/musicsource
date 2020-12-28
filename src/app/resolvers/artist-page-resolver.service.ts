@@ -57,6 +57,12 @@ export class ArtistPageResolverService implements Resolve<ArtistPageInfo> {
                 albums.sort((a1, a2) => (a2.year || 0) - (a1.year || 0))
               )
             ),
+            foundOn$: this.library.getAlbumsWithArtist(artist).pipe(
+              reduce((acc, cur) => [...acc, cur], [] as AlbumWithCover[]),
+              map((albums) =>
+                albums.sort((a1, a2) => (a2.year || 0) - (a1.year || 0))
+              )
+            ),
             songs$: this.library.getArtistTitles(artist).pipe(
               take(5),
               mergeMap((song) =>

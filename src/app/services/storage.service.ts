@@ -28,7 +28,8 @@ export class StorageService {
       db.createObjectStore('pictures', { keyPath: 'hash' });
       // Albums
       const albums = db.createObjectStore('albums', { keyPath: 'id' });
-      albums.createIndex('artists', 'artist');
+      albums.createIndex('artists', 'artists', { multiEntry: true });
+      albums.createIndex('albumArtist', 'albumArtist');
       albums.createIndex('name', 'name');
       albums.createIndex('year', 'year');
       albums.createIndex('addedOn', 'addedOn');
@@ -183,23 +184,26 @@ export class StorageService {
     store: string,
     index?: string,
     query?: IDBValidKey | IDBKeyRange | null,
-    direction: IDBCursorDirection = 'next'
+    direction?: IDBCursorDirection,
+    predicate?: (_: T) => boolean
   ): Observable<{ value: T; key: IDBValidKey; primaryKey: IDBValidKey }> {
     return new Observable((observer) => {
       const request = index
         ? transaction
             .objectStore(store)
             .index(index)
-            .openCursor(query, direction)
-        : transaction.objectStore(store).openCursor(query, direction);
+            .openCursor(query, direction || 'next')
+        : transaction.objectStore(store).openCursor(query, direction || 'next');
       request.onsuccess = (event: any) => {
         const cursor: IDBCursorWithValue = event.target.result;
         if (cursor && !observer.closed) {
-          observer.next({
-            value: cursor.value,
-            key: cursor.key,
-            primaryKey: cursor.primaryKey,
-          });
+          if (!predicate || predicate(cursor.value)) {
+            observer.next({
+              value: cursor.value,
+              key: cursor.key,
+              primaryKey: cursor.primaryKey,
+            });
+          }
           cursor.continue();
         } else {
           observer.complete();

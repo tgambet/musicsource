@@ -5,6 +5,7 @@ import { Album } from '@app/models/album.model';
 import { map } from 'rxjs/operators';
 import { Song } from '@app/models/song.model';
 import { Icons } from '@app/utils/icons.util';
+import { hash } from '@app/utils/hash.util';
 
 export type AlbumPageInfo = {
   album: Album;
@@ -20,16 +21,29 @@ export type AlbumPageInfo = {
         <app-container-page class="header-container">
           <div class="info">
             <div class="cover" style="--aspect-ratio:1">
-              <img [src]="info.cover" alt="cover" />
+              <img [src]="info.cover" alt="cover" *ngIf="info.cover" />
             </div>
             <div class="metadata">
               <app-title [title]="info.album.name"></app-title>
               <p>
-                Album •
-                <a [routerLink]="['/', 'artist', info.album.artistId]">{{
-                  info.album.artist
-                }}</a>
-                • {{ info.album.year }}
+                <span>Album</span> •
+                <a
+                  *ngIf="info.album.albumArtist"
+                  [routerLink]="[
+                    '/',
+                    'artist',
+                    getHash(info.album.albumArtist)
+                  ]"
+                  >{{ info.album.albumArtist }}</a
+                >
+                <span
+                  *ngIf="
+                    !info.album.albumArtist && info.album.artists.length > 1
+                  "
+                >
+                  Various artists
+                </span>
+                • <span>{{ info.album.year }}</span>
               </p>
               <p class="stats">
                 {{ info.songs.length }} titres •
@@ -149,5 +163,9 @@ export class AlbumPageComponent implements OnInit {
   getLength(songs: Song[]): number {
     const sec = songs.reduce((acc, song) => acc + (song.duration || 0), 0);
     return Math.floor(sec / 60);
+  }
+
+  getHash(albumArtist: string) {
+    return hash(albumArtist);
   }
 }
