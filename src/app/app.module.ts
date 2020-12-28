@@ -66,6 +66,8 @@ import { LibraryArtistsComponent } from './pages/library-artists.component';
 import { LibraryPlaylistsComponent } from './pages/library-playlists.component';
 import { LibraryContentComponent } from './pages/library-content.component';
 import { UpdateService } from '@app/services/update.service';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { LibrarySongsComponent } from './pages/library-songs.component';
 
 @NgModule({
   declarations: [
@@ -107,6 +109,7 @@ import { UpdateService } from '@app/services/update.service';
     LibraryArtistsComponent,
     LibraryPlaylistsComponent,
     LibraryContentComponent,
+    LibrarySongsComponent,
   ],
   imports: [
     BrowserModule,
@@ -125,6 +128,7 @@ import { UpdateService } from '@app/services/update.service';
     A11yModule,
     MatDialogModule,
     MatTabsModule,
+    MatSlideToggleModule,
     StoreModule.forRoot(reducers, {
       runtimeChecks: {
         strictStateSerializability: false,

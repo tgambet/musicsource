@@ -6,13 +6,15 @@ import {
   ElementRef,
   HostListener,
   Input,
+  OnDestroy,
   OnInit,
   ViewChild,
 } from '@angular/core';
 import { SelectOption } from '@app/components/select.component';
 import { LibraryFacade } from '@app/store/library/library.facade';
 import { ActivatedRoute, Router } from '@angular/router';
-import { take, tap } from 'rxjs/operators';
+import { tap } from 'rxjs/operators';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-library-content',
@@ -25,6 +27,7 @@ import { take, tap } from 'rxjs/operators';
           [selected]="selectedSortOption"
           (selectionChange)="sort($event)"
         ></app-select>
+        <mat-slide-toggle>Favorites only</mat-slide-toggle>
       </app-container>
     </div>
     <app-container>
@@ -49,18 +52,25 @@ import { take, tap } from 'rxjs/operators';
         display: flex;
         align-items: center;
         padding: 16px 0;
-        transition: background-color ease 200ms;
       }
       .filters.scrolled-top {
         background-color: #212121;
         border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         box-shadow: rgba(0, 0, 0, 0.4) 0 5px 6px -3px;
       }
+      .filters app-container {
+        display: flex;
+        align-items: center;
+      }
+      mat-slide-toggle {
+        margin-left: auto;
+      }
     `,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class LibraryContentComponent implements OnInit, AfterViewInit {
+export class LibraryContentComponent
+  implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('filters', { static: true })
   filters!: ElementRef;
 
@@ -71,6 +81,8 @@ export class LibraryContentComponent implements OnInit, AfterViewInit {
   selectedSortOption!: SelectOption;
 
   scrolledTop = false;
+
+  subscription = new Subscription();
 
   constructor(
     private library: LibraryFacade,
@@ -91,18 +103,25 @@ export class LibraryContentComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
-    this.route.queryParamMap
-      .pipe(
-        take(1),
-        tap(
-          (params) =>
-            (this.selectedSortOption =
-              this.sortOptions.find(
-                (o) => o.value === `${params.get('sort')}_${params.get('dir')}`
-              ) || this.sortOptions[0])
+    this.subscription.add(
+      this.route.queryParamMap
+        .pipe(
+          tap(
+            (params) =>
+              (this.selectedSortOption =
+                this.sortOptions.find(
+                  (o) =>
+                    o.value === `${params.get('sort')}_${params.get('dir')}`
+                ) || this.sortOptions[0])
+          ),
+          tap(() => this.cdr.markForCheck())
         )
-      )
-      .subscribe();
+        .subscribe()
+    );
+  }
+
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
   }
 
   async sort(option: string) {

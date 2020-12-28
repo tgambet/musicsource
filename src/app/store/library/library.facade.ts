@@ -10,7 +10,7 @@ import {
   ArtistWithCover$,
 } from '@app/models/artist.model';
 import { getCover, Picture } from '@app/models/picture.model';
-import { Song } from '@app/models/song.model';
+import { Song, SongWithCover$ } from '@app/models/song.model';
 
 @Injectable()
 export class LibraryFacade {
@@ -110,6 +110,30 @@ export class LibraryFacade {
               cover$: artist.pictureKey
                 ? this.storage
                     .get$('pictures', artist.pictureKey)
+                    .pipe(map((picture) => getCover(picture as Picture)))
+                : EMPTY,
+            }))
+          )
+      )
+    );
+  }
+
+  getSongs(
+    index?: string,
+    query?: IDBValidKey | IDBKeyRange | null,
+    direction: IDBCursorDirection = 'next'
+  ): Observable<SongWithCover$> {
+    return this.storage.open$(['songs']).pipe(
+      concatMap((transaction) =>
+        this.storage
+          .walk$<Song>(transaction, 'songs', index, query, direction)
+          .pipe(
+            map(({ value }) => value),
+            map((song) => ({
+              ...song,
+              cover$: song.pictureKey
+                ? this.storage
+                    .get$('pictures', song.pictureKey)
                     .pipe(map((picture) => getCover(picture as Picture)))
                 : EMPTY,
             }))

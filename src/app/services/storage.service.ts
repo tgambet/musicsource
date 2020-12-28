@@ -23,6 +23,7 @@ export class StorageService {
       songs.createIndex('artists', 'artists', { multiEntry: true });
       songs.createIndex('genres', 'genre', { multiEntry: true });
       songs.createIndex('albums', 'album');
+      songs.createIndex('title', 'title');
       // Pictures
       db.createObjectStore('pictures', { keyPath: 'hash' });
       // Albums

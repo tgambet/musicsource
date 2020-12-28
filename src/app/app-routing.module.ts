@@ -17,6 +17,7 @@ import { LibraryArtistsComponent } from '@app/pages/library-artists.component';
 import { ViewportScroller } from '@angular/common';
 import { filter } from 'rxjs/operators';
 import { LibraryPlaylistsComponent } from '@app/pages/library-playlists.component';
+import { LibrarySongsComponent } from '@app/pages/library-songs.component';
 
 const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -31,7 +32,7 @@ const routes: Routes = [
       { path: 'playlists', component: LibraryPlaylistsComponent },
       { path: 'albums', component: LibraryAlbumsComponent },
       { path: 'artists', component: LibraryArtistsComponent },
-      { path: 'songs', component: SearchComponent },
+      { path: 'songs', component: LibrarySongsComponent },
     ],
   },
   { path: 'search', component: SearchComponent },

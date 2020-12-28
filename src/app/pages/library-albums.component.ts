@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { LibraryFacade } from '@app/store/library/library.facade';
 import { Observable } from 'rxjs';
 import { AlbumWithCover } from '@app/models/album.model';
-import { map, scan, switchMap, take, tap } from 'rxjs/operators';
+import { map, scan, switchMap } from 'rxjs/operators';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SelectOption } from '@app/components/select.component';
 
@@ -62,7 +62,7 @@ export class LibraryAlbumsComponent implements OnInit {
     { name: 'A to Z', value: 'name_asc' },
     { name: 'Z to A', value: 'name_desc' },
   ];
-  selectedSortOption = this.sortOptions[0];
+  selectedSortOption: SelectOption = this.sortOptions[0];
 
   constructor(
     private library: LibraryFacade,
@@ -71,19 +71,6 @@ export class LibraryAlbumsComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.route.queryParamMap
-      .pipe(
-        take(1),
-        tap(
-          (params) =>
-            (this.selectedSortOption =
-              this.sortOptions.find(
-                (o) => o.value === `${params.get('sort')}_${params.get('dir')}`
-              ) || this.sortOptions[0])
-        )
-      )
-      .subscribe();
-
     const sort$ = this.route.queryParamMap.pipe(
       map((params) => ({
         index: params.get('sort') || 'year',

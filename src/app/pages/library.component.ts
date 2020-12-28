@@ -60,13 +60,13 @@ import {
           <a
             mat-tab-link
             disableRipple
-            routerLink="liked"
+            routerLink="songs"
             fragment="top"
             routerLinkActive="active"
             #rla3="routerLinkActive"
             [active]="rla3.isActive"
           >
-            Liked songs
+            Songs
           </a>
         </nav>
       </app-container>
@@ -89,7 +89,6 @@ import {
         top: 63px;
         z-index: 101;
         background: black;
-        transition: background-color ease 200ms;
       }
       .container.scrolled-top {
         background-color: #212121;

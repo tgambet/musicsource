@@ -1,14 +1,5 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  ElementRef,
-  OnInit,
-  ViewChild,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { SelectOption } from '@app/components/select.component';
-import { LibraryFacade } from '@app/store/library/library.facade';
-import { ActivatedRoute, Router } from '@angular/router';
-import { take, tap } from 'rxjs/operators';
 import { Icons } from '@app/utils/icons.util';
 
 @Component({
@@ -61,36 +52,16 @@ import { Icons } from '@app/utils/icons.util';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LibraryPlaylistsComponent implements OnInit {
-  @ViewChild('filters', { static: true })
-  filters!: ElementRef;
-
   sortOptions: SelectOption[] = [
     { name: 'Added recently', value: 'addedOn_desc' },
     { name: 'A to Z', value: 'name_asc' },
     { name: 'Z to A', value: 'name_desc' },
   ];
-  selectedSortOption = this.sortOptions[0];
+  selectedSortOption?: SelectOption;
 
   icons = Icons;
 
-  constructor(
-    private library: LibraryFacade,
-    private router: Router,
-    private route: ActivatedRoute
-  ) {}
+  constructor() {}
 
-  ngOnInit(): void {
-    this.route.queryParamMap
-      .pipe(
-        take(1),
-        tap(
-          (params) =>
-            (this.selectedSortOption =
-              this.sortOptions.find(
-                (o) => o.value === `${params.get('sort')}_${params.get('dir')}`
-              ) || this.sortOptions[0])
-        )
-      )
-      .subscribe();
-  }
+  ngOnInit(): void {}
 }
