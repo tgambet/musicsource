@@ -57,7 +57,7 @@ export class LibraryPlaylistsComponent implements OnInit {
     { name: 'A to Z', value: 'name_asc' },
     { name: 'Z to A', value: 'name_desc' },
   ];
-  selectedSortOption?: SelectOption;
+  selectedSortOption: SelectOption = this.sortOptions[0];
 
   icons = Icons;
 
