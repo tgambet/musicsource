@@ -18,7 +18,11 @@ import { hash } from '@app/utils/hash.util';
             [artist]="album.albumArtist"
             [cover]="album.cover"
             [albumRouterLink]="['/', 'album', album.id]"
-            [artistRouterLink]="['/', 'artist', getHash(album.albumArtist)]"
+            [artistRouterLink]="
+              album.albumArtist
+                ? ['/', 'artist', getHash(album.albumArtist)]
+                : undefined
+            "
           ></app-album>
         </div>
       </app-h-list>
