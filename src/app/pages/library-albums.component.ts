@@ -43,7 +43,6 @@ import { hash } from '@app/utils/hash.util';
     `
       :host {
         display: block;
-        min-height: 1200px;
       }
       .albums {
         display: flex;

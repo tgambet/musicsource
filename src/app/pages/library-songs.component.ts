@@ -148,6 +148,7 @@ import { hash } from '@app/utils/hash.util';
         color: #aaa;
         flex: 0 0 54px;
         margin-left: 16px;
+        text-align: right;
       }
       .song:hover .controls {
         visibility: visible;

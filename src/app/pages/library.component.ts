@@ -132,5 +132,7 @@ export class LibraryComponent implements OnInit {
       this.navContainer.nativeElement.getBoundingClientRect().y <= 63;
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    setTimeout(() => this.update());
+  }
 }

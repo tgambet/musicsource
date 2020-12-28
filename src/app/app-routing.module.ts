@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { Routes, RouterModule, Router, Event, Scroll } from '@angular/router';
+import { Event, Router, RouterModule, Routes, Scroll } from '@angular/router';
 import { HomeComponent } from '@app/pages/home.component';
 import { LibraryComponent } from '@app/pages/library.component';
 import { SearchComponent } from '@app/pages/search.component';
@@ -15,9 +15,10 @@ import { ArtistPageResolverService } from '@app/resolvers/artist-page-resolver.s
 import { LibraryAlbumsComponent } from '@app/pages/library-albums.component';
 import { LibraryArtistsComponent } from '@app/pages/library-artists.component';
 import { ViewportScroller } from '@angular/common';
-import { filter } from 'rxjs/operators';
+import { concatMap, delay, filter, retry, tap } from 'rxjs/operators';
 import { LibraryPlaylistsComponent } from '@app/pages/library-playlists.component';
 import { LibrarySongsComponent } from '@app/pages/library-songs.component';
+import { defer, EMPTY, of, throwError } from 'rxjs';
 
 const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -81,7 +82,29 @@ export class AppRoutingModule {
       .subscribe((e) => {
         if (e.position) {
           // backward navigation
-          viewportScroller.scrollToPosition(e.position);
+          const p = e.position;
+          // viewportScroller.scrollToPosition(p);
+
+          const getPos$ = defer(() => of(viewportScroller.getScrollPosition()));
+          const scroll$ = defer(() => of(viewportScroller.scrollToPosition(p)));
+
+          scroll$
+            .pipe(
+              delay(1),
+              tap(() => console.log(1)),
+              concatMap(() =>
+                getPos$.pipe(
+                  concatMap((pos) =>
+                    pos[1] === p[1] ? EMPTY : throwError('not matching')
+                  )
+                )
+              ),
+              retry(200)
+            )
+            .subscribe();
+
+          // setTimeout(() => viewportScroller.scrollToPosition(p), 100);
+          // setTimeout(() => viewportScroller.scrollToPosition(p), 200);
         } else if (e.anchor) {
           // anchor navigation
           viewportScroller.scrollToAnchor(e.anchor);

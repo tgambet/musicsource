@@ -45,7 +45,6 @@ import { Icons } from '@app/utils/icons.util';
     `
       :host {
         display: block;
-        min-height: 1200px;
       }
       .artists {
         display: flex;
@@ -82,9 +81,6 @@ import { Icons } from '@app/utils/icons.util';
       .meta {
         display: flex;
         flex-direction: column;
-      }
-      .sub {
-        color: #aaa;
       }
       .controls {
         position: absolute;

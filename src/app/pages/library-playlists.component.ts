@@ -26,7 +26,6 @@ import { Icons } from '@app/utils/icons.util';
     `
       :host {
         display: block;
-        min-height: 1200px;
       }
       .playlists {
         display: flex;
