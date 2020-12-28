@@ -65,7 +65,10 @@ import { hash } from '@app/utils/hash.util';
               </ng-container>
             </span>
             <span class="album">
-              <a [routerLink]="['/', 'album', getHash(song.album)]">
+              <a
+                [routerLink]="['/', 'album', getHash(song.album)]"
+                *ngIf="song.album"
+              >
                 {{ song.album }}
               </a>
             </span>

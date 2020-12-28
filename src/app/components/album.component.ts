@@ -33,7 +33,7 @@ import { PlayerState } from './player-button.component';
         'Album',
         artist && artistRouterLink
           ? { text: artist, routerLink: artistRouterLink }
-          : artist,
+          : artist || '',
         year ? year.toString(10) : ''
       ]"
       [size]="size"

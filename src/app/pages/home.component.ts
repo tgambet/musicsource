@@ -4,6 +4,7 @@ import { filter, scan, take } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { AlbumWithCover } from '@app/models/album.model';
 import { ArtistWithCover } from '@app/models/artist.model';
+import { hash } from '@app/utils/hash.util';
 
 @Component({
   selector: 'app-home',
@@ -14,10 +15,10 @@ import { ArtistWithCover } from '@app/models/artist.model';
         <div class="album" appHListItem *ngFor="let album of albums$ | async">
           <app-album
             [name]="album.name"
-            [artist]="album.artist"
+            [artist]="album.albumArtist"
             [cover]="album.cover"
             [albumRouterLink]="['/', 'album', album.id]"
-            [artistRouterLink]="['/', 'artist', album.artistId]"
+            [artistRouterLink]="['/', 'artist', getHash(album.albumArtist)]"
           ></app-album>
         </div>
       </app-h-list>
@@ -78,4 +79,8 @@ export class HomeComponent implements OnInit {
   constructor(private library: LibraryFacade) {}
 
   ngOnInit(): void {}
+
+  getHash(albumArtist: string) {
+    return hash(albumArtist);
+  }
 }
