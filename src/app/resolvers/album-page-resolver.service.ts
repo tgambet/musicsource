@@ -29,7 +29,7 @@ export class AlbumPageResolverService implements Resolve<AlbumPageInfo> {
       return EMPTY;
     }
 
-    return this.library.getAlbum(id).pipe(
+    return this.library.getAlbumByHash(id).pipe(
       concatMap((album) => (!album ? throwError('not found') : of(album))),
       catchError(() => {
         this.router.navigate(['/home']);

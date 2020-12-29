@@ -1,13 +1,13 @@
 import { Except } from '@app/utils/types.util';
 
 export interface Album {
-  id: string;
   name: string;
+  hash: string;
   albumArtist?: string;
   artists: string[];
   year?: number;
   pictureKey?: IDBValidKey;
-  addedOn: number;
+  lastModified: Date;
 }
 
 export type AlbumWithCover = Except<Album, 'pictureKey'> & { cover?: string };

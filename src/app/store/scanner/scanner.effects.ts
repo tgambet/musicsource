@@ -247,19 +247,27 @@ export class ScannerEffects implements OnRunEffects {
                       .reduce((acc, cur) => [...acc, ...cur], [] as string[])
                       .filter((song, i, arr) => arr.indexOf(song) === i);
 
+                    const lastModified = [...songs].sort(
+                      (s1, s2) =>
+                        s2.lastModified.getMilliseconds() -
+                        s1.lastModified.getMilliseconds()
+                    )[0].lastModified;
+
+                    const albumArtist =
+                      songs.find((song) => song.albumartist)?.albumartist ||
+                      artists.length === 1
+                        ? artists[0]
+                        : undefined;
+
                     return {
-                      id: hash(album),
                       name: album,
-                      albumArtist:
-                        songs.find((song) => song.albumartist)?.albumartist ||
-                        artists.length === 1
-                          ? artists[0]
-                          : undefined,
+                      hash: hash(`${album}`),
+                      albumArtist,
                       artists,
                       year: songs[0].year,
                       pictureKey: songs.find((song) => song.pictureKey)
                         ?.pictureKey,
-                      addedOn: Date.now(),
+                      lastModified: new Date(lastModified),
                     };
                   })
                 )
@@ -303,11 +311,18 @@ export class ScannerEffects implements OnRunEffects {
                   const latestAlbum: Album | undefined = albums
                     .filter((album) => album.pictureKey)
                     .sort((a1, a2) => (a2.year || 0) - (a1.year || 0))[0];
+
+                  const lastModified = [...albums].sort(
+                    (a1, a2) =>
+                      a2.lastModified.getMilliseconds() -
+                      a1.lastModified.getMilliseconds()
+                  )[0].lastModified;
+
                   return {
                     hash: hash(artist.toString()),
                     name: artist.toString(),
                     pictureKey: latestAlbum?.pictureKey,
-                    addedOn: new Date(), // TODO use latest albums addedOn
+                    lastModified: new Date(lastModified),
                   };
                 })
               )

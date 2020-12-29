@@ -17,7 +17,7 @@ import { hash } from '@app/utils/hash.util';
             [name]="album.name"
             [artist]="album.albumArtist"
             [cover]="album.cover"
-            [albumRouterLink]="['/', 'album', album.id]"
+            [albumRouterLink]="['/', 'album', album.hash]"
             [artistRouterLink]="
               album.albumArtist
                 ? ['/', 'artist', getHash(album.albumArtist)]

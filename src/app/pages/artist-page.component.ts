@@ -65,7 +65,7 @@ export type ArtistPageInfo = {
               [name]="album.name"
               [year]="album.year"
               [cover]="album.cover"
-              [albumRouterLink]="['/', 'album', album.id]"
+              [albumRouterLink]="['/', 'album', album.hash]"
             >
             </app-album>
           </app-h-list>
@@ -84,7 +84,7 @@ export type ArtistPageInfo = {
               [name]="album.name"
               [year]="album.year"
               [cover]="album.cover"
-              [albumRouterLink]="['/', 'album', album.id]"
+              [albumRouterLink]="['/', 'album', album.hash]"
               [artist]="
                 album.albumArtist ||
                 (album.artists.length > 1 ? 'Various artists' : undefined)

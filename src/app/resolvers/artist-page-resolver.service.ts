@@ -37,7 +37,7 @@ export class ArtistPageResolverService implements Resolve<ArtistPageInfo> {
       return EMPTY;
     }
 
-    return this.library.getArtistById(id).pipe(
+    return this.library.getArtistByHash(id).pipe(
       concatMap((artist) => (!artist ? throwError('not found') : of(artist))),
       catchError(() => {
         this.router.navigate(['/home']);

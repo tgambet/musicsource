@@ -192,11 +192,14 @@ export class LibraryFacade {
   getArtist = (name: string): Observable<Artist | undefined> =>
     this.storage.get$('artists', name);
 
-  getArtistById = (id: string): Observable<Artist | undefined> =>
-    this.storage.get$('artists', id, 'hash');
+  getArtistByHash = (hash: string): Observable<Artist | undefined> =>
+    this.storage.get$('artists', hash, 'hash');
 
   getAlbum = (id: string): Observable<Album | undefined> =>
     this.storage.get$('albums', id);
+
+  getAlbumByHash = (hash: string): Observable<Album | undefined> =>
+    this.storage.get$('albums', hash, 'hash');
 
   getPicture = (id: IDBValidKey | undefined): Observable<Picture | undefined> =>
     id ? this.storage.get$('pictures', id) : of(undefined);
@@ -204,7 +207,7 @@ export class LibraryFacade {
   getAlbumTitles = (album: Album): Observable<Song> =>
     this.storage.open$(['songs']).pipe(
       concatMap((t) =>
-        this.storage.walk$<Song>(t, 'songs', 'albums', album.name)
+        this.storage.walk$<Song>(t, 'songs', 'album', album.name)
       ),
       map(({ value }) => value)
       // filter(

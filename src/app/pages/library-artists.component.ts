@@ -171,7 +171,7 @@ export class LibraryArtistsComponent implements OnInit {
   artists$!: Observable<ArtistWithCover$[]>;
 
   sortOptions: SelectOption[] = [
-    { name: 'Recently added', value: 'addedOn_desc' },
+    { name: 'Recently added', value: 'lastModified_desc' },
     { name: 'A to Z', value: 'name_asc' },
     { name: 'Z to A', value: 'name_desc' },
   ];
@@ -193,8 +193,8 @@ export class LibraryArtistsComponent implements OnInit {
         index:
           params.get('sort') === 'name'
             ? undefined
-            : params.get('sort') || undefined,
-        direction: ((params.get('dir') || 'asc') === 'asc'
+            : params.get('sort') || 'lastModified',
+        direction: ((params.get('dir') || 'desc') === 'asc'
           ? 'next'
           : 'prev') as IDBCursorDirection,
         favorites: params.get('favorites') === '1',

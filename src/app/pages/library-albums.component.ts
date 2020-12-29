@@ -32,7 +32,7 @@ import { hash } from '@app/utils/hash.util';
                 ? ['/', 'artist', getHash(album.albumArtist)]
                 : undefined
             "
-            [albumRouterLink]="['/', 'album', album.id]"
+            [albumRouterLink]="['/', 'album', album.hash]"
             size="small"
           ></app-album>
         </div>
@@ -64,6 +64,7 @@ export class LibraryAlbumsComponent implements OnInit {
   albums$!: Observable<AlbumWithCover[]>;
 
   sortOptions: SelectOption[] = [
+    { name: 'Recently added', value: 'lastModified_desc' },
     { name: 'Latest releases', value: 'year_desc' },
     { name: 'Oldest releases', value: 'year_asc' },
     { name: 'A to Z', value: 'name_asc' },
@@ -80,7 +81,10 @@ export class LibraryAlbumsComponent implements OnInit {
   ngOnInit(): void {
     const sort$ = this.route.queryParamMap.pipe(
       map((params) => ({
-        index: params.get('sort') || 'year',
+        index:
+          params.get('sort') === 'name'
+            ? undefined
+            : params.get('sort') || 'lastModified',
         direction: ((params.get('dir') || 'desc') === 'asc'
           ? 'next'
           : 'prev') as IDBCursorDirection,
@@ -96,7 +100,7 @@ export class LibraryAlbumsComponent implements OnInit {
     );
   }
 
-  trackBy = (index: number, album: AlbumWithCover) => album.id;
+  trackBy = (index: number, album: AlbumWithCover) => album.name;
 
   getHash(albumArtist: string) {
     return hash(albumArtist);

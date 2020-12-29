@@ -29,17 +29,17 @@ export class StorageService {
       // Pictures
       db.createObjectStore('pictures', { keyPath: 'hash' });
       // Albums
-      const albums = db.createObjectStore('albums', { keyPath: 'id' });
+      const albums = db.createObjectStore('albums', { keyPath: 'name' });
+      albums.createIndex('hash', 'hash');
       albums.createIndex('artists', 'artists', { multiEntry: true });
       albums.createIndex('albumArtist', 'albumArtist');
-      albums.createIndex('name', 'name');
       albums.createIndex('year', 'year');
-      albums.createIndex('addedOn', 'addedOn');
+      albums.createIndex('lastModified', 'lastModified');
       // Artists
       const artists = db.createObjectStore('artists', { keyPath: 'name' });
       artists.createIndex('hash', 'hash');
-      artists.createIndex('addedOn', 'addedOn');
       artists.createIndex('likedOn', 'likedOn');
+      artists.createIndex('lastModified', 'lastModified');
       // Playlists
       const playlists = db.createObjectStore('playlists', { keyPath: 'title' });
       playlists.createIndex('createdOn', 'createdOn');

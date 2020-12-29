@@ -8,6 +8,7 @@ import {
 } from '@angular/core';
 import { Icons } from '@app/utils/icons.util';
 
+// TODO generic value type
 export interface SelectOption {
   name: string;
   value: string;
