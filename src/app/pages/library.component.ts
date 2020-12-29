@@ -30,6 +30,11 @@ import {
             routerLink="playlists"
             fragment="top"
             routerLinkActive="active"
+            queryParamsHandling="merge"
+            [queryParams]="{
+              sort: null,
+              dir: null
+            }"
             #rla1="routerLinkActive"
             [active]="rla1.isActive"
           >
@@ -41,6 +46,11 @@ import {
             fragment="top"
             routerLink="albums"
             routerLinkActive="active"
+            queryParamsHandling="merge"
+            [queryParams]="{
+              sort: null,
+              dir: null
+            }"
             #rla2="routerLinkActive"
             [active]="rla2.isActive"
           >
@@ -52,6 +62,11 @@ import {
             routerLink="artists"
             fragment="top"
             routerLinkActive="active"
+            queryParamsHandling="merge"
+            [queryParams]="{
+              sort: null,
+              dir: null
+            }"
             #rla4="routerLinkActive"
             [active]="rla4.isActive"
           >
@@ -63,6 +78,11 @@ import {
             routerLink="songs"
             fragment="top"
             routerLinkActive="active"
+            queryParamsHandling="merge"
+            [queryParams]="{
+              sort: null,
+              dir: null
+            }"
             #rla3="routerLinkActive"
             [active]="rla3.isActive"
           >

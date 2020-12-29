@@ -5,6 +5,7 @@ export interface Artist {
   id: string;
   name: string;
   pictureKey?: IDBValidKey;
+  isFavorite?: boolean;
 }
 
 export type ArtistWithCover = Except<Artist, 'pictureKey'> & { cover?: string };

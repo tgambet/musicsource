@@ -97,12 +97,20 @@ export class LibraryFacade {
   getArtists(
     index?: string,
     query?: IDBValidKey | IDBKeyRange | null,
-    direction: IDBCursorDirection = 'next'
+    direction?: IDBCursorDirection,
+    predicate?: (_: Artist) => boolean
   ): Observable<ArtistWithCover$> {
     return this.storage.open$(['artists']).pipe(
       concatMap((transaction) =>
         this.storage
-          .walk$<Artist>(transaction, 'artists', index, query, direction)
+          .walk$<Artist>(
+            transaction,
+            'artists',
+            index,
+            query,
+            direction || 'next',
+            predicate
+          )
           .pipe(
             map(({ value }) => value),
             map((artist) => ({
@@ -292,6 +300,12 @@ export class LibraryFacade {
   toggleSongFavorite(song: Song): Observable<void> {
     return this.storage
       .update$<Song>('songs', { isFavorite: !song.isFavorite }, song.entryPath)
+      .pipe(map(() => void 0));
+  }
+
+  toggleArtistFavorite(artist: Artist): Observable<void> {
+    return this.storage
+      .update$<Artist>('artists', { isFavorite: !artist.isFavorite }, artist.id)
       .pipe(map(() => void 0));
   }
 }

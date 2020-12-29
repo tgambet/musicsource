@@ -106,7 +106,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
             </div>
           </ng-container>
 
-          <p class="empty" *ngIf="i === 0">There is no song to display</p>
+          <p class="empty" *ngIf="i === 0">Nothing to display</p>
         </ng-container>
       </div>
     </app-library-content>
@@ -187,6 +187,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
       .controls {
         flex: 0 0 auto;
         margin-left: 16px;
+        color: #aaa;
       }
       .controls button:not(.favorite) {
         opacity: 0;
