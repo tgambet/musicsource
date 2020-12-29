@@ -6,6 +6,7 @@ export type Song = Omit<ICommonTagsResult, 'picture'> & {
   entryPath: string;
   pictureKey?: IDBValidKey;
   duration?: number;
+  isFavorite?: boolean;
 };
 
 export type SongWithCover = Except<Song, 'pictureKey'> & {

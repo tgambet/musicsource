@@ -19,6 +19,7 @@ import {
   mdiFolderPlusOutline,
   mdiFolderSearchOutline,
   mdiFolderSyncOutline,
+  mdiHeart,
   mdiHeartOutline,
   mdiHelpCircle,
   mdiHistory,
@@ -47,6 +48,7 @@ export class Icons {
   static currencyUsd = mdiCurrencyUsd;
   static dotsVertical = mdiDotsVertical;
   static folderOutline = mdiFolderOutline;
+  static heart = mdiHeart;
   static heartOutline = mdiHeartOutline;
   static helpCircle = mdiHelpCircle;
   static history = mdiHistory;

@@ -288,4 +288,10 @@ export class LibraryFacade {
       concatMap((perm) => (perm ? of(void 0) : throwError('Permission denied')))
     );
   }
+
+  toggleSongFavorite(song: Song): Observable<void> {
+    return this.storage
+      .update$<Song>('songs', { isFavorite: !song.isFavorite }, song.entryPath)
+      .pipe(map(() => void 0));
+  }
 }

@@ -1,5 +1,6 @@
 import {
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   HostListener,
   OnDestroy,
@@ -24,6 +25,7 @@ import { tapError } from '@app/utils/tap-error.util';
 import { Icons } from '@app/utils/icons.util';
 import { ActivatedRoute } from '@angular/router';
 import { hash } from '@app/utils/hash.util';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-library-songs',
@@ -34,56 +36,92 @@ import { hash } from '@app/utils/hash.util';
     >
       <div class="songs">
         <ng-container *ngFor="let songs$ of songsObs; let i = index">
-          <div
-            class="song"
+          <ng-container
             *ngFor="
               let song of songs$ | async;
               trackBy: trackBy;
               let count = count
             "
           >
-            <div class="cover" style="--aspect-ratio:1">
-              <img
-                *ngIf="song.cover$ | async as cover"
-                [src]="cover"
-                alt="cover"
-              />
-              <app-player-button
-                size="small"
-                shape="square"
-              ></app-player-button>
+            <div
+              class="song"
+              *ngIf="!sort.favorites || song.isFavorite"
+              cdkMonitorSubtreeFocus
+            >
+              <div class="cover" style="--aspect-ratio:1">
+                <img
+                  *ngIf="song.cover$ | async as cover"
+                  [src]="cover"
+                  alt="cover"
+                />
+                <app-player-button
+                  size="small"
+                  shape="square"
+                ></app-player-button>
+              </div>
+              <span class="title">{{ song.title }}</span>
+              <span class="artists">
+                <ng-container
+                  *ngFor="let artist of song.artists; let last = last"
+                >
+                  <a [routerLink]="['/', 'artist', getHash(artist)]">{{
+                    artist
+                  }}</a>
+                  <span>{{ !last ? ', ' : '' }}</span>
+                </ng-container>
+              </span>
+              <span class="album">
+                <a
+                  [routerLink]="['/', 'album', getHash(song.album)]"
+                  *ngIf="song.album"
+                >
+                  {{ song.album }}
+                </a>
+              </span>
+              <span class="controls">
+                <button
+                  [class.favorite]="song.isFavorite"
+                  mat-icon-button
+                  [disableRipple]="true"
+                  (click)="toggleFavorite(song)"
+                >
+                  <app-icon
+                    [path]="song.isFavorite ? icons.heart : icons.heartOutline"
+                  ></app-icon>
+                </button>
+                <button
+                  class="trigger"
+                  aria-label="Other actions"
+                  title="Other actions"
+                  mat-icon-button
+                  [disableRipple]="true"
+                  [matMenuTriggerFor]="menu"
+                  #trigger="matMenuTrigger"
+                  [matMenuTriggerData]="{ song: song }"
+                >
+                  <app-icon [path]="icons.dotsVertical" [size]="24"></app-icon>
+                </button>
+              </span>
+              <span class="duration">{{ song.duration | duration }}</span>
             </div>
-            <span class="title">{{ song.title }}</span>
-            <span class="artists">
-              <ng-container
-                *ngFor="let artist of song.artists; let last = last"
-              >
-                <a [routerLink]="['/', 'artist', getHash(artist)]">{{
-                  artist
-                }}</a>
-                <span>{{ !last ? ', ' : '' }}</span>
-              </ng-container>
-            </span>
-            <span class="album">
-              <a
-                [routerLink]="['/', 'album', getHash(song.album)]"
-                *ngIf="song.album"
-              >
-                {{ song.album }}
-              </a>
-            </span>
-            <span class="controls">
-              <button mat-icon-button>
-                <app-icon [path]="icons.heartOutline"></app-icon>
-              </button>
-              <app-menu></app-menu>
-            </span>
-            <span class="duration">{{ song.duration | duration }}</span>
-          </div>
+          </ng-container>
+
           <p class="empty" *ngIf="i === 0">There is no song to display</p>
         </ng-container>
       </div>
     </app-library-content>
+
+    <mat-menu #menu="matMenu" [hasBackdrop]="true" [overlapTrigger]="true">
+      <ng-template matMenuContent let-song="song">
+        <button mat-menu-item (click)="toggleFavorite(song)">
+          <app-icon
+            [path]="song.isFavorite ? icons.heart : icons.heartOutline"
+          ></app-icon>
+          <span *ngIf="song.isFavorite">Remove from favorites</span>
+          <span *ngIf="!song.isFavorite">Add to favorites</span>
+        </button>
+      </ng-template>
+    </mat-menu>
   `,
   styles: [
     `
@@ -116,10 +154,11 @@ import { hash } from '@app/utils/hash.util';
         position: absolute;
         top: -4px;
         left: -4px;
-        visibility: hidden;
+        opacity: 0;
       }
-      .song:hover app-player-button {
-        visibility: visible;
+      .song:hover app-player-button,
+      .cdk-focused app-player-button {
+        opacity: 1;
       }
       .title {
         flex: 12 1 0;
@@ -139,21 +178,24 @@ import { hash } from '@app/utils/hash.util';
         overflow: hidden;
         text-overflow: ellipsis;
       }
-      .controls {
-        flex: 0 0 auto;
-        visibility: hidden;
-        margin-left: 16px;
-      }
       .duration {
         color: #aaa;
         flex: 0 0 54px;
         margin-left: 16px;
         text-align: right;
       }
-      .song:hover .controls {
-        visibility: visible;
+      .controls {
+        flex: 0 0 auto;
+        margin-left: 16px;
       }
-      .controls button {
+      .controls button:not(.favorite) {
+        opacity: 0;
+      }
+      .song:hover .controls button,
+      .cdk-focused .controls button {
+        opacity: 1;
+      }
+      .controls button:not(:last-of-type) {
         margin-right: 8px;
       }
       .song ~ .empty {
@@ -192,7 +234,12 @@ export class LibrarySongsComponent implements OnInit, OnDestroy {
 
   subscription = new Subscription();
 
-  constructor(private library: LibraryFacade, private route: ActivatedRoute) {}
+  constructor(
+    private library: LibraryFacade,
+    private route: ActivatedRoute,
+    private snack: MatSnackBar,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   @HostListener('window:scroll')
   update() {
@@ -245,7 +292,7 @@ export class LibrarySongsComponent implements OnInit, OnDestroy {
       : IDBKeyRange.upperBound(this.lastSong.title, false);
 
     const predicate: ((song: Song) => boolean) | undefined = favorites
-      ? (song) => song.album?.includes('Sup') || false
+      ? (song) => !!song.isFavorite
       : undefined;
 
     this.songsObs.push(
@@ -277,5 +324,27 @@ export class LibrarySongsComponent implements OnInit, OnDestroy {
 
   getHash(s: string): string {
     return hash(s);
+  }
+
+  toggleFavorite(song: Song) {
+    this.library
+      .toggleSongFavorite(song)
+      .pipe(tap(() => (song.isFavorite = !song.isFavorite)))
+      .pipe(
+        tap(() =>
+          this.snack.open(
+            song.isFavorite
+              ? 'Added to your favorites'
+              : 'Removed from your favorites',
+            undefined,
+            {
+              duration: 2000,
+              horizontalPosition: 'left',
+            }
+          )
+        )
+      )
+      .pipe(tap(() => this.cdr.markForCheck()))
+      .subscribe();
   }
 }

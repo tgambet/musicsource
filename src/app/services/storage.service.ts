@@ -128,6 +128,16 @@ export class StorageService {
       );
   }
 
+  update$<T>(
+    store: string,
+    value: Partial<T>,
+    key: IDBValidKey
+  ): Observable<IDBValidKey> {
+    return this.open$([store], 'readwrite').pipe(
+      this.update(store, value, key)
+    );
+  }
+
   delete(
     store: string,
     key: IDBValidKey | IDBKeyRange
