@@ -304,9 +304,10 @@ export class ScannerEffects implements OnRunEffects {
                     .filter((album) => album.pictureKey)
                     .sort((a1, a2) => (a2.year || 0) - (a1.year || 0))[0];
                   return {
-                    id: hash(artist.toString()),
+                    hash: hash(artist.toString()),
                     name: artist.toString(),
                     pictureKey: latestAlbum?.pictureKey,
+                    addedOn: new Date(), // TODO use latest albums addedOn
                   };
                 })
               )

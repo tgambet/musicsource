@@ -36,9 +36,10 @@ export class StorageService {
       albums.createIndex('year', 'year');
       albums.createIndex('addedOn', 'addedOn');
       // Artists
-      const artists = db.createObjectStore('artists', { keyPath: 'id' });
-      artists.createIndex('name', 'name');
-      artists.createIndex('isFavorite', 'isFavorite');
+      const artists = db.createObjectStore('artists', { keyPath: 'name' });
+      artists.createIndex('hash', 'hash');
+      artists.createIndex('addedOn', 'addedOn');
+      artists.createIndex('likedOn', 'likedOn');
       // Playlists
       const playlists = db.createObjectStore('playlists', { keyPath: 'title' });
       playlists.createIndex('createdOn', 'createdOn');
@@ -299,10 +300,14 @@ export class StorageService {
     );
   }
 
-  get$<T>(store: string, key: IDBValidKey): Observable<T | undefined> {
+  get$<T>(
+    store: string,
+    key: IDBValidKey,
+    index?: string
+  ): Observable<T | undefined> {
     return this.getDb().pipe(
       this.open([store], 'readonly'),
-      this.get<T>(key, store)
+      this.get<T>(key, store, index)
     );
   }
 

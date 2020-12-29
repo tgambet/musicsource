@@ -36,7 +36,7 @@ import { hash } from '@app/utils/hash.util';
           <app-artist
             [name]="artist.name"
             [cover]="artist.cover"
-            [artistRouterLink]="['/', 'artist', artist.id]"
+            [artistRouterLink]="['/', 'artist', artist.hash]"
           ></app-artist>
         </div>
       </app-h-list>

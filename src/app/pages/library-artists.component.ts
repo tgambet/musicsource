@@ -30,11 +30,11 @@ import { MatSnackBar } from '@angular/material/snack-bar';
       <div class="artists">
         <ng-container *ngFor="let artist of artists$ | async; trackBy: trackBy">
           <div
-            *ngIf="!favorites || artist.isFavorite"
+            *ngIf="!favorites || !!artist.likedOn"
             class="artist"
             cdkMonitorSubtreeFocus
           >
-            <a [routerLink]="['/', 'artist', artist.id]" matRipple>
+            <a [routerLink]="['/', 'artist', artist.hash]" matRipple>
               <div class="cover" style="--aspect-ratio:1">
                 <img
                   [src]="cover"
@@ -51,13 +51,13 @@ import { MatSnackBar } from '@angular/material/snack-bar';
             </a>
             <div class="controls">
               <button
-                [class.favorite]="artist.isFavorite"
+                [class.favorite]="!!artist.likedOn"
                 mat-icon-button
                 [disableRipple]="true"
                 (click)="toggleFavorite(artist)"
               >
                 <app-icon
-                  [path]="artist.isFavorite ? icons.heart : icons.heartOutline"
+                  [path]="!!artist.likedOn ? icons.heart : icons.heartOutline"
                 ></app-icon>
               </button>
               <button
@@ -171,6 +171,7 @@ export class LibraryArtistsComponent implements OnInit {
   artists$!: Observable<ArtistWithCover$[]>;
 
   sortOptions: SelectOption[] = [
+    { name: 'Recently added', value: 'addedOn_desc' },
     { name: 'A to Z', value: 'name_asc' },
     { name: 'Z to A', value: 'name_desc' },
   ];
@@ -189,7 +190,10 @@ export class LibraryArtistsComponent implements OnInit {
   ngOnInit(): void {
     const sort$ = this.route.queryParamMap.pipe(
       map((params) => ({
-        index: params.get('sort') || 'name',
+        index:
+          params.get('sort') === 'name'
+            ? undefined
+            : params.get('sort') || undefined,
         direction: ((params.get('dir') || 'asc') === 'asc'
           ? 'next'
           : 'prev') as IDBCursorDirection,
@@ -203,7 +207,7 @@ export class LibraryArtistsComponent implements OnInit {
         const predicate:
           | ((artist: Artist) => boolean)
           | undefined = sort.favorites
-          ? (artist) => !!artist.isFavorite
+          ? (artist) => !!artist.likedOn
           : undefined;
 
         return this.library
@@ -217,16 +221,18 @@ export class LibraryArtistsComponent implements OnInit {
     );
   }
 
-  trackBy = (index: number, artist: ArtistWithCover$) => artist.id;
+  trackBy = (index: number, artist: ArtistWithCover$) => artist.name;
 
   toggleFavorite(artist: Artist): void {
     this.library
       .toggleArtistFavorite(artist)
-      .pipe(tap(() => (artist.isFavorite = !artist.isFavorite)))
+      .pipe(
+        tap(() => (artist.likedOn = !!artist.likedOn ? undefined : new Date()))
+      )
       .pipe(
         tap(() =>
           this.snack.open(
-            artist.isFavorite
+            !!artist.likedOn
               ? 'Added to your favorites'
               : 'Removed from your favorites',
             undefined

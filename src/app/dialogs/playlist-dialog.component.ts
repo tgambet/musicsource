@@ -57,10 +57,10 @@ export class UniquePlaylistTitleValidator implements AsyncValidator {
               required
               formControlName="title"
             />
-            <mat-error *ngIf="form.get('title').hasError('required')">
+            <mat-error *ngIf="form.get('title')?.hasError('required')">
               Required
             </mat-error>
-            <mat-error *ngIf="form.get('title').hasError('taken')">
+            <mat-error *ngIf="form.get('title')?.hasError('taken')">
               A playlist with that name already exists
             </mat-error>
           </mat-form-field>

@@ -349,13 +349,7 @@ export class LibrarySongsComponent implements OnInit, OnDestroy {
   toggleFavorite(song: Song) {
     this.library
       .toggleSongFavorite(song)
-      .pipe(
-        tap(() =>
-          !!song.likedOn
-            ? (song.likedOn = undefined)
-            : (song.likedOn = new Date())
-        )
-      )
+      .pipe(tap(() => (song.likedOn = !!song.likedOn ? undefined : new Date())))
       .pipe(
         tap(() =>
           this.snack.open(

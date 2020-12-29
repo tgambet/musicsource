@@ -2,10 +2,11 @@ import { Except } from '@app/utils/types.util';
 import { Observable } from 'rxjs';
 
 export interface Artist {
-  id: string;
+  hash: string;
   name: string;
   pictureKey?: IDBValidKey;
-  isFavorite?: boolean;
+  likedOn?: Date;
+  addedOn: Date;
 }
 
 export type ArtistWithCover = Except<Artist, 'pictureKey'> & { cover?: string };

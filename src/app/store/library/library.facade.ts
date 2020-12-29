@@ -189,8 +189,11 @@ export class LibraryFacade {
       )
     );
 
-  getArtist = (id: string): Observable<Artist | undefined> =>
-    this.storage.get$('artists', id);
+  getArtist = (name: string): Observable<Artist | undefined> =>
+    this.storage.get$('artists', name);
+
+  getArtistById = (id: string): Observable<Artist | undefined> =>
+    this.storage.get$('artists', id, 'hash');
 
   getAlbum = (id: string): Observable<Album | undefined> =>
     this.storage.get$('albums', id);
@@ -316,7 +319,11 @@ export class LibraryFacade {
 
   toggleArtistFavorite(artist: Artist): Observable<void> {
     return this.storage
-      .update$<Artist>('artists', { isFavorite: !artist.isFavorite }, artist.id)
+      .update$<Artist>(
+        'artists',
+        { likedOn: !!artist.likedOn ? undefined : new Date() },
+        artist.name
+      )
       .pipe(map(() => void 0));
   }
 }
