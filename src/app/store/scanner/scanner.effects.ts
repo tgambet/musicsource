@@ -224,7 +224,7 @@ export class ScannerEffects implements OnRunEffects {
                 .walk$<SetRequired<Song, 'album'>>(
                   transaction,
                   'songs',
-                  'albums'
+                  'album'
                 )
                 .pipe(
                   filter(({ key }) => !!key.toString().trim()), // Prevent empty strings

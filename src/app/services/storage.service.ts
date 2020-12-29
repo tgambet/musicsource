@@ -21,9 +21,11 @@ export class StorageService {
       // Songs
       const songs = db.createObjectStore('songs', { keyPath: 'entryPath' });
       songs.createIndex('artists', 'artists', { multiEntry: true });
-      songs.createIndex('genres', 'genre', { multiEntry: true });
-      songs.createIndex('albums', 'album');
+      songs.createIndex('genre', 'genre', { multiEntry: true });
+      songs.createIndex('album', 'album');
       songs.createIndex('title', 'title');
+      songs.createIndex('likedOn', 'likedOn');
+      songs.createIndex('lastModified', 'lastModified');
       // Pictures
       db.createObjectStore('pictures', { keyPath: 'hash' });
       // Albums
@@ -36,6 +38,10 @@ export class StorageService {
       // Artists
       const artists = db.createObjectStore('artists', { keyPath: 'id' });
       artists.createIndex('name', 'name');
+      artists.createIndex('isFavorite', 'isFavorite');
+      // Playlists
+      const playlists = db.createObjectStore('playlists', { keyPath: 'title' });
+      playlists.createIndex('createdOn', 'createdOn');
     }).pipe(tap((db) => (this.db = db)));
   }
 

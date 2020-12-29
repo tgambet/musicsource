@@ -28,7 +28,10 @@ import {
   HListComponent,
   HListItemDirective,
 } from './components/h-list.component';
-import { MatSnackBarModule } from '@angular/material/snack-bar';
+import {
+  MAT_SNACK_BAR_DEFAULT_OPTIONS,
+  MatSnackBarModule,
+} from '@angular/material/snack-bar';
 import { CdkTreeModule } from '@angular/cdk/tree';
 import { HomeComponent } from './pages/home.component';
 import { LibraryComponent } from './pages/library.component';
@@ -68,6 +71,9 @@ import { LibraryContentComponent } from './pages/library-content.component';
 import { UpdateService } from '@app/services/update.service';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { LibrarySongsComponent } from './pages/library-songs.component';
+import { PlaylistDialogComponent } from './dialogs/playlist-dialog.component';
+import { MatInputModule } from '@angular/material/input';
+import { ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -110,6 +116,7 @@ import { LibrarySongsComponent } from './pages/library-songs.component';
     LibraryPlaylistsComponent,
     LibraryContentComponent,
     LibrarySongsComponent,
+    PlaylistDialogComponent,
   ],
   imports: [
     BrowserModule,
@@ -129,6 +136,8 @@ import { LibrarySongsComponent } from './pages/library-songs.component';
     MatDialogModule,
     MatTabsModule,
     MatSlideToggleModule,
+    MatInputModule,
+    ReactiveFormsModule,
     StoreModule.forRoot(reducers, {
       runtimeChecks: {
         strictStateSerializability: false,
@@ -149,6 +158,14 @@ import { LibrarySongsComponent } from './pages/library-songs.component';
     LibraryFacade,
     ScannerFacade,
     UpdateService,
+    {
+      provide: MAT_SNACK_BAR_DEFAULT_OPTIONS,
+      useValue: {
+        duration: 2500,
+        panelClass: 'dark-snack',
+        horizontalPosition: 'left',
+      },
+    },
   ],
   bootstrap: [AppComponent],
 })

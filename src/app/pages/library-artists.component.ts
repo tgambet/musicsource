@@ -229,11 +229,7 @@ export class LibraryArtistsComponent implements OnInit {
             artist.isFavorite
               ? 'Added to your favorites'
               : 'Removed from your favorites',
-            undefined,
-            {
-              duration: 2000,
-              horizontalPosition: 'left',
-            }
+            undefined
           )
         )
       )

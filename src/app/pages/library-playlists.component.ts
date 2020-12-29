@@ -11,7 +11,12 @@ import { Icons } from '@app/utils/icons.util';
     >
       <div class="playlists">
         <div class="playlist">
-          <a class="cover" [routerLink]="[]" matRipple>
+          <a
+            class="cover"
+            [routerLink]="['/', { outlets: { dialog: 'new-playlist' } }]"
+            [preserveFragment]="true"
+            matRipple
+          >
             <app-icon [path]="icons.plus" [size]="36"></app-icon>
           </a>
           <app-label
@@ -52,7 +57,7 @@ import { Icons } from '@app/utils/icons.util';
 })
 export class LibraryPlaylistsComponent implements OnInit {
   sortOptions: SelectOption[] = [
-    { name: 'Added recently', value: 'addedOn_desc' },
+    { name: 'Recently added', value: 'addedOn_desc' },
     { name: 'A to Z', value: 'name_asc' },
     { name: 'Z to A', value: 'name_desc' },
   ];

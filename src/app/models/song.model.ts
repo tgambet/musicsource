@@ -4,9 +4,10 @@ import { Observable } from 'rxjs';
 
 export type Song = Omit<ICommonTagsResult, 'picture'> & {
   entryPath: string;
+  lastModified: Date;
   pictureKey?: IDBValidKey;
   duration?: number;
-  isFavorite?: boolean;
+  likedOn?: Date;
 };
 
 export type SongWithCover = Except<Song, 'pictureKey'> & {

@@ -15,10 +15,11 @@ import { ArtistPageResolverService } from '@app/resolvers/artist-page-resolver.s
 import { LibraryAlbumsComponent } from '@app/pages/library-albums.component';
 import { LibraryArtistsComponent } from '@app/pages/library-artists.component';
 import { ViewportScroller } from '@angular/common';
-import { concatMap, delay, filter, retry, tap } from 'rxjs/operators';
+import { concatMap, delay, filter, retry } from 'rxjs/operators';
 import { LibraryPlaylistsComponent } from '@app/pages/library-playlists.component';
 import { LibrarySongsComponent } from '@app/pages/library-songs.component';
 import { defer, EMPTY, of, throwError } from 'rxjs';
+import { PlaylistDialogComponent } from '@app/dialogs/playlist-dialog.component';
 
 const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -63,6 +64,11 @@ const routes: Routes = [
     path: 'scan',
     component: ScanComponent,
   },
+  {
+    outlet: 'dialog',
+    path: 'new-playlist',
+    component: PlaylistDialogComponent,
+  },
 ];
 
 @NgModule({
@@ -91,7 +97,6 @@ export class AppRoutingModule {
           scroll$
             .pipe(
               delay(1),
-              tap(() => console.log(1)),
               concatMap(() =>
                 getPos$.pipe(
                   concatMap((pos) =>

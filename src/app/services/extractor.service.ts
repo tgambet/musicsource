@@ -33,22 +33,26 @@ export class ExtractorService {
     return defer(() => from(entry.handle.getFile())).pipe(
       // filter(file => this.supportedTypes.includes(file.type)),
       concatMap((file) =>
-        import('music-metadata-browser').then((musicMetadata) =>
-          musicMetadata.parseBlob(file /*{duration: true}*/)
+        from(
+          import('music-metadata-browser').then((musicMetadata) =>
+            musicMetadata.parseBlob(file /*{duration: true}*/)
+          )
+        ).pipe(
+          map(({ common, format }) => {
+            const pictures = this.toPicture(common.picture);
+            delete common.picture;
+            return right({
+              song: {
+                ...common,
+                lastModified: new Date(file.lastModified),
+                entryPath: entry.path,
+                duration: format.duration,
+              },
+              pictures,
+            });
+          })
         )
       ),
-      map(({ common, format }) => {
-        const pictures = this.toPicture(common.picture);
-        delete common.picture;
-        return right({
-          song: {
-            ...common,
-            entryPath: entry.path,
-            duration: format.duration,
-          },
-          pictures,
-        });
-      }),
       catchError((error) => of(left(error)))
     );
   }

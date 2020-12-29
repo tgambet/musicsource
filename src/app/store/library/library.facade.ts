@@ -131,7 +131,11 @@ export class LibraryFacade {
     query?: IDBValidKey | IDBKeyRange | null,
     direction?: IDBCursorDirection,
     predicate?: (song: Song) => boolean
-  ): Observable<SongWithCover$> {
+  ): Observable<{
+    value: SongWithCover$;
+    key: IDBValidKey;
+    primaryKey: IDBValidKey;
+  }> {
     return this.storage.open$(['songs']).pipe(
       concatMap((transaction) =>
         this.storage
@@ -144,14 +148,17 @@ export class LibraryFacade {
             predicate
           )
           .pipe(
-            map(({ value }) => value),
-            map((song) => ({
-              ...song,
-              cover$: song.pictureKey
-                ? this.storage
-                    .get$('pictures', song.pictureKey)
-                    .pipe(map((picture) => getCover(picture as Picture)))
-                : EMPTY,
+            map(({ value: song, key, primaryKey }) => ({
+              value: {
+                ...song,
+                cover$: song.pictureKey
+                  ? this.storage
+                      .get$('pictures', song.pictureKey)
+                      .pipe(map((picture) => getCover(picture as Picture)))
+                  : EMPTY,
+              },
+              key,
+              primaryKey,
             }))
           )
       )
@@ -299,7 +306,11 @@ export class LibraryFacade {
 
   toggleSongFavorite(song: Song): Observable<void> {
     return this.storage
-      .update$<Song>('songs', { isFavorite: !song.isFavorite }, song.entryPath)
+      .update$<Song>(
+        'songs',
+        { likedOn: !!song.likedOn ? undefined : new Date() },
+        song.entryPath
+      )
       .pipe(map(() => void 0));
   }
 

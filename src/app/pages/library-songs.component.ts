@@ -18,6 +18,7 @@ import {
   publish,
   scan,
   skip,
+  skipWhile,
   take,
   tap,
 } from 'rxjs/operators';
@@ -45,7 +46,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
           >
             <div
               class="song"
-              *ngIf="!sort.favorites || song.isFavorite"
+              *ngIf="!sort.favorites || !!song.likedOn"
               cdkMonitorSubtreeFocus
             >
               <div class="cover" style="--aspect-ratio:1">
@@ -80,13 +81,13 @@ import { MatSnackBar } from '@angular/material/snack-bar';
               </span>
               <span class="controls">
                 <button
-                  [class.favorite]="song.isFavorite"
+                  [class.favorite]="!!song.likedOn"
                   mat-icon-button
                   [disableRipple]="true"
                   (click)="toggleFavorite(song)"
                 >
                   <app-icon
-                    [path]="song.isFavorite ? icons.heart : icons.heartOutline"
+                    [path]="!!song.likedOn ? icons.heart : icons.heartOutline"
                   ></app-icon>
                 </button>
                 <button
@@ -113,13 +114,13 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 
     <mat-menu #menu="matMenu" [hasBackdrop]="true" [overlapTrigger]="true">
       <ng-template matMenuContent let-song="song">
-        <button mat-menu-item (click)="toggleFavorite(song)">
+        <!--<button mat-menu-item (click)="toggleFavorite(song)">
           <app-icon
             [path]="song.isFavorite ? icons.heart : icons.heartOutline"
           ></app-icon>
           <span *ngIf="song.isFavorite">Remove from favorites</span>
           <span *ngIf="!song.isFavorite">Add to favorites</span>
-        </button>
+        </button>-->
       </ng-template>
     </mat-menu>
   `,
@@ -219,6 +220,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 })
 export class LibrarySongsComponent implements OnInit, OnDestroy {
   sortOptions: SelectOption[] = [
+    { name: 'Recently added', value: 'lastModified_desc' },
     { name: 'A to Z', value: 'title_asc' },
     { name: 'Z to A', value: 'title_desc' },
   ];
@@ -230,7 +232,11 @@ export class LibrarySongsComponent implements OnInit, OnDestroy {
 
   sort!: { index: string; direction: IDBCursorDirection; favorites: boolean };
 
-  lastSong?: SongWithCover$;
+  last?: {
+    value: { [key: string]: any };
+    key: IDBValidKey;
+    primaryKey: IDBValidKey;
+  };
   loadMore = false;
 
   subscription = new Subscription();
@@ -258,15 +264,15 @@ export class LibrarySongsComponent implements OnInit, OnDestroy {
       this.route.queryParamMap
         .pipe(
           map((params) => ({
-            index: params.get('sort') || 'title',
-            direction: ((params.get('dir') || 'asc') === 'asc'
+            index: params.get('sort') || 'lastModified',
+            direction: ((params.get('dir') || 'desc') === 'asc'
               ? 'next'
               : 'prev') as IDBCursorDirection,
             favorites: params.get('favorites') === '1',
           })),
           tap((sort) => (this.sort = sort)),
           tap(() => (this.songsObs = [])),
-          tap(() => (this.lastSong = undefined)),
+          tap(() => (this.last = undefined)),
           tap(({ index, direction, favorites }) =>
             this.pushSongs(index, direction, favorites)
           )
@@ -286,32 +292,45 @@ export class LibrarySongsComponent implements OnInit, OnDestroy {
   ): void {
     this.loadMore = false;
 
-    const query: IDBKeyRange | null = !this.lastSong
+    const query: IDBKeyRange | null = !this.last
       ? null
       : direction === 'next'
-      ? IDBKeyRange.lowerBound(this.lastSong.title, false)
-      : IDBKeyRange.upperBound(this.lastSong.title, false);
+      ? IDBKeyRange.lowerBound(this.last.key, false)
+      : IDBKeyRange.upperBound(this.last.key, false);
 
     const predicate: ((song: Song) => boolean) | undefined = favorites
-      ? (song) => !!song.isFavorite
+      ? (song) => !!song.likedOn
       : undefined;
 
     this.songsObs.push(
       this.library.getSongs(index, query, direction, predicate).pipe(
+        skipWhile((res) =>
+          query
+            ? res.key !== this.last?.key &&
+              res.primaryKey !== this.last?.primaryKey
+            : false
+        ),
         skip(query ? 1 : 0),
-        take(100),
-        scan((acc, cur) => [...acc, cur], [] as SongWithCover$[]),
+        take(50),
+        scan(
+          (acc, cur) => [...acc, cur],
+          [] as {
+            value: SongWithCover$;
+            key: IDBValidKey;
+            primaryKey: IDBValidKey;
+          }[]
+        ),
         publish((m$) =>
           merge(
             m$.pipe(
               last(),
-              tap((songs) => (this.lastSong = songs[songs.length - 1])),
+              tap((songs) => (this.last = songs[songs.length - 1])),
               tap(() => (this.loadMore = true)),
               tapError(() => (this.loadMore = false)),
               concatMap(() => EMPTY),
               catchError(() => EMPTY)
             ),
-            m$,
+            m$.pipe(map((values) => values.map((v) => v.value))),
             2
           )
         )
@@ -330,18 +349,20 @@ export class LibrarySongsComponent implements OnInit, OnDestroy {
   toggleFavorite(song: Song) {
     this.library
       .toggleSongFavorite(song)
-      .pipe(tap(() => (song.isFavorite = !song.isFavorite)))
+      .pipe(
+        tap(() =>
+          !!song.likedOn
+            ? (song.likedOn = undefined)
+            : (song.likedOn = new Date())
+        )
+      )
       .pipe(
         tap(() =>
           this.snack.open(
-            song.isFavorite
+            !!song.likedOn
               ? 'Added to your favorites'
               : 'Removed from your favorites',
-            undefined,
-            {
-              duration: 2000,
-              horizontalPosition: 'left',
-            }
+            undefined
           )
         )
       )
