@@ -190,7 +190,7 @@ export class LibrarySettingsComponent {
   trackByFn = (index: number, entry: Entry): string => entry.path;
 
   navigate() {
-    this.parent.close().then(() => this.router.navigate(['/', 'explorer']));
+    // this.parent.close().then(() => this.router.navigate(['/', 'explorer']));
   }
 
   getChildren = (folder: DirectoryEntry): Observable<Entry[]> =>

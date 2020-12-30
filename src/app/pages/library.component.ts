@@ -33,7 +33,8 @@ import {
             queryParamsHandling="merge"
             [queryParams]="{
               sort: null,
-              dir: null
+              dir: null,
+              favorites: null
             }"
             #rla1="routerLinkActive"
             [active]="rla1.isActive"
@@ -49,7 +50,8 @@ import {
             queryParamsHandling="merge"
             [queryParams]="{
               sort: null,
-              dir: null
+              dir: null,
+              favorites: null
             }"
             #rla2="routerLinkActive"
             [active]="rla2.isActive"
@@ -65,7 +67,8 @@ import {
             queryParamsHandling="merge"
             [queryParams]="{
               sort: null,
-              dir: null
+              dir: null,
+              favorites: null
             }"
             #rla4="routerLinkActive"
             [active]="rla4.isActive"
@@ -81,7 +84,8 @@ import {
             queryParamsHandling="merge"
             [queryParams]="{
               sort: null,
-              dir: null
+              dir: null,
+              favorites: null
             }"
             #rla3="routerLinkActive"
             [active]="rla3.isActive"

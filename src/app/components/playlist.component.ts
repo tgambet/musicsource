@@ -21,15 +21,16 @@ import { PlayerState } from './player-button.component';
       tabindex="-1"
     >
       <img [src]="cover" height="226" width="226" alt="cover" *ngIf="cover" />
-      <!--<app-icon
-        [path]="icons.plus"
-        [fullWidth]="true"
+      <app-icon
+        [path]="icons.playlistPlay"
+        [size]="72"
         *ngIf="!cover"
-      ></app-icon>-->
+      ></app-icon>
     </app-cover>
     <app-label
       [topLabel]="{ text: name, routerLink: playlistRouterLink }"
       [bottomLabel]="label"
+      size="small"
     ></app-label>
   `,
   styles: [
@@ -41,7 +42,10 @@ import { PlayerState } from './player-button.component';
       }
       app-cover {
         margin-bottom: 16px;
-        background-color: #333;
+        background-color: #4f4f4f;
+      }
+      app-icon {
+        color: rgba(0, 0, 0, 0.2);
       }
     `,
   ],
@@ -52,7 +56,6 @@ export class PlaylistComponent {
   @Input() name!: string;
   @Input() label!: string;
   @Input() playlistRouterLink!: any[] | string;
-  @Input() artistRouterLink!: any[] | string;
   icons = Icons;
   menuItems = [
     {

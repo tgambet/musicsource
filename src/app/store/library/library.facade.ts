@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { DirectoryEntry, Entry } from '@app/models/entry.model';
-import { EMPTY, from, Observable, of, throwError } from 'rxjs';
-import { concatMap, map } from 'rxjs/operators';
+import { EMPTY, from, Observable, of, Subject, throwError } from 'rxjs';
+import { concatMap, map, tap } from 'rxjs/operators';
 import { StorageService } from '@app/services/storage.service';
 import { Album, AlbumWithCover } from '@app/models/album.model';
 import {
@@ -11,6 +11,7 @@ import {
 } from '@app/models/artist.model';
 import { getCover, Picture } from '@app/models/picture.model';
 import { Song, SongWithCover$ } from '@app/models/song.model';
+import { Playlist } from '@app/models/playlist.model';
 
 @Injectable()
 export class LibraryFacade {
@@ -61,6 +62,8 @@ export class LibraryFacade {
         )
       )
     );
+
+  private playlistsSubject: Subject<Playlist> = new Subject<Playlist>();
 
   constructor(private storage: StorageService) {}
 
@@ -328,5 +331,33 @@ export class LibraryFacade {
         artist.name
       )
       .pipe(map(() => void 0));
+  }
+
+  getPlaylist(title: string): Observable<Playlist | undefined> {
+    return this.storage.get$<Playlist>('playlists', title);
+  }
+
+  getPlaylists(): Observable<Playlist> {
+    return this.storage.open$(['playlists']).pipe(
+      concatMap((t) => this.storage.walk$<Playlist>(t, 'playlists')),
+      map(({ value }) => value)
+    );
+  }
+
+  getNewlyCreatedPlaylists(): Observable<Playlist> {
+    return this.playlistsSubject.asObservable();
+  }
+
+  createPlaylist(
+    partial: Pick<Playlist, 'title' | 'description'>
+  ): Observable<IDBValidKey> {
+    const playlist: Playlist = {
+      songs: [],
+      createdOn: new Date(),
+      ...partial,
+    };
+    return this.storage
+      .add$('playlists', playlist)
+      .pipe(tap(() => this.playlistsSubject.next(playlist)));
   }
 }

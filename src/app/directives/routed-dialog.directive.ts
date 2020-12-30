@@ -49,6 +49,7 @@ export class RoutedDialogDirective implements OnInit, OnDestroy {
           tap(() =>
             this.router.navigate([{ outlets: { [this.outlet]: null } }], {
               preserveFragment: true,
+              queryParamsHandling: 'preserve',
             })
           ),
           tap((result) => this.afterClose(result))
@@ -72,13 +73,13 @@ export class RoutedDialogDirective implements OnInit, OnDestroy {
     );
   }
 
-  close(result?: any): Promise<void> {
-    // this.dialogRef.close(result);
-    return this.router
-      .navigate([{ outlets: { [this.outlet]: null } }], {
-        preserveFragment: true,
-      })
-      .then(() => this.dialogRef.close(result));
+  close(result?: any): void {
+    this.dialogRef.close(result);
+    // return this.router
+    //   .navigate([{ outlets: { [this.outlet]: null } }], {
+    //     preserveFragment: true,
+    //   })
+    //   .then(() => this.dialogRef.close(result));
   }
 
   focus(): void {

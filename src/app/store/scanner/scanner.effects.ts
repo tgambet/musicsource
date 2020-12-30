@@ -249,8 +249,7 @@ export class ScannerEffects implements OnRunEffects {
 
                     const lastModified = [...songs].sort(
                       (s1, s2) =>
-                        s2.lastModified.getMilliseconds() -
-                        s1.lastModified.getMilliseconds()
+                        s2.lastModified.getTime() - s1.lastModified.getTime()
                     )[0].lastModified;
 
                     const albumArtist =
@@ -314,8 +313,7 @@ export class ScannerEffects implements OnRunEffects {
 
                   const lastModified = [...albums].sort(
                     (a1, a2) =>
-                      a2.lastModified.getMilliseconds() -
-                      a1.lastModified.getMilliseconds()
+                      a2.lastModified.getTime() - a1.lastModified.getTime()
                   )[0].lastModified;
 
                   return {

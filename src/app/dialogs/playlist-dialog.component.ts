@@ -1,32 +1,43 @@
 import {
+  ChangeDetectionStrategy,
   Component,
   OnInit,
-  ChangeDetectionStrategy,
   ViewChild,
-  Injectable,
 } from '@angular/core';
 import { MatDialogConfig } from '@angular/material/dialog';
 import { NoopScrollStrategy } from '@angular/cdk/overlay';
 import {
   AbstractControl,
-  AsyncValidator,
   FormControl,
   FormGroup,
   ValidationErrors,
   Validators,
 } from '@angular/forms';
 import { RoutedDialogDirective } from '@app/directives/routed-dialog.directive';
-import { Observable, of } from 'rxjs';
+import { Observable } from 'rxjs';
+import { ActivatedRoute, Router } from '@angular/router';
+import { LibraryFacade } from '@app/store/library/library.facade';
+import { map } from 'rxjs/operators';
 
-@Injectable({ providedIn: 'root' })
-export class UniquePlaylistTitleValidator implements AsyncValidator {
-  constructor() {}
-
-  validate(ctrl: AbstractControl): Observable<ValidationErrors | null> {
-    console.log(ctrl.value);
-    return ctrl.value.length < 10 ? of({ taken: 'title' }) : of(null);
-  }
-}
+// @Directive({
+//   selector: '[appUniquePlaylistTitleValidator]',
+//   providers: [
+//     {
+//       provide: NG_ASYNC_VALIDATORS,
+//       useExisting: UniquePlaylistTitleValidator,
+//       multi: true,
+//     },
+//   ],
+// })
+// export class UniquePlaylistTitleValidator implements AsyncValidator {
+//   constructor(private library: LibraryFacade) {}
+//
+//   validate(ctrl: AbstractControl): Observable<ValidationErrors | null> {
+//     return this.library
+//       .getPlaylist(ctrl.value)
+//       .pipe(map((p) => (p ? { taken: 'title' } : null)));
+//   }
+// }
 
 @Component({
   selector: 'app-playlist-dialog',
@@ -124,21 +135,29 @@ export class PlaylistDialogComponent implements OnInit {
   form = new FormGroup({
     title: new FormControl('', {
       validators: [Validators.required],
-      asyncValidators: this.uniqueTitleValidator.validate,
+      asyncValidators: (
+        control: AbstractControl
+      ): Observable<ValidationErrors | null> =>
+        this.library
+          .getPlaylist(control.value)
+          .pipe(map((p) => (p ? { taken: 'title' } : null))),
       updateOn: 'change',
     }),
     description: new FormControl(''),
   });
 
-  constructor(private uniqueTitleValidator: UniquePlaylistTitleValidator) {}
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private library: LibraryFacade
+  ) {}
 
   ngOnInit(): void {}
 
   async createPlaylist() {
     if (this.form.valid) {
-      console.log(this.form.getRawValue());
+      await this.library.createPlaylist(this.form.getRawValue()).toPromise();
       await this.dialog.close();
-      // window.document.location.reload();
     }
   }
 }

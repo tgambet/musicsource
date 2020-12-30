@@ -160,8 +160,8 @@ export class ScanComponent {
     );
   }
 
-  async close() {
-    await this.dialog.close();
+  close() {
+    this.dialog.close();
   }
 
   abort(): void {

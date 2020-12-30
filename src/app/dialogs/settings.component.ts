@@ -92,6 +92,6 @@ export class SettingsComponent {
   };
 
   close() {
-    return this.routed.close();
+    this.routed.close();
   }
 }
