@@ -1,5 +1,6 @@
 import {
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   OnDestroy,
   OnInit,
@@ -7,7 +8,7 @@ import {
 import { SelectOption } from '@app/components/select.component';
 import { Icons } from '@app/utils/icons.util';
 import { LibraryFacade } from '@app/store/library/library.facade';
-import { concatMap, map, scan, tap } from 'rxjs/operators';
+import { map, scan, startWith, switchMap, tap } from 'rxjs/operators';
 import { Playlist } from '@app/models/playlist.model';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, Subscription } from 'rxjs';
@@ -42,20 +43,18 @@ import { Observable, Subscription } from 'rxjs';
           class="playlist"
           *ngFor="let playlist of newPlaylists$ | async; trackBy: trackBy"
         >
-          <app-playlist
-            [name]="playlist.title"
-            [label]="'Auto playlist'"
-          ></app-playlist>
+          <app-playlist [playlist]="playlist"></app-playlist>
         </div>
-        <div
-          class="playlist"
+        <ng-container
           *ngFor="let playlist of playlists$ | async; trackBy: trackBy"
         >
-          <app-playlist
-            [name]="playlist.title"
-            [label]="'Auto playlist'"
-          ></app-playlist>
-        </div>
+          <div class="playlist" *ngIf="!favorites || !!playlist.likedOn">
+            <app-playlist
+              [playlist]="playlist"
+              (update)="playlistUpdate()"
+            ></app-playlist>
+          </div>
+        </ng-container>
       </div>
     </app-library-content>
   `,
@@ -91,8 +90,8 @@ import { Observable, Subscription } from 'rxjs';
 export class LibraryPlaylistsComponent implements OnInit, OnDestroy {
   sortOptions: SelectOption[] = [
     { name: 'Recently added', value: 'createdOn_desc' },
-    { name: 'A to Z', value: 'name_asc' },
-    { name: 'Z to A', value: 'name_desc' },
+    { name: 'A to Z', value: 'title_asc' },
+    { name: 'Z to A', value: 'title_desc' },
   ];
   selectedSortOption: SelectOption = this.sortOptions[0];
 
@@ -105,48 +104,53 @@ export class LibraryPlaylistsComponent implements OnInit, OnDestroy {
 
   sort!: any;
 
+  favorites?: boolean;
+
   constructor(
     private library: LibraryFacade,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
     const sort$ = this.route.queryParamMap.pipe(
       map((params) => ({
         index:
-          params.get('sort') === 'name'
+          params.get('sort') === 'title'
             ? undefined
             : params.get('sort') || 'createdOn',
         direction: ((params.get('dir') || 'desc') === 'asc'
           ? 'next'
           : 'prev') as IDBCursorDirection,
         favorites: params.get('favorites') === '1',
-      }))
+      })),
+      tap((sort) => (this.favorites = sort.favorites))
     );
 
     this.playlists$ = sort$.pipe(
-      concatMap((sort) =>
-        this.library
-          .getPlaylists()
-          .pipe(scan((acc, cur) => [...acc, cur], [] as Playlist[]))
-      )
+      switchMap((sort) => {
+        const predicate = sort.favorites
+          ? (playlist: Playlist) => !!playlist.likedOn
+          : undefined;
+
+        return this.library
+          .getPlaylists(sort.index, null, sort.direction, predicate)
+          .pipe(
+            scan((acc, cur) => [...acc, cur], [] as Playlist[]),
+            startWith([])
+          );
+      })
     );
 
-    this.subscription.add(
-      sort$
-        .pipe(
-          tap(
-            () =>
-              (this.newPlaylists$ = this.library
-                .getNewlyCreatedPlaylists()
-                .pipe(
-                  scan((acc, cur) => [...acc, cur], [] as Playlist[]),
-                  map((pl) => pl.reverse())
-                ))
-          )
+    this.newPlaylists$ = sort$.pipe(
+      switchMap(() =>
+        this.library.getNewlyCreatedPlaylists().pipe(
+          scan((acc, cur) => [...acc, cur], [] as Playlist[]),
+          startWith([]),
+          map((pl) => pl.reverse())
         )
-        .subscribe()
+      )
     );
   }
 
@@ -156,5 +160,9 @@ export class LibraryPlaylistsComponent implements OnInit, OnDestroy {
 
   trackBy(index: number, playlist: Playlist) {
     return playlist.title;
+  }
+
+  playlistUpdate() {
+    this.cdr.markForCheck();
   }
 }

@@ -18,16 +18,35 @@ import { Icons } from '../utils/icons.util';
     </button>
     <mat-menu #menu="matMenu" [hasBackdrop]="true">
       <ng-template matMenuContent>
-        <button
-          mat-menu-item
-          *ngFor="let item of menuItems"
-          (click)="item.click ? item.click() : undefined"
-          [disabled]="item.disabled"
-          [routerLink]="item.routerLink"
-        >
-          <app-icon *ngIf="item.icon" [path]="item.icon" [size]="24"></app-icon>
-          <span>{{ item.text }}</span>
-        </button>
+        <ng-container *ngFor="let item of menuItems">
+          <button
+            mat-menu-item
+            (click)="item.click ? item.click() : undefined"
+            [disabled]="item.disabled"
+            *ngIf="item.routerLink"
+            [routerLink]="item.routerLink"
+          >
+            <app-icon
+              *ngIf="item.icon"
+              [path]="item.icon"
+              [size]="24"
+            ></app-icon>
+            <span>{{ item.text }}</span>
+          </button>
+          <button
+            mat-menu-item
+            (click)="item.click ? item.click() : undefined"
+            [disabled]="item.disabled"
+            *ngIf="!item.routerLink"
+          >
+            <app-icon
+              *ngIf="item.icon"
+              [path]="item.icon"
+              [size]="24"
+            ></app-icon>
+            <span>{{ item.text }}</span>
+          </button>
+        </ng-container>
       </ng-template>
     </mat-menu>
   `,

@@ -367,9 +367,9 @@ export class LibrarySongsComponent implements OnInit, OnDestroy {
               : 'Removed from your favorites',
             undefined
           )
-        )
+        ),
+        tap(() => this.cdr.markForCheck())
       )
-      .pipe(tap(() => this.cdr.markForCheck()))
       .subscribe();
   }
 

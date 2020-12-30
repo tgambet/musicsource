@@ -10,6 +10,7 @@ import {
   mdiClose,
   mdiCog,
   mdiCurrencyUsd,
+  mdiDelete,
   mdiDotsVertical,
   mdiFolderAlertOutline,
   mdiFolderCogOutline,
@@ -30,6 +31,7 @@ import {
   mdiMusicBoxMultiple,
   mdiMusicNote,
   mdiPause,
+  mdiPencil,
   mdiPlay,
   mdiPlaylistMusic,
   mdiPlaylistPlay,
@@ -83,4 +85,6 @@ export class Icons {
   static account = mdiAccount;
   static menuDown = mdiMenuDown;
   static plus = mdiPlus;
+  static pencil = mdiPencil;
+  static delete = mdiDelete;
 }

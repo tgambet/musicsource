@@ -337,9 +337,23 @@ export class LibraryFacade {
     return this.storage.get$<Playlist>('playlists', title);
   }
 
-  getPlaylists(): Observable<Playlist> {
+  getPlaylists(
+    index?: string,
+    query?: IDBValidKey | IDBKeyRange | null,
+    direction?: IDBCursorDirection,
+    predicate?: (playlist: Playlist) => boolean
+  ): Observable<Playlist> {
     return this.storage.open$(['playlists']).pipe(
-      concatMap((t) => this.storage.walk$<Playlist>(t, 'playlists')),
+      concatMap((t) =>
+        this.storage.walk$<Playlist>(
+          t,
+          'playlists',
+          index,
+          query,
+          direction,
+          predicate
+        )
+      ),
       map(({ value }) => value)
     );
   }
@@ -359,5 +373,15 @@ export class LibraryFacade {
     return this.storage
       .add$('playlists', playlist)
       .pipe(tap(() => this.playlistsSubject.next(playlist)));
+  }
+
+  togglePlaylistFavorite(playlist: Playlist): Observable<void> {
+    return this.storage
+      .update$<Playlist>(
+        'playlists',
+        { likedOn: !!playlist.likedOn ? undefined : new Date() },
+        playlist.title
+      )
+      .pipe(map(() => void 0));
   }
 }
