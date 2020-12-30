@@ -27,6 +27,7 @@ import { Icons } from '@app/utils/icons.util';
 import { ActivatedRoute } from '@angular/router';
 import { hash } from '@app/utils/hash.util';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatMenuTrigger } from '@angular/material/menu';
 
 @Component({
   selector: 'app-library-songs',
@@ -34,6 +35,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
     <app-library-content
       [sortOptions]="sortOptions"
       [selectedSortOption]="selectedSortOption"
+      (click)="closeMenu()"
     >
       <div class="songs">
         <ng-container *ngFor="let songs$ of songsObs; let i = index">
@@ -96,14 +98,30 @@ import { MatSnackBar } from '@angular/material/snack-bar';
                   title="Other actions"
                   mat-icon-button
                   [disableRipple]="true"
-                  [matMenuTriggerFor]="menu"
                   #trigger="matMenuTrigger"
+                  [matMenuTriggerFor]="menu"
                   [matMenuTriggerData]="{ song: song }"
+                  (click)="menuOpened(trigger); $event.stopPropagation()"
                 >
                   <app-icon [path]="icons.dotsVertical" [size]="24"></app-icon>
                 </button>
               </span>
               <span class="duration">{{ song.duration | duration }}</span>
+              <mat-menu
+                #menu="matMenu"
+                [hasBackdrop]="false"
+                [overlapTrigger]="false"
+              >
+                <ng-template matMenuContent>
+                  <!--                  <button mat-menu-item (click)="toggleFavorite(song)">
+                    <app-icon
+                      [path]="!!song.likedOn ? icons.heart : icons.heartOutline"
+                    ></app-icon>
+                    <span *ngIf="!!song.likedOn">Remove from favorites</span>
+                    <span *ngIf="!song.likedOn">Add to favorites</span>
+                  </button>-->
+                </ng-template>
+              </mat-menu>
             </div>
           </ng-container>
 
@@ -111,18 +129,6 @@ import { MatSnackBar } from '@angular/material/snack-bar';
         </ng-container>
       </div>
     </app-library-content>
-
-    <mat-menu #menu="matMenu" [hasBackdrop]="true" [overlapTrigger]="true">
-      <ng-template matMenuContent let-song="song">
-        <!--<button mat-menu-item (click)="toggleFavorite(song)">
-          <app-icon
-            [path]="song.isFavorite ? icons.heart : icons.heartOutline"
-          ></app-icon>
-          <span *ngIf="song.isFavorite">Remove from favorites</span>
-          <span *ngIf="!song.isFavorite">Add to favorites</span>
-        </button>-->
-      </ng-template>
-    </mat-menu>
   `,
   styles: [
     `
@@ -241,6 +247,8 @@ export class LibrarySongsComponent implements OnInit, OnDestroy {
 
   subscription = new Subscription();
 
+  trigger?: MatMenuTrigger;
+
   constructor(
     private library: LibraryFacade,
     private route: ActivatedRoute,
@@ -257,6 +265,7 @@ export class LibrarySongsComponent implements OnInit, OnDestroy {
     ) {
       this.pushSongs(this.sort.index, this.sort.direction, this.sort.favorites);
     }
+    this.closeMenu();
   }
 
   ngOnInit(): void {
@@ -362,5 +371,19 @@ export class LibrarySongsComponent implements OnInit, OnDestroy {
       )
       .pipe(tap(() => this.cdr.markForCheck()))
       .subscribe();
+  }
+
+  menuOpened(trigger: MatMenuTrigger) {
+    if (this.trigger && this.trigger !== trigger) {
+      this.trigger.closeMenu();
+    }
+    this.trigger = trigger;
+  }
+
+  closeMenu() {
+    if (this.trigger) {
+      this.trigger.closeMenu();
+      this.trigger = undefined;
+    }
   }
 }
