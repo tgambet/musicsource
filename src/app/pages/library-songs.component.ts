@@ -53,7 +53,7 @@ import { MatDialog } from '@angular/material/dialog';
           >
             <div
               class="song"
-              *ngIf="!sort.favorites || !!song.likedOn"
+              *ngIf="!sort.likes || !!song.likedOn"
               cdkMonitorSubtreeFocus
             >
               <div class="cover" style="--aspect-ratio:1">
@@ -88,7 +88,7 @@ import { MatDialog } from '@angular/material/dialog';
               </span>
               <span class="controls">
                 <button
-                  [class.favorite]="!!song.likedOn"
+                  [class.liked]="!!song.likedOn"
                   mat-icon-button
                   [disableRipple]="true"
                   (click)="toggleFavorite(song)"
@@ -259,7 +259,7 @@ import { MatDialog } from '@angular/material/dialog';
         margin-left: 16px;
         color: #aaa;
       }
-      .controls button:not(.favorite) {
+      .controls button:not(.liked) {
         opacity: 0;
       }
       .song:hover .controls button,
@@ -306,7 +306,7 @@ export class LibrarySongsComponent implements OnInit, OnDestroy {
 
   songsObs: Observable<SongWithCover$[]>[] = [];
 
-  sort!: { index: string; direction: IDBCursorDirection; favorites: boolean };
+  sort!: { index: string; direction: IDBCursorDirection; likes: boolean };
 
   last?: {
     value: { [key: string]: any };
@@ -338,7 +338,7 @@ export class LibrarySongsComponent implements OnInit, OnDestroy {
       this.loadMore &&
       this.sort
     ) {
-      this.pushSongs(this.sort.index, this.sort.direction, this.sort.favorites);
+      this.pushSongs(this.sort.index, this.sort.direction, this.sort.likes);
     }
     this.closeMenu();
   }
@@ -352,13 +352,13 @@ export class LibrarySongsComponent implements OnInit, OnDestroy {
             direction: ((params.get('dir') || 'desc') === 'asc'
               ? 'next'
               : 'prev') as IDBCursorDirection,
-            favorites: params.get('favorites') === '1',
+            likes: params.get('likes') === '1',
           })),
           tap((sort) => (this.sort = sort)),
           tap(() => (this.songsObs = [])),
           tap(() => (this.last = undefined)),
-          tap(({ index, direction, favorites }) =>
-            this.pushSongs(index, direction, favorites)
+          tap(({ index, direction, likes }) =>
+            this.pushSongs(index, direction, likes)
           )
         )
         .subscribe()
@@ -372,7 +372,7 @@ export class LibrarySongsComponent implements OnInit, OnDestroy {
   pushSongs(
     index: string,
     direction: IDBCursorDirection,
-    favorites: boolean
+    likes: boolean
   ): void {
     this.loadMore = false;
 
@@ -382,7 +382,7 @@ export class LibrarySongsComponent implements OnInit, OnDestroy {
       ? IDBKeyRange.lowerBound(this.last.key, false)
       : IDBKeyRange.upperBound(this.last.key, false);
 
-    const predicate: ((song: Song) => boolean) | undefined = favorites
+    const predicate: ((song: Song) => boolean) | undefined = likes
       ? (song) => !!song.likedOn
       : undefined;
 
@@ -437,9 +437,7 @@ export class LibrarySongsComponent implements OnInit, OnDestroy {
       .pipe(
         tap(() =>
           this.snack.open(
-            !!song.likedOn
-              ? 'Added to your favorites'
-              : 'Removed from your favorites',
+            !!song.likedOn ? 'Added to your likes' : 'Removed from your likes',
             undefined
           )
         ),

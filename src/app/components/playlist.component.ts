@@ -33,12 +33,9 @@ import { MatSnackBar } from '@angular/material/snack-bar';
       <ng-container *ngIf="cover$ | async as cover; else icon">
         <ng-container *ngIf="color$ | async as color">
           <img [src]="cover" alt="cover" />
-          <img
-            [src]="cover"
-            alt="cover"
-            class="inner-cover"
-            [style.borderColor]="color"
-          />
+          <div class="inner-cover" [style.backgroundColor]="color">
+            <img [src]="cover" alt="cover" />
+          </div>
         </ng-container>
       </ng-container>
       <ng-template #icon>
@@ -75,9 +72,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
         width: 100%;
         height: 100%;
         box-sizing: border-box;
-        border-width: 25px;
-        border-style: solid;
-        border-radius: 4px;
+        padding: 16.6%;
       }
     `,
   ],

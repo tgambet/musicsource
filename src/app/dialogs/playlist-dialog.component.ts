@@ -48,56 +48,47 @@ import { map } from 'rxjs/operators';
       [config]="config"
       #dialog="appRoutedDialog"
     >
-      <div class="container">
-        <app-title title="New playlist" size="small"></app-title>
-        <form
-          class="example-form"
-          [formGroup]="form"
-          (submit)="createPlaylist()"
+      <app-title title="New playlist" size="small"></app-title>
+      <form class="example-form" [formGroup]="form" (submit)="createPlaylist()">
+        <mat-form-field
+          class="example-full-width"
+          color="accent"
+          hideRequiredMarker="true"
         >
-          <mat-form-field
-            class="example-full-width"
-            color="accent"
-            hideRequiredMarker="true"
-          >
-            <mat-label>Title</mat-label>
-            <input
-              matInput
-              placeholder=""
-              type="text"
-              required
-              formControlName="title"
-            />
-            <mat-error *ngIf="form.get('title')?.hasError('required')">
-              Required
-            </mat-error>
-            <mat-error *ngIf="form.get('title')?.hasError('taken')">
-              A playlist with that name already exists
-            </mat-error>
-          </mat-form-field>
-          <mat-form-field class="example-full-width" color="accent">
-            <mat-label>Description</mat-label>
-            <input matInput placeholder="" formControlName="description" />
-          </mat-form-field>
-          <div class="actions">
-            <button mat-button color="accent" matDialogClose type="reset">
-              Cancel
-            </button>
-            <button mat-raised-button color="accent">
-              Save
-            </button>
-          </div>
-        </form>
-      </div>
+          <mat-label>Title</mat-label>
+          <input
+            matInput
+            placeholder=""
+            type="text"
+            required
+            formControlName="title"
+          />
+          <mat-error *ngIf="form.get('title')?.hasError('required')">
+            Required
+          </mat-error>
+          <mat-error *ngIf="form.get('title')?.hasError('taken')">
+            A playlist with that name already exists
+          </mat-error>
+        </mat-form-field>
+        <mat-form-field class="example-full-width" color="accent">
+          <mat-label>Description</mat-label>
+          <input matInput placeholder="" formControlName="description" />
+        </mat-form-field>
+        <div class="actions">
+          <button mat-button color="accent" matDialogClose type="reset">
+            Cancel
+          </button>
+          <button mat-raised-button color="accent">
+            Save
+          </button>
+        </div>
+      </form>
     </ng-template>
   `,
   styles: [
     `
       :host {
         display: block;
-      }
-      .container {
-        padding: 24px;
       }
       app-title {
         margin-bottom: 48px;

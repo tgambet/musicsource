@@ -28,8 +28,8 @@ import { Subscription } from 'rxjs';
           (selectionChange)="this.sortValue = $event; sort()"
         ></app-select>
         <mat-slide-toggle
-          [checked]="favorites"
-          (change)="this.favorites = $event.checked; sort()"
+          [checked]="likes"
+          (change)="this.likes = $event.checked; sort()"
         >
           Favorites only
         </mat-slide-toggle>
@@ -90,7 +90,7 @@ export class LibraryContentComponent
   subscription = new Subscription();
 
   sortValue!: string;
-  favorites = false;
+  likes = false;
 
   constructor(
     private library: LibraryFacade,
@@ -123,7 +123,7 @@ export class LibraryContentComponent
                 ) || this.sortOptions[0])
           ),
           tap(() => (this.sortValue = this.selectedSortOption.value)),
-          tap((params) => (this.favorites = params.get('favorites') === '1')),
+          tap((params) => (this.likes = params.get('likes') === '1')),
           tap(() => this.cdr.markForCheck())
         )
         .subscribe()
@@ -137,7 +137,7 @@ export class LibraryContentComponent
   async sort() {
     const [sort, dir] = this.sortValue.split('_');
     await this.router.navigate([], {
-      queryParams: { sort, dir, favorites: this.favorites ? '1' : '0' },
+      queryParams: { sort, dir, likes: this.likes ? '1' : '0' },
       preserveFragment: true,
     });
   }

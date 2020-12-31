@@ -87,7 +87,7 @@ export class AlbumComponent {
     },
     {
       icon: Icons.heartOutline,
-      text: 'Add to favorites',
+      text: 'Add to your likes',
     },
     {
       icon: Icons.accountMusic,

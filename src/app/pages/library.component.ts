@@ -34,7 +34,7 @@ import {
             [queryParams]="{
               sort: null,
               dir: null,
-              favorites: null
+              liked: null
             }"
             #rla1="routerLinkActive"
             [active]="rla1.isActive"
@@ -51,29 +51,12 @@ import {
             [queryParams]="{
               sort: null,
               dir: null,
-              favorites: null
+              liked: null
             }"
             #rla2="routerLinkActive"
             [active]="rla2.isActive"
           >
             Albums
-          </a>
-          <a
-            mat-tab-link
-            disableRipple
-            routerLink="artists"
-            fragment="top"
-            routerLinkActive="active"
-            queryParamsHandling="merge"
-            [queryParams]="{
-              sort: null,
-              dir: null,
-              favorites: null
-            }"
-            #rla4="routerLinkActive"
-            [active]="rla4.isActive"
-          >
-            Artists
           </a>
           <a
             mat-tab-link
@@ -85,12 +68,29 @@ import {
             [queryParams]="{
               sort: null,
               dir: null,
-              favorites: null
+              liked: null
             }"
             #rla3="routerLinkActive"
             [active]="rla3.isActive"
           >
             Songs
+          </a>
+          <a
+            mat-tab-link
+            disableRipple
+            routerLink="artists"
+            fragment="top"
+            routerLinkActive="active"
+            queryParamsHandling="merge"
+            [queryParams]="{
+              sort: null,
+              dir: null,
+              liked: null
+            }"
+            #rla4="routerLinkActive"
+            [active]="rla4.isActive"
+          >
+            Artists
           </a>
         </nav>
       </app-container>

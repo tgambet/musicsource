@@ -30,7 +30,7 @@ const routes: Routes = [
     path: 'library',
     component: LibraryComponent,
     children: [
-      { path: '', redirectTo: 'playlists', pathMatch: 'full' },
+      { path: '', redirectTo: 'albums', pathMatch: 'full' },
       { path: 'playlists', component: LibraryPlaylistsComponent },
       { path: 'albums', component: LibraryAlbumsComponent },
       { path: 'artists', component: LibraryArtistsComponent },

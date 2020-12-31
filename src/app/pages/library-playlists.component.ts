@@ -48,7 +48,7 @@ import { Observable, Subscription } from 'rxjs';
         <ng-container
           *ngFor="let playlist of playlists$ | async; trackBy: trackBy"
         >
-          <div class="playlist" *ngIf="!favorites || !!playlist.likedOn">
+          <div class="playlist" *ngIf="!likes || !!playlist.likedOn">
             <app-playlist
               [playlist]="playlist"
               (update)="playlistUpdate()"
@@ -104,7 +104,7 @@ export class LibraryPlaylistsComponent implements OnInit, OnDestroy {
 
   sort!: any;
 
-  favorites?: boolean;
+  likes?: boolean;
 
   constructor(
     private library: LibraryFacade,
@@ -123,14 +123,14 @@ export class LibraryPlaylistsComponent implements OnInit, OnDestroy {
         direction: ((params.get('dir') || 'desc') === 'asc'
           ? 'next'
           : 'prev') as IDBCursorDirection,
-        favorites: params.get('favorites') === '1',
+        likes: params.get('likes') === '1',
       })),
-      tap((sort) => (this.favorites = sort.favorites))
+      tap((sort) => (this.likes = sort.likes))
     );
 
     this.playlists$ = sort$.pipe(
       switchMap((sort) => {
-        const predicate = sort.favorites
+        const predicate = sort.likes
           ? (playlist: Playlist) => !!playlist.likedOn
           : undefined;
 
