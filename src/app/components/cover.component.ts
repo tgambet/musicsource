@@ -35,10 +35,10 @@ import { MenuItem } from './menu.component';
       tabindex="-1"
       style="--aspect-ratio:1"
     >
-      <div class="shadow"></div>
       <div class="content">
         <ng-content></ng-content>
       </div>
+      <div class="shadow"></div>
     </a>
   `,
   styles: [
@@ -115,8 +115,8 @@ import { MenuItem } from './menu.component';
       }
       .content {
         position: absolute;
-        top: 50%;
-        transform: translateY(-50%);
+        /*top: 50%;*/
+        /*transform: translateY(-50%);*/
         width: 100%;
         display: flex;
         align-items: center;

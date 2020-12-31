@@ -117,6 +117,7 @@ export class ScanComponent {
     disableClose: true,
     scrollStrategy: new NoopScrollStrategy(),
     closeOnNavigation: false,
+    panelClass: 'scan-dialog',
   };
 
   scanner$: Observable<any>;

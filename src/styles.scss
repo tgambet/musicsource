@@ -138,8 +138,8 @@ body {
   font-family: Roboto, "Helvetica Neue", sans-serif;
   color: $text-color;
   background-color: $background-color;
-  overflow-x: hidden;
-  overflow-y: scroll;
+  // overflow-x: hidden;
+  // overflow-y: scroll;
 }
 p {
   margin: 0;
@@ -157,8 +157,13 @@ h6 {
   margin: 0;
 }
 
-.mat-dialog-container {
+.settings .mat-dialog-container,
+.scan-dialog .mat-dialog-container {
   padding: 0 !important;
+}
+
+.playlists-dialog .mat-dialog-container {
+  padding-bottom: 0 !important;
 }
 
 *::-webkit-scrollbar {

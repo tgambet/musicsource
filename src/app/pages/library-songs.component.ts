@@ -5,6 +5,8 @@ import {
   HostListener,
   OnDestroy,
   OnInit,
+  TemplateRef,
+  ViewChild,
 } from '@angular/core';
 import { SelectOption } from '@app/components/select.component';
 import { EMPTY, merge, Observable, Subscription } from 'rxjs';
@@ -16,6 +18,7 @@ import {
   last,
   map,
   publish,
+  reduce,
   scan,
   skip,
   skipWhile,
@@ -28,6 +31,8 @@ import { ActivatedRoute } from '@angular/router';
 import { hash } from '@app/utils/hash.util';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatMenuTrigger } from '@angular/material/menu';
+import { Playlist } from '@app/models/playlist.model';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-library-songs',
@@ -113,13 +118,38 @@ import { MatMenuTrigger } from '@angular/material/menu';
                 [overlapTrigger]="false"
               >
                 <ng-template matMenuContent>
-                  <!--                  <button mat-menu-item (click)="toggleFavorite(song)">
-                    <app-icon
-                      [path]="!!song.likedOn ? icons.heart : icons.heartOutline"
-                    ></app-icon>
-                    <span *ngIf="!!song.likedOn">Remove from favorites</span>
-                    <span *ngIf="!song.likedOn">Add to favorites</span>
-                  </button>-->
+                  <button mat-menu-item>
+                    <app-icon [path]="icons.radio"></app-icon>
+                    <span>Start radio</span>
+                  </button>
+                  <button mat-menu-item>
+                    <app-icon [path]="icons.playlistPlay"></app-icon>
+                    <span>Play next</span>
+                  </button>
+                  <button mat-menu-item>
+                    <app-icon [path]="icons.playlistMusic"></app-icon>
+                    <span>Add to queue</span>
+                  </button>
+                  <button mat-menu-item (click)="addSongToPlaylist(song)">
+                    <app-icon [path]="icons.playlistPlus"></app-icon>
+                    <span>Add to playlist</span>
+                  </button>
+                  <button
+                    mat-menu-item
+                    [routerLink]="['/', 'album', getHash(song.album)]"
+                    *ngIf="song.album"
+                  >
+                    <app-icon [path]="icons.album"></app-icon>
+                    <span>Go to album</span>
+                  </button>
+                  <button
+                    mat-menu-item
+                    [routerLink]="['/', 'artist', getHash(song.artist)]"
+                    *ngIf="song.artist"
+                  >
+                    <app-icon [path]="icons.accountMusic"></app-icon>
+                    <span>Go to artist</span>
+                  </button>
                 </ng-template>
               </mat-menu>
             </div>
@@ -129,9 +159,42 @@ import { MatMenuTrigger } from '@angular/material/menu';
         </ng-container>
       </div>
     </app-library-content>
+
+    <ng-template #addToPlaylist>
+      <app-title mat-dialog-title title="My playlists" size="small"></app-title>
+      <mat-dialog-content>
+        <ng-container *ngFor="let playlist of playlists$ | async">
+          <button mat-menu-item [mat-dialog-close]="playlist.title">
+            <app-icon [path]="icons.playlistEdit"></app-icon>
+            {{ playlist.title }}
+          </button>
+        </ng-container>
+      </mat-dialog-content>
+      <div class="dialog-actions">
+        <button mat-button [mat-dialog-close]="true" class="new-playlist">
+          NEW PLAYLIST
+        </button>
+      </div>
+    </ng-template>
   `,
   styles: [
     `
+      .mat-dialog-container {
+        padding-bottom: 0 !important;
+      }
+      .dialog-actions {
+        text-align: right;
+        margin: 0 -24px 0;
+      }
+      .new-playlist {
+        width: 100%;
+        height: 52px;
+      }
+      .mat-dialog-content {
+        padding: 0 !important;
+        border: solid rgba(255, 255, 255, 0.1);
+        border-width: 1px 0;
+      }
       :host {
         display: block;
         min-height: 1200px;
@@ -220,16 +283,23 @@ import { MatMenuTrigger } from '@angular/material/menu';
       a[href]:hover {
         text-decoration: underline;
       }
+      .mat-menu-item app-icon {
+        margin-right: 16px;
+      }
     `,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LibrarySongsComponent implements OnInit, OnDestroy {
+  @ViewChild('addToPlaylist', { static: true })
+  addToPlaylist!: TemplateRef<any>;
+
   sortOptions: SelectOption[] = [
     { name: 'Recently added', value: 'lastModified_desc' },
     { name: 'A to Z', value: 'title_asc' },
     { name: 'Z to A', value: 'title_desc' },
   ];
+
   selectedSortOption: SelectOption = this.sortOptions[0];
 
   icons = Icons;
@@ -249,10 +319,15 @@ export class LibrarySongsComponent implements OnInit, OnDestroy {
 
   trigger?: MatMenuTrigger;
 
+  playlists$: Observable<Playlist[]> = this.library
+    .getPlaylists()
+    .pipe(reduce((acc, cur) => [...acc, cur], [] as Playlist[]));
+
   constructor(
     private library: LibraryFacade,
     private route: ActivatedRoute,
     private snack: MatSnackBar,
+    private dialog: MatDialog,
     private cdr: ChangeDetectorRef
   ) {}
 
@@ -385,5 +460,32 @@ export class LibrarySongsComponent implements OnInit, OnDestroy {
       this.trigger.closeMenu();
       this.trigger = undefined;
     }
+  }
+
+  addSongToPlaylist(song: Song) {
+    const ref = this.dialog.open(this.addToPlaylist, {
+      width: '275px',
+      maxHeight: '80%',
+      height: 'auto',
+      panelClass: 'playlists-dialog',
+    });
+
+    ref
+      .afterClosed()
+      .pipe(
+        concatMap(
+          (result) =>
+            result === undefined
+              ? EMPTY
+              : result === true
+              ? EMPTY // Redirect to new playlist
+              : this.library
+                  .addSongToPlaylist(song, result)
+                  .pipe(
+                    tap((key) => this.snack.open(`Added to ${key}`, 'VIEW'))
+                  ) // TODO redirect to playlist
+        )
+      )
+      .subscribe();
   }
 }

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { DirectoryEntry, Entry } from '@app/models/entry.model';
 import { EMPTY, from, Observable, of, Subject, throwError } from 'rxjs';
-import { concatMap, map, tap } from 'rxjs/operators';
+import { concatMap, filter, map, tap } from 'rxjs/operators';
 import { StorageService } from '@app/services/storage.service';
 import { Album, AlbumWithCover } from '@app/models/album.model';
 import {
@@ -383,5 +383,21 @@ export class LibraryFacade {
         playlist.title
       )
       .pipe(map(() => void 0));
+  }
+
+  addSongToPlaylist(song: Song, title: string) {
+    return this.storage.get$('playlists', title).pipe(
+      filter((playlist): playlist is Playlist => !!playlist),
+      concatMap((playlist) =>
+        this.storage.update$(
+          'playlists',
+          {
+            songs: [...playlist.songs, song.entryPath],
+            pictureKey: playlist.pictureKey || song.pictureKey,
+          },
+          title
+        )
+      )
+    );
   }
 }

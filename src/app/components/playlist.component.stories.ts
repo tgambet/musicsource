@@ -53,7 +53,10 @@ const Template: Story<PlaylistComponent> = (args: PlaylistComponent) => ({
 
 export const Simple = Template.bind({});
 Simple.args = {
-  name: 'Nu-Metal Rage',
-  label: 'Korn, Linkin Park, Limp Bizkit, Rage Against the Machine',
-  cover: '/playlist_nu_metal.jpg',
+  playlist: {
+    title: 'Nu-Metal Rage',
+    description: 'Korn, Linkin Park, Limp Bizkit, Rage Against the Machine',
+    songs: [],
+    createdOn: new Date(),
+  },
 };

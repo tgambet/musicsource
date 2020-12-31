@@ -32,6 +32,7 @@
     "@ngrx/store": "^10.1.0",
     "@ngrx/store-devtools": "^10.1.0",
     "music-metadata-browser": "^2.1.6",
+    "node-vibrant": "3.1.6",
     "rxjs": "~6.6.0",
     "tslib": "^2.0.0",
     "zone.js": "~0.10.2"

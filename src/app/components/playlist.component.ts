@@ -2,18 +2,18 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
+  EventEmitter,
   Input,
   OnInit,
   Optional,
   Output,
-  EventEmitter,
 } from '@angular/core';
 import { Icons } from '../utils/icons.util';
 import { PlayerState } from './player-button.component';
 import { Playlist } from '@app/models/playlist.model';
-import { Observable } from 'rxjs';
+import { from, Observable, of } from 'rxjs';
 import { LibraryFacade } from '@app/store/library/library.facade';
-import { map, tap } from 'rxjs/operators';
+import { concatMap, map, tap } from 'rxjs/operators';
 import { getCover } from '@app/models/picture.model';
 import { MenuItem } from '@app/components/menu.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -30,13 +30,17 @@ import { MatSnackBar } from '@angular/material/snack-bar';
       (pauseClicked)="pause()"
       tabindex="-1"
     >
-      <img
-        [src]="cover"
-        height="226"
-        width="226"
-        alt="cover"
-        *ngIf="cover$ | async as cover; else icon"
-      />
+      <ng-container *ngIf="cover$ | async as cover; else icon">
+        <ng-container *ngIf="color$ | async as color">
+          <img [src]="cover" alt="cover" />
+          <img
+            [src]="cover"
+            alt="cover"
+            class="inner-cover"
+            [style.borderColor]="color"
+          />
+        </ng-container>
+      </ng-container>
       <ng-template #icon>
         <app-icon [path]="icons.playlistPlay" [size]="72"></app-icon>
       </ng-template>
@@ -52,7 +56,6 @@ import { MatSnackBar } from '@angular/material/snack-bar';
       :host,
       img {
         display: block;
-        max-width: 226px;
       }
       app-cover {
         margin-bottom: 16px;
@@ -60,6 +63,21 @@ import { MatSnackBar } from '@angular/material/snack-bar';
       }
       app-icon {
         color: rgba(0, 0, 0, 0.2);
+      }
+      img {
+        width: 100%;
+        height: auto;
+      }
+      .inner-cover {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        box-sizing: border-box;
+        border-width: 25px;
+        border-style: solid;
+        border-radius: 4px;
       }
     `,
   ],
@@ -78,6 +96,8 @@ export class PlaylistComponent implements OnInit {
 
   cover$!: Observable<string | undefined>;
 
+  color$!: Observable<any>;
+
   constructor(
     private library: LibraryFacade,
     private snack: MatSnackBar,
@@ -90,6 +110,20 @@ export class PlaylistComponent implements OnInit {
     this.cover$ = this.library
       .getPicture(this.playlist.pictureKey)
       .pipe(map((picture) => (picture ? getCover(picture) : undefined)));
+
+    this.color$ = this.cover$.pipe(
+      concatMap((cover) =>
+        !cover
+          ? of(undefined)
+          : from(import('node-vibrant')).pipe(
+              concatMap((vibrant) => vibrant.from(cover).getPalette()),
+              map((palette) => palette.Vibrant?.getRgb()),
+              map((hsl) =>
+                !!hsl ? `rgba(${hsl[0]}, ${hsl[1]}, ${hsl[2]}, 0.5)` : undefined
+              )
+            )
+      )
+    );
   }
 
   play() {

@@ -51,6 +51,10 @@ import { ScannerFacade } from '@app/store/scanner/scanner.facade';
         background: transparent;
         border-bottom: none;
       }
+      :host-context(.cdk-global-scrollblock) {
+        background: rgb(33, 33, 33);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      }
       h1 {
         font-family: 'YT Sans', sans-serif;
         letter-spacing: -1px;

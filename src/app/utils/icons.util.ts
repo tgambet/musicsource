@@ -33,6 +33,7 @@ import {
   mdiPause,
   mdiPencil,
   mdiPlay,
+  mdiPlaylistEdit,
   mdiPlaylistMusic,
   mdiPlaylistPlay,
   mdiPlaylistPlus,
@@ -87,4 +88,5 @@ export class Icons {
   static plus = mdiPlus;
   static pencil = mdiPencil;
   static delete = mdiDelete;
+  static playlistEdit = mdiPlaylistEdit;
 }
