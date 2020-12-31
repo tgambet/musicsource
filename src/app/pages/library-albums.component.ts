@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { LibraryFacade } from '@app/store/library/library.facade';
 import { Observable } from 'rxjs';
-import { AlbumWithCover } from '@app/models/album.model';
+import { AlbumWithCover$ } from '@app/models/album.model';
 import { map, scan, switchMap } from 'rxjs/operators';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SelectOption } from '@app/components/select.component';
@@ -21,7 +21,7 @@ import { hash } from '@app/utils/hash.util';
         >
           <app-album
             [name]="album.name"
-            [cover]="album.cover"
+            [cover]="album.cover$ | async"
             [year]="album.year"
             [artist]="
               album.albumArtist ||
@@ -61,7 +61,7 @@ import { hash } from '@app/utils/hash.util';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LibraryAlbumsComponent implements OnInit {
-  albums$!: Observable<AlbumWithCover[]>;
+  albums$!: Observable<AlbumWithCover$[]>;
 
   sortOptions: SelectOption[] = [
     { name: 'Recently added', value: 'lastModified_desc' },
@@ -95,12 +95,12 @@ export class LibraryAlbumsComponent implements OnInit {
       switchMap((sort) =>
         this.library
           .getAlbums(sort.index, null, sort.direction)
-          .pipe(scan((acc, cur) => [...acc, cur], [] as AlbumWithCover[]))
+          .pipe(scan((acc, cur) => [...acc, cur], [] as AlbumWithCover$[]))
       )
     );
   }
 
-  trackBy = (index: number, album: AlbumWithCover) => album.name;
+  trackBy = (index: number, album: AlbumWithCover$) => album.name;
 
   getHash(albumArtist: string) {
     return hash(albumArtist);

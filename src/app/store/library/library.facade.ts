@@ -3,7 +3,7 @@ import { DirectoryEntry, Entry } from '@app/models/entry.model';
 import { EMPTY, from, Observable, of, Subject, throwError } from 'rxjs';
 import { concatMap, filter, map, tap } from 'rxjs/operators';
 import { StorageService } from '@app/services/storage.service';
-import { Album, AlbumWithCover } from '@app/models/album.model';
+import { Album, AlbumWithCover$ } from '@app/models/album.model';
 import {
   Artist,
   ArtistWithCover,
@@ -15,26 +15,24 @@ import { Playlist } from '@app/models/playlist.model';
 
 @Injectable()
 export class LibraryFacade {
-  albums$: Observable<AlbumWithCover> = this.storage
+  albums$: Observable<AlbumWithCover$> = this.storage
     .open$(['albums', 'pictures'])
     .pipe(
       concatMap((transaction) =>
         this.storage.walk$<Album>(transaction, 'albums').pipe(
           map(({ value }) => value),
-          concatMap((album) =>
-            album.pictureKey
+          map((album) => ({
+            ...album,
+            cover$: album.pictureKey
               ? this.storage
                   .exec$<Picture>(
                     transaction.objectStore('pictures').get(album.pictureKey)
                   )
                   .pipe(
-                    map((picture) => ({
-                      ...album,
-                      cover: picture ? getCover(picture) : undefined,
-                    }))
+                    map((picture) => (picture ? getCover(picture) : undefined))
                   )
-              : of(album)
-          )
+              : of(undefined),
+          }))
         )
       )
     );
@@ -71,27 +69,27 @@ export class LibraryFacade {
     index?: string,
     query?: IDBValidKey | IDBKeyRange | null,
     direction: IDBCursorDirection = 'next'
-  ): Observable<AlbumWithCover> {
+  ): Observable<AlbumWithCover$> {
     return this.storage.open$(['albums', 'pictures']).pipe(
       concatMap((transaction) =>
         this.storage
           .walk$<Album>(transaction, 'albums', index, query, direction)
           .pipe(
             map(({ value }) => value),
-            concatMap((album) =>
-              album.pictureKey
+            map((album) => ({
+              ...album,
+              cover$: album.pictureKey
                 ? this.storage
                     .exec$<Picture>(
                       transaction.objectStore('pictures').get(album.pictureKey)
                     )
                     .pipe(
-                      map((picture) => ({
-                        ...album,
-                        cover: picture ? getCover(picture) : undefined,
-                      }))
+                      map((picture) =>
+                        picture ? getCover(picture) : undefined
+                      )
                     )
-                : of(album)
-            )
+                : of(undefined),
+            }))
           )
       )
     );
@@ -219,33 +217,33 @@ export class LibraryFacade {
       // )
     );
 
-  getArtistAlbums(artist: Artist): Observable<AlbumWithCover> {
+  getArtistAlbums(artist: Artist): Observable<AlbumWithCover$> {
     return this.storage.open$(['albums', 'pictures']).pipe(
       concatMap((transaction) =>
         this.storage
           .walk$<Album>(transaction, 'albums', 'albumArtist', artist.name)
           .pipe(
             map(({ value }) => value),
-            concatMap((album) =>
-              album.pictureKey
+            map((album) => ({
+              ...album,
+              cover$: album.pictureKey
                 ? this.storage
                     .exec$<Picture>(
                       transaction.objectStore('pictures').get(album.pictureKey)
                     )
                     .pipe(
-                      map((picture) => ({
-                        ...album,
-                        cover: picture ? getCover(picture) : undefined,
-                      }))
+                      map((picture) =>
+                        picture ? getCover(picture) : undefined
+                      )
                     )
-                : of(album)
-            )
+                : of(undefined),
+            }))
           )
       )
     );
   }
 
-  getAlbumsWithArtist(artist: Artist): Observable<AlbumWithCover> {
+  getAlbumsWithArtist(artist: Artist): Observable<AlbumWithCover$> {
     return this.storage.open$(['albums', 'pictures']).pipe(
       concatMap((transaction) =>
         this.storage
@@ -259,20 +257,20 @@ export class LibraryFacade {
           )
           .pipe(
             map(({ value }) => value),
-            concatMap((album) =>
-              album.pictureKey
+            map((album) => ({
+              ...album,
+              cover$: album.pictureKey
                 ? this.storage
                     .exec$<Picture>(
                       transaction.objectStore('pictures').get(album.pictureKey)
                     )
                     .pipe(
-                      map((picture) => ({
-                        ...album,
-                        cover: picture ? getCover(picture) : undefined,
-                      }))
+                      map((picture) =>
+                        picture ? getCover(picture) : undefined
+                      )
                     )
-                : of(album)
-            )
+                : of(undefined),
+            }))
           )
       )
     );

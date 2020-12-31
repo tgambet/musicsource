@@ -1,4 +1,5 @@
 import { Except } from '@app/utils/types.util';
+import { Observable } from 'rxjs';
 
 export interface Album {
   name: string;
@@ -10,4 +11,6 @@ export interface Album {
   lastModified: Date;
 }
 
-export type AlbumWithCover = Except<Album, 'pictureKey'> & { cover?: string };
+export type AlbumWithCover$ = Except<Album, 'pictureKey'> & {
+  cover$: Observable<string | undefined>;
+};

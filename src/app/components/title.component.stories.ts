@@ -27,7 +27,7 @@ const Template: Story<TitleComponent> = (args: TitleComponent) => ({
 
 export const Simple = Template.bind({});
 Simple.args = {
-  title: 'Your favorites',
+  title: 'Your likes',
 };
 
 export const WithLink = Template.bind({});

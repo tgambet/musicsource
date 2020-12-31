@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { LibraryFacade } from '@app/store/library/library.facade';
-import { filter, scan, take } from 'rxjs/operators';
+import { scan, take } from 'rxjs/operators';
 import { Observable } from 'rxjs';
-import { AlbumWithCover } from '@app/models/album.model';
+import { AlbumWithCover$ } from '@app/models/album.model';
 import { ArtistWithCover } from '@app/models/artist.model';
 import { hash } from '@app/utils/hash.util';
 
@@ -16,7 +16,7 @@ import { hash } from '@app/utils/hash.util';
           <app-album
             [name]="album.name"
             [artist]="album.albumArtist"
-            [cover]="album.cover"
+            [cover]="album.cover$ | async"
             [albumRouterLink]="['/', 'album', album.hash]"
             [artistRouterLink]="
               album.albumArtist
@@ -69,10 +69,10 @@ import { hash } from '@app/utils/hash.util';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HomeComponent implements OnInit {
-  albums$: Observable<AlbumWithCover[]> = this.library.albums$.pipe(
-    filter((album) => !!album.cover),
+  albums$: Observable<AlbumWithCover$[]> = this.library.albums$.pipe(
+    // filter((album) => !!album.cover),
     take(20),
-    scan((acc, cur) => [...acc, cur], [] as AlbumWithCover[])
+    scan((acc, cur) => [...acc, cur], [] as AlbumWithCover$[])
   );
 
   artists$ = this.library.artists$.pipe(

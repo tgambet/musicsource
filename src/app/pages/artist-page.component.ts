@@ -1,18 +1,23 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  OnInit,
+} from '@angular/core';
 import { Icons } from '@app/utils/icons.util';
 import { Observable } from 'rxjs';
 import { Artist } from '@app/models/artist.model';
 import { ActivatedRoute } from '@angular/router';
 import { map } from 'rxjs/operators';
-import { AlbumWithCover } from '@app/models/album.model';
+import { AlbumWithCover$ } from '@app/models/album.model';
 import { SongWithCover } from '@app/models/song.model';
 import { hash } from '@app/utils/hash.util';
 
 export type ArtistPageInfo = {
   artist: Artist;
   cover: string | undefined;
-  albums$: Observable<AlbumWithCover[]>;
-  foundOn$: Observable<AlbumWithCover[]>;
+  albums$: Observable<AlbumWithCover$[]>;
+  foundOn$: Observable<AlbumWithCover$[]>;
   songs$: Observable<SongWithCover[]>;
 };
 
@@ -64,7 +69,7 @@ export type ArtistPageInfo = {
               *ngFor="let album of albums"
               [name]="album.name"
               [year]="album.year"
-              [cover]="album.cover"
+              [cover]="album.cover$ | async"
               [albumRouterLink]="['/', 'album', album.hash]"
             >
             </app-album>
@@ -83,7 +88,7 @@ export type ArtistPageInfo = {
               *ngFor="let album of albums"
               [name]="album.name"
               [year]="album.year"
-              [cover]="album.cover"
+              [cover]="album.cover$ | async"
               [albumRouterLink]="['/', 'album', album.hash]"
               [artist]="
                 album.albumArtist ||
@@ -190,10 +195,12 @@ export class ArtistPageComponent implements OnInit {
   icons = Icons;
   info$!: Observable<ArtistPageInfo>;
 
-  constructor(private route: ActivatedRoute) {}
+  constructor(private route: ActivatedRoute, private cdr: ChangeDetectorRef) {}
 
   ngOnInit(): void {
     this.info$ = this.route.data.pipe(map((data) => data.info));
+
+    setTimeout(() => this.cdr.markForCheck());
   }
 
   getHash(albumArtist: string) {

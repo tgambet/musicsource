@@ -14,10 +14,11 @@ import {
   map,
   mergeMap,
   reduce,
+  scan,
   take,
 } from 'rxjs/operators';
 import { getCover } from '@app/models/picture.model';
-import { AlbumWithCover } from '@app/models/album.model';
+import { AlbumWithCover$ } from '@app/models/album.model';
 import { Song } from '@app/models/song.model';
 
 @Injectable({
@@ -52,15 +53,15 @@ export class ArtistPageResolverService implements Resolve<ArtistPageInfo> {
             artist,
             cover,
             albums$: this.library.getArtistAlbums(artist).pipe(
-              reduce((acc, cur) => [...acc, cur], [] as AlbumWithCover[]),
+              scan((acc, cur) => [...acc, cur], [] as AlbumWithCover$[]),
               map((albums) =>
-                albums.sort((a1, a2) => (a2.year || 0) - (a1.year || 0))
+                [...albums].sort((a1, a2) => (a2.year || 0) - (a1.year || 0))
               )
             ),
             foundOn$: this.library.getAlbumsWithArtist(artist).pipe(
-              reduce((acc, cur) => [...acc, cur], [] as AlbumWithCover[]),
+              scan((acc, cur) => [...acc, cur], [] as AlbumWithCover$[]),
               map((albums) =>
-                albums.sort((a1, a2) => (a2.year || 0) - (a1.year || 0))
+                [...albums].sort((a1, a2) => (a2.year || 0) - (a1.year || 0))
               )
             ),
             songs$: this.library.getArtistTitles(artist).pipe(
