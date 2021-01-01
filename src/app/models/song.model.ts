@@ -10,10 +10,6 @@ export type Song = Omit<ICommonTagsResult, 'picture'> & {
   likedOn?: Date;
 };
 
-export type SongWithCover = Except<Song, 'pictureKey'> & {
-  cover?: string;
-};
-
 export type SongWithCover$ = Except<Song, 'pictureKey'> & {
   cover$: Observable<string>;
 };

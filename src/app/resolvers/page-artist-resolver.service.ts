@@ -8,18 +8,10 @@ import {
 import { PageArtistData } from '@app/pages/page-artist.component';
 import { EMPTY, Observable, of, throwError } from 'rxjs';
 import { LibraryFacade } from '@app/store/library/library.facade';
-import {
-  catchError,
-  concatMap,
-  map,
-  mergeMap,
-  reduce,
-  scan,
-  take,
-} from 'rxjs/operators';
+import { catchError, concatMap, map, scan, take } from 'rxjs/operators';
 import { getCover } from '@app/models/picture.model';
 import { AlbumWithCover$ } from '@app/models/album.model';
-import { Song } from '@app/models/song.model';
+import { SongWithCover$ } from '@app/models/song.model';
 
 @Injectable({
   providedIn: 'root',
@@ -64,17 +56,10 @@ export class PageArtistResolverService implements Resolve<PageArtistData> {
                 [...albums].sort((a1, a2) => (a2.year || 0) - (a1.year || 0))
               )
             ),
-            songs$: this.library.getArtistTitles(artist).pipe(
+            songs$: this.library.getSongs('artists', artist.name).pipe(
+              map(({ value }) => value),
               take(5),
-              mergeMap((song) =>
-                this.library.getPicture(song.pictureKey).pipe(
-                  map((picture) => ({
-                    ...song,
-                    cover: picture ? getCover(picture) : undefined,
-                  }))
-                )
-              ),
-              reduce((acc, cur) => [...acc, cur], [] as Song[])
+              scan((acc, cur) => [...acc, cur], [] as SongWithCover$[])
             ),
           }))
         );

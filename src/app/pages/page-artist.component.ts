@@ -10,7 +10,7 @@ import { Artist } from '@app/models/artist.model';
 import { ActivatedRoute } from '@angular/router';
 import { map } from 'rxjs/operators';
 import { AlbumWithCover$ } from '@app/models/album.model';
-import { SongWithCover } from '@app/models/song.model';
+import { SongWithCover$ } from '@app/models/song.model';
 import { hash } from '@app/utils/hash.util';
 
 export type PageArtistData = {
@@ -18,7 +18,7 @@ export type PageArtistData = {
   cover: string | undefined;
   albums$: Observable<AlbumWithCover$[]>;
   foundOn$: Observable<AlbumWithCover$[]>;
-  songs$: Observable<SongWithCover[]>;
+  songs$: Observable<SongWithCover$[]>;
 };
 
 @Component({
@@ -54,7 +54,7 @@ export type PageArtistData = {
       <app-container-page class="content">
         <app-title title="Songs" size="small"></app-title>
         <ng-container *ngIf="info.songs$ | async as songs">
-          <!--<app-song-list [songs]="songs"></app-song-list>-->
+          <app-song-list [songs]="songs"></app-song-list>
         </ng-container>
         <ng-container *ngIf="info.albums$ | async as albums">
           <app-title

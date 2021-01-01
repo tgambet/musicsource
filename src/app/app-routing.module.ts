@@ -108,7 +108,7 @@ export class AppRoutingModule {
 
           scroll$
             .pipe(
-              delay(1),
+              delay(5),
               concatMap(() =>
                 getPos$.pipe(
                   concatMap((pos) =>
@@ -116,7 +116,7 @@ export class AppRoutingModule {
                   )
                 )
               ),
-              retry(200)
+              retry(40)
             )
             .subscribe();
 

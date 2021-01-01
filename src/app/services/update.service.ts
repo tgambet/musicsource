@@ -19,7 +19,9 @@ export class UpdateService {
       .pipe(
         concatMap(() =>
           this.snackBar
-            .open('A new version is available.', 'Reload')
+            .open('A new version is available.', 'Reload', {
+              duration: Infinity,
+            })
             .afterDismissed()
         ),
         tap(() =>
