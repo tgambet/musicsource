@@ -8,7 +8,7 @@ import { Icons } from '@app/utils/icons.util';
 @Component({
   selector: 'app-page-playlist-likes',
   template: `
-    <header>
+    <header (click)="songList.closeMenu()">
       <app-container-page class="header-container">
         <div class="info">
           <div class="cover" style="--aspect-ratio:1">
@@ -20,7 +20,7 @@ import { Icons } from '@app/utils/icons.util';
               <span>Auto playlist</span>
             </p>
             <p class="stats" *ngIf="songs$ | async as songs">
-              {{ songs.length }} titres • {{ getLength(songs) }} minutes
+              {{ songs.length }} songs • {{ getLength(songs) }} minutes
             </p>
             <p class="description">
               All the music you liked in MusicSource appears here.
@@ -44,10 +44,7 @@ import { Icons } from '@app/utils/icons.util';
       </app-container-page>
     </header>
     <app-container-page>
-      <app-song-list
-        [songs]="songs"
-        *ngIf="songs$ | async as songs"
-      ></app-song-list>
+      <app-song-list [songs]="songs$ | async" #songList></app-song-list>
       <p class="empty" *ngIf="(songs$ | async)?.length === 0">
         No liked songs yet.
       </p>
@@ -74,7 +71,7 @@ export class PagePlaylistLikesComponent implements OnInit {
   constructor(private library: LibraryFacade) {}
 
   ngOnInit(): void {
-    this.songs$ = this.library.getSongs('likedOn').pipe(
+    this.songs$ = this.library.getSongs('likedOn', undefined, 'prev').pipe(
       map(({ value }) => value),
       scan((acc, cur) => [...acc, cur], [] as SongWithCover$[]),
       startWith([]),

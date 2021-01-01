@@ -1,38 +1,24 @@
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { Song, SongWithCover$ } from '@app/models/song.model';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  HostListener,
+  Input,
+} from '@angular/core';
+import { SongWithCover$ } from '@app/models/song.model';
 import { Icons } from '@app/utils/icons.util';
 import { AudioService } from '@app/services/audio.service';
 import { LibraryFacade } from '@app/store/library/library.facade';
-import { concatMap, filter, tap } from 'rxjs/operators';
-import { DirectoryEntry, Entry, FileEntry } from '@app/models/entry.model';
+import { MatMenuTrigger } from '@angular/material/menu';
 
 @Component({
   selector: 'app-song-list',
   template: `
-    <div class="song" *ngFor="let song of songs; let i = index">
-      <span class="cover">
-        <img
-          *ngIf="song.cover$ | async as cover"
-          [src]="cover"
-          alt="cover"
-          height="32"
-        />
-        <app-player-button
-          size="small"
-          shape="square"
-          (playClicked)="play(song)"
-        ></app-player-button>
-      </span>
-      <span class="title">{{ song.title }}</span>
-      <span class="artist">{{ song.artist }}</span>
-      <span class="album">{{ song.album }}</span>
-      <span class="controls">
-        <button mat-icon-button>
-          <app-icon [path]="icons.heartOutline"></app-icon>
-        </button>
-        <app-menu></app-menu>
-      </span>
-    </div>
+    <app-song-list-item
+      *ngFor="let song of songs; trackBy: trackBy"
+      [song]="song"
+      cdkMonitorSubtreeFocus
+      (menuOpened)="menuOpened($event)"
+    ></app-song-list-item>
   `,
   styles: [
     `
@@ -40,57 +26,11 @@ import { DirectoryEntry, Entry, FileEntry } from '@app/models/entry.model';
         display: flex;
         flex-direction: column;
       }
-      .song {
-        display: flex;
-        align-items: center;
-        flex: 0 0 49px;
-        box-sizing: border-box;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        padding: 0 8px;
+      app-song-list-item {
+        flex: 0 0 48px;
       }
-      .song:last-of-type {
+      app-song-list-item:last-of-type {
         border: none;
-      }
-      .cover {
-        flex: 0 0 32px;
-        height: 32px;
-        margin-right: 24px;
-        text-align: center;
-        position: relative;
-        border-radius: 4px;
-        overflow: hidden;
-      }
-      .cover img {
-        display: block;
-      }
-      .cover app-player-button {
-        position: absolute;
-        top: -4px;
-        left: -4px;
-      }
-      .title {
-        flex: 12 1 0;
-      }
-      .artist,
-      .album {
-        color: #aaa;
-        flex: 9 1 0;
-      }
-      .controls {
-        flex: 0 0 auto;
-        visibility: hidden;
-      }
-      .song:hover .controls {
-        visibility: visible;
-      }
-      .controls button {
-        margin-right: 8px;
-      }
-      app-player-button {
-        visibility: hidden;
-      }
-      .song:hover app-player-button {
-        visibility: visible;
       }
     `,
   ],
@@ -101,39 +41,65 @@ export class SongListComponent {
 
   icons = Icons;
 
+  trigger?: MatMenuTrigger;
+
   // https://bugs.chromium.org/p/chromium/issues/detail?id=1146886&q=component%3ABlink%3EStorage%3EFileSystem&can=2
-  rootEntry?: DirectoryEntry;
+  // rootEntry?: DirectoryEntry;
 
-  constructor(private library: LibraryFacade, private audio: AudioService) {}
+  constructor() {}
 
-  isFileEntry(entry: Entry | undefined): entry is FileEntry {
-    return !!entry && entry.kind === 'file';
+  @HostListener('window:scroll')
+  update() {
+    this.closeMenu();
   }
 
-  isDirectoryEntry(entry: Entry | undefined): entry is DirectoryEntry {
-    return !!entry && entry.kind === 'directory';
+  @HostListener('click')
+  closeMenu() {
+    if (this.trigger) {
+      this.trigger.closeMenu();
+      this.trigger = undefined;
+    }
   }
 
-  play(song: Song) {
-    this.library
-      .getRootEntry()
-      .pipe(
-        filter(this.isDirectoryEntry),
-        tap((root) => (this.rootEntry = root))
-      )
-      .subscribe();
-
-    this.library
-      .getEntry(song.entryPath)
-      .pipe(
-        filter(this.isFileEntry),
-        concatMap((entry) =>
-          this.library.requestPermission(entry.handle).pipe(
-            concatMap(() => entry.handle.getFile()),
-            concatMap((file) => this.audio.play(file))
-          )
-        )
-      )
-      .subscribe();
+  menuOpened(trigger: MatMenuTrigger) {
+    if (this.trigger && this.trigger !== trigger) {
+      this.trigger.closeMenu();
+    }
+    this.trigger = trigger;
   }
+
+  trackBy(index: number, song: SongWithCover$): string {
+    return song.entryPath;
+  }
+
+  // isFileEntry(entry: Entry | undefined): entry is FileEntry {
+  //   return !!entry && entry.kind === 'file';
+  // }
+  //
+  // isDirectoryEntry(entry: Entry | undefined): entry is DirectoryEntry {
+  //   return !!entry && entry.kind === 'directory';
+  // }
+  //
+  // play(song: Song) {
+  //   this.library
+  //     .getRootEntry()
+  //     .pipe(
+  //       filter(this.isDirectoryEntry),
+  //       tap((root) => (this.rootEntry = root))
+  //     )
+  //     .subscribe();
+  //
+  //   this.library
+  //     .getEntry(song.entryPath)
+  //     .pipe(
+  //       filter(this.isFileEntry),
+  //       concatMap((entry) =>
+  //         this.library.requestPermission(entry.handle).pipe(
+  //           concatMap(() => entry.handle.getFile()),
+  //           concatMap((file) => this.audio.play(file))
+  //         )
+  //       )
+  //     )
+  //     .subscribe();
+  // }
 }

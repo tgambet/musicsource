@@ -1,6 +1,5 @@
 import {
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
   HostListener,
   OnDestroy,
@@ -28,11 +27,8 @@ import {
 import { tapError } from '@app/utils/tap-error.util';
 import { Icons } from '@app/utils/icons.util';
 import { ActivatedRoute } from '@angular/router';
-import { hash } from '@app/utils/hash.util';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatMenuTrigger } from '@angular/material/menu';
 import { Playlist } from '@app/models/playlist.model';
-import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-library-songs',
@@ -51,108 +47,12 @@ import { MatDialog } from '@angular/material/dialog';
               let count = count
             "
           >
-            <div
-              class="song"
+            <app-song-list-item
+              [song]="song"
               *ngIf="!sort.likes || !!song.likedOn"
               cdkMonitorSubtreeFocus
-            >
-              <div class="cover" style="--aspect-ratio:1">
-                <img
-                  *ngIf="song.cover$ | async as cover"
-                  [src]="cover"
-                  alt="cover"
-                />
-                <app-player-button
-                  size="small"
-                  shape="square"
-                ></app-player-button>
-              </div>
-              <span class="title">{{ song.title }}</span>
-              <span class="artists">
-                <ng-container
-                  *ngFor="let artist of song.artists; let last = last"
-                >
-                  <a [routerLink]="['/', 'artist', getHash(artist)]">{{
-                    artist
-                  }}</a>
-                  <span>{{ !last ? ', ' : '' }}</span>
-                </ng-container>
-              </span>
-              <span class="album">
-                <a
-                  [routerLink]="['/', 'album', getHash(song.album)]"
-                  *ngIf="song.album"
-                >
-                  {{ song.album }}
-                </a>
-              </span>
-              <span class="controls">
-                <button
-                  [class.liked]="!!song.likedOn"
-                  mat-icon-button
-                  [disableRipple]="true"
-                  (click)="toggleFavorite(song)"
-                >
-                  <app-icon
-                    [path]="!!song.likedOn ? icons.heart : icons.heartOutline"
-                  ></app-icon>
-                </button>
-                <button
-                  class="trigger"
-                  aria-label="Other actions"
-                  title="Other actions"
-                  mat-icon-button
-                  [disableRipple]="true"
-                  #trigger="matMenuTrigger"
-                  [matMenuTriggerFor]="menu"
-                  [matMenuTriggerData]="{ song: song }"
-                  (click)="menuOpened(trigger); $event.stopPropagation()"
-                >
-                  <app-icon [path]="icons.dotsVertical" [size]="24"></app-icon>
-                </button>
-              </span>
-              <span class="duration">{{ song.duration | duration }}</span>
-              <mat-menu
-                #menu="matMenu"
-                [hasBackdrop]="false"
-                [overlapTrigger]="false"
-              >
-                <ng-template matMenuContent>
-                  <button mat-menu-item>
-                    <app-icon [path]="icons.radio"></app-icon>
-                    <span>Start radio</span>
-                  </button>
-                  <button mat-menu-item>
-                    <app-icon [path]="icons.playlistPlay"></app-icon>
-                    <span>Play next</span>
-                  </button>
-                  <button mat-menu-item>
-                    <app-icon [path]="icons.playlistMusic"></app-icon>
-                    <span>Add to queue</span>
-                  </button>
-                  <button mat-menu-item (click)="addSongToPlaylist(song)">
-                    <app-icon [path]="icons.playlistPlus"></app-icon>
-                    <span>Add to playlist</span>
-                  </button>
-                  <button
-                    mat-menu-item
-                    [routerLink]="['/', 'album', getHash(song.album)]"
-                    *ngIf="song.album"
-                  >
-                    <app-icon [path]="icons.album"></app-icon>
-                    <span>Go to album</span>
-                  </button>
-                  <button
-                    mat-menu-item
-                    [routerLink]="['/', 'artist', getHash(song.artist)]"
-                    *ngIf="song.artist"
-                  >
-                    <app-icon [path]="icons.accountMusic"></app-icon>
-                    <span>Go to artist</span>
-                  </button>
-                </ng-template>
-              </mat-menu>
-            </div>
+              (menuOpened)="menuOpened($event)"
+            ></app-song-list-item>
           </ng-container>
 
           <p class="empty" *ngIf="i === 0">Nothing to display</p>
@@ -203,88 +103,19 @@ import { MatDialog } from '@angular/material/dialog';
         display: flex;
         flex-direction: column;
       }
-      .song {
+      app-song-list-item {
         flex: 0 0 48px;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        display: flex;
-        align-items: center;
-        padding: 0 8px;
       }
-      .song:last-of-type {
+      app-song-list-item:last-of-type {
         border: none;
       }
-      .cover {
-        width: 32px;
-        margin-right: 16px;
-        border-radius: 2px;
-        overflow: hidden;
-        position: relative;
-      }
-      .cover app-player-button {
-        position: absolute;
-        top: -4px;
-        left: -4px;
-        opacity: 0;
-      }
-      .song:hover app-player-button,
-      .cdk-focused app-player-button {
-        opacity: 1;
-      }
-      .title {
-        flex: 12 1 0;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        margin-right: 8px;
-      }
-      .artists {
-        margin-right: 8px;
-      }
-      .artists,
-      .album {
-        color: #aaa;
-        flex: 9 1 0;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-      .duration {
-        color: #aaa;
-        flex: 0 0 54px;
-        margin-left: 16px;
-        text-align: right;
-      }
-      .controls {
-        flex: 0 0 auto;
-        margin-left: 16px;
-        color: #aaa;
-      }
-      .controls button:not(.liked) {
-        opacity: 0;
-      }
-      .song:hover .controls button,
-      .cdk-focused .controls button {
-        opacity: 1;
-      }
-      .controls button:not(:last-of-type) {
-        margin-right: 8px;
-      }
-      .song ~ .empty {
+      app-song-list-item ~ .empty {
         display: none;
       }
       .empty {
         color: #aaa;
         padding: 24px 0;
         text-align: center;
-      }
-      a[href] {
-        text-decoration: none;
-      }
-      a[href]:hover {
-        text-decoration: underline;
-      }
-      .mat-menu-item app-icon {
-        margin-right: 16px;
       }
     `,
   ],
@@ -323,13 +154,7 @@ export class LibrarySongsComponent implements OnInit, OnDestroy {
     .getPlaylists()
     .pipe(reduce((acc, cur) => [...acc, cur], [] as Playlist[]));
 
-  constructor(
-    private library: LibraryFacade,
-    private route: ActivatedRoute,
-    private snack: MatSnackBar,
-    private dialog: MatDialog,
-    private cdr: ChangeDetectorRef
-  ) {}
+  constructor(private library: LibraryFacade, private route: ActivatedRoute) {}
 
   @HostListener('window:scroll')
   update() {
@@ -426,26 +251,6 @@ export class LibrarySongsComponent implements OnInit, OnDestroy {
     return song.entryPath;
   }
 
-  getHash(s: string): string {
-    return hash(s);
-  }
-
-  toggleFavorite(song: Song) {
-    this.library
-      .toggleSongFavorite(song)
-      .pipe(tap(() => (song.likedOn = !!song.likedOn ? undefined : new Date())))
-      .pipe(
-        tap(() =>
-          this.snack.open(
-            !!song.likedOn ? 'Added to your likes' : 'Removed from your likes',
-            undefined
-          )
-        ),
-        tap(() => this.cdr.markForCheck())
-      )
-      .subscribe();
-  }
-
   menuOpened(trigger: MatMenuTrigger) {
     if (this.trigger && this.trigger !== trigger) {
       this.trigger.closeMenu();
@@ -458,32 +263,5 @@ export class LibrarySongsComponent implements OnInit, OnDestroy {
       this.trigger.closeMenu();
       this.trigger = undefined;
     }
-  }
-
-  addSongToPlaylist(song: Song) {
-    const ref = this.dialog.open(this.addToPlaylist, {
-      width: '275px',
-      maxHeight: '80%',
-      height: 'auto',
-      panelClass: 'playlists-dialog',
-    });
-
-    ref
-      .afterClosed()
-      .pipe(
-        concatMap(
-          (result) =>
-            result === undefined
-              ? EMPTY
-              : result === true
-              ? EMPTY // Redirect to new playlist
-              : this.library
-                  .addSongToPlaylist(song, result)
-                  .pipe(
-                    tap((key) => this.snack.open(`Added to ${key}`, 'VIEW'))
-                  ) // TODO redirect to playlist
-        )
-      )
-      .subscribe();
   }
 }

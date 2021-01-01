@@ -78,6 +78,7 @@ import { PagePlaylistComponent } from './pages/page-playlist.component';
 import { IconLikesComponent } from './components/icon-likes.component';
 import { PlaylistLikesComponent } from './components/playlist-likes.component';
 import { PagePlaylistLikesComponent } from './pages/page-playlist-likes.component';
+import { SongListItemComponent } from './components/song-list-item.component';
 
 @NgModule({
   declarations: [
@@ -125,6 +126,7 @@ import { PagePlaylistLikesComponent } from './pages/page-playlist-likes.componen
     IconLikesComponent,
     PlaylistLikesComponent,
     PagePlaylistLikesComponent,
+    SongListItemComponent,
   ],
   imports: [
     BrowserModule,

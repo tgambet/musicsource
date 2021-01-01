@@ -38,7 +38,7 @@ export interface PagePlaylistData {
                 <span>Playlist</span> • <span>{{ '2020' }}</span>
               </p>
               <p class="stats" *ngIf="songs$ | async as songs">
-                {{ songs.length }} titres • {{ getLength(songs) }} minutes
+                {{ songs.length }} songs • {{ getLength(songs) }} minutes
               </p>
               <p class="description" *ngIf="info.playlist.description">
                 {{ info.playlist.description }}

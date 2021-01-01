@@ -46,7 +46,7 @@ export type PageAlbumData = {
                 • <span>{{ info.album.year }}</span>
               </p>
               <p class="stats">
-                {{ info.songs.length }} titres •
+                {{ info.songs.length }} songs •
                 {{ getLength(info.songs) }} minutes
               </p>
             </div>
