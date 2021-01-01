@@ -75,6 +75,9 @@ import { PlaylistDialogComponent } from './dialogs/playlist-dialog.component';
 import { MatInputModule } from '@angular/material/input';
 import { ReactiveFormsModule } from '@angular/forms';
 import { PagePlaylistComponent } from './pages/page-playlist.component';
+import { IconLikesComponent } from './components/icon-likes.component';
+import { PlaylistLikesComponent } from './components/playlist-likes.component';
+import { PagePlaylistLikesComponent } from './pages/page-playlist-likes.component';
 
 @NgModule({
   declarations: [
@@ -119,6 +122,9 @@ import { PagePlaylistComponent } from './pages/page-playlist.component';
     LibrarySongsComponent,
     PlaylistDialogComponent,
     PagePlaylistComponent,
+    IconLikesComponent,
+    PlaylistLikesComponent,
+    PagePlaylistLikesComponent,
   ],
   imports: [
     BrowserModule,

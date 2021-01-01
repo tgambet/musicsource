@@ -22,6 +22,7 @@ import { defer, EMPTY, of, throwError } from 'rxjs';
 import { PlaylistDialogComponent } from '@app/dialogs/playlist-dialog.component';
 import { PagePlaylistComponent } from '@app/pages/page-playlist.component';
 import { PagePlaylistResolver } from '@app/resolvers/page-playlist-resolver.service';
+import { PagePlaylistLikesComponent } from '@app/pages/page-playlist-likes.component';
 
 const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -49,6 +50,10 @@ const routes: Routes = [
     path: 'artist/:id',
     component: PageArtistComponent,
     resolve: { info: PageArtistResolverService },
+  },
+  {
+    path: 'likes',
+    component: PagePlaylistLikesComponent,
   },
   {
     path: 'playlist/:id',

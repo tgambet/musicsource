@@ -34,7 +34,7 @@ import {
             [queryParams]="{
               sort: null,
               dir: null,
-              liked: null
+              likes: null
             }"
             #rla1="routerLinkActive"
             [active]="rla1.isActive"
@@ -51,7 +51,7 @@ import {
             [queryParams]="{
               sort: null,
               dir: null,
-              liked: null
+              likes: null
             }"
             #rla2="routerLinkActive"
             [active]="rla2.isActive"
@@ -68,7 +68,7 @@ import {
             [queryParams]="{
               sort: null,
               dir: null,
-              liked: null
+              likes: null
             }"
             #rla3="routerLinkActive"
             [active]="rla3.isActive"
@@ -85,7 +85,7 @@ import {
             [queryParams]="{
               sort: null,
               dir: null,
-              liked: null
+              likes: null
             }"
             #rla4="routerLinkActive"
             [active]="rla4.isActive"
@@ -116,9 +116,6 @@ import {
       }
       .container.scrolled-top {
         background-color: #212121;
-      }
-      .container.scrolled-top nav {
-        /*border-bottom: none;*/
       }
       a {
         padding: 0;

@@ -38,8 +38,7 @@ export interface PagePlaylistData {
                 <span>Playlist</span> • <span>{{ '2020' }}</span>
               </p>
               <p class="stats" *ngIf="songs$ | async as songs">
-                {{ info.playlist.songs.length }} titres •
-                {{ getLength(songs) }} minutes
+                {{ songs.length }} titres • {{ getLength(songs) }} minutes
               </p>
               <p class="description" *ngIf="info.playlist.description">
                 {{ info.playlist.description }}
@@ -47,38 +46,43 @@ export interface PagePlaylistData {
             </div>
           </div>
           <div class="actions">
-            <button
-              mat-stroked-button
-              color="accent"
-              *ngIf="(songs$ | async)?.length === 0"
-            >
-              <app-icon [path]="icons.playlistEdit"></app-icon>
-              <span>Edit playlist</span>
-            </button>
-            <button
-              mat-raised-button
-              class="play-button"
-              color="accent"
-              *ngIf="(songs$ | async)?.length > 0"
-            >
-              <app-icon [path]="icons.shuffle"></app-icon>
-              <span>Shuffle</span>
-            </button>
-            <button
-              mat-stroked-button
-              class="shuffle-button"
-              color="accent"
-              *ngIf="(songs$ | async)?.length > 0"
-            >
-              <app-icon [path]="icons.heartOutline"></app-icon>
-              <span>Add to your likes</span>
-            </button>
+            <ng-container *ngIf="songs$ | async as songs">
+              <button
+                mat-stroked-button
+                color="accent"
+                *ngIf="songs.length === 0"
+              >
+                <app-icon [path]="icons.playlistEdit"></app-icon>
+                <span>Edit playlist</span>
+              </button>
+              <button
+                mat-raised-button
+                class="play-button"
+                color="accent"
+                *ngIf="songs.length > 0"
+              >
+                <app-icon [path]="icons.shuffle"></app-icon>
+                <span>Shuffle</span>
+              </button>
+              <button
+                mat-stroked-button
+                class="shuffle-button"
+                color="accent"
+                *ngIf="songs.length > 0"
+              >
+                <app-icon [path]="icons.heartOutline"></app-icon>
+                <span>Add to your likes</span>
+              </button>
+            </ng-container>
             <app-menu [disableRipple]="true"></app-menu>
           </div>
         </app-container-page>
       </header>
       <app-container-page>
-        <app-song-list [songs]="songs$ | async"></app-song-list>
+        <app-song-list
+          [songs]="songs"
+          *ngIf="songs$ | async as songs"
+        ></app-song-list>
         <p class="empty" *ngIf="(songs$ | async)?.length === 0">
           No songs in this playlist yet
         </p>
@@ -106,11 +110,6 @@ export interface PagePlaylistData {
       img {
         width: 100%;
         height: auto;
-      }
-      .empty {
-        color: #717171;
-        text-align: center;
-        font-size: 20px;
       }
     `,
   ],

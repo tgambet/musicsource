@@ -31,7 +31,7 @@ import { Subscription } from 'rxjs';
           [checked]="likes"
           (change)="this.likes = $event.checked; sort()"
         >
-          Your likes only
+          Liked only
         </mat-slide-toggle>
       </app-container>
     </div>

@@ -61,7 +61,7 @@ export class AlbumComponent {
   @Input() name!: string;
   @Input() artist?: string;
   @Input() year?: number;
-  @Input() cover?: string;
+  @Input() cover?: string | null;
   @Input() albumRouterLink!: any[] | string;
   @Input() artistRouterLink!: any[] | string | undefined;
   @Input() size: 'small' | 'large' = 'large';

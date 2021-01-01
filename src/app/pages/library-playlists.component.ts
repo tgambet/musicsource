@@ -45,6 +45,9 @@ import { Observable, Subscription } from 'rxjs';
         >
           <app-playlist [playlist]="playlist"></app-playlist>
         </div>
+        <div class="playlist likes">
+          <app-playlist-likes></app-playlist-likes>
+        </div>
         <ng-container
           *ngFor="let playlist of playlists$ | async; trackBy: trackBy"
         >

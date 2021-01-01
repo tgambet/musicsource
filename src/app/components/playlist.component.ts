@@ -28,7 +28,6 @@ import { MatSnackBar } from '@angular/material/snack-bar';
       [playerState]="state"
       (playClicked)="play()"
       (pauseClicked)="pause()"
-      tabindex="-1"
     >
       <ng-container *ngIf="cover$ | async as cover; else icon">
         <ng-container *ngIf="color$ | async as color">
@@ -43,7 +42,10 @@ import { MatSnackBar } from '@angular/material/snack-bar';
       </ng-template>
     </app-cover>
     <app-label
-      [topLabel]="{ text: playlist.title, routerLink: [] }"
+      [topLabel]="{
+        text: playlist.title,
+        routerLink: ['/', 'playlist', playlist.hash]
+      }"
       [bottomLabel]="playlist.songs.length + ' songs'"
       size="small"
     ></app-label>
