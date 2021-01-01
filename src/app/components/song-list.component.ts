@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { Song, SongWithCover } from '@app/models/song.model';
+import { Song, SongWithCover$ } from '@app/models/song.model';
 import { Icons } from '@app/utils/icons.util';
 import { AudioService } from '@app/services/audio.service';
 import { LibraryFacade } from '@app/store/library/library.facade';
@@ -11,7 +11,12 @@ import { DirectoryEntry, Entry, FileEntry } from '@app/models/entry.model';
   template: `
     <div class="song" *ngFor="let song of songs; let i = index">
       <span class="cover">
-        <img [src]="song.cover" alt="cover" height="32" />
+        <img
+          *ngIf="song.cover$ | async as cover"
+          [src]="cover"
+          alt="cover"
+          height="32"
+        />
         <app-player-button
           size="small"
           shape="square"
@@ -48,6 +53,7 @@ import { DirectoryEntry, Entry, FileEntry } from '@app/models/entry.model';
       }
       .cover {
         flex: 0 0 32px;
+        height: 32px;
         margin-right: 24px;
         text-align: center;
         position: relative;
@@ -91,7 +97,7 @@ import { DirectoryEntry, Entry, FileEntry } from '@app/models/entry.model';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SongListComponent {
-  @Input() songs!: SongWithCover[];
+  @Input() songs!: SongWithCover$[];
 
   icons = Icons;
 

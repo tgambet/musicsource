@@ -7,14 +7,14 @@ import { Song } from '@app/models/song.model';
 import { Icons } from '@app/utils/icons.util';
 import { hash } from '@app/utils/hash.util';
 
-export type AlbumPageInfo = {
+export type PageAlbumData = {
   album: Album;
   songs: Song[];
   cover: string | undefined;
 };
 
 @Component({
-  selector: 'app-album-page',
+  selector: 'app-page-album',
   template: `
     <ng-container *ngIf="info$ | async as info">
       <header>
@@ -69,90 +69,13 @@ export type AlbumPageInfo = {
       </app-container-page>
     </ng-container>
   `,
-  styles: [
-    `
-      :host {
-        display: block;
-        padding-bottom: 64px;
-      }
-      header {
-        display: flex;
-        margin-top: -64px;
-        margin-bottom: 64px;
-        padding-top: 64px;
-        background-color: #1d1d1d;
-      }
-      .header-container {
-        min-height: 264px;
-        margin-top: 64px;
-        margin-bottom: 64px;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        position: relative;
-        box-sizing: border-box;
-      }
-      .cover {
-        width: 264px;
-        margin-right: 64px;
-        border-radius: 4px;
-        overflow: hidden;
-      }
-      .info {
-        display: flex;
-        align-items: center;
-      }
-      .metadata p {
-        color: #aaa;
-      }
-      .metadata p a {
-        text-decoration: none;
-      }
-      .metadata p a:hover {
-        text-decoration: underline;
-      }
-      .stats {
-        margin-top: 4px;
-      }
-      app-title {
-        margin-bottom: 16px;
-      }
-      .actions {
-        margin-top: 40px;
-      }
-      @media (min-width: 936px) {
-        .header-container {
-          padding-left: 312px;
-        }
-        .cover {
-          position: absolute;
-          top: 0;
-          left: 0;
-        }
-      }
-      button {
-        padding: 0 32px;
-        display: inline-flex;
-        align-items: center;
-      }
-      button app-icon {
-        margin-right: 8px;
-      }
-      .play-button {
-        background-color: white;
-        color: black;
-        margin-right: 16px;
-      }
-      .shuffle-button {
-        border-color: rgb(170, 170, 170);
-      }
-    `,
-  ],
+  styleUrls: ['../styles/page-header.component.scss'],
+  styles: [``],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AlbumPageComponent implements OnInit {
+export class PageAlbumComponent implements OnInit {
   icons = Icons;
-  info$!: Observable<AlbumPageInfo>;
+  info$!: Observable<PageAlbumData>;
 
   constructor(private route: ActivatedRoute) {}
 

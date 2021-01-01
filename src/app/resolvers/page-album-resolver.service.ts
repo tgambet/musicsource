@@ -10,18 +10,18 @@ import { LibraryFacade } from '@app/store/library/library.facade';
 import { catchError, concatMap, map, reduce } from 'rxjs/operators';
 import { Song } from '@app/models/song.model';
 import { getCover } from '@app/models/picture.model';
-import { AlbumPageInfo } from '@app/pages/album-page.component';
+import { PageAlbumData } from '@app/pages/page-album.component';
 
 @Injectable({
   providedIn: 'root',
 })
-export class AlbumPageResolverService implements Resolve<AlbumPageInfo> {
+export class PageAlbumResolverService implements Resolve<PageAlbumData> {
   constructor(private library: LibraryFacade, private router: Router) {}
 
   resolve(
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
-  ): Observable<AlbumPageInfo> | Observable<never> {
+  ): Observable<PageAlbumData> | Observable<never> {
     const id = route.paramMap.get('id');
 
     if (!id) {

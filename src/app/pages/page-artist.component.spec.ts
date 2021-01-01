@@ -1,20 +1,19 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ArtistPageComponent } from './artist-page.component';
+import { PageArtistComponent } from './page-artist.component';
 
 describe('ArtistPageComponent', () => {
-  let component: ArtistPageComponent;
-  let fixture: ComponentFixture<ArtistPageComponent>;
+  let component: PageArtistComponent;
+  let fixture: ComponentFixture<PageArtistComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ ArtistPageComponent ]
-    })
-    .compileComponents();
+      declarations: [PageArtistComponent],
+    }).compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ArtistPageComponent);
+    fixture = TestBed.createComponent(PageArtistComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

@@ -55,6 +55,7 @@ export const Simple = Template.bind({});
 Simple.args = {
   playlist: {
     title: 'Nu-Metal Rage',
+    hash: '123456',
     description: 'Korn, Linkin Park, Limp Bizkit, Rage Against the Machine',
     songs: [],
     createdOn: new Date(),

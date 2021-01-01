@@ -8,10 +8,10 @@ import { ExplorerComponent } from '@app/pages/explorer.component';
 import { LibrarySettingsComponent } from '@app/dialogs/library-settings.component';
 import { SettingsComponent } from '@app/dialogs/settings.component';
 import { ScanComponent } from '@app/dialogs/scan.component';
-import { AlbumPageComponent } from '@app/pages/album-page.component';
-import { AlbumPageResolverService } from '@app/resolvers/album-page-resolver.service';
-import { ArtistPageComponent } from '@app/pages/artist-page.component';
-import { ArtistPageResolverService } from '@app/resolvers/artist-page-resolver.service';
+import { PageAlbumComponent } from '@app/pages/page-album.component';
+import { PageAlbumResolverService } from '@app/resolvers/page-album-resolver.service';
+import { PageArtistComponent } from '@app/pages/page-artist.component';
+import { PageArtistResolverService } from '@app/resolvers/page-artist-resolver.service';
 import { LibraryAlbumsComponent } from '@app/pages/library-albums.component';
 import { LibraryArtistsComponent } from '@app/pages/library-artists.component';
 import { ViewportScroller } from '@angular/common';
@@ -20,6 +20,8 @@ import { LibraryPlaylistsComponent } from '@app/pages/library-playlists.componen
 import { LibrarySongsComponent } from '@app/pages/library-songs.component';
 import { defer, EMPTY, of, throwError } from 'rxjs';
 import { PlaylistDialogComponent } from '@app/dialogs/playlist-dialog.component';
+import { PagePlaylistComponent } from '@app/pages/page-playlist.component';
+import { PagePlaylistResolver } from '@app/resolvers/page-playlist-resolver.service';
 
 const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -40,15 +42,19 @@ const routes: Routes = [
   { path: 'search', component: SearchComponent },
   {
     path: 'album/:id',
-    component: AlbumPageComponent,
-    resolve: { info: AlbumPageResolverService },
+    component: PageAlbumComponent,
+    resolve: { info: PageAlbumResolverService },
   },
   {
     path: 'artist/:id',
-    component: ArtistPageComponent,
-    resolve: { info: ArtistPageResolverService },
+    component: PageArtistComponent,
+    resolve: { info: PageArtistResolverService },
   },
-  { path: 'playlist/:id', component: HistoryComponent },
+  {
+    path: 'playlist/:id',
+    component: PagePlaylistComponent,
+    resolve: { info: PagePlaylistResolver },
+  },
   { path: 'listen', component: HistoryComponent },
   {
     outlet: 'dialog',

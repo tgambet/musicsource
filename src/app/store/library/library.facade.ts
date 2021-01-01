@@ -12,6 +12,7 @@ import {
 import { getCover, Picture } from '@app/models/picture.model';
 import { Song, SongWithCover$ } from '@app/models/song.model';
 import { Playlist } from '@app/models/playlist.model';
+import { hash } from '@app/utils/hash.util';
 
 @Injectable()
 export class LibraryFacade {
@@ -166,6 +167,21 @@ export class LibraryFacade {
     );
   }
 
+  getPlaylistSongs(playlist: Playlist): Observable<SongWithCover$> {
+    return this.storage
+      .getAllValues$<Song>(playlist.songs.reverse(), 'songs')
+      .pipe(
+        map((song) => ({
+          ...song,
+          cover$: song.pictureKey
+            ? this.storage
+                .get$('pictures', song.pictureKey)
+                .pipe(map((picture) => getCover(picture as Picture)))
+            : EMPTY,
+        }))
+      );
+  }
+
   getEntry = (path: string): Observable<Entry | undefined> =>
     this.storage.get$('entries', path);
 
@@ -193,17 +209,25 @@ export class LibraryFacade {
   getArtist = (name: string): Observable<Artist | undefined> =>
     this.storage.get$('artists', name);
 
-  getArtistByHash = (hash: string): Observable<Artist | undefined> =>
-    this.storage.get$('artists', hash, 'hash');
+  getArtistByHash = (h: string): Observable<Artist | undefined> =>
+    this.storage.get$('artists', h, 'hash');
 
   getAlbum = (id: string): Observable<Album | undefined> =>
     this.storage.get$('albums', id);
 
-  getAlbumByHash = (hash: string): Observable<Album | undefined> =>
-    this.storage.get$('albums', hash, 'hash');
+  getAlbumByHash = (h: string): Observable<Album | undefined> =>
+    this.storage.get$('albums', h, 'hash');
 
   getPicture = (id: IDBValidKey | undefined): Observable<Picture | undefined> =>
     id ? this.storage.get$('pictures', id) : of(undefined);
+
+  getCover(
+    pictureKey: IDBValidKey | undefined
+  ): Observable<string | undefined> {
+    return this.getPicture(pictureKey).pipe(
+      map((picture) => (picture ? getCover(picture) : undefined))
+    );
+  }
 
   getAlbumTitles = (album: Album): Observable<Song> =>
     this.storage.open$(['songs']).pipe(
@@ -366,6 +390,7 @@ export class LibraryFacade {
     const playlist: Playlist = {
       songs: [],
       createdOn: new Date(),
+      hash: hash(partial.title),
       ...partial,
     };
     return this.storage
@@ -397,5 +422,9 @@ export class LibraryFacade {
         )
       )
     );
+  }
+
+  getPlaylistByHash(h: string): Observable<Playlist | undefined> {
+    return this.storage.get$<Playlist>('playlists', h, 'hash');
   }
 }

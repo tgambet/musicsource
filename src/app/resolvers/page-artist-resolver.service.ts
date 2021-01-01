@@ -5,7 +5,7 @@ import {
   Router,
   RouterStateSnapshot,
 } from '@angular/router';
-import { ArtistPageInfo } from '@app/pages/artist-page.component';
+import { PageArtistData } from '@app/pages/page-artist.component';
 import { EMPTY, Observable, of, throwError } from 'rxjs';
 import { LibraryFacade } from '@app/store/library/library.facade';
 import {
@@ -24,13 +24,13 @@ import { Song } from '@app/models/song.model';
 @Injectable({
   providedIn: 'root',
 })
-export class ArtistPageResolverService implements Resolve<ArtistPageInfo> {
+export class PageArtistResolverService implements Resolve<PageArtistData> {
   constructor(private library: LibraryFacade, private router: Router) {}
 
   resolve(
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
-  ): Observable<ArtistPageInfo> | Observable<never> {
+  ): Observable<PageArtistData> | Observable<never> {
     const id = route.paramMap.get('id');
 
     if (!id) {

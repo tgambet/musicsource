@@ -24,7 +24,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
     <app-cover
       [title]="playlist.title"
       [menuItems]="menuItems"
-      [coverRouterLink]="[]"
+      [coverRouterLink]="['/', 'playlist', playlist.hash]"
       [playerState]="state"
       (playClicked)="play()"
       (pauseClicked)="pause()"

@@ -54,8 +54,8 @@ import { ExtractorService } from '@app/services/extractor.service';
 import { ResizerService } from '@app/services/resizer.service';
 import { LibraryFacade } from '@app/store/library/library.facade';
 import { ScannerFacade } from '@app/store/scanner/scanner.facade';
-import { AlbumPageComponent } from './pages/album-page.component';
-import { ArtistPageComponent } from './pages/artist-page.component';
+import { PageAlbumComponent } from './pages/page-album.component';
+import { PageArtistComponent } from './pages/page-artist.component';
 import { ContainerComponent } from './components/container.component';
 import { ContainerHomeComponent } from './components/container-home.component';
 import { ContainerPageComponent } from './components/container-page.component';
@@ -74,6 +74,7 @@ import { LibrarySongsComponent } from './pages/library-songs.component';
 import { PlaylistDialogComponent } from './dialogs/playlist-dialog.component';
 import { MatInputModule } from '@angular/material/input';
 import { ReactiveFormsModule } from '@angular/forms';
+import { PagePlaylistComponent } from './pages/page-playlist.component';
 
 @NgModule({
   declarations: [
@@ -102,8 +103,8 @@ import { ReactiveFormsModule } from '@angular/forms';
     LibrarySettingsComponent,
     SettingsComponent,
     ScanComponent,
-    AlbumPageComponent,
-    ArtistPageComponent,
+    PageAlbumComponent,
+    PageArtistComponent,
     ContainerComponent,
     ContainerHomeComponent,
     ContainerPageComponent,
@@ -117,6 +118,7 @@ import { ReactiveFormsModule } from '@angular/forms';
     LibraryContentComponent,
     LibrarySongsComponent,
     PlaylistDialogComponent,
+    PagePlaylistComponent,
   ],
   imports: [
     BrowserModule,

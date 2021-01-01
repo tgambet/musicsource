@@ -13,7 +13,7 @@ import { AlbumWithCover$ } from '@app/models/album.model';
 import { SongWithCover } from '@app/models/song.model';
 import { hash } from '@app/utils/hash.util';
 
-export type ArtistPageInfo = {
+export type PageArtistData = {
   artist: Artist;
   cover: string | undefined;
   albums$: Observable<AlbumWithCover$[]>;
@@ -22,7 +22,7 @@ export type ArtistPageInfo = {
 };
 
 @Component({
-  selector: 'app-artist-page',
+  selector: 'app-page-artist',
   template: `
     <ng-container *ngIf="info$ | async as info">
       <header>
@@ -54,7 +54,7 @@ export type ArtistPageInfo = {
       <app-container-page class="content">
         <app-title title="Songs" size="small"></app-title>
         <ng-container *ngIf="info.songs$ | async as songs">
-          <app-song-list [songs]="songs"></app-song-list>
+          <!--<app-song-list [songs]="songs"></app-song-list>-->
         </ng-container>
         <ng-container *ngIf="info.albums$ | async as albums">
           <app-title
@@ -191,9 +191,9 @@ export type ArtistPageInfo = {
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ArtistPageComponent implements OnInit {
+export class PageArtistComponent implements OnInit {
   icons = Icons;
-  info$!: Observable<ArtistPageInfo>;
+  info$!: Observable<PageArtistData>;
 
   constructor(private route: ActivatedRoute, private cdr: ChangeDetectorRef) {}
 

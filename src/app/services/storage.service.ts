@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, of, OperatorFunction, throwError } from 'rxjs';
-import { concatMap, tap } from 'rxjs/operators';
+import { concatMap, mergeAll, tap } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
@@ -42,6 +42,7 @@ export class StorageService {
       artists.createIndex('lastModified', 'lastModified');
       // Playlists
       const playlists = db.createObjectStore('playlists', { keyPath: 'title' });
+      playlists.createIndex('hash', 'hash');
       playlists.createIndex('createdOn', 'createdOn');
     }).pipe(tap((db) => (this.db = db)));
   }
@@ -174,6 +175,25 @@ export class StorageService {
     query?: IDBValidKey | IDBKeyRange | null
   ): Observable<T[]> {
     return this.open$([store]).pipe(this.getAll(store, index, query));
+  }
+
+  getAllValues$<T>(
+    keys: IDBValidKey[],
+    store: string,
+    index?: string
+  ): Observable<T> {
+    return this.open$([store]).pipe(
+      concatMap((transaction) =>
+        keys.map((key) =>
+          this.exec$(
+            index
+              ? transaction.objectStore(store).index(index).get(key)
+              : transaction.objectStore(store).get(key)
+          )
+        )
+      ),
+      mergeAll()
+    );
   }
 
   exec$<T>(request: IDBRequest<T>): Observable<T> {

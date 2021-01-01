@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { AlbumPageResolverService } from './album-page-resolver.service';
+import { PageAlbumResolverService } from './page-album-resolver.service';
 
 describe('AlbumPageResolverService', () => {
-  let service: AlbumPageResolverService;
+  let service: PageAlbumResolverService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(AlbumPageResolverService);
+    service = TestBed.inject(PageAlbumResolverService);
   });
 
   it('should be created', () => {
