@@ -16,6 +16,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatMenuTrigger } from '@angular/material/menu';
 import { LibraryFacade } from '@app/store/library/library.facade';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { PlaylistAddComponent } from '@app/dialogs/playlist-add.component';
 
 @Component({
   selector: 'app-song-list-item',
@@ -175,7 +176,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SongListItemComponent implements OnInit {
-  @Input() song: SongWithCover$;
+  @Input() song!: SongWithCover$;
   @Output() menuOpened = new EventEmitter<MatMenuTrigger>();
 
   icons = Icons;
@@ -194,7 +195,7 @@ export class SongListItemComponent implements OnInit {
   }
 
   addSongToPlaylist(song: Song) {
-    const ref = this.dialog.open(this.addToPlaylist, {
+    const ref = this.dialog.open(PlaylistAddComponent, {
       width: '275px',
       maxHeight: '80%',
       height: 'auto',

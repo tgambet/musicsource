@@ -17,7 +17,6 @@ import {
   last,
   map,
   publish,
-  reduce,
   scan,
   skip,
   skipWhile,
@@ -28,7 +27,6 @@ import { tapError } from '@app/utils/tap-error.util';
 import { Icons } from '@app/utils/icons.util';
 import { ActivatedRoute } from '@angular/router';
 import { MatMenuTrigger } from '@angular/material/menu';
-import { Playlist } from '@app/models/playlist.model';
 
 @Component({
   selector: 'app-library-songs',
@@ -59,42 +57,9 @@ import { Playlist } from '@app/models/playlist.model';
         </ng-container>
       </div>
     </app-library-content>
-
-    <ng-template #addToPlaylist>
-      <app-title mat-dialog-title title="My playlists" size="small"></app-title>
-      <mat-dialog-content>
-        <ng-container *ngFor="let playlist of playlists$ | async">
-          <button mat-menu-item [mat-dialog-close]="playlist.title">
-            <app-icon [path]="icons.playlistEdit"></app-icon>
-            {{ playlist.title }}
-          </button>
-        </ng-container>
-      </mat-dialog-content>
-      <div class="dialog-actions">
-        <button mat-button [mat-dialog-close]="true" class="new-playlist">
-          NEW PLAYLIST
-        </button>
-      </div>
-    </ng-template>
   `,
   styles: [
     `
-      .mat-dialog-container {
-        padding-bottom: 0 !important;
-      }
-      .dialog-actions {
-        text-align: right;
-        margin: 0 -24px 0;
-      }
-      .new-playlist {
-        width: 100%;
-        height: 52px;
-      }
-      .mat-dialog-content {
-        padding: 0 !important;
-        border: solid rgba(255, 255, 255, 0.1);
-        border-width: 1px 0;
-      }
       :host {
         display: block;
         min-height: 1200px;
@@ -149,10 +114,6 @@ export class LibrarySongsComponent implements OnInit, OnDestroy {
   subscription = new Subscription();
 
   trigger?: MatMenuTrigger;
-
-  playlists$: Observable<Playlist[]> = this.library
-    .getPlaylists()
-    .pipe(reduce((acc, cur) => [...acc, cur], [] as Playlist[]));
 
   constructor(private library: LibraryFacade, private route: ActivatedRoute) {}
 

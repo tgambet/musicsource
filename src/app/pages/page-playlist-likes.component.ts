@@ -8,7 +8,7 @@ import { Icons } from '@app/utils/icons.util';
 @Component({
   selector: 'app-page-playlist-likes',
   template: `
-    <header (click)="songList.closeMenu()">
+    <header (click)="songList?.closeMenu()">
       <app-container-page class="header-container">
         <div class="info">
           <div class="cover" style="--aspect-ratio:1">

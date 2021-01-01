@@ -6,8 +6,6 @@ import {
 } from '@angular/core';
 import { SongWithCover$ } from '@app/models/song.model';
 import { Icons } from '@app/utils/icons.util';
-import { AudioService } from '@app/services/audio.service';
-import { LibraryFacade } from '@app/store/library/library.facade';
 import { MatMenuTrigger } from '@angular/material/menu';
 
 @Component({
@@ -37,7 +35,7 @@ import { MatMenuTrigger } from '@angular/material/menu';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SongListComponent {
-  @Input() songs!: SongWithCover$[];
+  @Input() songs!: SongWithCover$[] | null;
 
   icons = Icons;
 

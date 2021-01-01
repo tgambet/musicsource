@@ -71,7 +71,7 @@ import { LibraryContentComponent } from './pages/library-content.component';
 import { UpdateService } from '@app/services/update.service';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { LibrarySongsComponent } from './pages/library-songs.component';
-import { PlaylistDialogComponent } from './dialogs/playlist-dialog.component';
+import { PlaylistNewComponent } from './dialogs/playlist-new.component';
 import { MatInputModule } from '@angular/material/input';
 import { ReactiveFormsModule } from '@angular/forms';
 import { PagePlaylistComponent } from './pages/page-playlist.component';
@@ -79,6 +79,7 @@ import { IconLikesComponent } from './components/icon-likes.component';
 import { PlaylistLikesComponent } from './components/playlist-likes.component';
 import { PagePlaylistLikesComponent } from './pages/page-playlist-likes.component';
 import { SongListItemComponent } from './components/song-list-item.component';
+import { PlaylistAddComponent } from './dialogs/playlist-add.component';
 
 @NgModule({
   declarations: [
@@ -121,12 +122,13 @@ import { SongListItemComponent } from './components/song-list-item.component';
     LibraryPlaylistsComponent,
     LibraryContentComponent,
     LibrarySongsComponent,
-    PlaylistDialogComponent,
+    PlaylistNewComponent,
     PagePlaylistComponent,
     IconLikesComponent,
     PlaylistLikesComponent,
     PagePlaylistLikesComponent,
     SongListItemComponent,
+    PlaylistAddComponent,
   ],
   imports: [
     BrowserModule,

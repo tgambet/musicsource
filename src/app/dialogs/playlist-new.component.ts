@@ -110,7 +110,7 @@ import { map } from 'rxjs/operators';
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class PlaylistDialogComponent implements OnInit {
+export class PlaylistNewComponent implements OnInit {
   @ViewChild('dialog', { static: true })
   dialog!: RoutedDialogDirective;
 
