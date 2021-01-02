@@ -35,17 +35,17 @@ export type PageArtistData = {
         <app-container-page class="header-container">
           <app-title [title]="info.artist.name"></app-title>
           <div class="actions">
-            <button mat-stroked-button class="primary">
+            <button mat-raised-button color="accent">
               <app-icon [path]="icons.shuffle"></app-icon>
-              <span>SHUFFLE</span>
+              <span>Shuffle</span>
             </button>
-            <button mat-stroked-button class="primary">
+            <button mat-raised-button color="accent">
               <app-icon [path]="icons.radio"></app-icon>
-              <span>RADIO</span>
+              <span>Radio</span>
             </button>
             <button mat-stroked-button>
               <app-icon [path]="icons.heartOutline"></app-icon>
-              <span>ADD TO FAVORITES</span>
+              <span>Add to your likes</span>
             </button>
             <app-menu [disableRipple]="true"></app-menu>
           </div>
@@ -169,13 +169,15 @@ export type PageArtistData = {
         align-items: center;
         margin-right: 8px;
         border-color: rgb(170, 170, 170) !important;
+        border-radius: 2px;
+        text-transform: uppercase;
+      }
+      button span {
+        display: inline-block;
+        line-height: 24px;
       }
       button app-icon {
         margin-right: 8px;
-      }
-      button.primary {
-        background-color: white;
-        color: black;
       }
       .album {
         margin: 0 24px 0 0;

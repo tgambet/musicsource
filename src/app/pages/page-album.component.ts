@@ -52,13 +52,13 @@ export type PageAlbumData = {
             </div>
           </div>
           <div class="actions">
-            <button mat-stroked-button class="play-button">
+            <button mat-raised-button color="accent">
               <app-icon [path]="icons.play"></app-icon>
-              <span>PLAY</span>
+              <span>Play</span>
             </button>
-            <button mat-stroked-button class="shuffle-button">
+            <button mat-stroked-button>
               <app-icon [path]="icons.heartOutline"></app-icon>
-              <span>ADD TO FAVORITES</span>
+              <span>Add to your likes</span>
             </button>
             <app-menu [disableRipple]="true"></app-menu>
           </div>

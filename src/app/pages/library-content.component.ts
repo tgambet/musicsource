@@ -43,7 +43,7 @@ import { Subscription } from 'rxjs';
     `
       :host {
         display: block;
-        min-height: 1440px;
+        min-height: calc(100vh - 64px - 48px);
       }
       #top {
         position: relative;
