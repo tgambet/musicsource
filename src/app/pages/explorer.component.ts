@@ -7,7 +7,6 @@ import {
 import { ExtractorService } from '@app/services/extractor.service';
 import { FileService } from '@app/services/file.service';
 import { filter, map, publish, scan, tap } from 'rxjs/operators';
-import { AudioService } from '@app/services/audio.service';
 import { merge, ReplaySubject, Subject } from 'rxjs';
 import { NestedTreeControl } from '@angular/cdk/tree';
 import { Icons } from '@app/utils/icons.util';
@@ -89,7 +88,7 @@ const isDirectChild = (
       }
     `,
   ],
-  providers: [FileService, ExtractorService, AudioService],
+  providers: [FileService, ExtractorService],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ExplorerComponent {

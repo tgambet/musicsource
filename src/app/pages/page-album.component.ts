@@ -2,10 +2,11 @@ import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
 import { Album } from '@app/models/album.model';
-import { map } from 'rxjs/operators';
+import { concatMap, map } from 'rxjs/operators';
 import { Song } from '@app/models/song.model';
 import { Icons } from '@app/utils/icons.util';
 import { hash } from '@app/utils/hash.util';
+import { PlayerService } from '@app/services/player.service';
 
 export type PageAlbumData = {
   album: Album;
@@ -52,7 +53,7 @@ export type PageAlbumData = {
             </div>
           </div>
           <div class="actions">
-            <button mat-raised-button color="accent">
+            <button mat-raised-button color="accent" (click)="play(info.album)">
               <app-icon [path]="icons.play"></app-icon>
               <span>Play</span>
             </button>
@@ -77,7 +78,7 @@ export class PageAlbumComponent implements OnInit {
   icons = Icons;
   info$!: Observable<PageAlbumData>;
 
-  constructor(private route: ActivatedRoute) {}
+  constructor(private route: ActivatedRoute, private player: PlayerService) {}
 
   ngOnInit(): void {
     this.info$ = this.route.data.pipe(map((data) => data.info));
@@ -90,5 +91,12 @@ export class PageAlbumComponent implements OnInit {
 
   getHash(albumArtist: string) {
     return hash(albumArtist);
+  }
+
+  play(album: Album) {
+    this.player
+      .playAlbum(album)
+      .pipe(concatMap(() => this.player.resume()))
+      .subscribe();
   }
 }

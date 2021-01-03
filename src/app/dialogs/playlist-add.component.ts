@@ -28,6 +28,9 @@ import { LibraryFacade } from '@app/store/library/library.facade';
       :host {
         display: block;
       }
+      app-icon {
+        margin-right: 8px;
+      }
       .mat-dialog-container {
         padding-bottom: 0 !important;
       }
@@ -53,7 +56,7 @@ export class PlaylistAddComponent implements OnInit {
   icons = Icons;
 
   playlists$: Observable<Playlist[]> = this.library
-    .getPlaylists()
+    .getPlaylists('title')
     .pipe(reduce((acc, cur) => [...acc, cur], [] as Playlist[]));
 
   constructor(private library: LibraryFacade) {}

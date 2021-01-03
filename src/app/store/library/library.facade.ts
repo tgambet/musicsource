@@ -1,5 +1,9 @@
 import { Injectable } from '@angular/core';
-import { DirectoryEntry, Entry } from '@app/models/entry.model';
+import {
+  DirectoryEntry,
+  Entry,
+  requestPermissionPromise,
+} from '@app/models/entry.model';
 import { EMPTY, from, Observable, of, Subject, throwError } from 'rxjs';
 import { concatMap, filter, map, tap } from 'rxjs/operators';
 import { StorageService } from '@app/services/storage.service';
@@ -229,17 +233,19 @@ export class LibraryFacade {
     );
   }
 
-  getAlbumTitles = (album: Album): Observable<Song> =>
-    this.storage.open$(['songs']).pipe(
-      concatMap((t) =>
-        this.storage.walk$<Song>(t, 'songs', 'album', album.name)
-      ),
-      map(({ value }) => value)
-      // filter(
-      //   (song) =>
-      //     song.albumartist === album.artist || song.artist === album.artist
-      // )
-    );
+  getAlbumTitles = (album: Album): Observable<SongWithCover$> =>
+    this.getSongs('album', album.name).pipe(map(({ value }) => value));
+
+  // this.storage.open$(['songs']).pipe(
+  //   concatMap((t) =>
+  //     this.storage.walk$<Song>(t, 'songs', 'album', album.name)
+  //   ),
+  //   map(({ value }) => value)
+  //   // filter(
+  //   //   (song) =>
+  //   //     song.albumartist === album.artist || song.artist === album.artist
+  //   // )
+  // );
 
   getArtistAlbums(artist: Artist): Observable<AlbumWithCover$> {
     return this.storage.open$(['albums', 'pictures']).pipe(
@@ -309,28 +315,8 @@ export class LibraryFacade {
     );
   }
 
-  async requestPermissionPromise(
-    fileHandle: FileSystemHandle,
-    readWrite = false
-  ) {
-    let options = {};
-    if (readWrite) {
-      options = { mode: 'readwrite' };
-    }
-    // Check if permission was already granted. If so, return true.
-    if ((await fileHandle.queryPermission(options)) === 'granted') {
-      return true;
-    }
-    // Request permission. If the user grants permission, return true.
-    if ((await fileHandle.requestPermission(options)) === 'granted') {
-      return true;
-    }
-    // The user didn't grant permission, so return false.
-    return false;
-  }
-
   requestPermission(handle: FileSystemHandle): Observable<void> {
-    return from(this.requestPermissionPromise(handle)).pipe(
+    return from(requestPermissionPromise(handle)).pipe(
       concatMap((perm) => (perm ? of(void 0) : throwError('Permission denied')))
     );
   }
@@ -398,6 +384,15 @@ export class LibraryFacade {
       .pipe(tap(() => this.playlistsSubject.next(playlist)));
   }
 
+  // createTempPlaylist(songs: Song[]): Observable<IDBValidKey> {
+  //   const playlist: TempPlaylist = {
+  //     songs: songs.map((s) => s.entryPath),
+  //     createdOn: new Date(),
+  //     hash: hash(new Date().toISOString()),
+  //   };
+  //   return this.storage.add$('playlists', playlist);
+  // }
+
   togglePlaylistFavorite(playlist: Playlist): Observable<void> {
     return this.storage
       .update$<Playlist>(
@@ -409,7 +404,7 @@ export class LibraryFacade {
   }
 
   addSongToPlaylist(song: Song, title: string) {
-    return this.storage.get$('playlists', title).pipe(
+    return this.storage.get$('playlists', title, 'title').pipe(
       filter((playlist): playlist is Playlist => !!playlist),
       concatMap((playlist) =>
         this.storage.update$(
@@ -418,13 +413,13 @@ export class LibraryFacade {
             songs: [...playlist.songs, song.entryPath],
             pictureKey: playlist.pictureKey || song.pictureKey,
           },
-          title
+          playlist.hash
         )
       )
     );
   }
 
   getPlaylistByHash(h: string): Observable<Playlist | undefined> {
-    return this.storage.get$<Playlist>('playlists', h, 'hash');
+    return this.storage.get$<Playlist>('playlists', h);
   }
 }

@@ -80,6 +80,9 @@ import { PlaylistLikesComponent } from './components/playlist-likes.component';
 import { PagePlaylistLikesComponent } from './pages/page-playlist-likes.component';
 import { SongListItemComponent } from './components/song-list-item.component';
 import { PlaylistAddComponent } from './dialogs/playlist-add.component';
+import { PlayerComponent } from './components/player.component';
+import { MatSliderModule } from '@angular/material/slider';
+import { AudioService } from '@app/services/audio.service';
 
 @NgModule({
   declarations: [
@@ -129,6 +132,7 @@ import { PlaylistAddComponent } from './dialogs/playlist-add.component';
     PagePlaylistLikesComponent,
     SongListItemComponent,
     PlaylistAddComponent,
+    PlayerComponent,
   ],
   imports: [
     BrowserModule,
@@ -149,6 +153,7 @@ import { PlaylistAddComponent } from './dialogs/playlist-add.component';
     MatTabsModule,
     MatSlideToggleModule,
     MatInputModule,
+    MatSliderModule,
     ReactiveFormsModule,
     StoreModule.forRoot(reducers, {
       runtimeChecks: {
@@ -170,6 +175,7 @@ import { PlaylistAddComponent } from './dialogs/playlist-add.component';
     LibraryFacade,
     ScannerFacade,
     UpdateService,
+    AudioService,
     {
       provide: MAT_SNACK_BAR_DEFAULT_OPTIONS,
       useValue: {

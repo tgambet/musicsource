@@ -119,10 +119,7 @@ export class LibraryPlaylistsComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     const sort$ = this.route.queryParamMap.pipe(
       map((params) => ({
-        index:
-          params.get('sort') === 'title'
-            ? undefined
-            : params.get('sort') || 'createdOn',
+        index: params.get('sort') || 'createdOn',
         direction: ((params.get('dir') || 'desc') === 'asc'
           ? 'next'
           : 'prev') as IDBCursorDirection,

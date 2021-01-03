@@ -27,8 +27,41 @@
 //  )
 //));
 
+$red: (
+  50: #ffebee,
+  100: #ffcdd2,
+  200: #ef9a9a,
+  300: #e57373,
+  400: #ef5350,
+  500: #f44336,
+  600: #e53935,
+  700: #d32f2f,
+  800: #c62828,
+  900: #b71c1c,
+  A100: #ff8a80,
+  A200: #ff5252,
+  A400: #ff1744,
+  A700: #ff0000,
+  contrast: (
+    50: $dark-primary-text,
+    100: $dark-primary-text,
+    200: $dark-primary-text,
+    300: $dark-primary-text,
+    400: $dark-primary-text,
+    500: $light-primary-text,
+    600: $light-primary-text,
+    700: $light-primary-text,
+    800: $light-primary-text,
+    900: $light-primary-text,
+    A100: $dark-primary-text,
+    A200: $light-primary-text,
+    A400: $light-primary-text,
+    A700: $light-primary-text,
+  )
+);
+
 $musicsource-theme: (
-  primary: mat-palette($mat-light-green, A400),
+  primary: mat-palette($red, A700),
   accent: mat-palette($mat-grey, 200),
   warn: mat-palette($mat-deep-orange, A200),
   is-dark: true,
@@ -166,12 +199,45 @@ h6 {
   padding-bottom: 0 !important;
 }
 
+app-player .mat-slider .mat-slider-wrapper {
+  top: 15px;
+  right: 0;
+  left: 0;
+}
+
+app-player .mat-slider-horizontal .mat-slider-thumb {
+  cursor: pointer !important;
+}
+
+app-player .mat-slider.back .mat-slider-thumb-container {
+  display: none;
+}
+
+app-player .mat-slider.front .mat-slider-track-wrapper,
+app-player .mat-slider.front .mat-slider-track-background,
+app-player .mat-slider.front .mat-slider-track-fill {
+  height: 4px;
+}
+
+app-player .mat-slider.front .mat-slider-track-background {
+  background-color: #4c4c4c;
+}
+
+app-player .mat-slider.back .mat-slider-track-background {
+  transform: translateX(0) scale3d(1, 1, 1) !important;
+}
+
+app-player .mat-slider:not(.mat-slider-sliding).cdk-focused .mat-slider-thumb {
+  transform: scale(0.7);
+}
+
 *::-webkit-scrollbar {
   width: 12px;
   height: 12px;
 }
 *::-webkit-scrollbar-track {
-  background-color: mat-color(map-get($musicsource-theme, background), app-bar);
+  background-color: #181818;
+  border-left: 1px solid rgba(255,255,255,0.1);
 }
 *::-webkit-scrollbar-thumb {
   background-color: mat-color(

@@ -214,7 +214,7 @@ export class SongListItemComponent implements OnInit {
               : this.library
                   .addSongToPlaylist(song, result)
                   .pipe(
-                    tap((key) => this.snack.open(`Added to ${key}`, 'VIEW'))
+                    tap(() => this.snack.open(`Added to ${result}`, 'VIEW'))
                   ) // TODO redirect to playlist
         )
       )

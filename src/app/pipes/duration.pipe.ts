@@ -4,9 +4,9 @@ import { Pipe, PipeTransform } from '@angular/core';
   name: 'duration',
 })
 export class DurationPipe implements PipeTransform {
-  transform(value: number | undefined): string {
+  transform(value: number | null | undefined): string {
     if (!value) {
-      return '--:--';
+      return '0:00';
     }
 
     const hours = Math.floor(value / 3600);

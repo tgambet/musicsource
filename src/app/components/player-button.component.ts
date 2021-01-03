@@ -13,7 +13,18 @@ export type PlayerState = 'playing' | 'loading' | 'stopped';
 @Component({
   selector: 'app-player-button',
   template: `
-    <button mat-icon-button [ngClass]="[size, state, shape]" (click)="toggle()">
+    <button
+      mat-icon-button
+      [ngClass]="[size, state, shape]"
+      (click)="toggle()"
+      [routerLink]="[
+        '/',
+        { outlets: { player: [linkId, { id: 'heroId', foo: 'foo' }] } }
+      ]"
+      [preserveFragment]="false"
+      queryParamsHandling="preserve"
+      [replaceUrl]="true"
+    >
       <app-icon
         class="play-pause"
         [path]="
@@ -86,11 +97,17 @@ export type PlayerState = 'playing' | 'loading' | 'stopped';
 })
 export class PlayerButtonComponent {
   @Input()
+  linkId = 'test';
+
+  @Input()
   shape: 'round' | 'square' = 'round';
+
   @Input()
   size: 'small' | 'large' = 'small';
+
   @Input()
   state: PlayerState = 'stopped';
+
   @Output() playClicked = new EventEmitter<void>();
   @Output() pauseClicked = new EventEmitter<void>();
   icons = Icons;

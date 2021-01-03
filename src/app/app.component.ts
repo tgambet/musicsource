@@ -7,13 +7,13 @@ import {
 } from '@angular/core';
 import { ExtractorService } from '@app/services/extractor.service';
 import { FileService } from '@app/services/file.service';
-import { AudioService } from '@app/services/audio.service';
 
 @Component({
   selector: 'app-root',
   template: `
     <app-top-bar></app-top-bar>
     <router-outlet></router-outlet>
+    <router-outlet name="player"></router-outlet>
     <router-outlet name="dialog"></router-outlet>
     <router-outlet name="help"></router-outlet>
     <router-outlet name="feedback"></router-outlet>
@@ -30,7 +30,7 @@ import { AudioService } from '@app/services/audio.service';
       }
     `,
   ],
-  providers: [FileService, ExtractorService, AudioService],
+  providers: [FileService, ExtractorService],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AppComponent implements OnInit {

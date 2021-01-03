@@ -41,8 +41,8 @@ export class StorageService {
       artists.createIndex('likedOn', 'likedOn');
       artists.createIndex('lastModified', 'lastModified');
       // Playlists
-      const playlists = db.createObjectStore('playlists', { keyPath: 'title' });
-      playlists.createIndex('hash', 'hash');
+      const playlists = db.createObjectStore('playlists', { keyPath: 'hash' });
+      playlists.createIndex('title', 'title');
       playlists.createIndex('createdOn', 'createdOn');
     }).pipe(tap((db) => (this.db = db)));
   }

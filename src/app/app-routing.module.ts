@@ -23,6 +23,7 @@ import { PlaylistNewComponent } from '@app/dialogs/playlist-new.component';
 import { PagePlaylistComponent } from '@app/pages/page-playlist.component';
 import { PagePlaylistResolver } from '@app/resolvers/page-playlist-resolver.service';
 import { PagePlaylistLikesComponent } from '@app/pages/page-playlist-likes.component';
+import { PlayerComponent } from '@app/components/player.component';
 
 const routes: Routes = [
   { path: '', component: HomeComponent },
@@ -80,6 +81,11 @@ const routes: Routes = [
     path: 'new-playlist',
     component: PlaylistNewComponent,
   },
+  {
+    outlet: 'player',
+    path: '**',
+    component: PlayerComponent,
+  },
 ];
 
 @NgModule({
@@ -88,7 +94,7 @@ const routes: Routes = [
       relativeLinkResolution: 'corrected',
       scrollPositionRestoration: 'disabled',
       anchorScrolling: 'enabled',
-      onSameUrlNavigation: 'reload',
+      // onSameUrlNavigation: 'reload',
     }),
   ],
   exports: [RouterModule],
@@ -108,15 +114,17 @@ export class AppRoutingModule {
 
           scroll$
             .pipe(
-              delay(5),
+              delay(10),
               concatMap(() =>
                 getPos$.pipe(
                   concatMap((pos) =>
-                    pos[1] === p[1] ? EMPTY : throwError('not matching')
+                    pos[1] === p[1]
+                      ? EMPTY
+                      : throwError('position not matching')
                   )
                 )
               ),
-              retry(40)
+              retry(50)
             )
             .subscribe();
 
@@ -126,7 +134,7 @@ export class AppRoutingModule {
           // anchor navigation
           viewportScroller.scrollToAnchor(e.anchor);
         } else {
-          const a = [/library.+#top/];
+          const a = [/library.+#top/, /library.+\(player:.+\).*/];
           // forward navigation
           if (!a.find((l) => l.test(e.routerEvent.url))) {
             viewportScroller.scrollToPosition([0, 0]);

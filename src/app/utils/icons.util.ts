@@ -27,6 +27,7 @@ import {
   mdiHome,
   mdiMagnify,
   mdiMenuDown,
+  mdiMenuUp,
   mdiMessageAlert,
   mdiMusicBoxMultiple,
   mdiMusicNote,
@@ -38,55 +39,62 @@ import {
   mdiPlaylistPlay,
   mdiPlaylistPlus,
   mdiPlus,
+  mdiRepeat,
   mdiSecurity,
   mdiShuffleVariant,
+  mdiSkipNext,
+  mdiSkipPrevious,
   mdiSync,
   mdiVolumeHigh,
 } from '@mdi/js';
 
 export class Icons {
+  static account = mdiAccount;
   static accountMusic = mdiAccountMusic;
   static album = mdiAlbum;
+  static check = mdiCheck;
+  static chevronDown = mdiChevronDown;
+  static chevronLeft = mdiChevronLeft;
+  static chevronRight = mdiChevronRight;
+  static close = mdiClose;
   static cog = mdiCog;
   static currencyUsd = mdiCurrencyUsd;
+  static delete = mdiDelete;
   static dotsVertical = mdiDotsVertical;
+  static fileMusic = mdiMusicNote;
+  static folder = mdiFolderOutline;
+  static folderAlert = mdiFolderAlertOutline;
+  static folderCog = mdiFolderCogOutline;
+  static folderMusic = mdiFolderMusicOutline;
+  static folderOpen = mdiFolderOpenOutline;
   static folderOutline = mdiFolderOutline;
+  static folderPlus = mdiFolderPlusOutline;
+  static folderRefresh = mdiFolderSyncOutline;
+  static folderSearch = mdiFolderSearchOutline;
   static heart = mdiHeart;
   static heartOutline = mdiHeartOutline;
   static helpCircle = mdiHelpCircle;
   static history = mdiHistory;
   static home = mdiHome;
   static library = mdiMusicBoxMultiple;
+  static menuDown = mdiMenuDown;
+  static menuUp = mdiMenuUp;
   static messageAlert = mdiMessageAlert;
   static pause = mdiPause;
+  static pencil = mdiPencil;
   static play = mdiPlay;
+  static playlistEdit = mdiPlaylistEdit;
   static playlistMusic = mdiPlaylistMusic;
   static playlistPlay = mdiPlaylistPlay;
   static playlistPlus = mdiPlaylistPlus;
+  static plus = mdiPlus;
   static radio = mdiAccessPoint;
+  static repeat = mdiRepeat;
   static search = mdiMagnify;
   static security = mdiSecurity;
   static shuffle = mdiShuffleVariant;
-  static volumeHigh = mdiVolumeHigh;
-  static chevronLeft = mdiChevronLeft;
-  static chevronRight = mdiChevronRight;
-  static chevronDown = mdiChevronDown;
-  static fileMusic = mdiMusicNote;
-  static folder = mdiFolderOutline;
-  static folderOpen = mdiFolderOpenOutline;
-  static folderPlus = mdiFolderPlusOutline;
-  static folderMusic = mdiFolderMusicOutline;
-  static folderCog = mdiFolderCogOutline;
-  static folderSearch = mdiFolderSearchOutline;
-  static folderRefresh = mdiFolderSyncOutline;
-  static folderAlert = mdiFolderAlertOutline;
+  static skipNext = mdiSkipNext;
+  static skipPrevious = mdiSkipPrevious;
   static sync = mdiSync;
-  static close = mdiClose;
-  static check = mdiCheck;
-  static account = mdiAccount;
-  static menuDown = mdiMenuDown;
-  static plus = mdiPlus;
-  static pencil = mdiPencil;
-  static delete = mdiDelete;
-  static playlistEdit = mdiPlaylistEdit;
+  static volumeHigh = mdiVolumeHigh;
 }
