@@ -216,8 +216,8 @@ export class LibraryFacade {
   getArtistByHash = (h: string): Observable<Artist | undefined> =>
     this.storage.get$('artists', h, 'hash');
 
-  getAlbum = (id: string): Observable<Album | undefined> =>
-    this.storage.get$('albums', id);
+  getAlbum = (title: string): Observable<Album | undefined> =>
+    this.storage.get$('albums', title);
 
   getAlbumByHash = (h: string): Observable<Album | undefined> =>
     this.storage.get$('albums', h, 'hash');

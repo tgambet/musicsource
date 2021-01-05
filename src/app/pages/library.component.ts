@@ -1,11 +1,15 @@
 import {
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   ElementRef,
-  HostListener,
+  OnDestroy,
   OnInit,
   ViewChild,
 } from '@angular/core';
+import { ScrollerService } from '@app/services/scroller.service';
+import { tap, throttleTime } from 'rxjs/operators';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-library',
@@ -27,8 +31,8 @@ import {
           <a
             mat-tab-link
             disableRipple
-            routerLink="playlists"
             fragment="top"
+            routerLink="playlists"
             routerLinkActive="active"
             queryParamsHandling="merge"
             [queryParams]="{
@@ -141,19 +145,36 @@ import {
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class LibraryComponent implements OnInit {
+export class LibraryComponent implements OnInit, OnDestroy {
   @ViewChild('navContainer', { static: true })
   navContainer!: ElementRef;
 
   scrolledTop = false;
 
-  @HostListener('window:scroll')
-  update() {
-    this.scrolledTop =
-      this.navContainer.nativeElement.getBoundingClientRect().y <= 63;
-  }
+  subscription = new Subscription();
+
+  constructor(
+    private scroller: ScrollerService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit(): void {
-    setTimeout(() => this.update());
+    const scrollSub = this.scroller.scroll$
+      .pipe(
+        throttleTime(100, undefined, { leading: true, trailing: true }),
+        tap(
+          () =>
+            (this.scrolledTop =
+              this.navContainer.nativeElement.getBoundingClientRect().y <= 63)
+        ),
+        tap(() => this.cdr.markForCheck())
+      )
+      .subscribe();
+
+    this.subscription.add(scrollSub);
+  }
+
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
   }
 }

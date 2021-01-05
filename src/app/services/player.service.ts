@@ -3,7 +3,7 @@ import { AudioService } from '@app/services/audio.service';
 import { Album } from '@app/models/album.model';
 import { LibraryFacade } from '@app/store/library/library.facade';
 import { concatMap, filter, map, reduce, take, tap } from 'rxjs/operators';
-import { Song, SongWithCover$ } from '@app/models/song.model';
+import { SongWithCover$ } from '@app/models/song.model';
 import { Router } from '@angular/router';
 import { combineLatest, Observable, ReplaySubject, Subject } from 'rxjs';
 import { FileEntry } from '@app/models/entry.model';
@@ -84,6 +84,16 @@ export class PlayerService {
     );
   }
 
+  playIndex(index: number) {
+    return this.songs$.pipe(
+      take(1),
+      map((songs) => songs[index]),
+      filter((nextSong) => !!nextSong),
+      tap((nextSong) => this.currentSong$.next(nextSong)),
+      concatMap((nextSong) => this.playSong(nextSong))
+    );
+  }
+
   hasNextSong(): Observable<boolean> {
     return combineLatest([this.songs$, this.currentSong$]).pipe(
       map(([songs, currentSong]) => {
@@ -91,6 +101,10 @@ export class PlayerService {
         return !!songs[currentIndex + 1];
       })
     );
+  }
+
+  hasCurrentSong(): Observable<boolean> {
+    return this.currentSong$.pipe(map((currentSong) => !!currentSong));
   }
 
   hasPreviousSong(): Observable<boolean> {
@@ -111,10 +125,30 @@ export class PlayerService {
       await this.library.requestPermission(this.handle).toPromise();
       const file = await this.handle.getFile();
       await this.audio.resume(file);
+    } else {
+      await this.playCurrent();
     }
   }
 
-  private playSong(song: Song) {
+  async playCurrent() {
+    console.log('current');
+    const song = await this.currentSong$
+      .asObservable()
+      .pipe(take(1))
+      .toPromise();
+    await this.playSong(song).toPromise();
+    await this.resume();
+  }
+
+  setCurrentSong(song: SongWithCover$): void {
+    this.currentSong$.next(song);
+  }
+
+  setSongs(songs: SongWithCover$[]): void {
+    this.songs$.next(songs);
+  }
+
+  private playSong(song: SongWithCover$) {
     return this.library.getEntry(song.entryPath).pipe(
       filter((entry): entry is FileEntry => !!entry),
       tap((entry) => (this.handle = entry.handle)),

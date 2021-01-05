@@ -36,9 +36,9 @@ import { ScannerFacade } from '@app/store/scanner/scanner.facade';
         flex-direction: row;
         align-items: center;
         /*flex: 0 0 64px;*/
-        padding: 0 12px;
+        padding: 0 24px 0 12px;
         box-sizing: border-box;
-        width: 100%;
+        width: 100vw;
         white-space: nowrap;
         background: rgb(33, 33, 33);
         z-index: 100;
@@ -54,6 +54,10 @@ import { ScannerFacade } from '@app/store/scanner/scanner.facade';
       :host-context(.cdk-global-scrollblock) {
         background: rgb(33, 33, 33);
         border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      }
+      :host-context(.with-background) {
+        background: rgb(33, 33, 33);
+        border-bottom: none;
       }
       h1 {
         font-family: 'YT Sans', sans-serif;

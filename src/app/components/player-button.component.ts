@@ -13,18 +13,7 @@ export type PlayerState = 'playing' | 'loading' | 'stopped';
 @Component({
   selector: 'app-player-button',
   template: `
-    <button
-      mat-icon-button
-      [ngClass]="[size, state, shape]"
-      (click)="toggle()"
-      [routerLink]="[
-        '/',
-        { outlets: { player: [linkId, { id: 'heroId', foo: 'foo' }] } }
-      ]"
-      [preserveFragment]="false"
-      queryParamsHandling="preserve"
-      [replaceUrl]="true"
-    >
+    <button mat-icon-button [ngClass]="[size, state, shape]" (click)="toggle()">
       <app-icon
         class="play-pause"
         [path]="

@@ -83,6 +83,7 @@ import { PlaylistAddComponent } from './dialogs/playlist-add.component';
 import { PlayerComponent } from './components/player.component';
 import { MatSliderModule } from '@angular/material/slider';
 import { AudioService } from '@app/services/audio.service';
+import { PlayComponent } from './pages/play.component';
 
 @NgModule({
   declarations: [
@@ -133,6 +134,7 @@ import { AudioService } from '@app/services/audio.service';
     SongListItemComponent,
     PlaylistAddComponent,
     PlayerComponent,
+    PlayComponent,
   ],
   imports: [
     BrowserModule,

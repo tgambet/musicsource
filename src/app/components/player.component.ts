@@ -1,11 +1,12 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  OnDestroy,
   OnInit,
   ViewChild,
 } from '@angular/core';
 import { Icons } from '@app/utils/icons.util';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, ActivationStart, Router } from '@angular/router';
 import {
   filter,
   map,
@@ -13,12 +14,18 @@ import {
   shareReplay,
   switchMap,
   take,
+  tap,
 } from 'rxjs/operators';
 import { LibraryFacade } from '@app/store/library/library.facade';
 import { MatSlider, MatSliderChange } from '@angular/material/slider';
-import { concat, merge, Observable, of } from 'rxjs';
+import { concat, merge, Observable, of, Subscription } from 'rxjs';
 import { PlayerService } from '@app/services/player.service';
 import { SongWithCover$ } from '@app/models/song.model';
+
+export interface PlayerData {
+  songs: SongWithCover$[];
+  currentSong: SongWithCover$;
+}
 
 @Component({
   selector: 'app-player',
@@ -72,7 +79,12 @@ import { SongWithCover$ } from '@app/models/song.model';
         ></app-icon>
       </button>
       <ng-template #disabledPlay>
-        <button mat-icon-button [disabled]="true" color="accent">
+        <button
+          mat-icon-button
+          [disableRipple]="false"
+          color="accent"
+          (click)="playCurrent()"
+        >
           <app-icon [path]="icons.play" [size]="40"></app-icon>
         </button>
       </ng-template>
@@ -126,6 +138,7 @@ import { SongWithCover$ } from '@app/models/song.model';
         [disableRipple]="true"
         color="accent"
         class="menu"
+        (click)="toggleMenu()"
       >
         <app-icon [path]="icons.menuUp" [size]="36"></app-icon>
       </button>
@@ -136,18 +149,15 @@ import { SongWithCover$ } from '@app/models/song.model';
       :host {
         display: flex;
         align-items: center;
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        height: 72px;
         background-color: #212121;
         white-space: nowrap;
+        height: 100%;
+        padding-right: 12px;
       }
       mat-slider {
         position: absolute;
         top: -15px;
-        width: 100%;
+        width: calc(100% - 12px);
         padding: 0;
         height: 32px;
         cursor: pointer;
@@ -178,8 +188,10 @@ import { SongWithCover$ } from '@app/models/song.model';
       .center {
         display: flex;
         align-items: center;
+        overflow: hidden;
       }
       .cover {
+        flex-shrink: 0;
         height: 40px;
         width: 40px;
         background-color: #717171;
@@ -190,12 +202,17 @@ import { SongWithCover$ } from '@app/models/song.model';
         display: flex;
         flex-direction: column;
         margin: 0 8px 0 16px;
+        overflow: hidden;
       }
       .meta .top {
         font-weight: 500;
       }
       .meta .sub {
         color: #aaa;
+      }
+      .meta span {
+        text-overflow: ellipsis;
+        overflow: hidden;
       }
       .controls {
       }
@@ -213,7 +230,7 @@ import { SongWithCover$ } from '@app/models/song.model';
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class PlayerComponent implements OnInit {
+export class PlayerComponent implements OnInit, OnDestroy {
   @ViewChild('seeker', { static: true })
   seeker!: MatSlider;
 
@@ -227,13 +244,35 @@ export class PlayerComponent implements OnInit {
   nextEnabled$!: Observable<boolean>;
   prevEnabled$!: Observable<boolean>;
 
+  isPlayRoute!: boolean;
+
+  subscription = new Subscription();
+
   constructor(
     private route: ActivatedRoute,
+    private router: Router,
     private library: LibraryFacade,
     private player: PlayerService
   ) {}
 
   ngOnInit(): void {
+    const r1$ = this.router.events
+      .pipe(
+        filter(
+          (event): event is ActivationStart => event instanceof ActivationStart
+        ),
+        filter((event) => event.snapshot.outlet === 'primary'),
+        tap(
+          (event) => (this.isPlayRoute = event.snapshot.url[0]?.path === 'play')
+        )
+      )
+      .subscribe();
+
+    this.subscription.add(r1$);
+
+    this.isPlayRoute =
+      this.route.snapshot.parent?.firstChild?.url[0]?.path === 'play';
+
     const input$ = this.seeker.input.asObservable().pipe(shareReplay(1));
     const change$ = this.seeker.change.asObservable();
     this.value$ = merge(
@@ -262,22 +301,18 @@ export class PlayerComponent implements OnInit {
       filter((song): song is SongWithCover$ => !!song)
     );
 
-    // this.route.url
-    //   .pipe(
-    //     skip(1),
-    //     map((segments) => segments[0]),
-    //     map((segment) => segment.path)
-    //     /*        switchMap((hash) => this.library.getPlaylists(undefined, hash)),
-    //     concatMap((playlist) => this.library.getEntry(playlist.songs[0])),
-    //     filter((entry): entry is FileEntry => !!entry),
-    //     concatMap((entry) =>
-    //       this.library.requestPermission(entry.handle).pipe(
-    //         concatMap(() => entry.handle.getFile()),
-    //         concatMap((file) => this.audio.play(file))
-    //       )
-    //     )*/
-    //   )
-    //   .subscribe();
+    const data$ = this.route.data
+      .pipe(
+        tap((data) => this.player.setSongs(data.info.songs)),
+        tap((data) => this.player.setCurrentSong(data.info.currentSong))
+      )
+      .subscribe();
+
+    this.subscription.add(data$);
+  }
+
+  ngOnDestroy(): void {
+    this.subscription.unsubscribe();
   }
 
   seek(n: MatSliderChange) {
@@ -308,5 +343,20 @@ export class PlayerComponent implements OnInit {
 
   async resume() {
     await this.player.resume();
+  }
+
+  async toggleMenu(): Promise<void | boolean> {
+    if (this.isPlayRoute) {
+      if (history.length > 2) {
+        return history.back();
+      }
+      return await this.router.navigate(['/', 'library']);
+    }
+    return await this.router.navigate(['/', 'play']);
+  }
+
+  async playCurrent() {
+    console.log('cu');
+    await this.player.playCurrent();
   }
 }

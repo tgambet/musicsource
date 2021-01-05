@@ -24,15 +24,26 @@ import { PagePlaylistComponent } from '@app/pages/page-playlist.component';
 import { PagePlaylistResolver } from '@app/resolvers/page-playlist-resolver.service';
 import { PagePlaylistLikesComponent } from '@app/pages/page-playlist-likes.component';
 import { PlayerComponent } from '@app/components/player.component';
+import { PlayComponent } from '@app/pages/play.component';
+import { PlayerResolverService } from '@app/resolvers/player-resolver.service';
 
 const routes: Routes = [
-  { path: '', component: HomeComponent },
-  { path: 'explorer', component: ExplorerComponent },
-  { path: 'history', component: HistoryComponent },
-  { path: 'home', component: HomeComponent },
+  { path: '', component: HomeComponent, data: { animation: 'default' } },
+  { path: 'home', component: HomeComponent, data: { animation: 'default' } },
+  {
+    path: 'history',
+    component: HistoryComponent,
+    data: { animation: 'default' },
+  },
+  {
+    path: 'explorer',
+    component: ExplorerComponent,
+    data: { animation: 'default' },
+  },
   {
     path: 'library',
     component: LibraryComponent,
+    data: { animation: 'default' },
     children: [
       { path: '', redirectTo: 'albums', pathMatch: 'full' },
       { path: 'playlists', component: LibraryPlaylistsComponent },
@@ -41,27 +52,39 @@ const routes: Routes = [
       { path: 'songs', component: LibrarySongsComponent },
     ],
   },
-  { path: 'search', component: SearchComponent },
+  {
+    path: 'search',
+    component: SearchComponent,
+    data: { animation: 'default' },
+  },
   {
     path: 'album/:id',
     component: PageAlbumComponent,
+    data: { animation: 'default' },
     resolve: { info: PageAlbumResolverService },
   },
   {
     path: 'artist/:id',
     component: PageArtistComponent,
+    data: { animation: 'default' },
     resolve: { info: PageArtistResolverService },
   },
   {
     path: 'likes',
+    data: { animation: 'default' },
     component: PagePlaylistLikesComponent,
+  },
+  {
+    path: 'play',
+    component: PlayComponent,
+    data: { animation: 'PlayPage' },
   },
   {
     path: 'playlist/:id',
     component: PagePlaylistComponent,
+    data: { animation: 'default' },
     resolve: { info: PagePlaylistResolver },
   },
-  { path: 'listen', component: HistoryComponent },
   {
     outlet: 'dialog',
     path: 'settings',
@@ -83,8 +106,9 @@ const routes: Routes = [
   },
   {
     outlet: 'player',
-    path: '**',
+    path: ':type/:id',
     component: PlayerComponent,
+    resolve: { info: PlayerResolverService },
   },
 ];
 
@@ -93,7 +117,7 @@ const routes: Routes = [
     RouterModule.forRoot(routes, {
       relativeLinkResolution: 'corrected',
       scrollPositionRestoration: 'disabled',
-      anchorScrolling: 'enabled',
+      // anchorScrolling: 'enabled',
       // onSameUrlNavigation: 'reload',
     }),
   ],
@@ -134,7 +158,7 @@ export class AppRoutingModule {
           // anchor navigation
           viewportScroller.scrollToAnchor(e.anchor);
         } else {
-          const a = [/library.+#top/, /library.+\(player:.+\).*/];
+          const a = [/library.+#top/, /library.+\(player:.+\).*/, /\/play\(/];
           // forward navigation
           if (!a.find((l) => l.test(e.routerEvent.url))) {
             viewportScroller.scrollToPosition([0, 0]);

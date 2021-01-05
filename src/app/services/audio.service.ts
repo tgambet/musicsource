@@ -27,6 +27,8 @@ export class AudioService {
   private objectUrl!: string;
 
   constructor(@Inject(DOCUMENT) document: Document) {
+    this.playing$.next(false);
+
     this.initialize()
       .pipe(
         tapError((e) => console.log(e)),
