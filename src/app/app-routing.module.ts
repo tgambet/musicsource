@@ -15,10 +15,18 @@ import { PageArtistResolverService } from '@app/resolvers/page-artist-resolver.s
 import { LibraryAlbumsComponent } from '@app/pages/library-albums.component';
 import { LibraryArtistsComponent } from '@app/pages/library-artists.component';
 import { ViewportScroller } from '@angular/common';
-import { concatMap, delay, filter, retry } from 'rxjs/operators';
+import {
+  concatMap,
+  concatMapTo,
+  debounceTime,
+  filter,
+  first,
+  publish,
+  retry,
+} from 'rxjs/operators';
 import { LibraryPlaylistsComponent } from '@app/pages/library-playlists.component';
 import { LibrarySongsComponent } from '@app/pages/library-songs.component';
-import { defer, EMPTY, of, throwError } from 'rxjs';
+import { defer, EMPTY, fromEvent, merge, of, throwError, timer } from 'rxjs';
 import { PlaylistNewComponent } from '@app/dialogs/playlist-new.component';
 import { PagePlaylistComponent } from '@app/pages/page-playlist.component';
 import { PagePlaylistResolver } from '@app/resolvers/page-playlist-resolver.service';
@@ -136,27 +144,37 @@ export class AppRoutingModule {
           const getPos$ = defer(() => of(viewportScroller.getScrollPosition()));
           const scroll$ = defer(() => of(viewportScroller.scrollToPosition(p)));
 
-          scroll$
+          timer(10)
             .pipe(
-              delay(10),
-              concatMap(() =>
-                getPos$.pipe(
-                  concatMap((pos) =>
-                    pos[1] === p[1]
-                      ? EMPTY
-                      : throwError('position not matching')
-                  )
+              publish((m$) =>
+                merge(
+                  m$.pipe(
+                    concatMap(() =>
+                      fromEvent(window, 'scroll').pipe(
+                        debounceTime(150),
+                        first()
+                      )
+                    ),
+                    concatMap(() =>
+                      getPos$.pipe(
+                        concatMap((pos) =>
+                          pos[1] === p[1]
+                            ? EMPTY
+                            : throwError('position not matching')
+                        )
+                      )
+                    )
+                  ),
+                  m$.pipe(concatMapTo(scroll$))
                 )
               ),
-              retry(50)
+              retry(10)
             )
             .subscribe();
-
-          // setTimeout(() => viewportScroller.scrollToPosition(p), 100);
-          // setTimeout(() => viewportScroller.scrollToPosition(p), 200);
         } else if (e.anchor) {
           // anchor navigation
-          viewportScroller.scrollToAnchor(e.anchor);
+          const anchor = e.anchor;
+          setTimeout(() => viewportScroller.scrollToAnchor(anchor));
         } else {
           const a = [/library.+#top/, /library.+\(player:.+\).*/, /\/play\(/];
           // forward navigation

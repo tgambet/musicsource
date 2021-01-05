@@ -181,7 +181,7 @@ export class LibrarySongsComponent implements OnInit, OnDestroy {
             : false
         ),
         skip(query ? 1 : 0),
-        take(50),
+        take(150),
         scan(
           (acc, cur) => [...acc, cur],
           [] as {
