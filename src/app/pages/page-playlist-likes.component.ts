@@ -1,9 +1,10 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { Song, SongWithCover$ } from '@app/models/song.model';
 import { Observable } from 'rxjs';
 import { LibraryFacade } from '@app/store/library/library.facade';
-import { map, scan, shareReplay, startWith } from 'rxjs/operators';
+import { map, shareReplay, startWith } from 'rxjs/operators';
 import { Icons } from '@app/utils/icons.util';
+import { scanArray } from '@app/utils/scanArray.util';
 
 @Component({
   selector: 'app-page-playlist-likes',
@@ -73,7 +74,7 @@ export class PagePlaylistLikesComponent implements OnInit {
   ngOnInit(): void {
     this.songs$ = this.library.getSongs('likedOn', undefined, 'prev').pipe(
       map(({ value }) => value),
-      scan((acc, cur) => [...acc, cur], [] as SongWithCover$[]),
+      scanArray(),
       startWith([]),
       shareReplay(1)
     );

@@ -2,10 +2,11 @@ import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { LibraryFacade } from '@app/store/library/library.facade';
 import { Observable } from 'rxjs';
 import { AlbumWithCover$ } from '@app/models/album.model';
-import { map, scan, switchMap } from 'rxjs/operators';
+import { map, switchMap } from 'rxjs/operators';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SelectOption } from '@app/components/select.component';
 import { hash } from '@app/utils/hash.util';
+import { scanArray } from '@app/utils/scanArray.util';
 
 @Component({
   selector: 'app-library-albums',
@@ -95,7 +96,7 @@ export class LibraryAlbumsComponent implements OnInit {
       switchMap((sort) =>
         this.library
           .getAlbums(sort.index, null, sort.direction)
-          .pipe(scan((acc, cur) => [...acc, cur], [] as AlbumWithCover$[]))
+          .pipe(scanArray())
       )
     );
   }

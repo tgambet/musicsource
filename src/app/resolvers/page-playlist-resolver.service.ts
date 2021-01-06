@@ -8,9 +8,9 @@ import {
 import { PagePlaylistData } from '@app/pages/page-playlist.component';
 import { LibraryFacade } from '@app/store/library/library.facade';
 import { EMPTY, Observable, of, throwError } from 'rxjs';
-import { catchError, concatMap, map, scan, startWith } from 'rxjs/operators';
+import { catchError, concatMap, map, startWith } from 'rxjs/operators';
 import { getCover } from '@app/models/picture.model';
-import { SongWithCover$ } from '@app/models/song.model';
+import { scanArray } from '@app/utils/scanArray.util';
 
 @Injectable({
   providedIn: 'root',
@@ -42,10 +42,9 @@ export class PagePlaylistResolver implements Resolve<PagePlaylistData> {
           .getPicture(playlist.pictureKey)
           .pipe(map((picture) => (picture ? getCover(picture) : undefined)));
 
-        const songs$ = this.library.getPlaylistSongs(playlist).pipe(
-          scan((acc, cur) => [...acc, cur], [] as SongWithCover$[]),
-          startWith([])
-        );
+        const songs$ = this.library
+          .getPlaylistSongs(playlist)
+          .pipe(scanArray(), startWith([]));
 
         return cover$.pipe(
           map((cover) => ({

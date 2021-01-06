@@ -8,10 +8,11 @@ import {
 import { SelectOption } from '@app/components/select.component';
 import { Icons } from '@app/utils/icons.util';
 import { LibraryFacade } from '@app/store/library/library.facade';
-import { map, scan, startWith, switchMap, tap } from 'rxjs/operators';
+import { map, startWith, switchMap, tap } from 'rxjs/operators';
 import { Playlist } from '@app/models/playlist.model';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, Subscription } from 'rxjs';
+import { scanArray } from '@app/utils/scanArray.util';
 
 @Component({
   selector: 'app-library-playlists',
@@ -136,17 +137,14 @@ export class LibraryPlaylistsComponent implements OnInit, OnDestroy {
 
         return this.library
           .getPlaylists(sort.index, null, sort.direction, predicate)
-          .pipe(
-            scan((acc, cur) => [...acc, cur], [] as Playlist[]),
-            startWith([])
-          );
+          .pipe(scanArray(), startWith([]));
       })
     );
 
     this.newPlaylists$ = sort$.pipe(
       switchMap(() =>
         this.library.getNewlyCreatedPlaylists().pipe(
-          scan((acc, cur) => [...acc, cur], [] as Playlist[]),
+          scanArray(),
           startWith([]),
           map((pl) => pl.reverse())
         )

@@ -9,16 +9,10 @@ import { LibraryFacade } from '@app/store/library/library.facade';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { Artist, ArtistWithCover$ } from '@app/models/artist.model';
-import {
-  map,
-  scan,
-  shareReplay,
-  startWith,
-  switchMap,
-  tap,
-} from 'rxjs/operators';
+import { map, shareReplay, startWith, switchMap, tap } from 'rxjs/operators';
 import { Icons } from '@app/utils/icons.util';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { scanArray } from '@app/utils/scanArray.util';
 
 @Component({
   selector: 'app-library-artists',
@@ -210,10 +204,7 @@ export class LibraryArtistsComponent implements OnInit {
 
         return this.library
           .getArtists(sort.index, null, sort.direction, predicate)
-          .pipe(
-            scan((acc, cur) => [...acc, cur], [] as ArtistWithCover$[]),
-            startWith([])
-          );
+          .pipe(scanArray(), startWith([]));
       }),
       shareReplay(1)
     );

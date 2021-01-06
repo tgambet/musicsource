@@ -20,7 +20,6 @@ import {
   mapTo,
   mergeMap,
   publish,
-  reduce,
   takeUntil,
   tap,
 } from 'rxjs/operators';
@@ -64,6 +63,7 @@ import { Album } from '@app/models/album.model';
 import { SetRequired } from '@app/utils/types.util';
 import { Song } from '@app/models/song.model';
 import { hash } from '@app/utils/hash.util';
+import { reduceArray } from '@app/utils/reduceArray.util';
 
 @Injectable()
 export class ScannerEffects implements OnRunEffects {
@@ -234,7 +234,7 @@ export class ScannerEffects implements OnRunEffects {
                   ),
                   mergeMap((groups$) =>
                     groups$.pipe(
-                      reduce((acc, cur) => [...acc, cur], [] as Song[]),
+                      reduceArray(),
                       map((songs) => ({
                         album: groups$.key,
                         songs,
@@ -299,7 +299,7 @@ export class ScannerEffects implements OnRunEffects {
                 ),
                 mergeMap((groups$) =>
                   groups$.pipe(
-                    reduce((acc, cur) => [...acc, cur], [] as Album[]),
+                    reduceArray(),
                     map((albums) => ({
                       artist: groups$.key,
                       albums,

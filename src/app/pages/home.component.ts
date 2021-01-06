@@ -1,10 +1,10 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { LibraryFacade } from '@app/store/library/library.facade';
-import { scan, take } from 'rxjs/operators';
+import { take } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { AlbumWithCover$ } from '@app/models/album.model';
-import { ArtistWithCover } from '@app/models/artist.model';
 import { hash } from '@app/utils/hash.util';
+import { scanArray } from '@app/utils/scanArray.util';
 
 @Component({
   selector: 'app-home',
@@ -72,12 +72,12 @@ export class HomeComponent implements OnInit {
   albums$: Observable<AlbumWithCover$[]> = this.library.albums$.pipe(
     // filter((album) => !!album.cover),
     take(20),
-    scan((acc, cur) => [...acc, cur], [] as AlbumWithCover$[])
+    scanArray()
   );
 
   artists$ = this.library.artists$.pipe(
     // take(20),
-    scan((acc, cur) => [...acc, cur], [] as ArtistWithCover[])
+    scanArray()
   );
 
   constructor(private library: LibraryFacade) {}

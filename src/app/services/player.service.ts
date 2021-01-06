@@ -2,11 +2,12 @@ import { Injectable } from '@angular/core';
 import { AudioService } from '@app/services/audio.service';
 import { Album } from '@app/models/album.model';
 import { LibraryFacade } from '@app/store/library/library.facade';
-import { concatMap, filter, map, reduce, take, tap } from 'rxjs/operators';
+import { concatMap, filter, map, take, tap } from 'rxjs/operators';
 import { SongWithCover$ } from '@app/models/song.model';
 import { Router } from '@angular/router';
 import { combineLatest, Observable, ReplaySubject, Subject } from 'rxjs';
 import { FileEntry } from '@app/models/entry.model';
+import { reduceArray } from '@app/utils/reduceArray.util';
 
 @Injectable({
   providedIn: 'root',
@@ -15,6 +16,7 @@ export class PlayerService {
   songs$: Subject<SongWithCover$[]> = new ReplaySubject(1);
   currentSong$: Subject<SongWithCover$> = new ReplaySubject(1);
 
+  // https://bugs.chromium.org/p/chromium/issues/detail?id=1146886&q=component%3ABlink%3EStorage%3EFileSystem&can=2
   private handle?: any;
 
   constructor(
@@ -41,7 +43,7 @@ export class PlayerService {
 
   playAlbum(album: Album) {
     return this.library.getAlbumTitles(album).pipe(
-      reduce((acc, cur) => [...acc, cur], [] as SongWithCover$[]),
+      reduceArray(),
       tap((songs) => this.songs$.next(songs)),
       tap(() =>
         this.router.navigate(

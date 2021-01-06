@@ -8,10 +8,9 @@ import {
 import { PageArtistData } from '@app/pages/page-artist.component';
 import { EMPTY, Observable, of, throwError } from 'rxjs';
 import { LibraryFacade } from '@app/store/library/library.facade';
-import { catchError, concatMap, map, scan, take } from 'rxjs/operators';
+import { catchError, concatMap, map, take } from 'rxjs/operators';
 import { getCover } from '@app/models/picture.model';
-import { AlbumWithCover$ } from '@app/models/album.model';
-import { SongWithCover$ } from '@app/models/song.model';
+import { scanArray } from '@app/utils/scanArray.util';
 
 @Injectable({
   providedIn: 'root',
@@ -45,13 +44,13 @@ export class PageArtistResolverService implements Resolve<PageArtistData> {
             artist,
             cover,
             albums$: this.library.getArtistAlbums(artist).pipe(
-              scan((acc, cur) => [...acc, cur], [] as AlbumWithCover$[]),
+              scanArray(),
               map((albums) =>
                 [...albums].sort((a1, a2) => (a2.year || 0) - (a1.year || 0))
               )
             ),
             foundOn$: this.library.getAlbumsWithArtist(artist).pipe(
-              scan((acc, cur) => [...acc, cur], [] as AlbumWithCover$[]),
+              scanArray(),
               map((albums) =>
                 [...albums].sort((a1, a2) => (a2.year || 0) - (a1.year || 0))
               )
@@ -59,7 +58,7 @@ export class PageArtistResolverService implements Resolve<PageArtistData> {
             songs$: this.library.getSongs('artists', artist.name).pipe(
               map(({ value }) => value),
               take(5),
-              scan((acc, cur) => [...acc, cur], [] as SongWithCover$[])
+              scanArray()
             ),
           }))
         );
