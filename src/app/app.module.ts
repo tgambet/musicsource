@@ -84,6 +84,8 @@ import { PlayerComponent } from './components/player.component';
 import { MatSliderModule } from '@angular/material/slider';
 import { AudioService } from '@app/services/audio.service';
 import { PlayComponent } from './pages/play.component';
+import { PlaylistListItemComponent } from './components/playlist-list-item.component';
+import { PlaylistListComponent } from './components/playlist-list.component';
 
 @NgModule({
   declarations: [
@@ -135,6 +137,8 @@ import { PlayComponent } from './pages/play.component';
     PlaylistAddComponent,
     PlayerComponent,
     PlayComponent,
+    PlaylistListItemComponent,
+    PlaylistListComponent,
   ],
   imports: [
     BrowserModule,

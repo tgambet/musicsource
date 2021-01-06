@@ -136,7 +136,9 @@ export class AppRoutingModule {
     router.events
       .pipe(filter((e: Event): e is Scroll => e instanceof Scroll))
       .subscribe((e) => {
-        if (e.position) {
+        if (e.position && e.position[1] === 0) {
+          viewportScroller.scrollToPosition([0, 0]);
+        } else if (e.position) {
           // backward navigation
           const p = e.position;
           // viewportScroller.scrollToPosition(p);
