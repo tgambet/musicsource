@@ -41,9 +41,9 @@ export class PlayerResolverService implements Resolve<PlayerData> {
           }),
           concatMap((album) => this.library.getAlbumTitles(album)),
           reduceArray(),
-          map((songs) => ({
-            songs,
-            currentSong: songs[0],
+          map((playlist) => ({
+            playlist,
+            currentIndex: 0,
           }))
         );
       default:

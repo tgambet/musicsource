@@ -13,18 +13,17 @@ import {
   mapTo,
   shareReplay,
   switchMap,
-  take,
   tap,
 } from 'rxjs/operators';
 import { LibraryFacade } from '@app/store/library/library.facade';
 import { MatSlider, MatSliderChange } from '@angular/material/slider';
-import { concat, merge, Observable, of, Subscription } from 'rxjs';
-import { PlayerService } from '@app/services/player.service';
+import { merge, Observable, of, Subscription } from 'rxjs';
 import { SongWithCover$ } from '@app/models/song.model';
+import { PlayerFacade } from '@app/store/player/player.facade';
 
 export interface PlayerData {
-  songs: SongWithCover$[];
-  currentSong: SongWithCover$;
+  playlist: SongWithCover$[];
+  currentIndex: number;
 }
 
 @Component({
@@ -46,7 +45,7 @@ export interface PlayerData {
       [min]="0"
       [max]="max$ | async"
       [value]="value$ | async"
-      [disabled]="disabled$ | async"
+      [disabled]="seekerDisabled$ | async"
       (change)="seek($event)"
       cdkMonitorSubtreeFocus
       #seeker
@@ -57,51 +56,51 @@ export interface PlayerData {
         [disableRipple]="true"
         color="accent"
         (click)="playPreviousSong()"
-        *ngIf="prevEnabled$ | async; else prevDisabled"
+        [disabled]="(prevEnabled$ | async) === false"
       >
         <app-icon [path]="icons.skipPrevious"></app-icon>
       </button>
-      <ng-template #prevDisabled>
+      <!--<ng-template #prevDisabled>
         <button mat-icon-button [disabled]="true" color="accent">
           <app-icon [path]="icons.skipPrevious"></app-icon>
         </button>
-      </ng-template>
+      </ng-template>-->
       <button
         mat-icon-button
         [disableRipple]="true"
         color="accent"
-        *ngIf="playing$ | async as playing; else disabledPlay"
-        (click)="playing.value ? pause() : resume()"
+        *ngIf="playing$ | async as playing"
+        (click)="playing.value ? pause() : play()"
       >
         <app-icon
           [path]="playing.value ? icons.pause : icons.play"
           [size]="40"
         ></app-icon>
       </button>
-      <ng-template #disabledPlay>
-        <button
-          mat-icon-button
-          [disableRipple]="false"
-          color="accent"
-          (click)="playCurrent()"
-        >
-          <app-icon [path]="icons.play" [size]="40"></app-icon>
-        </button>
-      </ng-template>
+      <!--      <ng-template #disabledPlay>-->
+      <!--        <button-->
+      <!--          mat-icon-button-->
+      <!--          [disableRipple]="false"-->
+      <!--          color="accent"-->
+      <!--          (click)="playCurrent()"-->
+      <!--        >-->
+      <!--          <app-icon [path]="icons.play" [size]="40"></app-icon>-->
+      <!--        </button>-->
+      <!--      </ng-template>-->
       <button
         mat-icon-button
         [disableRipple]="true"
         color="accent"
         (click)="playNextSong()"
-        *ngIf="nextEnabled$ | async; else nextDisabled"
+        [disabled]="(nextEnabled$ | async) === false"
       >
         <app-icon [path]="icons.skipNext"></app-icon>
       </button>
-      <ng-template #nextDisabled>
+      <!--      <ng-template #nextDisabled>
         <button mat-icon-button [disabled]="true" color="accent">
           <app-icon [path]="icons.skipNext"></app-icon>
         </button>
-      </ng-template>
+      </ng-template>-->
       <span class="time">
         {{ value$ | async | duration }} / {{ max$ | async | duration }}
       </span>
@@ -238,7 +237,7 @@ export class PlayerComponent implements OnInit, OnDestroy {
 
   value$!: Observable<number>;
   max$!: Observable<number>;
-  disabled$!: Observable<boolean>;
+  seekerDisabled$!: Observable<boolean>;
   currentSong$!: Observable<SongWithCover$>;
   playing$!: Observable<{ value: boolean }>;
   nextEnabled$!: Observable<boolean>;
@@ -252,7 +251,7 @@ export class PlayerComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private router: Router,
     private library: LibraryFacade,
-    private player: PlayerService
+    private player: PlayerFacade
   ) {}
 
   ngOnInit(): void {
@@ -289,26 +288,31 @@ export class PlayerComponent implements OnInit, OnDestroy {
 
     this.max$ = this.player.getDuration$();
     this.playing$ = this.player.getPlaying$().pipe(map((value) => ({ value })));
-    this.nextEnabled$ = this.player.hasNextSong();
-    this.prevEnabled$ = this.player.hasPreviousSong();
+    this.nextEnabled$ = this.player.hasNextSong$();
+    this.prevEnabled$ = this.player.hasPrevSong$();
 
-    this.disabled$ = concat(
-      of(true),
-      this.player.getDuration$().pipe(take(1), mapTo(false))
-    );
+    this.seekerDisabled$ = this.player
+      .getDuration$()
+      .pipe(map((duration) => duration === 0));
 
-    this.currentSong$ = this.player.currentSong$.pipe(
-      filter((song): song is SongWithCover$ => !!song)
-    );
+    //   concat(
+    //   of(true),
+    //   this.player.getDuration$().pipe(take(1), mapTo(false))
+    // );
 
-    const data$ = this.route.data
-      .pipe(
-        tap((data) => this.player.setSongs(data.info.songs)),
-        tap((data) => this.player.setCurrentSong(data.info.currentSong))
-      )
-      .subscribe();
+    this.currentSong$ = this.player
+      .getCurrentSong$()
+      .pipe(filter((song): song is SongWithCover$ => !!song));
 
-    this.subscription.add(data$);
+    // const data$ = this.route.data
+    //   .pipe(
+    //     tap(({ info }) =>
+    //       this.player.setPlaylist(info.playlist, info.currentIndex)
+    //     )
+    //   )
+    //   .subscribe();
+    //
+    // this.subscription.add(data$);
   }
 
   ngOnDestroy(): void {
@@ -325,24 +329,27 @@ export class PlayerComponent implements OnInit, OnDestroy {
     this.player.pause();
   }
 
-  async playNextSong() {
-    const playing = await this.player.getPlaying$().pipe(take(1)).toPromise();
-    await this.player.playNextSong().toPromise();
-    if (playing) {
-      await this.player.resume();
-    }
+  playNextSong() {
+    // const playing = await this.player.getPlaying$().pipe(take(1)).toPromise();
+    // await this.player.playNextSong().toPromise();
+    // if (playing) {
+    //   await this.player.resume();
+    // }
+    this.player.setNextIndex();
+    // this.playerF.play();
   }
 
-  async playPreviousSong() {
-    const playing = await this.player.getPlaying$().pipe(take(1)).toPromise();
-    await this.player.playPreviousSong().toPromise();
-    if (playing) {
-      await this.player.resume();
-    }
+  playPreviousSong() {
+    // const playing = await this.player.getPlaying$().pipe(take(1)).toPromise();
+    // await this.player.playPreviousSong().toPromise();
+    // if (playing) {
+    //   await this.player.resume();
+    // }
+    this.player.setPrevIndex();
   }
 
-  async resume() {
-    await this.player.resume();
+  play() {
+    this.player.play();
   }
 
   async toggleMenu(): Promise<void | boolean> {
@@ -353,10 +360,5 @@ export class PlayerComponent implements OnInit, OnDestroy {
       return await this.router.navigate(['/', 'library']);
     }
     return await this.router.navigate(['/', 'play']);
-  }
-
-  async playCurrent() {
-    console.log('cu');
-    await this.player.playCurrent();
   }
 }

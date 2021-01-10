@@ -31,9 +31,7 @@ import { PlaylistNewComponent } from '@app/dialogs/playlist-new.component';
 import { PagePlaylistComponent } from '@app/pages/page-playlist.component';
 import { PagePlaylistResolver } from '@app/resolvers/page-playlist-resolver.service';
 import { PagePlaylistLikesComponent } from '@app/pages/page-playlist-likes.component';
-import { PlayerComponent } from '@app/components/player.component';
 import { PlayComponent } from '@app/pages/play.component';
-import { PlayerResolverService } from '@app/resolvers/player-resolver.service';
 
 const routes: Routes = [
   { path: '', component: HomeComponent, data: { animation: 'default' } },
@@ -112,12 +110,6 @@ const routes: Routes = [
     path: 'new-playlist',
     component: PlaylistNewComponent,
   },
-  {
-    outlet: 'player',
-    path: ':type/:id',
-    component: PlayerComponent,
-    resolve: { info: PlayerResolverService },
-  },
 ];
 
 @NgModule({
@@ -178,7 +170,7 @@ export class AppRoutingModule {
           const anchor = e.anchor;
           setTimeout(() => viewportScroller.scrollToAnchor(anchor));
         } else {
-          const a = [/library.+#top/, /library.+\(player:.+\).*/, /\/play\(/];
+          const a = [/library.+#top/, /\/play\(/];
           // forward navigation
           if (!a.find((l) => l.test(e.routerEvent.url))) {
             viewportScroller.scrollToPosition([0, 0]);

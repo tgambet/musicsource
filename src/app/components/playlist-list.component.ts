@@ -18,7 +18,6 @@ import { MatMenuTrigger } from '@angular/material/menu';
       *ngFor="let song of playlist; trackBy: trackBy; let i = index"
       [song]="song"
       (menuOpened)="menuOpened($event)"
-      (playClicked)="playClicked.emit(i)"
     ></app-playlist-list-item>
   `,
   styles: [

@@ -166,10 +166,10 @@ export class PlaylistComponent implements OnInit {
         text: 'Shuffle play',
         click: () => alert('clicked'),
       },
-      {
-        icon: Icons.radio,
-        text: 'Start radio',
-      },
+      // {
+      //   icon: Icons.radio,
+      //   text: 'Start radio',
+      // },
       {
         icon: Icons.pencil,
         text: 'Edit playlist',
