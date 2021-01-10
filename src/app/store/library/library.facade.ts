@@ -17,7 +17,7 @@ import { getCover, Picture } from '@app/models/picture.model';
 import { Song, SongWithCover$ } from '@app/models/song.model';
 import { Playlist } from '@app/models/playlist.model';
 import { hash } from '@app/utils/hash.util';
-import { reduceArray } from '@app/utils/reduceArray.util';
+import { reduceArray } from '@app/utils/reduce-array.util';
 
 @Injectable()
 export class LibraryFacade {
@@ -174,7 +174,7 @@ export class LibraryFacade {
 
   getPlaylistSongs(playlist: Playlist): Observable<SongWithCover$> {
     return this.storage
-      .getAllValues$<Song>(playlist.songs.reverse(), 'songs')
+      .getAllValues$<Song>([...playlist.songs].reverse(), 'songs')
       .pipe(
         map((song) => ({
           ...song,

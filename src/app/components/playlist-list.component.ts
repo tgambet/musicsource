@@ -18,6 +18,8 @@ import { MatMenuTrigger } from '@angular/material/menu';
       *ngFor="let song of playlist; trackBy: trackBy; let i = index"
       [song]="song"
       (menuOpened)="menuOpened($event)"
+      (playClicked)="playClicked.emit(i)"
+      [class.selected]="song.entryPath === currentSong?.entryPath"
     ></app-playlist-list-item>
   `,
   styles: [
@@ -28,6 +30,9 @@ import { MatMenuTrigger } from '@angular/material/menu';
       }
       app-playlist-list-item {
         flex: 0 0 56px;
+      }
+      app-playlist-list-item.selected {
+        background-color: rgba(255, 255, 255, 0.1);
       }
       app-playlist-list-item:last-of-type {
         border: none;
@@ -48,6 +53,7 @@ import { MatMenuTrigger } from '@angular/material/menu';
 })
 export class PlaylistListComponent implements OnInit {
   @Input() playlist!: SongWithCover$[];
+  @Input() currentSong?: SongWithCover$ | null;
 
   @Output() playClicked = new EventEmitter<number>();
 

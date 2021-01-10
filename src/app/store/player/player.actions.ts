@@ -1,6 +1,7 @@
 import { createAction, props } from '@ngrx/store';
 import { SongWithCover$ } from '@app/models/song.model';
 import { Album } from '@app/models/album.model';
+import { Playlist } from '@app/models/playlist.model';
 
 export const show = createAction('player/show');
 
@@ -39,3 +40,10 @@ export const playAlbum = createAction(
   'player/play-album',
   props<{ album: Album; index: number }>()
 );
+
+export const playPlaylist = createAction(
+  'player/play-playlist',
+  props<{ playlist: Playlist; index: number }>()
+);
+
+export const shuffle = createAction('player/shuffle');

@@ -129,7 +129,12 @@ export interface PlayerData {
       <button mat-icon-button [disableRipple]="true" color="accent">
         <app-icon [path]="icons.repeat"></app-icon>
       </button>
-      <button mat-icon-button [disableRipple]="true" color="accent">
+      <button
+        mat-icon-button
+        [disableRipple]="true"
+        color="accent"
+        (click)="shuffle()"
+      >
         <app-icon [path]="icons.shuffle"></app-icon>
       </button>
       <button
@@ -360,5 +365,9 @@ export class PlayerComponent implements OnInit, OnDestroy {
       return await this.router.navigate(['/', 'library']);
     }
     return await this.router.navigate(['/', 'play']);
+  }
+
+  shuffle() {
+    this.player.shuffle();
   }
 }

@@ -29,6 +29,8 @@ import { PlayerFacade } from '@app/store/player/player.facade';
         #playlistList
         *ngIf="playlist$ | async as playlist"
         [playlist]="playlist"
+        (playClicked)="play($event)"
+        [currentSong]="currentSong$ | async"
       ></app-playlist-list>
     </div>
   `,
@@ -106,13 +108,7 @@ export class PlayComponent implements OnInit {
   }
 
   play(index: number) {
-    // this.player.setCurrentIndex(index);
-    //this.player.play();
-    console.log(index);
-
-    this.router.navigate([
-      '/',
-      { outlets: { player: ['current', { t: index }] } },
-    ]);
+    this.player.setCurrentIndex(index);
+    this.player.play();
   }
 }

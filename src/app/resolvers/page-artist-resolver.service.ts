@@ -10,7 +10,7 @@ import { EMPTY, Observable, of, throwError } from 'rxjs';
 import { LibraryFacade } from '@app/store/library/library.facade';
 import { catchError, concatMap, map, take } from 'rxjs/operators';
 import { getCover } from '@app/models/picture.model';
-import { scanArray } from '@app/utils/scanArray.util';
+import { scanArray } from '@app/utils/scan-array.util';
 
 @Injectable({
   providedIn: 'root',

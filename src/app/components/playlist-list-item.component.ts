@@ -16,7 +16,11 @@ import { MatMenuTrigger } from '@angular/material/menu';
   template: `
     <div class="cover" style="--aspect-ratio:1">
       <img *ngIf="song.cover$ | async as cover" [src]="cover" alt="cover" />
-      <app-player-button size="small" shape="square"></app-player-button>
+      <app-player-button
+        size="small"
+        shape="square"
+        (playClicked)="playClicked.emit()"
+      ></app-player-button>
     </div>
     <div class="meta">
       <span class="title">{{ song.title }}</span>

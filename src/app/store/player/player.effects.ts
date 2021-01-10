@@ -10,6 +10,7 @@ import { concat, Observable, of } from 'rxjs';
 import {
   play,
   playAlbum,
+  playPlaylist,
   setDuration,
   setPlaying,
   setPlaylist,
@@ -20,6 +21,7 @@ import { Router } from '@angular/router';
 import { AudioService } from '@app/services/audio.service';
 import { PlayerFacade } from '@app/store/player/player.facade';
 import { LibraryFacade } from '@app/store/library/library.facade';
+import { reduceArray } from '@app/utils/reduce-array.util';
 
 @Injectable()
 export class PlayerEffects implements OnRunEffects {
@@ -60,6 +62,24 @@ export class PlayerEffects implements OnRunEffects {
             .pipe(
               map((playlist) => setPlaylist({ playlist, currentIndex: index }))
             ),
+          of(show()),
+          of(play())
+        )
+      )
+    )
+  );
+
+  playPlaylist$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(playPlaylist),
+      switchMap(({ playlist, index }) =>
+        concat(
+          this.library.getPlaylistSongs(playlist).pipe(
+            reduceArray(),
+            map((songs) =>
+              setPlaylist({ playlist: songs, currentIndex: index })
+            )
+          ),
           of(show()),
           of(play())
         )

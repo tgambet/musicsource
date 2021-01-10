@@ -9,7 +9,7 @@ import { PlayerData } from '@app/components/player.component';
 import { EMPTY, Observable, of, throwError } from 'rxjs';
 import { LibraryFacade } from '@app/store/library/library.facade';
 import { catchError, concatMap, map } from 'rxjs/operators';
-import { reduceArray } from '@app/utils/reduceArray.util';
+import { reduceArray } from '@app/utils/reduce-array.util';
 
 @Injectable({
   providedIn: 'root',

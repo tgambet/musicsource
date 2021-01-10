@@ -16,15 +16,18 @@ import {
   pause,
   play,
   playAlbum,
+  playPlaylist,
   setCurrentIndex,
   setNextIndex,
   setNextSong,
   setPlaylist,
   setPrevIndex,
   show,
+  shuffle,
 } from '@app/store/player/player.actions';
 import { AudioService } from '@app/services/audio.service';
 import { Album } from '@app/models/album.model';
+import { Playlist } from '@app/models/playlist.model';
 
 @Injectable()
 export class PlayerFacade {
@@ -104,5 +107,13 @@ export class PlayerFacade {
 
   playAlbum(album: Album, index = 0): void {
     this.store.dispatch(playAlbum({ album, index }));
+  }
+
+  playPlaylist(playlist: Playlist, index = 0): void {
+    this.store.dispatch(playPlaylist({ playlist, index }));
+  }
+
+  shuffle() {
+    this.store.dispatch(shuffle());
   }
 }

@@ -12,7 +12,7 @@ import { Artist, ArtistWithCover$ } from '@app/models/artist.model';
 import { map, shareReplay, startWith, switchMap, tap } from 'rxjs/operators';
 import { Icons } from '@app/utils/icons.util';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { scanArray } from '@app/utils/scanArray.util';
+import { scanArray } from '@app/utils/scan-array.util';
 
 @Component({
   selector: 'app-library-artists',

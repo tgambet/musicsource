@@ -12,7 +12,7 @@ import { map, startWith, switchMap, tap } from 'rxjs/operators';
 import { Playlist } from '@app/models/playlist.model';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, Subscription } from 'rxjs';
-import { scanArray } from '@app/utils/scanArray.util';
+import { scanArray } from '@app/utils/scan-array.util';
 
 @Component({
   selector: 'app-library-playlists',
