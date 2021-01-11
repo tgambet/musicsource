@@ -61,7 +61,7 @@ import { ContainerHomeComponent } from './components/container-home.component';
 import { ContainerPageComponent } from './components/container-page.component';
 import { SongListComponent } from './components/song-list.component';
 import { DurationPipe } from '@app/pipes/duration.pipe';
-import { TrackListComponent } from '@app/components/track-list.component';
+import { TrackListItemComponent } from '@app/components/track-list-item.component';
 import { MatTabsModule } from '@angular/material/tabs';
 import { LibraryAlbumsComponent } from './pages/library-albums.component';
 import { SelectComponent } from './components/select.component';
@@ -86,6 +86,8 @@ import { AudioService } from '@app/services/audio.service';
 import { PlayComponent } from './pages/play.component';
 import { PlaylistListItemComponent } from './components/playlist-list-item.component';
 import { PlaylistListComponent } from './components/playlist-list.component';
+import { PlayerEffects } from '@app/store/player/player.effects';
+import { PlayerFacade } from '@app/store/player/player.facade';
 
 @NgModule({
   declarations: [
@@ -120,7 +122,7 @@ import { PlaylistListComponent } from './components/playlist-list.component';
     ContainerHomeComponent,
     ContainerPageComponent,
     SongListComponent,
-    TrackListComponent,
+    TrackListItemComponent,
     DurationPipe,
     LibraryAlbumsComponent,
     SelectComponent,
@@ -171,7 +173,7 @@ import { PlaylistListComponent } from './components/playlist-list.component';
         strictActionTypeUniqueness: false,
       },
     }),
-    EffectsModule.forRoot([LibraryEffects, ScannerEffects]),
+    EffectsModule.forRoot([LibraryEffects, ScannerEffects, PlayerEffects]),
     // StoreDevtoolsModule.instrument({ maxAge: 150, logOnly: true }),
   ],
   providers: [
@@ -182,6 +184,7 @@ import { PlaylistListComponent } from './components/playlist-list.component';
     ScannerFacade,
     UpdateService,
     AudioService,
+    PlayerFacade,
     {
       provide: MAT_SNACK_BAR_DEFAULT_OPTIONS,
       useValue: {

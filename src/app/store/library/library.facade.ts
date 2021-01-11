@@ -17,6 +17,7 @@ import { getCover, Picture } from '@app/models/picture.model';
 import { Song, SongWithCover$ } from '@app/models/song.model';
 import { Playlist } from '@app/models/playlist.model';
 import { hash } from '@app/utils/hash.util';
+import { reduceArray } from '@app/utils/reduce-array.util';
 
 @Injectable()
 export class LibraryFacade {
@@ -173,7 +174,7 @@ export class LibraryFacade {
 
   getPlaylistSongs(playlist: Playlist): Observable<SongWithCover$> {
     return this.storage
-      .getAllValues$<Song>(playlist.songs.reverse(), 'songs')
+      .getAllValues$<Song>([...playlist.songs].reverse(), 'songs')
       .pipe(
         map((song) => ({
           ...song,
@@ -236,16 +237,13 @@ export class LibraryFacade {
   getAlbumTitles = (album: Album): Observable<SongWithCover$> =>
     this.getSongs('album', album.name).pipe(map(({ value }) => value));
 
-  // this.storage.open$(['songs']).pipe(
-  //   concatMap((t) =>
-  //     this.storage.walk$<Song>(t, 'songs', 'album', album.name)
-  //   ),
-  //   map(({ value }) => value)
-  //   // filter(
-  //   //   (song) =>
-  //   //     song.albumartist === album.artist || song.artist === album.artist
-  //   // )
-  // );
+  getAlbumTracks = (album: Album): Observable<SongWithCover$[]> =>
+    this.getAlbumTitles(album).pipe(
+      reduceArray(),
+      map((songs) =>
+        songs.sort((s1, s2) => (s1.track.no || 0) - (s2.track.no || 0))
+      )
+    );
 
   getArtistAlbums(artist: Artist): Observable<AlbumWithCover$> {
     return this.storage.open$(['albums', 'pictures']).pipe(
@@ -398,7 +396,7 @@ export class LibraryFacade {
       .update$<Playlist>(
         'playlists',
         { likedOn: !!playlist.likedOn ? undefined : new Date() },
-        playlist.title
+        playlist.hash
       )
       .pipe(map(() => void 0));
   }

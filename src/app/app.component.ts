@@ -16,6 +16,8 @@ import {
   trigger,
 } from '@angular/animations';
 import { ScrollerService } from '@app/services/scroller.service';
+import { Observable } from 'rxjs';
+import { PlayerFacade } from '@app/store/player/player.facade';
 
 export const debugAnimation = (name: string) => (
   from: any,
@@ -81,7 +83,7 @@ export const slideInAnimation = trigger('routeAnimations', [
       <router-outlet #outlet="outlet"></router-outlet>
     </main>
     <aside>
-      <router-outlet name="player"></router-outlet>
+      <app-player *ngIf="showPlayer$ | async"></app-player>
     </aside>
     <router-outlet name="dialog"></router-outlet>
     <router-outlet name="help"></router-outlet>
@@ -124,7 +126,12 @@ export class AppComponent implements OnInit {
   @HostBinding('class.with-background')
   withBackground = false;
 
-  constructor(private scroller: ScrollerService) {}
+  showPlayer$: Observable<boolean> = this.player.isShown$();
+
+  constructor(
+    private scroller: ScrollerService,
+    private player: PlayerFacade
+  ) {}
 
   @HostListener('window:scroll', ['$event'])
   setScrolledTop(event: any) {

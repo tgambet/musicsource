@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import { LibraryFacade } from '@app/store/library/library.facade';
 import { map, shareReplay, startWith } from 'rxjs/operators';
 import { Icons } from '@app/utils/icons.util';
-import { scanArray } from '@app/utils/scanArray.util';
+import { scanArray } from '@app/utils/scan-array.util';
 
 @Component({
   selector: 'app-page-playlist-likes',

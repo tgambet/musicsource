@@ -86,9 +86,6 @@ export type PlayerState = 'playing' | 'loading' | 'stopped';
 })
 export class PlayerButtonComponent {
   @Input()
-  linkId = 'test';
-
-  @Input()
   shape: 'round' | 'square' = 'round';
 
   @Input()

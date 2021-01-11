@@ -5,6 +5,7 @@ import { Song, SongWithCover$ } from '@app/models/song.model';
 import { ActivatedRoute } from '@angular/router';
 import { concatMap, map, shareReplay, switchMap } from 'rxjs/operators';
 import { Icons } from '@app/utils/icons.util';
+import { PlayerFacade } from '@app/store/player/player.facade';
 
 export interface PagePlaylistData {
   playlist: Playlist;
@@ -60,6 +61,7 @@ export interface PagePlaylistData {
                 class="play-button"
                 color="accent"
                 *ngIf="songs.length > 0"
+                (click)="shufflePlay(songs)"
               >
                 <app-icon [path]="icons.shuffle"></app-icon>
                 <span>Shuffle</span>
@@ -123,7 +125,7 @@ export class PagePlaylistComponent implements OnInit {
 
   icons = Icons;
 
-  constructor(private route: ActivatedRoute) {}
+  constructor(private route: ActivatedRoute, private player: PlayerFacade) {}
 
   ngOnInit(): void {
     this.info$ = this.route.data.pipe(map((data) => data.info));
@@ -149,5 +151,12 @@ export class PagePlaylistComponent implements OnInit {
   getLength(songs: Song[]): number {
     const sec = songs.reduce((acc, song) => acc + (song.duration || 0), 0);
     return Math.floor(sec / 60);
+  }
+
+  shufflePlay(songs: SongWithCover$[]) {
+    this.player.setPlaylist(songs);
+    this.player.shuffle();
+    this.player.show();
+    this.player.play();
   }
 }

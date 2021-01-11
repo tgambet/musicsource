@@ -3,7 +3,7 @@ import { Icons } from '@app/utils/icons.util';
 import { Observable } from 'rxjs';
 import { Playlist } from '@app/models/playlist.model';
 import { LibraryFacade } from '@app/store/library/library.facade';
-import { reduceArray } from '@app/utils/reduceArray.util';
+import { reduceArray } from '@app/utils/reduce-array.util';
 
 @Component({
   selector: 'app-playlist-add',

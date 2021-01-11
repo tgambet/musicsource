@@ -63,7 +63,7 @@ import { Album } from '@app/models/album.model';
 import { SetRequired } from '@app/utils/types.util';
 import { Song } from '@app/models/song.model';
 import { hash } from '@app/utils/hash.util';
-import { reduceArray } from '@app/utils/reduceArray.util';
+import { reduceArray } from '@app/utils/reduce-array.util';
 
 @Injectable()
 export class ScannerEffects implements OnRunEffects {

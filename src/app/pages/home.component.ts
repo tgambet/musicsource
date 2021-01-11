@@ -4,7 +4,7 @@ import { take } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { AlbumWithCover$ } from '@app/models/album.model';
 import { hash } from '@app/utils/hash.util';
-import { scanArray } from '@app/utils/scanArray.util';
+import { scanArray } from '@app/utils/scan-array.util';
 
 @Component({
   selector: 'app-home',

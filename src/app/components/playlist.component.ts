@@ -17,6 +17,7 @@ import { concatMap, map, tap } from 'rxjs/operators';
 import { getCover } from '@app/models/picture.model';
 import { MenuItem } from '@app/components/menu.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { PlayerFacade } from '@app/store/player/player.facade';
 
 @Component({
   selector: 'app-playlist',
@@ -98,6 +99,7 @@ export class PlaylistComponent implements OnInit {
   constructor(
     private library: LibraryFacade,
     private snack: MatSnackBar,
+    private player: PlayerFacade,
     @Optional() private cdr: ChangeDetectorRef
   ) {}
 
@@ -124,11 +126,12 @@ export class PlaylistComponent implements OnInit {
   }
 
   play() {
-    this.state = 'loading';
-    setTimeout(() => {
-      this.state = 'playing';
-      this.cdr.markForCheck();
-    }, 1000);
+    // this.state = 'loading';
+    // setTimeout(() => {
+    //   this.state = 'playing';
+    //   this.cdr.markForCheck();
+    // }, 1000);
+    this.player.playPlaylist(this.playlist);
   }
 
   pause() {
@@ -166,10 +169,10 @@ export class PlaylistComponent implements OnInit {
         text: 'Shuffle play',
         click: () => alert('clicked'),
       },
-      {
-        icon: Icons.radio,
-        text: 'Start radio',
-      },
+      // {
+      //   icon: Icons.radio,
+      //   text: 'Start radio',
+      // },
       {
         icon: Icons.pencil,
         text: 'Edit playlist',

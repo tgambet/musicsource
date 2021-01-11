@@ -10,7 +10,6 @@ import { LibraryFacade } from '@app/store/library/library.facade';
 import { catchError, concatMap, map } from 'rxjs/operators';
 import { getCover } from '@app/models/picture.model';
 import { PageAlbumData } from '@app/pages/page-album.component';
-import { reduceArray } from '@app/utils/reduceArray.util';
 
 @Injectable({
   providedIn: 'root',
@@ -36,7 +35,7 @@ export class PageAlbumResolverService implements Resolve<PageAlbumData> {
         return EMPTY;
       }),
       concatMap((album) => {
-        const songs$ = this.library.getAlbumTitles(album).pipe(reduceArray());
+        const songs$ = this.library.getAlbumTracks(album);
         const cover$ = this.library
           .getPicture(album.pictureKey)
           .pipe(map((picture) => (picture ? getCover(picture) : undefined)));

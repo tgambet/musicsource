@@ -2,15 +2,15 @@ import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
 import { Album } from '@app/models/album.model';
-import { concatMap, map } from 'rxjs/operators';
-import { Song } from '@app/models/song.model';
+import { map } from 'rxjs/operators';
+import { Song, SongWithCover$ } from '@app/models/song.model';
 import { Icons } from '@app/utils/icons.util';
 import { hash } from '@app/utils/hash.util';
-import { PlayerService } from '@app/services/player.service';
+import { PlayerFacade } from '@app/store/player/player.facade';
 
 export type PageAlbumData = {
   album: Album;
-  songs: Song[];
+  songs: SongWithCover$[];
   cover: string | undefined;
 };
 
@@ -66,19 +66,41 @@ export type PageAlbumData = {
         </app-container-page>
       </header>
       <app-container-page>
-        <app-track-list [songs]="info.songs"></app-track-list>
+        <div class="track-list">
+          <app-track-list-item
+            [song]="song"
+            *ngFor="let song of info.songs; let i = index"
+            [trackNumber]="i + 1"
+            (playClicked)="play(info.album, i)"
+            [class.selected]="(currentSongsPath$ | async) === song.entryPath"
+          ></app-track-list-item>
+        </div>
       </app-container-page>
     </ng-container>
   `,
   styleUrls: ['../styles/page-header.component.scss'],
-  styles: [``],
+  styles: [
+    `
+      .track-list {
+        display: flex;
+        flex-direction: column;
+      }
+      app-track-list-item.selected {
+        background-color: rgba(255, 255, 255, 0.1);
+      }
+    `,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PageAlbumComponent implements OnInit {
   icons = Icons;
   info$!: Observable<PageAlbumData>;
 
-  constructor(private route: ActivatedRoute, private player: PlayerService) {}
+  currentSongsPath$ = this.player
+    .getCurrentSong$()
+    .pipe(map((song) => song?.entryPath));
+
+  constructor(private route: ActivatedRoute, private player: PlayerFacade) {}
 
   ngOnInit(): void {
     this.info$ = this.route.data.pipe(map((data) => data.info));
@@ -93,10 +115,7 @@ export class PageAlbumComponent implements OnInit {
     return hash(albumArtist);
   }
 
-  play(album: Album) {
-    this.player
-      .playAlbum(album)
-      .pipe(concatMap(() => this.player.resume()))
-      .subscribe();
+  play(album: Album, index = 0) {
+    this.player.playAlbum(album, index);
   }
 }

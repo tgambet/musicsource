@@ -27,8 +27,6 @@ export class AudioService {
   private objectUrl!: string;
 
   constructor(@Inject(DOCUMENT) document: Document) {
-    this.playing$.next(false);
-
     this.initialize()
       .pipe(
         tapError((e) => console.log(e)),
@@ -49,7 +47,7 @@ export class AudioService {
       .subscribe();
   }
 
-  play(file: File): Observable<void> {
+  setSrc(file: File): Observable<void> {
     if (!this.isInitialized) {
       console.warn('AudioService not initialized!');
       return EMPTY;
@@ -60,8 +58,6 @@ export class AudioService {
         this.objectUrl = URL.createObjectURL(file);
         this.audio.src = this.objectUrl;
       })
-      // tap(() => (this.audio.srcObject = file)),
-      // concatMap(() => this.audio.play())
     );
   }
 
@@ -73,11 +69,9 @@ export class AudioService {
     this.audio.pause();
   }
 
-  async resume(file?: File) {
+  async resume() {
     if (this.audio.src) {
       await this.audio.play();
-    } else if (file) {
-      await this.play(file).toPromise();
     }
   }
 

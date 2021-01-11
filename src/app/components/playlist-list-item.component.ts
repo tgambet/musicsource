@@ -20,7 +20,6 @@ import { MatMenuTrigger } from '@angular/material/menu';
         size="small"
         shape="square"
         (playClicked)="playClicked.emit()"
-        (pauseClicked)="playClicked.emit()"
       ></app-player-button>
     </div>
     <div class="meta">

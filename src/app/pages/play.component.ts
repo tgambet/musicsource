@@ -6,10 +6,11 @@ import {
   ViewChild,
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { PlayerService } from '@app/services/player.service';
 import { hash } from '@app/utils/hash.util';
 import { Icons } from '@app/utils/icons.util';
 import { PlaylistListComponent } from '@app/components/playlist-list.component';
+import { PlayerFacade } from '@app/store/player/player.facade';
+import { take, tap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-play',
@@ -30,6 +31,7 @@ import { PlaylistListComponent } from '@app/components/playlist-list.component';
         *ngIf="playlist$ | async as playlist"
         [playlist]="playlist"
         (playClicked)="play($event)"
+        [currentSong]="currentSong$ | async"
       ></app-playlist-list>
     </div>
   `,
@@ -79,16 +81,16 @@ export class PlayComponent implements OnInit {
   @ViewChild('playlistList')
   playlistList!: PlaylistListComponent;
 
-  currentSong$ = this.player.currentSong$;
+  currentSong$ = this.player.getCurrentSong$();
 
-  playlist$ = this.player.songs$;
+  playlist$ = this.player.getPlaylist$();
 
   icons = Icons;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private player: PlayerService
+    private player: PlayerFacade
   ) {}
 
   @HostListener('click')
@@ -97,17 +99,24 @@ export class PlayComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    if (this.route.snapshot.parent?.children[1]?.outlet !== 'player') {
-      this.router.navigate(['/', 'home']);
-    }
+    this.playlist$
+      .pipe(
+        take(1),
+        tap((playlist) => {
+          if (playlist.length === 0) {
+            this.router.navigate(['/', 'library']);
+          }
+        })
+      )
+      .subscribe();
   }
 
   getHash(artist: string) {
     return hash(artist);
   }
 
-  async play(index: number) {
-    await this.player.playIndex(index).toPromise();
-    await this.player.resume();
+  play(index: number) {
+    this.player.setCurrentIndex(index);
+    this.player.play();
   }
 }
