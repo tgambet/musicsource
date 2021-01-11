@@ -118,14 +118,4 @@ export class PageAlbumComponent implements OnInit {
   play(album: Album, index = 0) {
     this.player.playAlbum(album, index);
   }
-
-  /*
-
-  [routerLink]="[
-                '/',
-                { outlets: { player: ['album', info.album.hash] } }
-              ]"
-              [replaceUrl]="true"
-              [skipLocationChange]="true"
-   */
 }

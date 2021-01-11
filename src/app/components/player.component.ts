@@ -60,11 +60,6 @@ export interface PlayerData {
       >
         <app-icon [path]="icons.skipPrevious"></app-icon>
       </button>
-      <!--<ng-template #prevDisabled>
-        <button mat-icon-button [disabled]="true" color="accent">
-          <app-icon [path]="icons.skipPrevious"></app-icon>
-        </button>
-      </ng-template>-->
       <button
         mat-icon-button
         [disableRipple]="true"
@@ -77,16 +72,6 @@ export interface PlayerData {
           [size]="40"
         ></app-icon>
       </button>
-      <!--      <ng-template #disabledPlay>-->
-      <!--        <button-->
-      <!--          mat-icon-button-->
-      <!--          [disableRipple]="false"-->
-      <!--          color="accent"-->
-      <!--          (click)="playCurrent()"-->
-      <!--        >-->
-      <!--          <app-icon [path]="icons.play" [size]="40"></app-icon>-->
-      <!--        </button>-->
-      <!--      </ng-template>-->
       <button
         mat-icon-button
         [disableRipple]="true"
@@ -96,11 +81,6 @@ export interface PlayerData {
       >
         <app-icon [path]="icons.skipNext"></app-icon>
       </button>
-      <!--      <ng-template #nextDisabled>
-        <button mat-icon-button [disabled]="true" color="accent">
-          <app-icon [path]="icons.skipNext"></app-icon>
-        </button>
-      </ng-template>-->
       <span class="time">
         {{ value$ | async | duration }} / {{ max$ | async | duration }}
       </span>
@@ -300,24 +280,9 @@ export class PlayerComponent implements OnInit, OnDestroy {
       .getDuration$()
       .pipe(map((duration) => duration === 0));
 
-    //   concat(
-    //   of(true),
-    //   this.player.getDuration$().pipe(take(1), mapTo(false))
-    // );
-
     this.currentSong$ = this.player
       .getCurrentSong$()
       .pipe(filter((song): song is SongWithCover$ => !!song));
-
-    // const data$ = this.route.data
-    //   .pipe(
-    //     tap(({ info }) =>
-    //       this.player.setPlaylist(info.playlist, info.currentIndex)
-    //     )
-    //   )
-    //   .subscribe();
-    //
-    // this.subscription.add(data$);
   }
 
   ngOnDestroy(): void {
@@ -328,6 +293,10 @@ export class PlayerComponent implements OnInit, OnDestroy {
     if (n.value) {
       this.player.seek(n.value);
     }
+  }
+
+  play() {
+    this.player.play();
   }
 
   pause() {
@@ -342,8 +311,8 @@ export class PlayerComponent implements OnInit, OnDestroy {
     this.player.setPrevIndex();
   }
 
-  play() {
-    this.player.play();
+  shuffle() {
+    this.player.shuffle();
   }
 
   async toggleMenu(): Promise<void | boolean> {
@@ -354,9 +323,5 @@ export class PlayerComponent implements OnInit, OnDestroy {
       return await this.router.navigate(['/', 'library']);
     }
     return await this.router.navigate(['/', 'play']);
-  }
-
-  shuffle() {
-    this.player.shuffle();
   }
 }

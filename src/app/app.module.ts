@@ -88,7 +88,6 @@ import { PlaylistListItemComponent } from './components/playlist-list-item.compo
 import { PlaylistListComponent } from './components/playlist-list.component';
 import { PlayerEffects } from '@app/store/player/player.effects';
 import { PlayerFacade } from '@app/store/player/player.facade';
-import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 
 @NgModule({
   declarations: [
@@ -175,7 +174,7 @@ import { StoreDevtoolsModule } from '@ngrx/store-devtools';
       },
     }),
     EffectsModule.forRoot([LibraryEffects, ScannerEffects, PlayerEffects]),
-    StoreDevtoolsModule.instrument({ maxAge: 150, logOnly: true }),
+    // StoreDevtoolsModule.instrument({ maxAge: 150, logOnly: true }),
   ],
   providers: [
     FileService,

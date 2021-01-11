@@ -237,12 +237,6 @@ export class LibraryFacade {
   getAlbumTitles = (album: Album): Observable<SongWithCover$> =>
     this.getSongs('album', album.name).pipe(map(({ value }) => value));
 
-  // getAlbumTitlesByHash = (h: string): Observable<SongWithCover$> =>
-  //   this.getAlbumByHash(h).pipe(
-  //     concatMap((album) => (album ? of(album) : throwError('Not found'))),
-  //     concatMap((album) => this.getAlbumTitles(album))
-  //   );
-
   getAlbumTracks = (album: Album): Observable<SongWithCover$[]> =>
     this.getAlbumTitles(album).pipe(
       reduceArray(),
@@ -250,23 +244,6 @@ export class LibraryFacade {
         songs.sort((s1, s2) => (s1.track.no || 0) - (s2.track.no || 0))
       )
     );
-
-  // getAlbumTracksByHash = (h: string): Observable<SongWithCover$[]> =>
-  //   this.getAlbumByHash(h).pipe(
-  //     concatMap((album) => (album ? of(album) : throwError('Not found'))),
-  //     concatMap((album) => this.getAlbumTracks(album))
-  //   );
-
-  // this.storage.open$(['songs']).pipe(
-  //   concatMap((t) =>
-  //     this.storage.walk$<Song>(t, 'songs', 'album', album.name)
-  //   ),
-  //   map(({ value }) => value)
-  //   // filter(
-  //   //   (song) =>
-  //   //     song.albumartist === album.artist || song.artist === album.artist
-  //   // )
-  // );
 
   getArtistAlbums(artist: Artist): Observable<AlbumWithCover$> {
     return this.storage.open$(['albums', 'pictures']).pipe(

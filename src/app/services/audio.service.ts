@@ -58,8 +58,6 @@ export class AudioService {
         this.objectUrl = URL.createObjectURL(file);
         this.audio.src = this.objectUrl;
       })
-      // tap(() => (this.audio.srcObject = file)),
-      // concatMap(() => this.audio.play())
     );
   }
 
@@ -74,9 +72,7 @@ export class AudioService {
   async resume() {
     if (this.audio.src) {
       await this.audio.play();
-    } /*else if (file) {
-      await this.setSrc(file).toPromise();
-    }*/
+    }
   }
 
   private initialize(): Observable<{

@@ -10,6 +10,7 @@ import { hash } from '@app/utils/hash.util';
 import { Icons } from '@app/utils/icons.util';
 import { PlaylistListComponent } from '@app/components/playlist-list.component';
 import { PlayerFacade } from '@app/store/player/player.facade';
+import { take, tap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-play',
@@ -98,9 +99,16 @@ export class PlayComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // if (this.route.snapshot.parent?.children[1]?.outlet !== 'player') {
-    //   this.router.navigate(['/', 'home']);
-    // }
+    this.playlist$
+      .pipe(
+        take(1),
+        tap((playlist) => {
+          if (playlist.length === 0) {
+            this.router.navigate(['/', 'library']);
+          }
+        })
+      )
+      .subscribe();
   }
 
   getHash(artist: string) {
