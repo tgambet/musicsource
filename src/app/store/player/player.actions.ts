@@ -1,18 +1,17 @@
 import { createAction, props } from '@ngrx/store';
 import { SongWithCover$ } from '@app/models/song.model';
-import { Album } from '@app/models/album.model';
-import { Playlist } from '@app/models/playlist.model';
 
 export const show = createAction('player/show');
+export const hide = createAction('player/hide');
 
 export const setPlaylist = createAction(
   'player/set-playlist',
   props<{ playlist: SongWithCover$[]; currentIndex: number }>()
 );
 
-export const setNextSong = createAction(
-  'player/set-next-song',
-  props<{ song: SongWithCover$ }>()
+export const addToPlaylist = createAction(
+  'player/add-to-playlist',
+  props<{ playlist: SongWithCover$[]; next: boolean }>()
 );
 
 export const setCurrentIndex = createAction(
@@ -34,16 +33,6 @@ export const setPlaying = createAction(
 export const setDuration = createAction(
   'player/set-duration',
   props<{ duration: number }>()
-);
-
-export const playAlbum = createAction(
-  'player/play-album',
-  props<{ album: Album; index: number }>()
-);
-
-export const playPlaylist = createAction(
-  'player/play-playlist',
-  props<{ playlist: Playlist; index: number }>()
 );
 
 export const shuffle = createAction('player/shuffle');

@@ -15,7 +15,7 @@ export const selectPlaylist = createSelector(
 
 export const selectCurrentIndex = createSelector(
   selectPlayerState,
-  (state) => state.currentIndex || 0
+  (state) => state.currentIndex
 );
 
 export const selectCurrentSong = createSelector(

@@ -7,6 +7,7 @@ import { Song, SongWithCover$ } from '@app/models/song.model';
 import { Icons } from '@app/utils/icons.util';
 import { hash } from '@app/utils/hash.util';
 import { PlayerFacade } from '@app/store/player/player.facade';
+import { MenuItem } from '@app/components/menu.component';
 
 export type PageAlbumData = {
   album: Album;
@@ -53,7 +54,7 @@ export type PageAlbumData = {
             </div>
           </div>
           <div class="actions">
-            <button mat-raised-button color="accent" (click)="play(info.album)">
+            <button mat-raised-button color="accent" (click)="play(info.songs)">
               <app-icon [path]="icons.play"></app-icon>
               <span>Play</span>
             </button>
@@ -61,7 +62,10 @@ export type PageAlbumData = {
               <app-icon [path]="icons.heartOutline"></app-icon>
               <span>Add to your likes</span>
             </button>
-            <app-menu [disableRipple]="true"></app-menu>
+            <app-menu
+              [disableRipple]="true"
+              [menuItems]="menuItems$ | async"
+            ></app-menu>
           </div>
         </app-container-page>
       </header>
@@ -71,7 +75,7 @@ export type PageAlbumData = {
             [song]="song"
             *ngFor="let song of info.songs; let i = index"
             [trackNumber]="i + 1"
-            (playClicked)="play(info.album, i)"
+            (playClicked)="play(info.songs, i)"
             [class.selected]="(currentSongsPath$ | async) === song.entryPath"
           ></app-track-list-item>
         </div>
@@ -100,10 +104,49 @@ export class PageAlbumComponent implements OnInit {
     .getCurrentSong$()
     .pipe(map((song) => song?.entryPath));
 
+  menuItems$!: Observable<MenuItem[]>;
+
   constructor(private route: ActivatedRoute, private player: PlayerFacade) {}
 
   ngOnInit(): void {
     this.info$ = this.route.data.pipe(map((data) => data.info));
+    this.menuItems$ = this.info$.pipe(
+      map((info) => this.getMenuItem(info.songs))
+    );
+  }
+
+  getMenuItem(songs: SongWithCover$[]): MenuItem[] {
+    return [
+      {
+        text: 'Shuffle play',
+        icon: this.icons.shuffle,
+        click: () => {
+          this.player.setPlaying(true);
+          this.player.setPlaylist(songs);
+          this.player.shuffle();
+          this.player.show();
+        },
+      },
+      {
+        text: 'Play next',
+        icon: this.icons.playlistPlay,
+        click: () => {
+          this.player.setPlaying(true);
+          this.player.addToPlaylist(songs, true);
+          this.player.show();
+        },
+      },
+      {
+        text: 'Add to queue',
+        icon: this.icons.playlistMusic,
+        click: () => {
+          this.player.setPlaying(true);
+          this.player.addToPlaylist(songs);
+          this.player.show();
+        },
+      },
+      { text: 'Add to playlist', icon: this.icons.playlistPlus },
+    ];
   }
 
   getLength(songs: Song[]): number {
@@ -115,7 +158,9 @@ export class PageAlbumComponent implements OnInit {
     return hash(albumArtist);
   }
 
-  play(album: Album, index = 0) {
-    this.player.playAlbum(album, index);
+  play(songs: SongWithCover$[], index = 0) {
+    this.player.setPlaying(true);
+    this.player.setPlaylist(songs, index);
+    this.player.show();
   }
 }

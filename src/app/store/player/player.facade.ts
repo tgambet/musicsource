@@ -13,21 +13,19 @@ import {
 import { Observable } from 'rxjs';
 import { SongWithCover$ } from '@app/models/song.model';
 import {
+  addToPlaylist,
+  hide,
   pause,
   play,
-  playAlbum,
-  playPlaylist,
   setCurrentIndex,
   setNextIndex,
-  setNextSong,
+  setPlaying,
   setPlaylist,
   setPrevIndex,
   show,
   shuffle,
 } from '@app/store/player/player.actions';
 import { AudioService } from '@app/services/audio.service';
-import { Album } from '@app/models/album.model';
-import { Playlist } from '@app/models/playlist.model';
 
 @Injectable()
 export class PlayerFacade {
@@ -77,8 +75,8 @@ export class PlayerFacade {
     this.store.dispatch(setPlaylist({ playlist, currentIndex }));
   }
 
-  setNextSong(song: SongWithCover$): void {
-    this.store.dispatch(setNextSong({ song }));
+  addToPlaylist(playlist: SongWithCover$[], next = false): void {
+    this.store.dispatch(addToPlaylist({ playlist, next }));
   }
 
   setCurrentIndex(index: number): void {
@@ -93,6 +91,10 @@ export class PlayerFacade {
     this.store.dispatch(setPrevIndex());
   }
 
+  setPlaying(playing: boolean): void {
+    this.store.dispatch(setPlaying({ playing }));
+  }
+
   play(): void {
     this.store.dispatch(play());
   }
@@ -105,12 +107,9 @@ export class PlayerFacade {
     this.store.dispatch(show());
   }
 
-  playAlbum(album: Album, index = 0): void {
-    this.store.dispatch(playAlbum({ album, index }));
-  }
-
-  playPlaylist(playlist: Playlist, index = 0): void {
-    this.store.dispatch(playPlaylist({ playlist, index }));
+  hide(): void {
+    this.store.dispatch(setPlaylist({ playlist: [], currentIndex: 0 }));
+    this.store.dispatch(hide());
   }
 
   shuffle() {

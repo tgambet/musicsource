@@ -154,9 +154,9 @@ export class PagePlaylistComponent implements OnInit {
   }
 
   shufflePlay(songs: SongWithCover$[]) {
+    this.player.setPlaying(true);
     this.player.setPlaylist(songs);
     this.player.shuffle();
     this.player.show();
-    this.player.play();
   }
 }

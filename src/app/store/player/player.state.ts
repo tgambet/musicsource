@@ -3,7 +3,7 @@ import { SongWithCover$ } from '@app/models/song.model';
 export interface PlayerState {
   show: boolean;
   playlist: SongWithCover$[];
-  currentIndex?: number;
+  currentIndex: number;
   playing: boolean;
   duration?: number;
 }
@@ -11,7 +11,7 @@ export interface PlayerState {
 export const initialState: PlayerState = {
   show: false,
   playlist: [],
-  currentIndex: undefined,
+  currentIndex: 0,
   playing: false,
   duration: undefined,
 };

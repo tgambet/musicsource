@@ -18,6 +18,7 @@ import { getCover } from '@app/models/picture.model';
 import { MenuItem } from '@app/components/menu.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { PlayerFacade } from '@app/store/player/player.facade';
+import { reduceArray } from '@app/utils/reduce-array.util';
 
 @Component({
   selector: 'app-playlist',
@@ -131,7 +132,17 @@ export class PlaylistComponent implements OnInit {
     //   this.state = 'playing';
     //   this.cdr.markForCheck();
     // }, 1000);
-    this.player.playPlaylist(this.playlist);
+    this.library
+      .getPlaylistSongs(this.playlist)
+      .pipe(
+        reduceArray(),
+        tap((songs) => {
+          this.player.setPlaying(true);
+          this.player.setPlaylist(songs, 0);
+          this.player.show();
+        })
+      )
+      .subscribe();
   }
 
   pause() {
