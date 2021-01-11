@@ -6,8 +6,9 @@ import {
   ofType,
   OnRunEffects,
 } from '@ngrx/effects';
-import { concat, Observable, of } from 'rxjs';
+import { concat, EMPTY, Observable, of } from 'rxjs';
 import {
+  pause,
   play,
   playAlbum,
   playPlaylist,
@@ -16,18 +17,63 @@ import {
   setPlaylist,
   show,
 } from '@app/store/player/player.actions';
-import { map, switchMap } from 'rxjs/operators';
+import { concatMap, filter, map, switchMap, tap } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { AudioService } from '@app/services/audio.service';
 import { PlayerFacade } from '@app/store/player/player.facade';
 import { LibraryFacade } from '@app/store/library/library.facade';
 import { reduceArray } from '@app/utils/reduce-array.util';
+import { SongWithCover$ } from '@app/models/song.model';
+import { FileEntry } from '@app/models/entry.model';
 
 @Injectable()
 export class PlayerEffects implements OnRunEffects {
-  // a$ = createEffect(() => this.actions$.pipe(ofType(play), switchMap()));
+  // https://bugs.chromium.org/p/chromium/issues/detail?id=1146886&q=component%3ABlink%3EStorage%3EFileSystem&can=2
+  handle?: any;
 
-  // b$ = createEffect(() => )
+  setSrc$ = createEffect(
+    () =>
+      this.player.getCurrentSong$().pipe(
+        filter((song): song is SongWithCover$ => !!song),
+        switchMap((song) =>
+          this.library.getEntry(song.entryPath).pipe(
+            filter((entry): entry is FileEntry => !!entry),
+            tap((entry) => (this.handle = entry.handle)),
+            concatMap((entry) =>
+              this.library.requestPermission(entry.handle).pipe(
+                concatMap(() => entry.handle.getFile()),
+                concatMap((file) => this.audio.setSrc(file))
+              )
+            ),
+            concatMap(() => this.player.getPlaying$()),
+            concatMap((playing) => (playing ? this.audio.resume() : EMPTY))
+          )
+        )
+      ),
+    { dispatch: false }
+  );
+
+  play$ = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(play),
+        tap(() => this.audio.resume())
+      ),
+    {
+      dispatch: false,
+    }
+  );
+
+  pause$ = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(pause),
+        tap(() => this.audio.pause())
+      ),
+    {
+      dispatch: false,
+    }
+  );
 
   playing$ = createEffect(() =>
     this.audio.playing$.pipe(map((playing) => setPlaying({ playing })))
@@ -36,21 +82,6 @@ export class PlayerEffects implements OnRunEffects {
   duration$ = createEffect(() =>
     this.audio.duration$.pipe(map((duration) => setDuration({ duration })))
   );
-
-  // routing$ = createEffect(
-  //   () =>
-  //     this.router.events.pipe(
-  //       filter((e): e is ActivationStart => e instanceof ActivationStart),
-  //       filter((e) => e.snapshot.outlet === 'player'),
-  //       tap((e) => {
-  //         const typ = e.snapshot.url[0]?.path;
-  //         const id = e.snapshot.url[1]?.path;
-  //         const t = e.snapshot.url[1]?.parameterMap.get('t') || '1';
-  //         console.log(t);
-  //       })
-  //     ),
-  //   { dispatch: false }
-  // );
 
   playAlbum$ = createEffect(() =>
     this.actions$.pipe(
@@ -63,7 +94,7 @@ export class PlayerEffects implements OnRunEffects {
               map((playlist) => setPlaylist({ playlist, currentIndex: index }))
             ),
           of(show()),
-          of(play())
+          of(setPlaying({ playing: true }))
         )
       )
     )
@@ -86,36 +117,6 @@ export class PlayerEffects implements OnRunEffects {
       )
     )
   );
-
-  // playlist$ = createEffect(() =>
-  //   this.router.events.pipe(
-  //     filter((e): e is ActivationStart => e instanceof ActivationStart),
-  //     filter((e) => e.snapshot.outlet === 'player'),
-  //     concatMap((e) => {
-  //       const typ = e.snapshot.url[0]?.path;
-  //       const id = e.snapshot.url[1]?.path;
-  //       const t = e.snapshot.url[1]?.parameterMap.get('t') || '1';
-  //
-  //       if (!typ || !id) {
-  //         this.router.navigate(['/library']);
-  //         return EMPTY;
-  //       }
-  //
-  //       switch (typ) {
-  //         case 'album':
-  //           return this.library.getAlbumTracksByHash(id).pipe(
-  //             map((playlist) =>
-  //               setPlaylist({ playlist, currentIndex: +t - 1 })
-  //             ),
-  //             tapError(() => this.router.navigate(['/home'])),
-  //             catchError(() => EMPTY)
-  //           );
-  //         default:
-  //           return EMPTY;
-  //       }
-  //     })
-  //   )
-  // );
 
   constructor(
     private actions$: Actions,

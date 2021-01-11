@@ -170,7 +170,7 @@ export class AppRoutingModule {
           const anchor = e.anchor;
           setTimeout(() => viewportScroller.scrollToAnchor(anchor));
         } else {
-          const a = [/library.+#top/, /\/play\(/];
+          const a = [/library.+#top/, /\/play$/];
           // forward navigation
           if (!a.find((l) => l.test(e.routerEvent.url))) {
             viewportScroller.scrollToPosition([0, 0]);

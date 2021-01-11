@@ -335,21 +335,10 @@ export class PlayerComponent implements OnInit, OnDestroy {
   }
 
   playNextSong() {
-    // const playing = await this.player.getPlaying$().pipe(take(1)).toPromise();
-    // await this.player.playNextSong().toPromise();
-    // if (playing) {
-    //   await this.player.resume();
-    // }
     this.player.setNextIndex();
-    // this.playerF.play();
   }
 
   playPreviousSong() {
-    // const playing = await this.player.getPlaying$().pipe(take(1)).toPromise();
-    // await this.player.playPreviousSong().toPromise();
-    // if (playing) {
-    //   await this.player.resume();
-    // }
     this.player.setPrevIndex();
   }
 
