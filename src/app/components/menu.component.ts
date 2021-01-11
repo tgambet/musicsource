@@ -83,7 +83,7 @@ import { Icons } from '../utils/icons.util';
 })
 export class MenuComponent {
   @Input() triggerIcon = Icons.dotsVertical;
-  @Input() menuItems!: MenuItem[];
+  @Input() menuItems!: MenuItem[] | null;
   @Input() disableRipple = false;
   @Input() rippleColor = 'rgba(255, 255, 255, 0.1)';
   icons = Icons;
