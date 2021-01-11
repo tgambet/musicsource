@@ -21,6 +21,7 @@ export class AudioService {
   timeUpdate$: Subject<number> = new ReplaySubject(1);
   duration$: Subject<number> = new ReplaySubject(1);
   playing$: Subject<boolean> = new ReplaySubject(1);
+  ended$: Subject<void> = new Subject();
 
   private context!: AudioContext;
   private audio!: HTMLMediaElement;
@@ -94,6 +95,7 @@ export class AudioService {
         );
         audio.addEventListener('pause', () => this.playing$.next(false));
         audio.addEventListener('play', () => this.playing$.next(true));
+        audio.addEventListener('ended', () => this.ended$.next());
         const source = context.createMediaElementSource(audio);
         return of({ context, source /*, gain*/, audio });
         //})

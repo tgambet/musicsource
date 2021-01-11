@@ -13,11 +13,12 @@ import {
   playAlbum,
   playPlaylist,
   setDuration,
+  setNextIndex,
   setPlaying,
   setPlaylist,
   show,
 } from '@app/store/player/player.actions';
-import { concatMap, filter, map, switchMap, tap } from 'rxjs/operators';
+import { concatMap, filter, map, switchMap, take, tap } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { AudioService } from '@app/services/audio.service';
 import { PlayerFacade } from '@app/store/player/player.facade';
@@ -26,6 +27,7 @@ import { reduceArray } from '@app/utils/reduce-array.util';
 import { SongWithCover$ } from '@app/models/song.model';
 import { FileEntry } from '@app/models/entry.model';
 
+// noinspection JSUnusedGlobalSymbols
 @Injectable()
 export class PlayerEffects implements OnRunEffects {
   // https://bugs.chromium.org/p/chromium/issues/detail?id=1146886&q=component%3ABlink%3EStorage%3EFileSystem&can=2
@@ -51,6 +53,19 @@ export class PlayerEffects implements OnRunEffects {
         )
       ),
     { dispatch: false }
+  );
+
+  nextSong$ = createEffect(() =>
+    this.audio.ended$.pipe(
+      switchMap(() =>
+        this.player.hasNextSong$().pipe(
+          take(1),
+          concatMap((hasNextSong) =>
+            hasNextSong ? of(setNextIndex(), play()) : EMPTY
+          )
+        )
+      )
+    )
   );
 
   play$ = createEffect(
