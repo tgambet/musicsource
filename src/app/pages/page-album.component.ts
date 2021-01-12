@@ -1,13 +1,23 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  HostListener,
+  OnInit,
+} from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Observable } from 'rxjs';
+import { EMPTY, Observable } from 'rxjs';
 import { Album } from '@app/models/album.model';
-import { map } from 'rxjs/operators';
+import { concatMap, map, tap } from 'rxjs/operators';
 import { Song, SongWithCover$ } from '@app/models/song.model';
 import { Icons } from '@app/utils/icons.util';
 import { hash } from '@app/utils/hash.util';
 import { PlayerFacade } from '@app/store/player/player.facade';
 import { MenuItem } from '@app/components/menu.component';
+import { MatMenuTrigger } from '@angular/material/menu';
+import { PlaylistAddComponent } from '@app/dialogs/playlist-add.component';
+import { LibraryFacade } from '@app/store/library/library.facade';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatDialog } from '@angular/material/dialog';
 
 export type PageAlbumData = {
   album: Album;
@@ -77,6 +87,8 @@ export type PageAlbumData = {
             [trackNumber]="i + 1"
             (playClicked)="play(info.songs, i)"
             [class.selected]="(currentSongsPath$ | async) === song.entryPath"
+            (menuOpened)="menuOpened($event)"
+            cdkMonitorSubtreeFocus
           ></app-track-list-item>
         </div>
       </app-container-page>
@@ -106,7 +118,35 @@ export class PageAlbumComponent implements OnInit {
 
   menuItems$!: Observable<MenuItem[]>;
 
-  constructor(private route: ActivatedRoute, private player: PlayerFacade) {}
+  trigger?: MatMenuTrigger;
+
+  constructor(
+    private route: ActivatedRoute,
+    private player: PlayerFacade,
+    private library: LibraryFacade,
+    private snack: MatSnackBar,
+    private dialog: MatDialog
+  ) {}
+
+  @HostListener('window:scroll')
+  @HostListener('click')
+  closeMenu() {
+    if (this.trigger) {
+      this.trigger.closeMenu();
+      this.trigger = undefined;
+    }
+  }
+
+  menuOpened(trigger: MatMenuTrigger) {
+    if (this.trigger && this.trigger !== trigger) {
+      this.trigger.closeMenu();
+    }
+    this.trigger = trigger;
+  }
+
+  trackBy(index: number, song: SongWithCover$): string {
+    return song.entryPath;
+  }
 
   ngOnInit(): void {
     this.info$ = this.route.data.pipe(map((data) => data.info));
@@ -131,7 +171,6 @@ export class PageAlbumComponent implements OnInit {
         text: 'Play next',
         icon: this.icons.playlistPlay,
         click: () => {
-          this.player.setPlaying(true);
           this.player.addToPlaylist(songs, true);
           this.player.show();
         },
@@ -140,12 +179,15 @@ export class PageAlbumComponent implements OnInit {
         text: 'Add to queue',
         icon: this.icons.playlistMusic,
         click: () => {
-          this.player.setPlaying(true);
           this.player.addToPlaylist(songs);
           this.player.show();
         },
       },
-      { text: 'Add to playlist', icon: this.icons.playlistPlus },
+      {
+        text: 'Add to playlist',
+        icon: this.icons.playlistPlus,
+        click: () => this.addAlbumToPlaylist(songs),
+      },
     ];
   }
 
@@ -162,5 +204,32 @@ export class PageAlbumComponent implements OnInit {
     this.player.setPlaying(true);
     this.player.setPlaylist(songs, index);
     this.player.show();
+  }
+
+  addAlbumToPlaylist(songs: Song[]) {
+    const ref = this.dialog.open(PlaylistAddComponent, {
+      width: '275px',
+      maxHeight: '80%',
+      height: 'auto',
+      panelClass: 'playlists-dialog',
+    });
+
+    ref
+      .afterClosed()
+      .pipe(
+        concatMap(
+          (result) =>
+            result === undefined
+              ? EMPTY
+              : result === true
+              ? EMPTY // Redirect to new playlist and add song
+              : this.library
+                  .addSongsToPlaylist([...songs].reverse(), result)
+                  .pipe(
+                    tap(() => this.snack.open(`Added to ${result}`, 'VIEW'))
+                  ) // TODO redirect to playlist
+        )
+      )
+      .subscribe();
   }
 }

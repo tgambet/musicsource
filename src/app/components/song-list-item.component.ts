@@ -66,10 +66,6 @@ import { PlaylistAddComponent } from '@app/dialogs/playlist-add.component';
     <mat-menu #menu="matMenu" [hasBackdrop]="false" [overlapTrigger]="false">
       <ng-template matMenuContent>
         <button mat-menu-item>
-          <app-icon [path]="icons.radio"></app-icon>
-          <span>Start radio</span>
-        </button>
-        <button mat-menu-item>
           <app-icon [path]="icons.playlistPlay"></app-icon>
           <span>Play next</span>
         </button>
@@ -212,7 +208,7 @@ export class SongListItemComponent implements OnInit {
               : result === true
               ? EMPTY // Redirect to new playlist
               : this.library
-                  .addSongToPlaylist(song, result)
+                  .addSongsToPlaylist([song], result)
                   .pipe(
                     tap(() => this.snack.open(`Added to ${result}`, 'VIEW'))
                   ) // TODO redirect to playlist
@@ -224,12 +220,11 @@ export class SongListItemComponent implements OnInit {
   toggleFavorite(song: Song) {
     this.library
       .toggleSongFavorite(song)
-      .pipe(tap(() => (song.likedOn = !!song.likedOn ? undefined : new Date())))
+      .pipe(tap((updated) => (song.likedOn = updated.likedOn)))
       .pipe(
         tap(() =>
           this.snack.open(
-            !!song.likedOn ? 'Added to your likes' : 'Removed from your likes',
-            undefined
+            !!song.likedOn ? 'Added to your likes' : 'Removed from your likes'
           )
         ),
         tap(() => this.cdr.markForCheck())

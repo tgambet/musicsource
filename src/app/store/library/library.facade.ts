@@ -319,14 +319,14 @@ export class LibraryFacade {
     );
   }
 
-  toggleSongFavorite(song: Song): Observable<void> {
-    return this.storage
-      .update$<Song>(
-        'songs',
-        { likedOn: !!song.likedOn ? undefined : new Date() },
-        song.entryPath
-      )
-      .pipe(map(() => void 0));
+  toggleSongFavorite(song: Song): Observable<Song> {
+    const update = { likedOn: !!song.likedOn ? undefined : new Date() };
+    return this.storage.update$<Song>('songs', update, song.entryPath).pipe(
+      map(() => ({
+        ...song,
+        ...update,
+      }))
+    );
   }
 
   toggleArtistFavorite(artist: Artist): Observable<void> {
@@ -401,15 +401,16 @@ export class LibraryFacade {
       .pipe(map(() => void 0));
   }
 
-  addSongToPlaylist(song: Song, title: string) {
+  addSongsToPlaylist(songs: Song[], title: string) {
     return this.storage.get$('playlists', title, 'title').pipe(
       filter((playlist): playlist is Playlist => !!playlist),
       concatMap((playlist) =>
         this.storage.update$(
           'playlists',
           {
-            songs: [...playlist.songs, song.entryPath],
-            pictureKey: playlist.pictureKey || song.pictureKey,
+            songs: [...playlist.songs, ...songs.map((song) => song.entryPath)],
+            pictureKey:
+              playlist.pictureKey || songs.find((song) => song.pictureKey),
           },
           playlist.hash
         )

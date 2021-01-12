@@ -47,10 +47,6 @@ export class SongListComponent {
   constructor() {}
 
   @HostListener('window:scroll')
-  update() {
-    this.closeMenu();
-  }
-
   @HostListener('click')
   closeMenu() {
     if (this.trigger) {
