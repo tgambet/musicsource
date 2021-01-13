@@ -1,5 +1,12 @@
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  Input,
+  Output,
+  EventEmitter,
+} from '@angular/core';
 import { Icons } from '../utils/icons.util';
+import { MatMenuTrigger } from '@angular/material/menu';
 
 @Component({
   selector: 'app-menu',
@@ -7,6 +14,9 @@ import { Icons } from '../utils/icons.util';
     <button
       class="trigger"
       [matMenuTriggerFor]="menu"
+      #trigger="matMenuTrigger"
+      (menuOpened)="menuOpened.emit(trigger)"
+      (click)="$event.stopPropagation()"
       aria-label="menu"
       title="Other actions"
       matRipple
@@ -16,7 +26,7 @@ import { Icons } from '../utils/icons.util';
     >
       <app-icon [path]="triggerIcon" [size]="24"></app-icon>
     </button>
-    <mat-menu #menu="matMenu" [hasBackdrop]="true">
+    <mat-menu #menu="matMenu" [hasBackdrop]="false">
       <ng-template matMenuContent>
         <ng-container *ngFor="let item of menuItems">
           <button
@@ -86,6 +96,7 @@ export class MenuComponent {
   @Input() menuItems!: MenuItem[] | null;
   @Input() disableRipple = false;
   @Input() rippleColor = 'rgba(255, 255, 255, 0.1)';
+  @Output() menuOpened = new EventEmitter<MatMenuTrigger>();
   icons = Icons;
 }
 

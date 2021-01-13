@@ -1,4 +1,9 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  HostListener,
+  OnInit,
+} from '@angular/core';
 import { LibraryFacade } from '@app/store/library/library.facade';
 import { Observable } from 'rxjs';
 import { AlbumWithCover$ } from '@app/models/album.model';
@@ -7,6 +12,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { SelectOption } from '@app/components/select.component';
 import { hash } from '@app/utils/hash.util';
 import { scanArray } from '@app/utils/scan-array.util';
+import { MatMenuTrigger } from '@angular/material/menu';
 
 @Component({
   selector: 'app-library-albums',
@@ -20,7 +26,11 @@ import { scanArray } from '@app/utils/scan-array.util';
           class="album"
           *ngFor="let album of albums$ | async; trackBy: trackBy"
         >
-          <app-album [album]="album" size="small"></app-album>
+          <app-album
+            [album]="album"
+            size="small"
+            (menuOpened)="menuOpened($event)"
+          ></app-album>
         </div>
       </div>
     </app-library-content>
@@ -58,11 +68,29 @@ export class LibraryAlbumsComponent implements OnInit {
   ];
   selectedSortOption: SelectOption = this.sortOptions[0];
 
+  trigger?: MatMenuTrigger;
+
   constructor(
     private library: LibraryFacade,
     private router: Router,
     private route: ActivatedRoute
   ) {}
+
+  @HostListener('window:scroll')
+  @HostListener('click')
+  closeMenu() {
+    if (this.trigger) {
+      this.trigger.closeMenu();
+      this.trigger = undefined;
+    }
+  }
+
+  menuOpened(trigger: MatMenuTrigger) {
+    if (this.trigger && this.trigger !== trigger) {
+      this.trigger.closeMenu();
+    }
+    this.trigger = trigger;
+  }
 
   ngOnInit(): void {
     const sort$ = this.route.queryParamMap.pipe(

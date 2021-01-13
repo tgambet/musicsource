@@ -8,6 +8,7 @@ import {
 import { PlayerState } from './player-button.component';
 import { Icons } from '../utils/icons.util';
 import { MenuItem } from './menu.component';
+import { MatMenuTrigger } from '@angular/material/menu';
 
 @Component({
   selector: 'app-cover',
@@ -25,6 +26,7 @@ import { MenuItem } from './menu.component';
       [triggerIcon]="menuTriggerIcon"
       [menuItems]="menuItems"
       rippleColor="rgba(0,0,0,0.2)"
+      (menuOpened)="menuOpened.emit($event)"
     >
     </app-menu>
     <a
@@ -134,4 +136,5 @@ export class CoverComponent {
   @Input() menuTriggerIcon = Icons.dotsVertical;
   @Output() playClicked = new EventEmitter<void>();
   @Output() pauseClicked = new EventEmitter<void>();
+  @Output() menuOpened = new EventEmitter<MatMenuTrigger>();
 }

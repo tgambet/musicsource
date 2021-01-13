@@ -1,14 +1,22 @@
 import {
-  Component,
   ChangeDetectionStrategy,
-  Input,
-  Optional,
   ChangeDetectorRef,
+  Component,
+  EventEmitter,
+  Input,
+  OnInit,
+  Output,
 } from '@angular/core';
 import { Icons } from '../utils/icons.util';
 import { PlayerState } from './player-button.component';
 import { AlbumWithCover$ } from '@app/models/album.model';
 import { hash } from '@app/utils/hash.util';
+import { MatMenuTrigger } from '@angular/material/menu';
+import { MenuItem } from '@app/components/menu.component';
+import { PlayerFacade } from '@app/store/player/player.facade';
+import { ComponentHelperService } from '@app/services/component-helper.service';
+import { LibraryFacade } from '@app/store/library/library.facade';
+import { concatMap, tap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-album',
@@ -20,6 +28,7 @@ import { hash } from '@app/utils/hash.util';
       [playerState]="state"
       (playClicked)="play()"
       (pauseClicked)="pause()"
+      (menuOpened)="menuOpened.emit($event)"
       tabindex="-1"
     >
       <img
@@ -66,53 +75,114 @@ import { hash } from '@app/utils/hash.util';
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AlbumComponent {
+export class AlbumComponent implements OnInit {
   @Input() album!: AlbumWithCover$;
   @Input() size: 'small' | 'large' = 'large';
+  @Output() menuOpened = new EventEmitter<MatMenuTrigger>();
   icons = Icons;
-  menuItems = [
-    {
-      icon: Icons.shuffle,
-      text: 'Shuffle play',
-      click: () => alert('clicked'),
-    },
-    {
-      icon: Icons.radio,
-      text: 'Start radio',
-    },
-    {
-      icon: Icons.playlistPlay,
-      text: 'Play next',
-      // click: () => (menuItems[0].icon = Icons.heartOutline),
-    },
-    {
-      icon: Icons.playlistMusic,
-      text: 'Add to queue',
-    },
-    {
-      icon: Icons.heartOutline,
-      text: 'Add to your likes',
-    },
-    {
-      icon: Icons.accountMusic,
-      text: 'Go to artist',
-    },
-  ];
+  menuItems!: MenuItem[];
   state: PlayerState = 'stopped';
 
-  constructor(@Optional() private cdr?: ChangeDetectorRef) {}
+  constructor(
+    private library: LibraryFacade,
+    private player: PlayerFacade,
+    private helper: ComponentHelperService,
+    private cdr: ChangeDetectorRef
+  ) {}
+
+  ngOnInit(): void {
+    this.menuItems = [
+      {
+        icon: Icons.shuffle,
+        text: 'Shuffle play',
+        click: () => {
+          this.library
+            .getAlbumTracks(this.album)
+            .pipe(
+              tap((tracks) => {
+                this.player.setPlaying(true);
+                this.player.setPlaylist(tracks);
+                this.player.shuffle();
+                this.player.show();
+              })
+            )
+            .subscribe();
+        },
+      },
+      {
+        icon: Icons.playlistPlay,
+        text: 'Play next',
+        click: () => {
+          this.library
+            .getAlbumTracks(this.album)
+            .pipe(
+              tap((tracks) => {
+                this.player.addToPlaylist(tracks, true);
+                this.player.show();
+              })
+            )
+            .subscribe();
+        },
+      },
+      {
+        icon: Icons.playlistMusic,
+        text: 'Add to queue',
+        click: () => {
+          this.library
+            .getAlbumTracks(this.album)
+            .pipe(
+              tap((tracks) => {
+                this.player.addToPlaylist(tracks);
+                this.player.show();
+              })
+            )
+            .subscribe();
+        },
+      },
+      {
+        icon: Icons.heartOutline,
+        text: 'Add to your likes',
+        click: () => {
+          this.helper
+            .toggleLikedAlbum(this.album)
+            .subscribe(() => this.cdr.markForCheck());
+        },
+      },
+      {
+        icon: Icons.playlistPlus,
+        text: 'Add to playlist',
+        click: () => {
+          this.library
+            .getAlbumTracks(this.album)
+            .pipe(concatMap((tracks) => this.helper.addSongsToPlaylist(tracks)))
+            .subscribe();
+        },
+      },
+      {
+        icon: Icons.accountMusic,
+        text: 'Go to artist',
+        routerLink: this.album.albumArtist
+          ? ['/', 'artist', this.getHash(this.album.albumArtist)]
+          : undefined,
+        disabled: !this.album.albumArtist,
+      },
+    ];
+  }
 
   play() {
-    this.state = 'loading';
-    setTimeout(() => {
-      this.state = 'playing';
-      this.cdr?.markForCheck();
-    }, 1000);
+    this.library
+      .getAlbumTracks(this.album)
+      .pipe(
+        tap((tracks) => {
+          this.player.setPlaying(true);
+          this.player.setPlaylist(tracks);
+          this.player.show();
+        })
+      )
+      .subscribe();
   }
 
-  pause() {
-    this.state = 'stopped';
-  }
+  pause() {}
 
   getHash(s: string): string {
     return hash(s);
