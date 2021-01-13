@@ -1,6 +1,5 @@
 import {
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
   EventEmitter,
   Input,
@@ -9,7 +8,7 @@ import {
 } from '@angular/core';
 import { Icons } from '../utils/icons.util';
 import { PlayerState } from './player-button.component';
-import { AlbumWithCover$ } from '@app/models/album.model';
+import { Album, AlbumWithCover$ } from '@app/models/album.model';
 import { hash } from '@app/utils/hash.util';
 import { MatMenuTrigger } from '@angular/material/menu';
 import { MenuItem } from '@app/components/menu.component';
@@ -79,6 +78,8 @@ export class AlbumComponent implements OnInit {
   @Input() album!: AlbumWithCover$;
   @Input() size: 'small' | 'large' = 'large';
   @Output() menuOpened = new EventEmitter<MatMenuTrigger>();
+  @Output() update = new EventEmitter<Album>();
+
   icons = Icons;
   menuItems!: MenuItem[];
   state: PlayerState = 'stopped';
@@ -86,11 +87,33 @@ export class AlbumComponent implements OnInit {
   constructor(
     private library: LibraryFacade,
     private player: PlayerFacade,
-    private helper: ComponentHelperService,
-    private cdr: ChangeDetectorRef
+    private helper: ComponentHelperService
   ) {}
 
   ngOnInit(): void {
+    this.updateMenu();
+  }
+
+  play() {
+    this.library
+      .getAlbumTracks(this.album)
+      .pipe(
+        tap((tracks) => {
+          this.player.setPlaying(true);
+          this.player.setPlaylist(tracks);
+          this.player.show();
+        })
+      )
+      .subscribe();
+  }
+
+  pause() {}
+
+  getHash(s: string): string {
+    return hash(s);
+  }
+
+  updateMenu() {
     this.menuItems = [
       {
         icon: Icons.shuffle,
@@ -140,12 +163,15 @@ export class AlbumComponent implements OnInit {
         },
       },
       {
-        icon: Icons.heartOutline,
-        text: 'Add to your likes',
+        icon: !!this.album.likedOn ? Icons.heart : Icons.heartOutline,
+        text: !!this.album.likedOn
+          ? 'Remove from your likes'
+          : 'Add to your likes',
         click: () => {
-          this.helper
-            .toggleLikedAlbum(this.album)
-            .subscribe(() => this.cdr.markForCheck());
+          this.helper.toggleLikedAlbum(this.album).subscribe(() => {
+            this.updateMenu();
+            this.update.next(this.album);
+          });
         },
       },
       {
@@ -167,24 +193,5 @@ export class AlbumComponent implements OnInit {
         disabled: !this.album.albumArtist,
       },
     ];
-  }
-
-  play() {
-    this.library
-      .getAlbumTracks(this.album)
-      .pipe(
-        tap((tracks) => {
-          this.player.setPlaying(true);
-          this.player.setPlaylist(tracks);
-          this.player.show();
-        })
-      )
-      .subscribe();
-  }
-
-  pause() {}
-
-  getHash(s: string): string {
-    return hash(s);
   }
 }

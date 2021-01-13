@@ -1,13 +1,14 @@
 import {
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   HostListener,
   OnInit,
 } from '@angular/core';
 import { LibraryFacade } from '@app/store/library/library.facade';
 import { Observable } from 'rxjs';
-import { AlbumWithCover$ } from '@app/models/album.model';
-import { map, switchMap } from 'rxjs/operators';
+import { Album, AlbumWithCover$ } from '@app/models/album.model';
+import { map, switchMap, tap } from 'rxjs/operators';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SelectOption } from '@app/components/select.component';
 import { hash } from '@app/utils/hash.util';
@@ -22,16 +23,16 @@ import { MatMenuTrigger } from '@angular/material/menu';
       [sortOptions]="sortOptions"
     >
       <div class="albums">
-        <div
-          class="album"
-          *ngFor="let album of albums$ | async; trackBy: trackBy"
-        >
-          <app-album
-            [album]="album"
-            size="small"
-            (menuOpened)="menuOpened($event)"
-          ></app-album>
-        </div>
+        <ng-container *ngFor="let album of albums$ | async; trackBy: trackBy">
+          <div class="album" *ngIf="!likes || !!album.likedOn">
+            <app-album
+              [album]="album"
+              size="small"
+              (menuOpened)="menuOpened($event)"
+              (update)="update()"
+            ></app-album>
+          </div>
+        </ng-container>
       </div>
     </app-library-content>
   `,
@@ -70,10 +71,13 @@ export class LibraryAlbumsComponent implements OnInit {
 
   trigger?: MatMenuTrigger;
 
+  likes?: boolean;
+
   constructor(
     private library: LibraryFacade,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private cdr: ChangeDetectorRef
   ) {}
 
   @HostListener('window:scroll')
@@ -102,15 +106,21 @@ export class LibraryAlbumsComponent implements OnInit {
         direction: ((params.get('dir') || 'desc') === 'asc'
           ? 'next'
           : 'prev') as IDBCursorDirection,
-      }))
+        likes: params.get('likes') === '1',
+      })),
+      tap((sort) => (this.likes = sort.likes))
     );
 
     this.albums$ = sort$.pipe(
-      switchMap((sort) =>
-        this.library
-          .getAlbums(sort.index, null, sort.direction)
-          .pipe(scanArray())
-      )
+      switchMap((sort) => {
+        const predicate = sort.likes
+          ? (album: Album) => !!album.likedOn
+          : undefined;
+
+        return this.library
+          .getAlbums(sort.index, null, sort.direction, predicate)
+          .pipe(scanArray());
+      })
     );
   }
 
@@ -118,5 +128,9 @@ export class LibraryAlbumsComponent implements OnInit {
 
   getHash(albumArtist: string) {
     return hash(albumArtist);
+  }
+
+  update() {
+    this.cdr.markForCheck();
   }
 }

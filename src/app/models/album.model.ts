@@ -9,6 +9,7 @@ export interface Album {
   year?: number;
   pictureKey?: IDBValidKey;
   lastModified: Date;
+  likedOn?: Date;
 }
 
 export type AlbumWithCover$ = Except<Album, 'pictureKey'> & {

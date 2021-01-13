@@ -35,6 +35,7 @@ export class StorageService {
       albums.createIndex('albumArtist', 'albumArtist');
       albums.createIndex('year', 'year');
       albums.createIndex('lastModified', 'lastModified');
+      albums.createIndex('likedOn', 'likedOn');
       // Artists
       const artists = db.createObjectStore('artists', { keyPath: 'name' });
       artists.createIndex('hash', 'hash');

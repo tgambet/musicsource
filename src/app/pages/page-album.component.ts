@@ -1,5 +1,6 @@
 import {
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   HostListener,
   OnInit,
@@ -73,9 +74,12 @@ export type PageAlbumData = {
               <app-icon [path]="icons.play"></app-icon>
               <span>Play</span>
             </button>
-            <button mat-stroked-button>
-              <app-icon [path]="icons.heartOutline"></app-icon>
-              <span>Add to your likes</span>
+            <button mat-stroked-button (click)="toggleLiked(info.album)">
+              <app-icon
+                [path]="!!info.album.likedOn ? icons.heart : icons.heartOutline"
+              ></app-icon>
+              <span *ngIf="!info.album.likedOn">Add to your likes</span>
+              <span *ngIf="!!info.album.likedOn">Remove from your likes</span>
             </button>
             <app-menu
               [disableRipple]="true"
@@ -134,7 +138,8 @@ export class PageAlbumComponent implements OnInit {
     private library: LibraryFacade,
     private snack: MatSnackBar,
     private dialog: MatDialog,
-    private helper: ComponentHelperService
+    private helper: ComponentHelperService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   @HostListener('window:scroll')
@@ -217,5 +222,11 @@ export class PageAlbumComponent implements OnInit {
 
   addAlbumToPlaylist(songs: Song[]) {
     this.helper.addSongsToPlaylist(songs).subscribe();
+  }
+
+  toggleLiked(album: Album) {
+    this.helper
+      .toggleLikedAlbum(album)
+      .subscribe(() => this.cdr.markForCheck());
   }
 }

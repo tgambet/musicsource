@@ -74,12 +74,20 @@ export class LibraryFacade {
   getAlbums(
     index?: string,
     query?: IDBValidKey | IDBKeyRange | null,
-    direction: IDBCursorDirection = 'next'
+    direction?: IDBCursorDirection,
+    predicate?: (_: Album) => boolean
   ): Observable<AlbumWithCover$> {
     return this.storage.open$(['albums', 'pictures']).pipe(
       concatMap((transaction) =>
         this.storage
-          .walk$<Album>(transaction, 'albums', index, query, direction)
+          .walk$<Album>(
+            transaction,
+            'albums',
+            index,
+            query,
+            direction || 'next',
+            predicate
+          )
           .pipe(
             map(({ value }) => value),
             map((album) => ({
@@ -321,6 +329,16 @@ export class LibraryFacade {
     return this.storage.update$<Song>('songs', update, song.entryPath).pipe(
       map(() => ({
         ...song,
+        ...update,
+      }))
+    );
+  }
+
+  toggleLikedAlbum(album: Album): Observable<Album> {
+    const update = { likedOn: !!album.likedOn ? undefined : new Date() };
+    return this.storage.update$<Album>('albums', update, album.name).pipe(
+      map(() => ({
+        ...album,
         ...update,
       }))
     );

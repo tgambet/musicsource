@@ -11,7 +11,7 @@ import { Router } from '@angular/router';
 import { reduceArray } from '@app/utils/reduce-array.util';
 import { shuffleArray } from '@app/utils/shuffle-array.util';
 import { PlayerFacade } from '@app/store/player/player.facade';
-import { AlbumWithCover$ } from '@app/models/album.model';
+import { Album } from '@app/models/album.model';
 
 @Injectable({
   providedIn: 'root',
@@ -33,6 +33,19 @@ export class ComponentHelperService {
         tap(() =>
           this.snack.open(
             !!song.likedOn ? 'Added to your likes' : 'Removed from your likes'
+          )
+        )
+      );
+  }
+
+  toggleLikedAlbum(album: Album): Observable<Album> {
+    return this.library
+      .toggleLikedAlbum(album)
+      .pipe(tap((updated) => (album.likedOn = updated.likedOn)))
+      .pipe(
+        tap(() =>
+          this.snack.open(
+            !!album.likedOn ? 'Added to your likes' : 'Removed from your likes'
           )
         )
       );
@@ -105,9 +118,5 @@ export class ComponentHelperService {
         this.player.show();
       })
     );
-  }
-
-  toggleLikedAlbum(album: AlbumWithCover$): Observable<AlbumWithCover$> {
-    return EMPTY; // TODO
   }
 }
