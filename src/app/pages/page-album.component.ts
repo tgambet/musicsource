@@ -34,6 +34,11 @@ export type PageAlbumData = {
           <div class="info">
             <div class="cover" style="--aspect-ratio:1">
               <img [src]="info.cover" alt="cover" *ngIf="info.cover" />
+              <app-icon
+                [path]="icons.album"
+                [fullWidth]="true"
+                *ngIf="!info.cover"
+              ></app-icon>
             </div>
             <div class="metadata">
               <app-title [title]="info.album.name"></app-title>
@@ -97,6 +102,9 @@ export type PageAlbumData = {
   styleUrls: ['../styles/page-header.component.scss'],
   styles: [
     `
+      .cover app-icon {
+        color: rgba(255, 255, 255, 0.4);
+      }
       .track-list {
         display: flex;
         flex-direction: column;

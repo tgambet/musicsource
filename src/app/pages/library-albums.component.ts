@@ -20,22 +20,7 @@ import { scanArray } from '@app/utils/scan-array.util';
           class="album"
           *ngFor="let album of albums$ | async; trackBy: trackBy"
         >
-          <app-album
-            [name]="album.name"
-            [cover]="album.cover$ | async"
-            [year]="album.year"
-            [artist]="
-              album.albumArtist ||
-              (album.artists.length > 1 ? 'Various artists' : undefined)
-            "
-            [artistRouterLink]="
-              album.albumArtist
-                ? ['/', 'artist', getHash(album.albumArtist)]
-                : undefined
-            "
-            [albumRouterLink]="['/', 'album', album.hash]"
-            size="small"
-          ></app-album>
+          <app-album [album]="album" size="small"></app-album>
         </div>
       </div>
     </app-library-content>

@@ -10,6 +10,8 @@ export interface Link {
   routerLink: any[] | string;
 }
 
+type BottomLabel = undefined | string | Link | (undefined | string | Link)[];
+
 @Component({
   selector: 'app-label',
   template: `
@@ -30,9 +32,8 @@ export interface Link {
           <a
             *ngIf="asLink(label); let label; else: labelText"
             [routerLink]="label.routerLink"
+            >{{ label.text }}</a
           >
-            {{ label.text }}
-          </a>
           <ng-template #labelText>
             <span>{{ label }}</span>
           </ng-template>
@@ -86,19 +87,26 @@ export interface Link {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LabelComponent {
-  @Input() topLabel!: string | Link;
-  @Input() bottomLabel!: string | Link | (string | Link)[];
+  @Input() topLabel!: undefined | string | Link;
+  @Input() bottomLabel?: BottomLabel;
   @Input() size: 'small' | 'large' = 'large';
 
   @HostBinding('class')
   @Input()
   align: 'left' | 'center' = 'left';
 
-  asArray(val: string | Link | (string | Link)[]): (string | Link)[] {
-    return Array.isArray(val) ? (val as Link[]).filter((a) => a) : [val];
+  asArray(val: BottomLabel): (string | Link)[] {
+    return Array.isArray(val)
+      ? (val as Link[]).filter((a) => a)
+      : val
+      ? [val]
+      : [];
   }
 
-  asLink(val: string | Link): false | Link {
+  asLink(val: undefined | string | Link): false | Link {
+    if (!val) {
+      return false;
+    }
     return typeof val !== 'string' ? (val as Link) : false;
   }
 }

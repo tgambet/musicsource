@@ -77,10 +77,7 @@ export type PageArtistData = {
               appHListItem
               class="album"
               *ngFor="let album of albums"
-              [name]="album.name"
-              [year]="album.year"
-              [cover]="album.cover$ | async"
-              [albumRouterLink]="['/', 'album', album.hash]"
+              [album]="album"
             >
             </app-album>
           </app-h-list>
@@ -96,19 +93,7 @@ export type PageArtistData = {
               appHListItem
               class="album"
               *ngFor="let album of albums"
-              [name]="album.name"
-              [year]="album.year"
-              [cover]="album.cover$ | async"
-              [albumRouterLink]="['/', 'album', album.hash]"
-              [artist]="
-                album.albumArtist ||
-                (album.artists.length > 1 ? 'Various artists' : undefined)
-              "
-              [artistRouterLink]="
-                album.albumArtist
-                  ? ['/', 'artist', getHash(album.albumArtist)]
-                  : undefined
-              "
+              [album]="album"
             >
             </app-album>
           </app-h-list>

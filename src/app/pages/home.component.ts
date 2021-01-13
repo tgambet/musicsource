@@ -13,17 +13,7 @@ import { scanArray } from '@app/utils/scan-array.util';
       <app-title title="Albums"></app-title>
       <app-h-list buttonsTopPosition="113px">
         <div class="album" appHListItem *ngFor="let album of albums$ | async">
-          <app-album
-            [name]="album.name"
-            [artist]="album.albumArtist"
-            [cover]="album.cover$ | async"
-            [albumRouterLink]="['/', 'album', album.hash]"
-            [artistRouterLink]="
-              album.albumArtist
-                ? ['/', 'artist', getHash(album.albumArtist)]
-                : undefined
-            "
-          ></app-album>
+          <app-album [album]="album"></app-album>
         </div>
       </app-h-list>
       <app-title title="Artists"></app-title>
