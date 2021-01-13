@@ -5,19 +5,19 @@ import {
   OnInit,
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { EMPTY, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 import { Album } from '@app/models/album.model';
-import { concatMap, map, tap } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 import { Song, SongWithCover$ } from '@app/models/song.model';
 import { Icons } from '@app/utils/icons.util';
 import { hash } from '@app/utils/hash.util';
 import { PlayerFacade } from '@app/store/player/player.facade';
 import { MenuItem } from '@app/components/menu.component';
 import { MatMenuTrigger } from '@angular/material/menu';
-import { PlaylistAddComponent } from '@app/dialogs/playlist-add.component';
 import { LibraryFacade } from '@app/store/library/library.facade';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
+import { ComponentHelperService } from '@app/services/component-helper.service';
 
 export type PageAlbumData = {
   album: Album;
@@ -125,7 +125,8 @@ export class PageAlbumComponent implements OnInit {
     private player: PlayerFacade,
     private library: LibraryFacade,
     private snack: MatSnackBar,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private helper: ComponentHelperService
   ) {}
 
   @HostListener('window:scroll')
@@ -207,29 +208,6 @@ export class PageAlbumComponent implements OnInit {
   }
 
   addAlbumToPlaylist(songs: Song[]) {
-    const ref = this.dialog.open(PlaylistAddComponent, {
-      width: '275px',
-      maxHeight: '80%',
-      height: 'auto',
-      panelClass: 'playlists-dialog',
-    });
-
-    ref
-      .afterClosed()
-      .pipe(
-        concatMap(
-          (result) =>
-            result === undefined
-              ? EMPTY
-              : result === true
-              ? EMPTY // Redirect to new playlist and add song
-              : this.library
-                  .addSongsToPlaylist([...songs].reverse(), result)
-                  .pipe(
-                    tap(() => this.snack.open(`Added to ${result}`, 'VIEW'))
-                  ) // TODO redirect to playlist
-        )
-      )
-      .subscribe();
+    this.helper.addSongsToPlaylist(songs).subscribe();
   }
 }

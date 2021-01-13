@@ -304,11 +304,8 @@ export class LibraryFacade {
     );
   }
 
-  getArtistTitles(artist: Artist): Observable<Song> {
-    return this.storage.open$(['songs']).pipe(
-      concatMap((transaction) =>
-        this.storage.walk$<Song>(transaction, 'songs', 'artists', artist.name)
-      ),
+  getArtistTitles(artist: Artist): Observable<SongWithCover$> {
+    return this.getSongs('artists', artist.name).pipe(
       map(({ value }) => value)
     );
   }

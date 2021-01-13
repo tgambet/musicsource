@@ -8,15 +8,10 @@ import {
 } from '@angular/core';
 import { Song, SongWithCover$ } from '@app/models/song.model';
 import { Icons } from '@app/utils/icons.util';
-import { concatMap, tap } from 'rxjs/operators';
-import { LibraryFacade } from '@app/store/library/library.facade';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { hash } from '@app/utils/hash.util';
 import { MatMenuTrigger } from '@angular/material/menu';
 import { PlayerFacade } from '@app/store/player/player.facade';
-import { PlaylistAddComponent } from '@app/dialogs/playlist-add.component';
-import { EMPTY } from 'rxjs';
-import { MatDialog } from '@angular/material/dialog';
+import { ComponentHelperService } from '@app/services/component-helper.service';
 
 @Component({
   selector: 'app-track-list-item',
@@ -35,7 +30,7 @@ import { MatDialog } from '@angular/material/dialog';
         [class.liked]="!!song.likedOn"
         mat-icon-button
         [disableRipple]="true"
-        (click)="toggleFavorite(song)"
+        (click)="toggleLiked(song)"
       >
         <app-icon
           [path]="!!song.likedOn ? icons.heart : icons.heartOutline"
@@ -150,26 +145,13 @@ export class TrackListItemComponent {
   icons = Icons;
 
   constructor(
-    private library: LibraryFacade,
     private player: PlayerFacade,
-    private snack: MatSnackBar,
-    private dialog: MatDialog,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private helper: ComponentHelperService
   ) {}
 
-  toggleFavorite(song: Song) {
-    this.library
-      .toggleSongFavorite(song)
-      .pipe(tap((updated) => (song.likedOn = updated.likedOn)))
-      .pipe(
-        tap(() =>
-          this.snack.open(
-            !!song.likedOn ? 'Added to your likes' : 'Removed from your likes'
-          )
-        ),
-        tap(() => this.cdr.markForCheck())
-      )
-      .subscribe();
+  toggleLiked(song: SongWithCover$) {
+    this.helper.toggleLikedSong(song).subscribe(() => this.cdr.markForCheck());
   }
 
   getHash(s: string): string {
@@ -187,29 +169,6 @@ export class TrackListItemComponent {
   }
 
   addSongToPlaylist(song: Song) {
-    const ref = this.dialog.open(PlaylistAddComponent, {
-      width: '275px',
-      maxHeight: '80%',
-      height: 'auto',
-      panelClass: 'playlists-dialog',
-    });
-
-    ref
-      .afterClosed()
-      .pipe(
-        concatMap(
-          (result) =>
-            result === undefined
-              ? EMPTY
-              : result === true
-              ? EMPTY // Redirect to new playlist and add song
-              : this.library
-                  .addSongsToPlaylist([song], result)
-                  .pipe(
-                    tap(() => this.snack.open(`Added to ${result}`, 'VIEW'))
-                  ) // TODO redirect to playlist
-        )
-      )
-      .subscribe();
+    this.helper.addSongsToPlaylist([song]).subscribe();
   }
 }

@@ -2,17 +2,22 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
+  HostListener,
   OnInit,
 } from '@angular/core';
 import { SelectOption } from '@app/components/select.component';
 import { LibraryFacade } from '@app/store/library/library.facade';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
 import { Artist, ArtistWithCover$ } from '@app/models/artist.model';
 import { map, shareReplay, startWith, switchMap, tap } from 'rxjs/operators';
 import { Icons } from '@app/utils/icons.util';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { scanArray } from '@app/utils/scan-array.util';
+import { ComponentHelperService } from '@app/services/component-helper.service';
+import { MatMenuTrigger } from '@angular/material/menu';
+import { reduceArray } from '@app/utils/reduce-array.util';
+import { shuffleArray } from '@app/utils/shuffle-array.util';
+import { PlayerFacade } from '@app/store/player/player.facade';
 
 @Component({
   selector: 'app-library-artists',
@@ -48,7 +53,7 @@ import { scanArray } from '@app/utils/scan-array.util';
                 [class.liked]="!!artist.likedOn"
                 mat-icon-button
                 [disableRipple]="true"
-                (click)="toggleFavorite(artist)"
+                (click)="toggleLiked(artist)"
               >
                 <app-icon
                   [path]="!!artist.likedOn ? icons.heart : icons.heartOutline"
@@ -62,11 +67,20 @@ import { scanArray } from '@app/utils/scan-array.util';
                 [disableRipple]="true"
                 [matMenuTriggerFor]="menu"
                 #trigger="matMenuTrigger"
-                [matMenuTriggerData]="{ artist: artist }"
+                (menuOpened)="menuOpened(trigger)"
+                (click)="$event.stopPropagation()"
               >
                 <app-icon [path]="icons.dotsVertical" [size]="24"></app-icon>
               </button>
             </div>
+            <mat-menu #menu="matMenu" [hasBackdrop]="false">
+              <ng-template matMenuContent>
+                <button mat-menu-item (click)="shufflePlay(artist)">
+                  <app-icon [path]="icons.shuffle"></app-icon>
+                  <span>Shuffle play</span>
+                </button>
+              </ng-template>
+            </mat-menu>
           </div>
         </ng-container>
         <p
@@ -79,18 +93,6 @@ import { scanArray } from '@app/utils/scan-array.util';
         </p>
       </div>
     </app-library-content>
-
-    <mat-menu #menu="matMenu" [hasBackdrop]="true" [overlapTrigger]="true">
-      <ng-template matMenuContent let-artist="artist">
-        <button mat-menu-item (click)="toggleFavorite(artist)">
-          <app-icon
-            [path]="!!artist.likedOn ? icons.heart : icons.heartOutline"
-          ></app-icon>
-          <span *ngIf="!!artist.likedOn">Remove from your likes</span>
-          <span *ngIf="!artist.likedOn">Add to your likes</span>
-        </button>
-      </ng-template>
-    </mat-menu>
   `,
   styles: [
     `
@@ -155,6 +157,9 @@ import { scanArray } from '@app/utils/scan-array.util';
         padding: 24px 0;
         text-align: center;
       }
+      .mat-menu-item app-icon {
+        margin-right: 16px;
+      }
     `,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -173,13 +178,31 @@ export class LibraryArtistsComponent implements OnInit {
 
   likes = false;
 
+  trigger?: MatMenuTrigger;
+
   constructor(
+    private player: PlayerFacade,
     private library: LibraryFacade,
-    private router: Router,
     private route: ActivatedRoute,
-    private snack: MatSnackBar,
+    private helper: ComponentHelperService,
     private cdr: ChangeDetectorRef
   ) {}
+
+  @HostListener('window:scroll')
+  @HostListener('click')
+  closeMenu() {
+    if (this.trigger) {
+      this.trigger.closeMenu();
+      this.trigger = undefined;
+    }
+  }
+
+  menuOpened(trigger: MatMenuTrigger) {
+    if (this.trigger && this.trigger !== trigger) {
+      this.trigger.closeMenu();
+    }
+    this.trigger = trigger;
+  }
 
   ngOnInit(): void {
     const sort$ = this.route.queryParamMap.pipe(
@@ -212,23 +235,25 @@ export class LibraryArtistsComponent implements OnInit {
 
   trackBy = (index: number, artist: ArtistWithCover$) => artist.name;
 
-  toggleFavorite(artist: Artist): void {
+  toggleLiked(artist: Artist): void {
+    this.helper
+      .toggleLikedArtist(artist)
+      .subscribe(() => this.cdr.markForCheck());
+  }
+
+  shufflePlay(artist: Artist) {
     this.library
-      .toggleArtistFavorite(artist)
+      .getArtistTitles(artist)
       .pipe(
-        tap(() => (artist.likedOn = !!artist.likedOn ? undefined : new Date()))
+        reduceArray(),
+        map((songs) => shuffleArray(songs)),
+        map((songs) => songs.slice(0, 100)),
+        tap((songs) => {
+          this.player.setPlaying(true);
+          this.player.setPlaylist(songs);
+          this.player.show();
+        })
       )
-      .pipe(
-        tap(() =>
-          this.snack.open(
-            !!artist.likedOn
-              ? 'Added to your likes'
-              : 'Removed from your likes',
-            undefined
-          )
-        )
-      )
-      .pipe(tap(() => this.cdr.markForCheck()))
       .subscribe();
   }
 }

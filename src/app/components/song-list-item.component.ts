@@ -1,22 +1,17 @@
 import {
-  Component,
-  OnInit,
   ChangeDetectionStrategy,
-  Input,
-  Output,
-  EventEmitter,
   ChangeDetectorRef,
+  Component,
+  EventEmitter,
+  Input,
+  OnInit,
+  Output,
 } from '@angular/core';
 import { Song, SongWithCover$ } from '@app/models/song.model';
 import { hash } from '@app/utils/hash.util';
 import { Icons } from '@app/utils/icons.util';
-import { concatMap, tap } from 'rxjs/operators';
-import { EMPTY } from 'rxjs';
-import { MatDialog } from '@angular/material/dialog';
 import { MatMenuTrigger } from '@angular/material/menu';
-import { LibraryFacade } from '@app/store/library/library.facade';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { PlaylistAddComponent } from '@app/dialogs/playlist-add.component';
+import { ComponentHelperService } from '@app/services/component-helper.service';
 
 @Component({
   selector: 'app-song-list-item',
@@ -42,7 +37,7 @@ import { PlaylistAddComponent } from '@app/dialogs/playlist-add.component';
         [class.liked]="!!song.likedOn"
         mat-icon-button
         [disableRipple]="true"
-        (click)="toggleFavorite(song)"
+        (click)="toggleLiked(song)"
       >
         <app-icon
           [path]="!!song.likedOn ? icons.heart : icons.heartOutline"
@@ -178,10 +173,8 @@ export class SongListItemComponent implements OnInit {
   icons = Icons;
 
   constructor(
-    private dialog: MatDialog,
-    private library: LibraryFacade,
-    private snack: MatSnackBar,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private helper: ComponentHelperService
   ) {}
 
   ngOnInit(): void {}
@@ -191,44 +184,10 @@ export class SongListItemComponent implements OnInit {
   }
 
   addSongToPlaylist(song: Song) {
-    const ref = this.dialog.open(PlaylistAddComponent, {
-      width: '275px',
-      maxHeight: '80%',
-      height: 'auto',
-      panelClass: 'playlists-dialog',
-    });
-
-    ref
-      .afterClosed()
-      .pipe(
-        concatMap(
-          (result) =>
-            result === undefined
-              ? EMPTY
-              : result === true
-              ? EMPTY // Redirect to new playlist
-              : this.library
-                  .addSongsToPlaylist([song], result)
-                  .pipe(
-                    tap(() => this.snack.open(`Added to ${result}`, 'VIEW'))
-                  ) // TODO redirect to playlist
-        )
-      )
-      .subscribe();
+    this.helper.addSongsToPlaylist([song]).subscribe();
   }
 
-  toggleFavorite(song: Song) {
-    this.library
-      .toggleSongFavorite(song)
-      .pipe(tap((updated) => (song.likedOn = updated.likedOn)))
-      .pipe(
-        tap(() =>
-          this.snack.open(
-            !!song.likedOn ? 'Added to your likes' : 'Removed from your likes'
-          )
-        ),
-        tap(() => this.cdr.markForCheck())
-      )
-      .subscribe();
+  toggleLiked(song: SongWithCover$) {
+    this.helper.toggleLikedSong(song).subscribe(() => this.cdr.markForCheck());
   }
 }

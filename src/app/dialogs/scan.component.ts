@@ -120,7 +120,15 @@ export class ScanComponent {
     panelClass: 'scan-dialog',
   };
 
-  scanner$: Observable<any>;
+  scanner$: Observable<{
+    state?: 'scanning' | 'success' | 'error';
+    error?: any;
+    step?: string;
+    stepSub?: string;
+    progress?: number;
+    progressDisplay?: string;
+    progressDisplaySub?: string;
+  }>;
 
   constructor(private scanner: ScannerFacade) {
     const throttle = <T>() =>

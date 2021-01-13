@@ -124,17 +124,17 @@ export class TopBarComponent {
       icon: Icons.folderSearch,
       click: () => this.scan(),
     },
-    {
-      text: 'Library settings',
-      icon: Icons.folderCog,
-      routerLink: [{ outlets: { dialog: ['settings'] } }],
-    },
-    { text: 'History', icon: Icons.history },
-    { text: 'Settings', icon: Icons.cog },
-    { text: 'Privacy policy', icon: Icons.security },
-    { text: 'Help', icon: Icons.helpCircle },
-    { text: 'Send feedback', icon: Icons.messageAlert },
-    { text: 'Offer me a job or a beer', icon: Icons.currencyUsd },
+    // {
+    //   text: 'Library settings',
+    //   icon: Icons.folderCog,
+    //   routerLink: [{ outlets: { dialog: ['settings'] } }],
+    // },
+    // { text: 'History', icon: Icons.history },
+    // { text: 'Settings', icon: Icons.cog },
+    // { text: 'Privacy policy', icon: Icons.security },
+    // { text: 'Help', icon: Icons.helpCircle },
+    // { text: 'Send feedback', icon: Icons.messageAlert },
+    // { text: 'Offer me a job or a beer', icon: Icons.currencyUsd },
   ];
 
   constructor(private router: Router, private scanner: ScannerFacade) {}
