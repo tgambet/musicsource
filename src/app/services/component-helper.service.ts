@@ -4,18 +4,24 @@ import { concatMap, map, tap } from 'rxjs/operators';
 import { LibraryFacade } from '@app/store/library/library.facade';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { EMPTY, Observable } from 'rxjs';
-import { Song } from '@app/models/song.model';
+import { Song, SongWithCover$ } from '@app/models/song.model';
 import { PlaylistAddComponent } from '@app/dialogs/playlist-add.component';
 import { MatDialog } from '@angular/material/dialog';
+import { Router } from '@angular/router';
+import { reduceArray } from '@app/utils/reduce-array.util';
+import { shuffleArray } from '@app/utils/shuffle-array.util';
+import { PlayerFacade } from '@app/store/player/player.facade';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ComponentHelperService {
   constructor(
+    private player: PlayerFacade,
     private library: LibraryFacade,
     private snack: MatSnackBar,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private router: Router
   ) {}
 
   toggleLikedSong(song: Song): Observable<Song> {
@@ -59,19 +65,44 @@ export class ComponentHelperService {
       })
       .afterClosed()
       .pipe(
-        concatMap(
-          (result) =>
-            result === undefined
-              ? EMPTY
-              : result === true
-              ? EMPTY // Redirect to new playlist and add song
-              : this.library
-                  .addSongsToPlaylist([...songs].reverse(), result)
-                  .pipe(
-                    tap(() => this.snack.open(`Added to ${result}`, 'VIEW'))
-                  ) // TODO redirect to playlist
+        concatMap((result) =>
+          result === undefined
+            ? EMPTY
+            : result === true
+            ? EMPTY // TODO Redirect to new playlist and add song
+            : this.library
+                .addSongsToPlaylist([...songs].reverse(), result)
+                .pipe(
+                  concatMap((key) =>
+                    this.snack
+                      .open(`Added to ${result}`, 'VIEW')
+                      .onAction()
+                      .pipe(
+                        tap(() =>
+                          this.router.navigate([
+                            '/',
+                            'playlist',
+                            key.toString(),
+                          ])
+                        )
+                      )
+                  )
+                )
         ),
         map(() => void 0)
       );
+  }
+
+  shufflePlayArtist(artist: Artist): Observable<SongWithCover$[]> {
+    return this.library.getArtistTitles(artist).pipe(
+      reduceArray(),
+      map((songs) => shuffleArray(songs)),
+      map((songs) => songs.slice(0, 100)),
+      tap((songs) => {
+        this.player.setPlaying(true);
+        this.player.setPlaylist(songs);
+        this.player.show();
+      })
+    );
   }
 }

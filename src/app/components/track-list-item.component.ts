@@ -150,12 +150,12 @@ export class TrackListItemComponent {
     private helper: ComponentHelperService
   ) {}
 
-  toggleLiked(song: SongWithCover$) {
-    this.helper.toggleLikedSong(song).subscribe(() => this.cdr.markForCheck());
-  }
-
   getHash(s: string): string {
     return hash(s);
+  }
+
+  toggleLiked(song: SongWithCover$) {
+    this.helper.toggleLikedSong(song).subscribe(() => this.cdr.markForCheck());
   }
 
   playNext(song: SongWithCover$): void {

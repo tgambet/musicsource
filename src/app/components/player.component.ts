@@ -21,11 +21,6 @@ import { merge, Observable, of, Subscription } from 'rxjs';
 import { SongWithCover$ } from '@app/models/song.model';
 import { PlayerFacade } from '@app/store/player/player.facade';
 
-export interface PlayerData {
-  playlist: SongWithCover$[];
-  currentIndex: number;
-}
-
 @Component({
   selector: 'app-player',
   template: `
@@ -135,8 +130,8 @@ export interface PlayerData {
         align-items: center;
         background-color: #212121;
         white-space: nowrap;
-        height: 100%;
         padding-right: 12px;
+        height: 72px;
       }
       mat-slider {
         position: absolute;

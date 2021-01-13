@@ -12,6 +12,7 @@ import { hash } from '@app/utils/hash.util';
 import { Icons } from '@app/utils/icons.util';
 import { MatMenuTrigger } from '@angular/material/menu';
 import { ComponentHelperService } from '@app/services/component-helper.service';
+import { PlayerFacade } from '@app/store/player/player.facade';
 
 @Component({
   selector: 'app-song-list-item',
@@ -60,11 +61,11 @@ import { ComponentHelperService } from '@app/services/component-helper.service';
     <span class="duration">{{ song.duration | duration }}</span>
     <mat-menu #menu="matMenu" [hasBackdrop]="false" [overlapTrigger]="false">
       <ng-template matMenuContent>
-        <button mat-menu-item>
+        <button mat-menu-item (click)="playNext(song)">
           <app-icon [path]="icons.playlistPlay"></app-icon>
           <span>Play next</span>
         </button>
-        <button mat-menu-item>
+        <button mat-menu-item (click)="addToQueue(song)">
           <app-icon [path]="icons.playlistMusic"></app-icon>
           <span>Add to queue</span>
         </button>
@@ -174,7 +175,8 @@ export class SongListItemComponent implements OnInit {
 
   constructor(
     private cdr: ChangeDetectorRef,
-    private helper: ComponentHelperService
+    private helper: ComponentHelperService,
+    private player: PlayerFacade
   ) {}
 
   ngOnInit(): void {}
@@ -183,11 +185,21 @@ export class SongListItemComponent implements OnInit {
     return hash(s);
   }
 
-  addSongToPlaylist(song: Song) {
-    this.helper.addSongsToPlaylist([song]).subscribe();
-  }
-
   toggleLiked(song: SongWithCover$) {
     this.helper.toggleLikedSong(song).subscribe(() => this.cdr.markForCheck());
+  }
+
+  playNext(song: SongWithCover$): void {
+    this.player.addToPlaylist([song], true);
+    this.player.show();
+  }
+
+  addToQueue(song: SongWithCover$): void {
+    this.player.addToPlaylist([song], false);
+    this.player.show();
+  }
+
+  addSongToPlaylist(song: Song) {
+    this.helper.addSongsToPlaylist([song]).subscribe();
   }
 }

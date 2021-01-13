@@ -12,6 +12,7 @@ import { map } from 'rxjs/operators';
 import { AlbumWithCover$ } from '@app/models/album.model';
 import { SongWithCover$ } from '@app/models/song.model';
 import { hash } from '@app/utils/hash.util';
+import { ComponentHelperService } from '@app/services/component-helper.service';
 
 export type PageArtistData = {
   artist: Artist;
@@ -35,19 +36,28 @@ export type PageArtistData = {
         <app-container-page class="header-container">
           <app-title [title]="info.artist.name"></app-title>
           <div class="actions">
-            <button mat-raised-button color="accent">
+            <button
+              mat-raised-button
+              color="accent"
+              (click)="shufflePlay(info.artist)"
+            >
               <app-icon [path]="icons.shuffle"></app-icon>
               <span>Shuffle</span>
             </button>
-            <button mat-raised-button color="accent">
+            <!--            <button mat-raised-button color="accent">
               <app-icon [path]="icons.radio"></app-icon>
               <span>Radio</span>
+            </button>-->
+            <button mat-stroked-button (click)="toggleLiked(info.artist)">
+              <app-icon
+                [path]="
+                  !!info.artist.likedOn ? icons.heart : icons.heartOutline
+                "
+              ></app-icon>
+              <span *ngIf="!info.artist.likedOn">Add to your likes</span>
+              <span *ngIf="!!info.artist.likedOn">Remove from your likes</span>
             </button>
-            <button mat-stroked-button>
-              <app-icon [path]="icons.heartOutline"></app-icon>
-              <span>Add to your likes</span>
-            </button>
-            <app-menu [disableRipple]="true"></app-menu>
+            <!--<app-menu [disableRipple]="true"></app-menu>-->
           </div>
         </app-container-page>
       </header>
@@ -197,15 +207,27 @@ export class PageArtistComponent implements OnInit {
   icons = Icons;
   info$!: Observable<PageArtistData>;
 
-  constructor(private route: ActivatedRoute, private cdr: ChangeDetectorRef) {}
+  constructor(
+    private route: ActivatedRoute,
+    private cdr: ChangeDetectorRef,
+    private helper: ComponentHelperService
+  ) {}
 
   ngOnInit(): void {
     this.info$ = this.route.data.pipe(map((data) => data.info));
-
-    setTimeout(() => this.cdr.markForCheck());
   }
 
   getHash(albumArtist: string) {
     return hash(albumArtist);
+  }
+
+  shufflePlay(artist: Artist) {
+    this.helper.shufflePlayArtist(artist).subscribe();
+  }
+
+  toggleLiked(artist: Artist) {
+    this.helper
+      .toggleLikedArtist(artist)
+      .subscribe(() => this.cdr.markForCheck());
   }
 }

@@ -15,8 +15,6 @@ import { Icons } from '@app/utils/icons.util';
 import { scanArray } from '@app/utils/scan-array.util';
 import { ComponentHelperService } from '@app/services/component-helper.service';
 import { MatMenuTrigger } from '@angular/material/menu';
-import { reduceArray } from '@app/utils/reduce-array.util';
-import { shuffleArray } from '@app/utils/shuffle-array.util';
 import { PlayerFacade } from '@app/store/player/player.facade';
 
 @Component({
@@ -242,18 +240,6 @@ export class LibraryArtistsComponent implements OnInit {
   }
 
   shufflePlay(artist: Artist) {
-    this.library
-      .getArtistTitles(artist)
-      .pipe(
-        reduceArray(),
-        map((songs) => shuffleArray(songs)),
-        map((songs) => songs.slice(0, 100)),
-        tap((songs) => {
-          this.player.setPlaying(true);
-          this.player.setPlaylist(songs);
-          this.player.show();
-        })
-      )
-      .subscribe();
+    this.helper.shufflePlayArtist(artist).subscribe();
   }
 }

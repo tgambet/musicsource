@@ -111,7 +111,6 @@ export const slideInAnimation = trigger('routeAnimations', [
         left: 0;
         width: 100vw;
         box-sizing: border-box;
-        height: 72px;
         z-index: 500;
       }
     `,
