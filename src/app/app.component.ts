@@ -10,6 +10,7 @@ import { FileService } from '@app/services/file.service';
 import { RouterOutlet } from '@angular/router';
 import {
   animate,
+  AnimationTriggerMetadata,
   query,
   style,
   transition,
@@ -29,51 +30,72 @@ export const debugAnimation = (name: string) => (
   return false;
 };
 
-export const slideInAnimation = trigger('routeAnimations', [
-  // transition(debugAnimation('main'), []),
-  transition('void <=> *', []),
-  transition('null <=> *', []),
-  transition('* => PlayPage', [
-    style({ position: 'relative' }),
-    query(':enter', [
+export const playerAnimation: AnimationTriggerMetadata = trigger(
+  'playerAnimations',
+  [
+    transition(':enter', [
       style({
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        height: 'calc(100% - 136px)',
-        width: '100vw',
-        zIndex: 200,
-        transform: 'translateY(100vh)',
+        transform: 'translateY(72px)',
+      }),
+      animate('300ms ease-out', style({ transform: 'translateY(0)' })),
+    ]),
+    transition(':leave', [
+      style({
+        transform: 'translateY(0)',
+      }),
+      animate('300ms ease-out', style({ transform: 'translateY(72px)' })),
+    ]),
+  ]
+);
+
+export const slideInAnimation: AnimationTriggerMetadata = trigger(
+  'routeAnimations',
+  [
+    // transition(debugAnimation('main'), []),
+    transition('void <=> *', []),
+    transition('null <=> *', []),
+    transition('* => PlayPage', [
+      style({ position: 'relative' }),
+      query(':enter', [
+        style({
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          height: 'calc(100% - 136px)',
+          width: '100vw',
+          zIndex: 200,
+          transform: 'translateY(100vh)',
+        }),
+      ]),
+      query(':enter', [
+        animate('300ms ease-out', style({ transform: 'translateY(64px)' })),
+      ]),
+      query('router-outlet ~ *', [style({}), animate(1, style({}))], {
+        optional: true,
       }),
     ]),
-    query(':enter', [
-      animate('300ms ease-out', style({ transform: 'translateY(64px)' })),
-    ]),
-    query('router-outlet ~ *', [style({}), animate(1, style({}))], {
-      optional: true,
-    }),
-  ]),
-  transition('PlayPage => *', [
-    style({ position: 'relative' }),
-    query(':leave', [
-      style({
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        height: 'calc(100% - 136px)',
-        width: '100vw',
-        zIndex: 200,
-        transform: 'translateY(64px)',
+    transition('PlayPage => *', [
+      style({ position: 'relative' }),
+      query(':leave', [
+        style({
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          height: 'calc(100% - 136px)',
+          width: '100vw',
+          zIndex: 200,
+          transform: 'translateY(64px)',
+        }),
+      ]),
+      query(':leave', [
+        animate('300ms ease-out', style({ transform: 'translateY(100vh)' })),
+      ]),
+      query('router-outlet ~ *', [style({}), animate(1, style({}))], {
+        optional: true,
       }),
     ]),
-    query(':leave', [
-      animate('300ms ease-out', style({ transform: 'translateY(100vh)' })),
-    ]),
-    query('router-outlet ~ *', [style({}), animate(1, style({}))], {
-      optional: true,
-    }),
-  ]),
-]);
+  ]
+);
 
 @Component({
   selector: 'app-root',
@@ -82,8 +104,8 @@ export const slideInAnimation = trigger('routeAnimations', [
     <main [@routeAnimations]="prepareRoute(outlet)">
       <router-outlet #outlet="outlet"></router-outlet>
     </main>
-    <aside>
-      <app-player *ngIf="showPlayer$ | async"></app-player>
+    <aside @playerAnimations *ngIf="showPlayer$ | async">
+      <app-player></app-player>
     </aside>
     <router-outlet name="dialog"></router-outlet>
     <router-outlet name="help"></router-outlet>
@@ -117,7 +139,7 @@ export const slideInAnimation = trigger('routeAnimations', [
   ],
   providers: [FileService, ExtractorService],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  animations: [slideInAnimation],
+  animations: [slideInAnimation, playerAnimation],
 })
 export class AppComponent implements OnInit {
   @HostBinding('class.scrolled-top')
