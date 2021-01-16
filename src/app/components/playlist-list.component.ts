@@ -4,8 +4,6 @@ import {
   ChangeDetectionStrategy,
   Input,
   HostListener,
-  Output,
-  EventEmitter,
 } from '@angular/core';
 import { SongWithCover$ } from '@app/models/song.model';
 import { MatMenuTrigger } from '@angular/material/menu';
@@ -17,8 +15,8 @@ import { MatMenuTrigger } from '@angular/material/menu';
       cdkMonitorSubtreeFocus
       *ngFor="let song of playlist; trackBy: trackBy; let i = index"
       [song]="song"
+      [playlist]="playlist"
       (menuOpened)="menuOpened($event)"
-      (playClicked)="playClicked.emit(i)"
       [class.selected]="song.entryPath === currentSong?.entryPath"
     ></app-playlist-list-item>
   `,
@@ -54,8 +52,6 @@ import { MatMenuTrigger } from '@angular/material/menu';
 export class PlaylistListComponent implements OnInit {
   @Input() playlist!: SongWithCover$[];
   @Input() currentSong?: SongWithCover$ | null;
-
-  @Output() playClicked = new EventEmitter<number>();
 
   trigger?: MatMenuTrigger;
 

@@ -30,7 +30,6 @@ import { take, tap } from 'rxjs/operators';
         #playlistList
         *ngIf="playlist$ | async as playlist"
         [playlist]="playlist"
-        (playClicked)="play($event)"
         [currentSong]="currentSong$ | async"
       ></app-playlist-list>
     </div>
@@ -113,10 +112,5 @@ export class PlayComponent implements OnInit {
 
   getHash(artist: string) {
     return hash(artist);
-  }
-
-  play(index: number) {
-    this.player.setPlaying();
-    this.player.setCurrentIndex(index);
   }
 }
