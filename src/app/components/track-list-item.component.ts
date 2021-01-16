@@ -21,8 +21,8 @@ import { ComponentHelperService } from '@app/services/component-helper.service';
       <app-player-button
         class="player-button"
         size="small"
-        (playClicked)="playClicked.emit()"
         [song]="song"
+        [playlist]="playlist"
       ></app-player-button>
     </span>
     <span class="title">{{ song.title }}</span>
@@ -140,9 +140,10 @@ import { ComponentHelperService } from '@app/services/component-helper.service';
 })
 export class TrackListItemComponent {
   @Input() song!: SongWithCover$;
+  @Input() playlist!: SongWithCover$[];
+
   @Input() trackNumber!: number;
 
-  @Output() playClicked = new EventEmitter<void>();
   @Output() menuOpened = new EventEmitter<MatMenuTrigger>();
 
   icons = Icons;

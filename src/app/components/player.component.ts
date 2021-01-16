@@ -60,7 +60,7 @@ import { PlayerFacade } from '@app/store/player/player.facade';
         [disableRipple]="true"
         color="accent"
         *ngIf="playing$ | async as playing"
-        (click)="playing.value ? pause() : play()"
+        (click)="playing.value ? pause() : resume()"
       >
         <app-icon
           [path]="playing.value ? icons.pause : icons.play"
@@ -290,8 +290,8 @@ export class PlayerComponent implements OnInit, OnDestroy {
     }
   }
 
-  play() {
-    this.player.play();
+  resume() {
+    this.player.resume();
   }
 
   pause() {

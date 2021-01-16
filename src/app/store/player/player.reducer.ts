@@ -5,6 +5,7 @@ import {
   hide,
   setCurrentIndex,
   setDuration,
+  setLoading,
   setNextIndex,
   setPlaying,
   setPlaylist,
@@ -57,6 +58,10 @@ export const playerReducer: ActionReducer<PlayerState> = createReducer(
   on(setPlaying, (state, { playing }) => ({
     ...state,
     playing,
+  })),
+  on(setLoading, (state, { loading }) => ({
+    ...state,
+    loading,
   })),
   on(setDuration, (state, { duration }) => ({
     ...state,

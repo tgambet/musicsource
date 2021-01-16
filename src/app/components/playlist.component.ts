@@ -9,7 +9,6 @@ import {
   Output,
 } from '@angular/core';
 import { Icons } from '../utils/icons.util';
-import { PlayerState } from './player-button.component';
 import { Playlist } from '@app/models/playlist.model';
 import { from, Observable, of } from 'rxjs';
 import { LibraryFacade } from '@app/store/library/library.facade';
@@ -27,9 +26,6 @@ import { reduceArray } from '@app/utils/reduce-array.util';
       [title]="playlist.title"
       [menuItems]="menuItems"
       [coverRouterLink]="['/', 'playlist', playlist.hash]"
-      [playerState]="state"
-      (playClicked)="play()"
-      (pauseClicked)="pause()"
     >
       <ng-container *ngIf="cover$ | async as cover; else icon">
         <ng-container *ngIf="color$ | async as color">
@@ -91,8 +87,6 @@ export class PlaylistComponent implements OnInit {
 
   menuItems!: MenuItem[];
 
-  state: PlayerState = 'stopped';
-
   cover$!: Observable<string | undefined>;
 
   color$!: Observable<any>;
@@ -137,16 +131,12 @@ export class PlaylistComponent implements OnInit {
       .pipe(
         reduceArray(),
         tap((songs) => {
-          this.player.setPlaying(true);
+          this.player.setPlaying();
           this.player.setPlaylist(songs, 0);
           this.player.show();
         })
       )
       .subscribe();
-  }
-
-  pause() {
-    this.state = 'stopped';
   }
 
   toggleLikePlaylist() {

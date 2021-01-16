@@ -6,7 +6,6 @@ import {
   Optional,
 } from '@angular/core';
 import { Icons } from '../utils/icons.util';
-import { PlayerState } from './player-button.component';
 
 @Component({
   selector: 'app-mix',
@@ -15,9 +14,6 @@ import { PlayerState } from './player-button.component';
       [title]="name"
       [menuItems]="menuItems"
       [coverRouterLink]="mixRouterLink"
-      [playerState]="state"
-      (playClicked)="play()"
-      (pauseClicked)="pause()"
       tabindex="-1"
     >
       <h2 class="my-mix">My<br />Mix</h2>
@@ -94,19 +90,6 @@ export class MixComponent {
       text: 'Add to playlist',
     },
   ];
-  state: PlayerState = 'stopped';
 
   constructor(@Optional() private cdr: ChangeDetectorRef) {}
-
-  play() {
-    this.state = 'loading';
-    setTimeout(() => {
-      this.state = 'playing';
-      this.cdr.markForCheck();
-    }, 1000);
-  }
-
-  pause() {
-    this.state = 'stopped';
-  }
 }

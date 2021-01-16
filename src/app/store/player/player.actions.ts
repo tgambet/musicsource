@@ -22,12 +22,17 @@ export const setCurrentIndex = createAction(
 export const setNextIndex = createAction('player/set-next-index');
 export const setPrevIndex = createAction('player/set-prev-index');
 
-export const play = createAction('player/play');
+export const resume = createAction('player/resume');
 export const pause = createAction('player/pause');
 
 export const setPlaying = createAction(
   'player/set-playing',
   props<{ playing: boolean }>()
+);
+
+export const setLoading = createAction(
+  'player/set-loading',
+  props<{ loading: boolean }>()
 );
 
 export const setDuration = createAction(

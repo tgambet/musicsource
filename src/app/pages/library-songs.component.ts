@@ -48,10 +48,10 @@ import { PlayerFacade } from '@app/store/player/player.facade';
           >
             <app-song-list-item
               [song]="song"
+              [playlist]="[song]"
               *ngIf="!sort.likes || !!song.likedOn"
               cdkMonitorSubtreeFocus
               (menuOpened)="menuOpened($event)"
-              (playClicked)="play(song)"
               [class.selected]="(currentSongPath$ | async) === song.entryPath"
             ></app-song-list-item>
           </ng-container>
@@ -238,11 +238,5 @@ export class LibrarySongsComponent implements OnInit, OnDestroy {
       this.trigger.closeMenu();
       this.trigger = undefined;
     }
-  }
-
-  play(song: SongWithCover$): void {
-    this.player.setPlaying(true);
-    this.player.setPlaylist([song]);
-    this.player.show();
   }
 }

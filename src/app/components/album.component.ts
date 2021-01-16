@@ -7,7 +7,6 @@ import {
   Output,
 } from '@angular/core';
 import { Icons } from '../utils/icons.util';
-import { PlayerState } from './player-button.component';
 import { Album, AlbumWithCover$ } from '@app/models/album.model';
 import { hash } from '@app/utils/hash.util';
 import { MatMenuTrigger } from '@angular/material/menu';
@@ -15,7 +14,9 @@ import { MenuItem } from '@app/components/menu.component';
 import { PlayerFacade } from '@app/store/player/player.facade';
 import { ComponentHelperService } from '@app/services/component-helper.service';
 import { LibraryFacade } from '@app/store/library/library.facade';
-import { concatMap, tap } from 'rxjs/operators';
+import { concatMap, map, shareReplay, tap } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { SongWithCover$ } from '@app/models/song.model';
 
 @Component({
   selector: 'app-album',
@@ -24,11 +25,10 @@ import { concatMap, tap } from 'rxjs/operators';
       [title]="album.name"
       [menuItems]="menuItems"
       [coverRouterLink]="['/', 'album', album.hash]"
-      [playerState]="state"
-      (playClicked)="play()"
-      (pauseClicked)="pause()"
       (menuOpened)="menuOpened.emit($event)"
       tabindex="-1"
+      [song]="song$ | async"
+      [playlist]="playlist$ | async"
     >
       <img
         *ngIf="album.cover$ | async as cover; else icon"
@@ -82,7 +82,9 @@ export class AlbumComponent implements OnInit {
 
   icons = Icons;
   menuItems!: MenuItem[];
-  state: PlayerState = 'stopped';
+
+  song$!: Observable<SongWithCover$>;
+  playlist$!: Observable<SongWithCover$[]>;
 
   constructor(
     private library: LibraryFacade,
@@ -92,22 +94,25 @@ export class AlbumComponent implements OnInit {
 
   ngOnInit(): void {
     this.updateMenu();
+
+    this.playlist$ = this.library
+      .getAlbumTracks(this.album)
+      .pipe(shareReplay(1));
+    this.song$ = this.playlist$.pipe(map((pl) => pl[0]));
   }
 
-  play() {
+  /*play() {
     this.library
       .getAlbumTracks(this.album)
       .pipe(
         tap((tracks) => {
-          this.player.setPlaying(true);
+          this.player.setPlaying();
           this.player.setPlaylist(tracks);
           this.player.show();
         })
       )
       .subscribe();
-  }
-
-  pause() {}
+  }*/
 
   getHash(s: string): string {
     return hash(s);
@@ -123,7 +128,7 @@ export class AlbumComponent implements OnInit {
             .getAlbumTracks(this.album)
             .pipe(
               tap((tracks) => {
-                this.player.setPlaying(true);
+                this.player.setPlaying();
                 this.player.setPlaylist(tracks);
                 this.player.shuffle();
                 this.player.show();

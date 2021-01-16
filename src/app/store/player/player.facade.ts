@@ -6,6 +6,7 @@ import {
   selectDuration,
   selectHasNextSong,
   selectHasPrevSong,
+  selectLoading,
   selectPlaying,
   selectPlaylist,
   selectShow,
@@ -16,8 +17,9 @@ import {
   addToPlaylist,
   hide,
   pause,
-  play,
+  resume,
   setCurrentIndex,
+  setLoading,
   setNextIndex,
   setPlaying,
   setPlaylist,
@@ -63,6 +65,10 @@ export class PlayerFacade {
     return this.store.select(selectPlaying);
   }
 
+  getLoading$(): Observable<boolean> {
+    return this.store.select(selectLoading);
+  }
+
   hasNextSong$(): Observable<boolean> {
     return this.store.select(selectHasNextSong);
   }
@@ -91,16 +97,20 @@ export class PlayerFacade {
     this.store.dispatch(setPrevIndex());
   }
 
-  setPlaying(playing: boolean): void {
-    this.store.dispatch(setPlaying({ playing }));
+  setPlaying(): void {
+    this.store.dispatch(setPlaying({ playing: true }));
   }
 
-  play(): void {
-    this.store.dispatch(play());
+  resume(): void {
+    this.store.dispatch(resume());
   }
 
   pause(): void {
     this.store.dispatch(pause());
+  }
+
+  setLoading(): void {
+    this.store.dispatch(setLoading({ loading: true }));
   }
 
   show(): void {

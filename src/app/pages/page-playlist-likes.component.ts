@@ -1,10 +1,16 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
 import { Song, SongWithCover$ } from '@app/models/song.model';
 import { Observable } from 'rxjs';
 import { LibraryFacade } from '@app/store/library/library.facade';
 import { map, shareReplay, startWith } from 'rxjs/operators';
 import { Icons } from '@app/utils/icons.util';
 import { scanArray } from '@app/utils/scan-array.util';
+import { SongListComponent } from '@app/components/song-list.component';
 
 @Component({
   selector: 'app-page-playlist-likes',
@@ -45,7 +51,11 @@ import { scanArray } from '@app/utils/scan-array.util';
       </app-container-page>
     </header>
     <app-container-page>
-      <app-song-list [songs]="songs$ | async" #songList></app-song-list>
+      <app-song-list
+        *ngIf="songs$ | async as songs"
+        [songs]="songs"
+        #songList
+      ></app-song-list>
       <p class="empty" *ngIf="(songs$ | async)?.length === 0">
         No liked songs yet.
       </p>
@@ -65,6 +75,9 @@ import { scanArray } from '@app/utils/scan-array.util';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PagePlaylistLikesComponent implements OnInit {
+  @ViewChild('songList', { static: false })
+  songList?: SongListComponent;
+
   songs$!: Observable<SongWithCover$[]>;
 
   icons = Icons;

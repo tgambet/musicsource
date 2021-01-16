@@ -92,9 +92,9 @@ export type PageAlbumData = {
         <div class="track-list">
           <app-track-list-item
             [song]="song"
+            [playlist]="info.songs"
             *ngFor="let song of info.songs; let i = index"
             [trackNumber]="i + 1"
-            (playClicked)="play(info.songs, i)"
             [class.selected]="(currentSongPath$ | async) === song.entryPath"
             (menuOpened)="menuOpened($event)"
             cdkMonitorSubtreeFocus
@@ -175,7 +175,7 @@ export class PageAlbumComponent implements OnInit {
         text: 'Shuffle play',
         icon: this.icons.shuffle,
         click: () => {
-          this.player.setPlaying(true);
+          this.player.setPlaying();
           this.player.setPlaylist(songs);
           this.player.shuffle();
           this.player.show();
@@ -215,7 +215,7 @@ export class PageAlbumComponent implements OnInit {
   }
 
   play(songs: SongWithCover$[], index = 0) {
-    this.player.setPlaying(true);
+    this.player.setPlaying();
     this.player.setPlaylist(songs, index);
     this.player.show();
   }

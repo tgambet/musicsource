@@ -113,7 +113,7 @@ export class ComponentHelperService {
       map((songs) => shuffleArray(songs)),
       map((songs) => songs.slice(0, 100)),
       tap((songs) => {
-        this.player.setPlaying(true);
+        this.player.setPlaying();
         this.player.setPlaylist(songs);
         this.player.show();
       })

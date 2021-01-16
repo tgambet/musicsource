@@ -26,7 +26,7 @@ describe('CoverComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(CoverComponent);
     component = fixture.componentInstance;
-    component.playerState = 'stopped';
+    // component.playerState = 'stopped';
     fixture.detectChanges();
   });
 

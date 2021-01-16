@@ -116,7 +116,7 @@ export class PlayComponent implements OnInit {
   }
 
   play(index: number) {
+    this.player.setPlaying();
     this.player.setCurrentIndex(index);
-    this.player.play();
   }
 }

@@ -9,15 +9,18 @@ import {
 import { EMPTY, Observable, of } from 'rxjs';
 import {
   pause,
-  play,
+  resume,
   setDuration,
+  setLoading,
   setNextIndex,
   setPlaying,
 } from '@app/store/player/player.actions';
 import {
   catchError,
   concatMap,
+  distinctUntilChanged,
   filter,
+  first,
   map,
   switchMap,
   take,
@@ -37,22 +40,31 @@ export class PlayerEffects implements OnRunEffects {
   // https://bugs.chromium.org/p/chromium/issues/detail?id=1146886&q=component%3ABlink%3EStorage%3EFileSystem&can=2
   handle?: any;
 
-  setSrc$ = createEffect(
+  play$ = createEffect(
     () =>
       this.player.getCurrentSong$().pipe(
         filter((song): song is SongWithCover$ => !!song),
+        distinctUntilChanged((s1, s2) => s1.entryPath === s2.entryPath),
+        tap(() => this.player.setLoading()),
         switchMap((song) =>
-          this.library.getEntry(song.entryPath).pipe(
-            filter((entry): entry is FileEntry => !!entry),
-            tap((entry) => (this.handle = entry.handle)),
-            concatMap((entry) =>
-              this.library.requestPermission(entry.handle).pipe(
-                tapError(() => this.player.hide()),
-                catchError(() => EMPTY),
-                concatMap(() => entry.handle.getFile()),
-                concatMap((file) => this.audio.setSrc(file)),
-                concatMap(() => this.player.getPlaying$()),
-                concatMap((playing) => (playing ? this.audio.resume() : EMPTY))
+          this.player.getPlaying$().pipe(
+            first(),
+            tap(() => this.player.pause()),
+            concatMap((playing) =>
+              this.library.getEntry(song.entryPath).pipe(
+                // delay(2000),
+                filter((entry): entry is FileEntry => !!entry),
+                tap((entry) => (this.handle = entry.handle)),
+                concatMap((entry) =>
+                  this.library.requestPermission(entry.handle).pipe(
+                    tapError(() => this.player.hide()),
+                    catchError(() => EMPTY),
+                    concatMap(() => entry.handle.getFile()),
+                    concatMap((file) => this.audio.setSrc(file)),
+                    // concatMap(() => this.player.getPlaying$().pipe(first())),
+                    concatMap(() => (playing ? this.audio.resume() : EMPTY))
+                  )
+                )
               )
             )
           )
@@ -67,17 +79,17 @@ export class PlayerEffects implements OnRunEffects {
         this.player.hasNextSong$().pipe(
           take(1),
           concatMap((hasNextSong) =>
-            hasNextSong ? of(setNextIndex(), play()) : EMPTY
+            hasNextSong ? of(setNextIndex(), resume()) : EMPTY
           )
         )
       )
     )
   );
 
-  play$ = createEffect(
+  resume$ = createEffect(
     () =>
       this.actions$.pipe(
-        ofType(play),
+        ofType(resume),
         tap(() => this.audio.resume())
       ),
     {
@@ -102,6 +114,10 @@ export class PlayerEffects implements OnRunEffects {
 
   duration$ = createEffect(() =>
     this.audio.duration$.pipe(map((duration) => setDuration({ duration })))
+  );
+
+  loading$ = createEffect(() =>
+    this.audio.loading$.pipe(map((loading) => setLoading({ loading })))
   );
 
   constructor(

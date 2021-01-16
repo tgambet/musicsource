@@ -5,6 +5,7 @@ export interface PlayerState {
   playlist: SongWithCover$[];
   currentIndex: number;
   playing: boolean;
+  loading: boolean;
   duration?: number;
 }
 
@@ -13,5 +14,6 @@ export const initialState: PlayerState = {
   playlist: [],
   currentIndex: 0,
   playing: false,
+  loading: false,
   duration: undefined,
 };

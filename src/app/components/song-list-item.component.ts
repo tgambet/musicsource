@@ -22,7 +22,8 @@ import { PlayerFacade } from '@app/store/player/player.facade';
       <app-player-button
         size="small"
         [song]="song"
-        (playClicked)="playClicked.emit(song)"
+        [playlist]="playlist"
+        *ngIf="song && playlist"
       ></app-player-button>
     </div>
     <span class="title">{{ song.title }}</span>
@@ -175,8 +176,9 @@ import { PlayerFacade } from '@app/store/player/player.facade';
 })
 export class SongListItemComponent implements OnInit {
   @Input() song!: SongWithCover$;
+  @Input() playlist!: SongWithCover$[];
+
   @Output() menuOpened = new EventEmitter<MatMenuTrigger>();
-  @Output() playClicked = new EventEmitter<SongWithCover$>();
 
   icons = Icons;
 

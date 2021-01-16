@@ -18,8 +18,8 @@ import { MatMenuTrigger } from '@angular/material/menu';
       <img *ngIf="song.cover$ | async as cover" [src]="cover" alt="cover" />
       <app-player-button
         size="small"
-        (playClicked)="playClicked.emit()"
         [song]="song"
+        [playlist]="playlist"
       ></app-player-button>
     </div>
     <div class="meta">
@@ -157,6 +157,7 @@ import { MatMenuTrigger } from '@angular/material/menu';
 })
 export class PlaylistListItemComponent implements OnInit {
   @Input() song!: SongWithCover$;
+  @Input() playlist!: SongWithCover$[];
 
   @Output() playClicked = new EventEmitter<void>();
   @Output() pauseClicked = new EventEmitter<void>();

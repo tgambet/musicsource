@@ -16,9 +16,9 @@ import { map } from 'rxjs/operators';
     <app-song-list-item
       *ngFor="let song of songs; trackBy: trackBy"
       [song]="song"
+      [playlist]="songs"
       cdkMonitorSubtreeFocus
       (menuOpened)="menuOpened($event)"
-      (playClicked)="play($event)"
       [class.selected]="(currentSongPath$ | async) === song.entryPath"
     ></app-song-list-item>
   `,
@@ -42,7 +42,7 @@ import { map } from 'rxjs/operators';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SongListComponent {
-  @Input() songs!: SongWithCover$[] | null;
+  @Input() songs!: SongWithCover$[];
 
   icons = Icons;
 
@@ -72,13 +72,5 @@ export class SongListComponent {
 
   trackBy(index: number, song: SongWithCover$): string {
     return song.entryPath;
-  }
-
-  play(song: SongWithCover$): void {
-    if (this.songs) {
-      this.player.setPlaying(true);
-      this.player.setPlaylist(this.songs, this.songs.indexOf(song));
-      this.player.show();
-    }
   }
 }

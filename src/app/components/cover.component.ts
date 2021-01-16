@@ -5,20 +5,22 @@ import {
   Input,
   Output,
 } from '@angular/core';
-import { PlayerState } from './player-button.component';
 import { Icons } from '../utils/icons.util';
 import { MenuItem } from './menu.component';
 import { MatMenuTrigger } from '@angular/material/menu';
+import { SongWithCover$ } from '@app/models/song.model';
 
 @Component({
   selector: 'app-cover',
   template: `
     <app-player-button
       cdkMonitorSubtreeFocus
-      [ngClass]="playerState"
       size="small"
-      (playClicked)="playClicked.emit()"
-      (pauseClicked)="pauseClicked.emit()"
+      [song]="song"
+      [playlist]="playlist"
+      [playlistMode]="true"
+      spinnerPosition="outside"
+      *ngIf="song && playlist"
     ></app-player-button>
     <app-menu
       cdkMonitorSubtreeFocus
@@ -73,8 +75,10 @@ import { MatMenuTrigger } from '@angular/material/menu';
         right: 16px;
         bottom: 16px;
         z-index: 1;
-        transition: transform 0.2s ease, opacity 0.2s ease;
+        transition: transform 0.2s ease, opacity 0.2s ease,
+          background-color 0.2s ease;
         border-radius: 50%;
+        background-color: rgba(0, 0, 0, 0.75);
       }
       app-player-button:hover,
       app-player-button.cdk-focused {
@@ -128,12 +132,11 @@ import { MatMenuTrigger } from '@angular/material/menu';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CoverComponent {
+  @Input() song!: SongWithCover$ | null;
+  @Input() playlist!: SongWithCover$[] | null;
   @Input() title!: string;
-  @Input() playerState!: PlayerState;
   @Input() coverRouterLink!: any[] | string;
   @Input() menuItems!: MenuItem[];
   @Input() menuTriggerIcon = Icons.dotsVertical;
-  @Output() playClicked = new EventEmitter<void>();
-  @Output() pauseClicked = new EventEmitter<void>();
   @Output() menuOpened = new EventEmitter<MatMenuTrigger>();
 }
