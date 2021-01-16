@@ -19,7 +19,11 @@ import { PlayerFacade } from '@app/store/player/player.facade';
   template: `
     <div class="cover" style="--aspect-ratio:1">
       <img *ngIf="song.cover$ | async as cover" [src]="cover" alt="cover" />
-      <app-player-button size="small" shape="square"></app-player-button>
+      <app-player-button
+        size="small"
+        [song]="song"
+        (playClicked)="playClicked.emit(song)"
+      ></app-player-button>
     </div>
     <span class="title">{{ song.title }}</span>
     <span class="artists">
@@ -112,6 +116,7 @@ import { PlayerFacade } from '@app/store/player/player.facade';
         top: -4px;
         left: -4px;
         opacity: 0;
+        background-color: rgba(0, 0, 0, 0.75);
       }
       .title {
         flex: 12 1 0;
@@ -148,7 +153,8 @@ import { PlayerFacade } from '@app/store/player/player.facade';
       :host:hover .controls button,
       :host.cdk-focused .controls button,
       :host:hover app-player-button,
-      :host.cdk-focused app-player-button {
+      :host.cdk-focused app-player-button,
+      :host.selected app-player-button {
         opacity: 1;
       }
       .controls button:not(:last-of-type) {
@@ -170,6 +176,7 @@ import { PlayerFacade } from '@app/store/player/player.facade';
 export class SongListItemComponent implements OnInit {
   @Input() song!: SongWithCover$;
   @Output() menuOpened = new EventEmitter<MatMenuTrigger>();
+  @Output() playClicked = new EventEmitter<SongWithCover$>();
 
   icons = Icons;
 

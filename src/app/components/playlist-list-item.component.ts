@@ -18,8 +18,8 @@ import { MatMenuTrigger } from '@angular/material/menu';
       <img *ngIf="song.cover$ | async as cover" [src]="cover" alt="cover" />
       <app-player-button
         size="small"
-        shape="square"
         (playClicked)="playClicked.emit()"
+        [song]="song"
       ></app-player-button>
     </div>
     <div class="meta">
@@ -104,6 +104,7 @@ import { MatMenuTrigger } from '@angular/material/menu';
         top: -4px;
         left: -4px;
         opacity: 0;
+        background-color: rgba(0, 0, 0, 0.75);
       }
       .meta {
         display: flex;
@@ -137,7 +138,8 @@ import { MatMenuTrigger } from '@angular/material/menu';
       :host:hover .controls button,
       :host.cdk-focused .controls button,
       :host:hover app-player-button,
-      :host.cdk-focused app-player-button {
+      :host.cdk-focused app-player-button,
+      :host.selected app-player-button {
         opacity: 1;
       }
       a[href] {

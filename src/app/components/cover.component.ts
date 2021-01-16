@@ -16,7 +16,6 @@ import { MatMenuTrigger } from '@angular/material/menu';
     <app-player-button
       cdkMonitorSubtreeFocus
       [ngClass]="playerState"
-      [state]="playerState"
       size="small"
       (playClicked)="playClicked.emit()"
       (pauseClicked)="pauseClicked.emit()"

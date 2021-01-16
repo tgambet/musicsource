@@ -27,6 +27,7 @@ import { tapError } from '@app/utils/tap-error.util';
 import { Icons } from '@app/utils/icons.util';
 import { ActivatedRoute } from '@angular/router';
 import { MatMenuTrigger } from '@angular/material/menu';
+import { PlayerFacade } from '@app/store/player/player.facade';
 
 @Component({
   selector: 'app-library-songs',
@@ -50,6 +51,8 @@ import { MatMenuTrigger } from '@angular/material/menu';
               *ngIf="!sort.likes || !!song.likedOn"
               cdkMonitorSubtreeFocus
               (menuOpened)="menuOpened($event)"
+              (playClicked)="play(song)"
+              [class.selected]="(currentSongPath$ | async) === song.entryPath"
             ></app-song-list-item>
           </ng-container>
 
@@ -73,6 +76,9 @@ import { MatMenuTrigger } from '@angular/material/menu';
       }
       app-song-list-item:last-of-type {
         border: none;
+      }
+      app-song-list-item.selected {
+        background-color: rgba(255, 255, 255, 0.1);
       }
       app-song-list-item ~ .empty {
         display: none;
@@ -115,7 +121,15 @@ export class LibrarySongsComponent implements OnInit, OnDestroy {
 
   trigger?: MatMenuTrigger;
 
-  constructor(private library: LibraryFacade, private route: ActivatedRoute) {}
+  currentSongPath$ = this.player
+    .getCurrentSong$()
+    .pipe(map((song) => song?.entryPath));
+
+  constructor(
+    private library: LibraryFacade,
+    private route: ActivatedRoute,
+    private player: PlayerFacade
+  ) {}
 
   @HostListener('window:scroll')
   update() {
@@ -224,5 +238,11 @@ export class LibrarySongsComponent implements OnInit, OnDestroy {
       this.trigger.closeMenu();
       this.trigger = undefined;
     }
+  }
+
+  play(song: SongWithCover$): void {
+    this.player.setPlaying(true);
+    this.player.setPlaylist([song]);
+    this.player.show();
   }
 }

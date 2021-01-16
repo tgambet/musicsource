@@ -95,7 +95,7 @@ export type PageAlbumData = {
             *ngFor="let song of info.songs; let i = index"
             [trackNumber]="i + 1"
             (playClicked)="play(info.songs, i)"
-            [class.selected]="(currentSongsPath$ | async) === song.entryPath"
+            [class.selected]="(currentSongPath$ | async) === song.entryPath"
             (menuOpened)="menuOpened($event)"
             cdkMonitorSubtreeFocus
           ></app-track-list-item>
@@ -124,7 +124,7 @@ export class PageAlbumComponent implements OnInit {
   icons = Icons;
   info$!: Observable<PageAlbumData>;
 
-  currentSongsPath$ = this.player
+  currentSongPath$ = this.player
     .getCurrentSong$()
     .pipe(map((song) => song?.entryPath));
 

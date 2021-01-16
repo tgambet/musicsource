@@ -19,9 +19,10 @@ import { ComponentHelperService } from '@app/services/component-helper.service';
     <span class="index">
       <span>{{ trackNumber }}</span>
       <app-player-button
+        class="player-button"
         size="small"
-        shape="square"
         (playClicked)="playClicked.emit()"
+        [song]="song"
       ></app-player-button>
     </span>
     <span class="title">{{ song.title }}</span>
@@ -99,7 +100,8 @@ import { ComponentHelperService } from '@app/services/component-helper.service';
         opacity: 0;
       }
       :host:hover .index span,
-      :host.cdk-focused .index span {
+      :host.cdk-focused .index span,
+      :host.selected .index span {
         visibility: hidden;
       }
       .title {
@@ -116,7 +118,8 @@ import { ComponentHelperService } from '@app/services/component-helper.service';
       :host:hover .controls button,
       :host.cdk-focused .controls button,
       :host:hover app-player-button,
-      :host.cdk-focused app-player-button {
+      :host.cdk-focused app-player-button,
+      :host.selected app-player-button {
         opacity: 1;
       }
       .controls button:not(:last-of-type) {

@@ -7,6 +7,8 @@ import {
 import { SongWithCover$ } from '@app/models/song.model';
 import { Icons } from '@app/utils/icons.util';
 import { MatMenuTrigger } from '@angular/material/menu';
+import { PlayerFacade } from '@app/store/player/player.facade';
+import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-song-list',
@@ -16,6 +18,8 @@ import { MatMenuTrigger } from '@angular/material/menu';
       [song]="song"
       cdkMonitorSubtreeFocus
       (menuOpened)="menuOpened($event)"
+      (playClicked)="play($event)"
+      [class.selected]="(currentSongPath$ | async) === song.entryPath"
     ></app-song-list-item>
   `,
   styles: [
@@ -30,6 +34,9 @@ import { MatMenuTrigger } from '@angular/material/menu';
       app-song-list-item:last-of-type {
         border: none;
       }
+      app-song-list-item.selected {
+        background-color: rgba(255, 255, 255, 0.1);
+      }
     `,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -41,10 +48,11 @@ export class SongListComponent {
 
   trigger?: MatMenuTrigger;
 
-  // https://bugs.chromium.org/p/chromium/issues/detail?id=1146886&q=component%3ABlink%3EStorage%3EFileSystem&can=2
-  // rootEntry?: DirectoryEntry;
+  currentSongPath$ = this.player
+    .getCurrentSong$()
+    .pipe(map((song) => song?.entryPath));
 
-  constructor() {}
+  constructor(private player: PlayerFacade) {}
 
   @HostListener('window:scroll')
   @HostListener('click')
@@ -66,34 +74,11 @@ export class SongListComponent {
     return song.entryPath;
   }
 
-  // isFileEntry(entry: Entry | undefined): entry is FileEntry {
-  //   return !!entry && entry.kind === 'file';
-  // }
-  //
-  // isDirectoryEntry(entry: Entry | undefined): entry is DirectoryEntry {
-  //   return !!entry && entry.kind === 'directory';
-  // }
-  //
-  // play(song: Song) {
-  //   this.library
-  //     .getRootEntry()
-  //     .pipe(
-  //       filter(this.isDirectoryEntry),
-  //       tap((root) => (this.rootEntry = root))
-  //     )
-  //     .subscribe();
-  //
-  //   this.library
-  //     .getEntry(song.entryPath)
-  //     .pipe(
-  //       filter(this.isFileEntry),
-  //       concatMap((entry) =>
-  //         this.library.requestPermission(entry.handle).pipe(
-  //           concatMap(() => entry.handle.getFile()),
-  //           concatMap((file) => this.audio.play(file))
-  //         )
-  //       )
-  //     )
-  //     .subscribe();
-  // }
+  play(song: SongWithCover$): void {
+    if (this.songs) {
+      this.player.setPlaying(true);
+      this.player.setPlaylist(this.songs, this.songs.indexOf(song));
+      this.player.show();
+    }
+  }
 }
