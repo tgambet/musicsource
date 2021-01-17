@@ -340,7 +340,7 @@ export class PlayerComponent implements OnInit, OnDestroy {
   }
 
   seek(n: MatSliderChange) {
-    if (n.value) {
+    if (n.value !== null) {
       this.player.seek(n.value);
     }
   }
@@ -381,6 +381,6 @@ export class PlayerComponent implements OnInit, OnDestroy {
   }
 
   toggleLiked(song: Song): void {
-    this.helper.toggleLikedSong(song).subscribe();
+    this.helper.toggleLikedSong(song).subscribe(() => this.cdr.markForCheck());
   }
 }

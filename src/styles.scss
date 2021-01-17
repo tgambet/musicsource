@@ -159,7 +159,7 @@ $background-color: mat-color(
 );
 
 html {
-  scroll-behavior: smooth;
+  // scroll-behavior: smooth;
   overflow-x: hidden;
 }
 
@@ -281,6 +281,6 @@ app-player .mat-slider:not(.mat-slider-sliding).cdk-focused .mat-slider-thumb {
 .snack-top {
   color: $text-color;
   background-color: #212121;
-  margin-bottom: 86px !important;
+  margin-bottom: 88px !important;
   margin-left: 16px !important;
 }
