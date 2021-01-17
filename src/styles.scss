@@ -273,8 +273,15 @@ app-player .mat-slider:not(.mat-slider-sliding).cdk-focused .mat-slider-thumb {
   }
 }
 
-.dark-snack {
+.snack {
   color: $text-color;
   background-color: #212121;
   // margin-bottom: 120px !important;
+}
+
+.snack-top {
+  color: $text-color;
+  background-color: #212121;
+  margin-bottom: 86px !important;
+  margin-left: 16px !important;
 }

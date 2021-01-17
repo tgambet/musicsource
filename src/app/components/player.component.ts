@@ -1,5 +1,6 @@
 import {
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   OnDestroy,
   OnInit,
@@ -18,12 +19,15 @@ import {
 import { LibraryFacade } from '@app/store/library/library.facade';
 import { MatSlider, MatSliderChange } from '@angular/material/slider';
 import { merge, Observable, of, Subscription } from 'rxjs';
-import { SongWithCover$ } from '@app/models/song.model';
+import { Song, SongWithCover$ } from '@app/models/song.model';
 import { PlayerFacade } from '@app/store/player/player.facade';
+import { hash } from '@app/utils/hash.util';
+import { ComponentHelperService } from '@app/services/component-helper.service';
 
 @Component({
   selector: 'app-player',
   template: `
+    <a (click)="toggleMenu()" class="back-link"></a>
     <mat-slider
       class="back"
       color="primary"
@@ -87,12 +91,24 @@ import { PlayerFacade } from '@app/store/player/player.facade';
       <div class="meta">
         <span class="top">{{ song.title }}</span>
         <span class="sub">
-          {{ song.artist }} • {{ song.album }} • {{ song.year }}
+          <a [routerLink]="['/artist', getHash(song.artist)]">{{
+            song.artist
+          }}</a>
+          •
+          <a [routerLink]="['/album', getHash(song.album)]">{{ song.album }}</a>
+          • {{ song.year }}
         </span>
       </div>
       <div class="controls">
-        <button mat-icon-button [disableRipple]="true" color="accent">
-          <app-icon [path]="icons.heartOutline"></app-icon>
+        <button
+          mat-icon-button
+          [disableRipple]="true"
+          color="accent"
+          (click)="toggleLiked(song)"
+        >
+          <app-icon
+            [path]="!!song.likedOn ? icons.heart : icons.heartOutline"
+          ></app-icon>
         </button>
         <app-menu></app-menu>
       </div>
@@ -119,7 +135,11 @@ import { PlayerFacade } from '@app/store/player/player.facade';
         class="menu"
         (click)="toggleMenu()"
       >
-        <app-icon [path]="icons.menuUp" [size]="36"></app-icon>
+        <app-icon
+          [path]="icons.menuUp"
+          [size]="36"
+          [class.up]="isPlayRoute"
+        ></app-icon>
       </button>
     </div>
   `,
@@ -132,8 +152,21 @@ import { PlayerFacade } from '@app/store/player/player.facade';
         white-space: nowrap;
         padding-right: 12px;
         height: 72px;
+        position: relative;
       }
-      mat-slider {
+      :host > * {
+        position: relative;
+        z-index: 2;
+      }
+      .back-link {
+        position: absolute;
+        z-index: 1;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+      }
+      :host mat-slider {
         position: absolute;
         top: -15px;
         width: calc(100% - 12px);
@@ -205,6 +238,19 @@ import { PlayerFacade } from '@app/store/player/player.facade';
       .right .menu {
         color: white;
       }
+      .menu app-icon {
+        transition: transform 300ms ease;
+      }
+      .menu app-icon.up {
+        transform: rotate(180deg);
+        transform-origin: center center;
+      }
+      a[href] {
+        text-decoration: none;
+      }
+      a[href]:hover {
+        text-decoration: underline;
+      }
     `,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -231,7 +277,9 @@ export class PlayerComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private router: Router,
     private library: LibraryFacade,
-    private player: PlayerFacade
+    private player: PlayerFacade,
+    private helper: ComponentHelperService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -243,7 +291,8 @@ export class PlayerComponent implements OnInit, OnDestroy {
         filter((event) => event.snapshot.outlet === 'primary'),
         tap(
           (event) => (this.isPlayRoute = event.snapshot.url[0]?.path === 'play')
-        )
+        ),
+        tap(() => this.cdr.markForCheck())
       )
       .subscribe();
 
@@ -307,6 +356,7 @@ export class PlayerComponent implements OnInit, OnDestroy {
   }
 
   shuffle() {
+    this.player.setCurrentIndex(0);
     this.player.shuffle();
   }
 
@@ -318,5 +368,13 @@ export class PlayerComponent implements OnInit, OnDestroy {
       return await this.router.navigate(['/', 'library']);
     }
     return await this.router.navigate(['/', 'play']);
+  }
+
+  getHash(s: string) {
+    return hash(s);
+  }
+
+  toggleLiked(song: Song): void {
+    this.helper.toggleLikedSong(song).subscribe();
   }
 }

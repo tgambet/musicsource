@@ -189,7 +189,7 @@ import { PlayerFacade } from '@app/store/player/player.facade';
       provide: MAT_SNACK_BAR_DEFAULT_OPTIONS,
       useValue: {
         duration: 2500,
-        panelClass: 'dark-snack',
+        panelClass: 'snack',
         horizontalPosition: 'left',
       },
     },

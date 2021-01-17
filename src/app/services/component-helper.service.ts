@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Artist } from '@app/models/artist.model';
-import { concatMap, map, tap } from 'rxjs/operators';
+import { concatMap, first, map, tap } from 'rxjs/operators';
 import { LibraryFacade } from '@app/store/library/library.facade';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { EMPTY, Observable } from 'rxjs';
@@ -31,7 +31,7 @@ export class ComponentHelperService {
       .pipe(tap((updated) => (song.likedOn = updated.likedOn)))
       .pipe(
         tap(() =>
-          this.snack.open(
+          this.openSnack(
             !!song.likedOn ? 'Added to your likes' : 'Removed from your likes'
           )
         )
@@ -44,7 +44,7 @@ export class ComponentHelperService {
       .pipe(tap((updated) => (album.likedOn = updated.likedOn)))
       .pipe(
         tap(() =>
-          this.snack.open(
+          this.openSnack(
             !!album.likedOn ? 'Added to your likes' : 'Removed from your likes'
           )
         )
@@ -59,11 +59,8 @@ export class ComponentHelperService {
       )
       .pipe(
         tap(() =>
-          this.snack.open(
-            !!artist.likedOn
-              ? 'Added to your likes'
-              : 'Removed from your likes',
-            undefined
+          this.openSnack(
+            !!artist.likedOn ? 'Added to your likes' : 'Removed from your likes'
           )
         )
       );
@@ -118,5 +115,19 @@ export class ComponentHelperService {
         this.player.show();
       })
     );
+  }
+
+  openSnack(message: string) {
+    this.player
+      .isShown$()
+      .pipe(
+        first(),
+        tap((shown) =>
+          this.snack.open(message, undefined, {
+            panelClass: shown ? 'snack-top' : 'snack',
+          })
+        )
+      )
+      .subscribe();
   }
 }
