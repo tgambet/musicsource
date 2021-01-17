@@ -11,6 +11,8 @@ import { Icons } from '@app/utils/icons.util';
 import { PlaylistListComponent } from '@app/components/playlist-list.component';
 import { PlayerFacade } from '@app/store/player/player.facade';
 import { take, tap } from 'rxjs/operators';
+import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+import { SongWithCover$ } from '@app/models/song.model';
 
 @Component({
   selector: 'app-play',
@@ -26,12 +28,17 @@ import { take, tap } from 'rxjs/operators';
       </div>
     </div>
     <div class="playlist">
-      <app-playlist-list
-        #playlistList
-        *ngIf="playlist$ | async as playlist"
-        [playlist]="playlist"
-        [currentSong]="currentSong$ | async"
-      ></app-playlist-list>
+      <ng-container *ngIf="currentSong$ | async as currentSong">
+        <!--cdkDropListLockAxis="y"-->
+        <app-playlist-list
+          cdkDropList
+          #playlistList
+          *ngIf="playlist$ | async as playlist"
+          [playlist]="playlist"
+          [currentSong]="currentSong"
+          (cdkDropListDropped)="drop(playlist, currentSong, $event)"
+        ></app-playlist-list>
+      </ng-container>
     </div>
   `,
   styles: [
@@ -112,5 +119,15 @@ export class PlayComponent implements OnInit {
 
   getHash(artist: string) {
     return hash(artist);
+  }
+
+  drop(
+    playlist: SongWithCover$[],
+    currentSong: SongWithCover$,
+    event: CdkDragDrop<SongWithCover$[]>
+  ) {
+    const newPlaylist = [...playlist];
+    moveItemInArray(newPlaylist, event.previousIndex, event.currentIndex);
+    this.player.setPlaylist(newPlaylist, newPlaylist.indexOf(currentSong));
   }
 }

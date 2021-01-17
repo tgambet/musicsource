@@ -43,8 +43,8 @@ export class PlayerEffects implements OnRunEffects {
   play$ = createEffect(
     () =>
       this.player.getCurrentSong$().pipe(
+        distinctUntilChanged((s1, s2) => s1?.entryPath === s2?.entryPath),
         filter((song): song is SongWithCover$ => !!song),
-        distinctUntilChanged((s1, s2) => s1.entryPath === s2.entryPath),
         tap(() => this.player.setLoading()),
         switchMap((song) =>
           this.player.getPlaying$().pipe(

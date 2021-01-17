@@ -97,8 +97,8 @@ export class PlayerFacade {
     this.store.dispatch(setPrevIndex());
   }
 
-  setPlaying(): void {
-    this.store.dispatch(setPlaying({ playing: true }));
+  setPlaying(playing = true): void {
+    this.store.dispatch(setPlaying({ playing }));
   }
 
   resume(): void {

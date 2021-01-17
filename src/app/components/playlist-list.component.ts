@@ -12,6 +12,8 @@ import { MatMenuTrigger } from '@angular/material/menu';
   selector: 'app-playlist-list',
   template: `
     <app-playlist-list-item
+      class="item"
+      cdkDrag
       cdkMonitorSubtreeFocus
       *ngFor="let song of playlist; trackBy: trackBy; let i = index"
       [song]="song"
@@ -26,13 +28,15 @@ import { MatMenuTrigger } from '@angular/material/menu';
         display: flex;
         flex-direction: column;
       }
-      app-playlist-list-item {
+      .item {
         flex: 0 0 56px;
+        box-sizing: border-box;
+        background-color: black;
       }
-      app-playlist-list-item.selected {
-        background-color: rgba(255, 255, 255, 0.1);
+      .item.selected {
+        background-color: #1a1a1a;
       }
-      app-playlist-list-item:last-of-type {
+      .item:last-of-type {
         border: none;
       }
       :host::-webkit-scrollbar-track {
@@ -44,6 +48,19 @@ import { MatMenuTrigger } from '@angular/material/menu';
       }
       :host:hover::-webkit-scrollbar-thumb {
         background-color: rgba(255, 255, 255, 0.24);
+      }
+      .cdk-drag-preview {
+        background-color: #1a1a1a;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+      }
+      .cdk-drag-placeholder {
+        opacity: 0;
+      }
+      .cdk-drag-animating {
+        transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+      }
+      :host.cdk-drop-list-dragging .item:not(.cdk-drag-placeholder) {
+        transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
       }
     `,
   ],

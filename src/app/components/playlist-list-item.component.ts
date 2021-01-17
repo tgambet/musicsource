@@ -91,6 +91,7 @@ import { MatMenuTrigger } from '@angular/material/menu';
         align-items: center;
         padding: 0 8px;
         border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        cursor: move;
       }
       .cover {
         width: 32px;
