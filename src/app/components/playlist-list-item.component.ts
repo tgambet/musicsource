@@ -159,8 +159,6 @@ export class PlaylistListItemComponent implements OnInit {
   @Input() song!: SongWithCover$;
   @Input() playlist!: SongWithCover$[];
 
-  @Output() playClicked = new EventEmitter<void>();
-  @Output() pauseClicked = new EventEmitter<void>();
   @Output() menuOpened = new EventEmitter<MatMenuTrigger>();
 
   icons = Icons;

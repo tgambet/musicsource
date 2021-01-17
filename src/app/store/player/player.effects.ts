@@ -52,7 +52,6 @@ export class PlayerEffects implements OnRunEffects {
             tap(() => this.player.pause()),
             concatMap((playing) =>
               this.library.getEntry(song.entryPath).pipe(
-                // delay(2000),
                 filter((entry): entry is FileEntry => !!entry),
                 tap((entry) => (this.handle = entry.handle)),
                 concatMap((entry) =>
@@ -61,7 +60,6 @@ export class PlayerEffects implements OnRunEffects {
                     catchError(() => EMPTY),
                     concatMap(() => entry.handle.getFile()),
                     concatMap((file) => this.audio.setSrc(file)),
-                    // concatMap(() => this.player.getPlaying$().pipe(first())),
                     concatMap(() => (playing ? this.audio.resume() : EMPTY))
                   )
                 )
@@ -79,7 +77,9 @@ export class PlayerEffects implements OnRunEffects {
         this.player.hasNextSong$().pipe(
           take(1),
           concatMap((hasNextSong) =>
-            hasNextSong ? of(setNextIndex(), resume()) : EMPTY
+            hasNextSong
+              ? of(setPlaying({ playing: true }), setNextIndex())
+              : EMPTY
           )
         )
       )
