@@ -91,11 +91,17 @@ import { ComponentHelperService } from '@app/services/component-helper.service';
       <div class="meta">
         <span class="top">{{ song.title }}</span>
         <span class="sub">
-          <a [routerLink]="['/artist', getHash(song.artist)]">{{
-            song.artist
-          }}</a>
+          <a
+            *ngIf="song.artist"
+            [routerLink]="['/artist', getHash(song.artist)]"
+            >{{ song.artist }}</a
+          >
           •
-          <a [routerLink]="['/album', getHash(song.album)]">{{ song.album }}</a>
+          <a
+            *ngIf="song.album"
+            [routerLink]="['/album', getHash(song.album)]"
+            >{{ song.album }}</a
+          >
           • {{ song.year }}
         </span>
       </div>
