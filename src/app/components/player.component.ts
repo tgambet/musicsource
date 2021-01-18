@@ -19,7 +19,7 @@ import {
 import { LibraryFacade } from '@app/store/library/library.facade';
 import { MatSlider, MatSliderChange } from '@angular/material/slider';
 import { merge, Observable, of, Subscription } from 'rxjs';
-import { Song, SongWithCover$ } from '@app/models/song.model';
+import { SongWithCover$ } from '@app/models/song.model';
 import { PlayerFacade } from '@app/store/player/player.facade';
 import { hash } from '@app/utils/hash.util';
 import { ComponentHelperService } from '@app/services/component-helper.service';
@@ -384,9 +384,9 @@ export class PlayerComponent implements OnInit, OnDestroy {
     return hash(s);
   }
 
-  toggleLiked(song: Song): void {
-    this.helper.toggleLikedSong(song).subscribe((updated) => {
-      this.updateMenu(updated as SongWithCover$);
+  toggleLiked(song: SongWithCover$): void {
+    this.helper.toggleLikedSong(song).subscribe(() => {
+      this.updateMenu(song);
       this.cdr.markForCheck();
     });
   }
@@ -407,8 +407,8 @@ export class PlayerComponent implements OnInit, OnDestroy {
         text: !!song.likedOn ? 'Remove from your likes' : 'Add to your likes',
         icon: !!song.likedOn ? this.icons.heart : this.icons.heartOutline,
         click: () =>
-          this.helper.toggleLikedSong(song).subscribe((updated) => {
-            this.updateMenu(updated as SongWithCover$);
+          this.helper.toggleLikedSong(song).subscribe(() => {
+            this.updateMenu(song);
             this.cdr.markForCheck();
           }),
       },
