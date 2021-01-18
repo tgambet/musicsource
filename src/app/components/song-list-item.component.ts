@@ -12,7 +12,6 @@ import { hash } from '@app/utils/hash.util';
 import { Icons } from '@app/utils/icons.util';
 import { MatMenuTrigger } from '@angular/material/menu';
 import { ComponentHelperService } from '@app/services/component-helper.service';
-import { PlayerFacade } from '@app/store/player/player.facade';
 
 @Component({
   selector: 'app-song-list-item',
@@ -184,8 +183,7 @@ export class SongListItemComponent implements OnInit {
 
   constructor(
     private cdr: ChangeDetectorRef,
-    private helper: ComponentHelperService,
-    private player: PlayerFacade
+    private helper: ComponentHelperService
   ) {}
 
   ngOnInit(): void {}
@@ -199,13 +197,11 @@ export class SongListItemComponent implements OnInit {
   }
 
   playNext(song: SongWithCover$): void {
-    this.player.addToPlaylist([song], true);
-    this.player.show();
+    this.helper.playNext(song);
   }
 
   addToQueue(song: SongWithCover$): void {
-    this.player.addToPlaylist([song], false);
-    this.player.show();
+    this.helper.addToQueue(song);
   }
 
   addSongToPlaylist(song: Song) {

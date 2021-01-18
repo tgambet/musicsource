@@ -25,7 +25,7 @@ import { ScannerFacade } from '@app/store/scanner/scanner.facade';
         <span>Search</span>
       </a>
     </nav>
-    <app-menu [menuItems]="menuItems"></app-menu>
+    <app-menu [menuItems]="menuItems" [hasBackdrop]="true"></app-menu>
   `,
   styles: [
     `

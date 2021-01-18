@@ -29,6 +29,7 @@ import {
   mdiMenuDown,
   mdiMenuUp,
   mdiMessageAlert,
+  mdiMinusCircleOutline,
   mdiMusicBoxMultiple,
   mdiMusicNote,
   mdiPause,
@@ -97,4 +98,5 @@ export class Icons {
   static skipPrevious = mdiSkipPrevious;
   static sync = mdiSync;
   static volumeHigh = mdiVolumeHigh;
+  static minusCircleOutline = mdiMinusCircleOutline;
 }

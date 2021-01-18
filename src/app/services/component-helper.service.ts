@@ -3,7 +3,7 @@ import { Artist } from '@app/models/artist.model';
 import { concatMap, first, map, tap } from 'rxjs/operators';
 import { LibraryFacade } from '@app/store/library/library.facade';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { EMPTY, Observable } from 'rxjs';
+import { combineLatest, EMPTY, Observable } from 'rxjs';
 import { Song, SongWithCover$ } from '@app/models/song.model';
 import { PlaylistAddComponent } from '@app/dialogs/playlist-add.component';
 import { MatDialog } from '@angular/material/dialog';
@@ -85,18 +85,19 @@ export class ComponentHelperService {
                 .addSongsToPlaylist([...songs].reverse(), result)
                 .pipe(
                   concatMap((key) =>
-                    this.snack
-                      .open(`Added to ${result}`, 'VIEW')
-                      .onAction()
-                      .pipe(
-                        tap(() =>
-                          this.router.navigate([
-                            '/',
-                            'playlist',
-                            key.toString(),
-                          ])
-                        )
+                    this.player.isShown$().pipe(
+                      first(),
+                      concatMap((shown) =>
+                        this.snack
+                          .open(`Added to ${result}`, 'VIEW', {
+                            panelClass: shown ? 'snack-top' : 'snack',
+                          })
+                          .onAction()
+                      ),
+                      tap(() =>
+                        this.router.navigate(['/', 'playlist', key.toString()])
                       )
+                    )
                   )
                 )
         ),
@@ -115,6 +116,34 @@ export class ComponentHelperService {
         this.player.show();
       })
     );
+  }
+
+  playNext(song: SongWithCover$) {
+    this.player.addToPlaylist([song], true);
+    this.player.show();
+    this.openSnack('Song will play next');
+  }
+
+  addToQueue(song: SongWithCover$) {
+    this.player.addToPlaylist([song]);
+    this.player.show();
+    this.openSnack('Song added to queue');
+  }
+
+  removeFromQueue(song: SongWithCover$) {
+    combineLatest([this.player.getPlaylist$(), this.player.getCurrentIndex$()])
+      .pipe(
+        first(),
+        tap(([playlist, index]) => {
+          const newPlaylist = [...playlist];
+          newPlaylist.splice(playlist.indexOf(song), 1);
+          this.player.setPlaylist(
+            newPlaylist,
+            Math.min(index, newPlaylist.length - 1)
+          );
+        })
+      )
+      .subscribe();
   }
 
   openSnack(message: string) {

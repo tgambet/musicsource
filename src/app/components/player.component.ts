@@ -23,6 +23,7 @@ import { Song, SongWithCover$ } from '@app/models/song.model';
 import { PlayerFacade } from '@app/store/player/player.facade';
 import { hash } from '@app/utils/hash.util';
 import { ComponentHelperService } from '@app/services/component-helper.service';
+import { MenuItem } from '@app/components/menu.component';
 
 @Component({
   selector: 'app-player',
@@ -116,7 +117,7 @@ import { ComponentHelperService } from '@app/services/component-helper.service';
             [path]="!!song.likedOn ? icons.heart : icons.heartOutline"
           ></app-icon>
         </button>
-        <app-menu></app-menu>
+        <app-menu [hasBackdrop]="true" [menuItems]="menuItems"></app-menu>
       </div>
     </div>
     <div class="right">
@@ -271,6 +272,7 @@ export class PlayerComponent implements OnInit, OnDestroy {
   max$!: Observable<number>;
   seekerDisabled$!: Observable<boolean>;
   currentSong$!: Observable<SongWithCover$>;
+  menuItems!: MenuItem[];
   playing$!: Observable<{ value: boolean }>;
   nextEnabled$!: Observable<boolean>;
   prevEnabled$!: Observable<boolean>;
@@ -333,6 +335,8 @@ export class PlayerComponent implements OnInit, OnDestroy {
     this.currentSong$ = this.player
       .getCurrentSong$()
       .pipe(filter((song): song is SongWithCover$ => !!song));
+
+    this.currentSong$.pipe(tap((song) => this.updateMenu(song))).subscribe();
   }
 
   ngOnDestroy(): void {
@@ -381,6 +385,57 @@ export class PlayerComponent implements OnInit, OnDestroy {
   }
 
   toggleLiked(song: Song): void {
-    this.helper.toggleLikedSong(song).subscribe(() => this.cdr.markForCheck());
+    this.helper.toggleLikedSong(song).subscribe((updated) => {
+      this.updateMenu(updated as SongWithCover$);
+      this.cdr.markForCheck();
+    });
+  }
+
+  updateMenu(song: SongWithCover$) {
+    this.menuItems = [
+      {
+        text: 'Play next',
+        icon: this.icons.playlistPlay,
+        click: () => this.helper.playNext(song),
+      },
+      {
+        text: 'Add to queue',
+        icon: this.icons.playlistMusic,
+        click: () => this.helper.addToQueue(song),
+      },
+      {
+        text: !!song.likedOn ? 'Remove from your likes' : 'Add to your likes',
+        icon: !!song.likedOn ? this.icons.heart : this.icons.heartOutline,
+        click: () =>
+          this.helper.toggleLikedSong(song).subscribe((updated) => {
+            this.updateMenu(updated as SongWithCover$);
+            this.cdr.markForCheck();
+          }),
+      },
+      {
+        text: 'Add to playlist',
+        icon: this.icons.playlistPlus,
+        click: () => this.helper.addSongsToPlaylist([song]).subscribe(),
+      },
+      {
+        text: 'Remove from queue',
+        icon: this.icons.minusCircleOutline,
+        click: () => this.helper.removeFromQueue(song),
+      },
+      {
+        text: 'Go to album',
+        icon: this.icons.album,
+        routerLink: song.album
+          ? ['/album', this.getHash(song.album)]
+          : undefined,
+      },
+      {
+        text: 'Go to artist',
+        icon: this.icons.accountMusic,
+        routerLink: song.artist
+          ? ['/artist', this.getHash(song.artist)]
+          : undefined,
+      },
+    ];
   }
 }

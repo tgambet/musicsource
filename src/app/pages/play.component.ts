@@ -36,6 +36,7 @@ import { SongWithCover$ } from '@app/models/song.model';
           *ngIf="playlist$ | async as playlist"
           [playlist]="playlist"
           [currentSong]="currentSong"
+          [currentIndex]="currentIndex$ | async"
           (cdkDropListDropped)="drop(playlist, currentSong, $event)"
         ></app-playlist-list>
       </ng-container>
@@ -88,6 +89,7 @@ export class PlayComponent implements OnInit {
   playlistList!: PlaylistListComponent;
 
   currentSong$ = this.player.getCurrentSong$();
+  currentIndex$ = this.player.getCurrentIndex$();
 
   playlist$ = this.player.getPlaylist$();
 

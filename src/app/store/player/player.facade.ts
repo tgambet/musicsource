@@ -53,7 +53,7 @@ export class PlayerFacade {
     return this.store.select(selectPlaylist);
   }
 
-  getCurrentIndex$(): Observable<number | undefined> {
+  getCurrentIndex$(): Observable<number> {
     return this.store.select(selectCurrentIndex);
   }
 

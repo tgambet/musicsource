@@ -19,7 +19,9 @@ import { MatMenuTrigger } from '@angular/material/menu';
       [song]="song"
       [playlist]="playlist"
       (menuOpened)="menuOpened($event)"
-      [class.selected]="song.entryPath === currentSong?.entryPath"
+      [class.selected]="
+        song.entryPath === currentSong?.entryPath && currentIndex === i
+      "
     ></app-playlist-list-item>
   `,
   styles: [
@@ -68,7 +70,8 @@ import { MatMenuTrigger } from '@angular/material/menu';
 })
 export class PlaylistListComponent implements OnInit {
   @Input() playlist!: SongWithCover$[];
-  @Input() currentSong?: SongWithCover$ | null;
+  @Input() currentSong!: SongWithCover$ | null;
+  @Input() currentIndex!: number | null;
 
   trigger?: MatMenuTrigger;
 

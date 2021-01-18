@@ -163,13 +163,11 @@ export class TrackListItemComponent {
   }
 
   playNext(song: SongWithCover$): void {
-    this.player.addToPlaylist([song], true);
-    this.player.show();
+    this.helper.playNext(song);
   }
 
   addToQueue(song: SongWithCover$): void {
-    this.player.addToPlaylist([song], false);
-    this.player.show();
+    this.helper.addToQueue(song);
   }
 
   addSongToPlaylist(song: Song) {

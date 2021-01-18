@@ -26,7 +26,7 @@ import { MatMenuTrigger } from '@angular/material/menu';
     >
       <app-icon [path]="triggerIcon" [size]="24"></app-icon>
     </button>
-    <mat-menu #menu="matMenu" [hasBackdrop]="false">
+    <mat-menu #menu="matMenu" [hasBackdrop]="hasBackdrop">
       <ng-template matMenuContent>
         <ng-container *ngFor="let item of menuItems">
           <button
@@ -92,6 +92,7 @@ import { MatMenuTrigger } from '@angular/material/menu';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MenuComponent {
+  @Input() hasBackdrop = false;
   @Input() triggerIcon = Icons.dotsVertical;
   @Input() menuItems!: MenuItem[] | null;
   @Input() disableRipple = false;
