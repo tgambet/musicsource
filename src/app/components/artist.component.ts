@@ -5,14 +5,13 @@ import { Icons } from '@app/utils/icons.util';
   selector: 'app-artist',
   template: `
     <div class="image">
-      <a [routerLink]="artistRouterLink" matRipple [title]="name">
-        <img
-          *ngIf="cover"
-          [src]="cover"
-          [alt]="name"
-          height="226"
-          width="226"
-        />
+      <a
+        [routerLink]="artistRouterLink"
+        matRipple
+        [title]="name"
+        style="--aspect-ratio:1"
+      >
+        <img *ngIf="cover" [src]="cover" [alt]="name" />
         <app-icon *ngIf="!cover" [path]="icons.account" [size]="200"></app-icon>
       </a>
     </div>
@@ -37,7 +36,6 @@ import { Icons } from '@app/utils/icons.util';
         overflow: hidden;
         border-radius: 50%;
         background-color: rgba(255, 255, 255, 0.1);
-        height: 226px;
         width: 100%;
       }
       .image a {
@@ -54,7 +52,7 @@ import { Icons } from '@app/utils/icons.util';
 export class ArtistComponent {
   @Input() name!: string;
   @Input() legend!: string;
-  @Input() cover?: string;
+  @Input() cover?: string | null;
   @Input() artistRouterLink!: any[] | string;
 
   icons = Icons;

@@ -17,6 +17,7 @@ import { LibraryFacade } from '@app/store/library/library.facade';
 import { concatMap, map, shareReplay, tap } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { SongWithCover$ } from '@app/models/song.model';
+import { HistoryService } from '@app/services/history.service';
 
 @Component({
   selector: 'app-album',
@@ -89,7 +90,8 @@ export class AlbumComponent implements OnInit {
   constructor(
     private library: LibraryFacade,
     private player: PlayerFacade,
-    private helper: ComponentHelperService
+    private helper: ComponentHelperService,
+    private history: HistoryService
   ) {}
 
   ngOnInit(): void {
@@ -98,6 +100,7 @@ export class AlbumComponent implements OnInit {
     this.playlist$ = this.library
       .getAlbumTracks(this.album)
       .pipe(shareReplay(1));
+
     this.song$ = this.playlist$.pipe(map((pl) => pl[0]));
   }
 
@@ -135,6 +138,7 @@ export class AlbumComponent implements OnInit {
               })
             )
             .subscribe();
+          this.history.albumPlayed(this.album);
         },
       },
       {

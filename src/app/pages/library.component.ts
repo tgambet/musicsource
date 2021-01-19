@@ -15,15 +15,7 @@ import { Subscription } from 'rxjs';
   selector: 'app-library',
   template: `
     <app-container class="recent">
-      <app-title size="small" title="Recent activity"></app-title>
-      <app-h-list buttonsTopPosition="80px">
-        <div class="recent" appHListItem>
-          <!--          <app-album
-            *ngFor="let album of albums$ | async"
-          >
-          </app-album>-->
-        </div>
-      </app-h-list>
+      <app-recent-activity></app-recent-activity>
     </app-container>
     <div class="container" #navContainer [class.scrolled-top]="scrolledTop">
       <app-container>
@@ -110,7 +102,9 @@ import { Subscription } from 'rxjs';
         margin-top: 32px;
       }
       .recent {
-        height: 200px;
+        margin-top: 32px;
+        margin-bottom: 80px;
+        min-height: 274px;
       }
       .container {
         position: sticky;

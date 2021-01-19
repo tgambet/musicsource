@@ -46,7 +46,8 @@
               "music-metadata/lib/core",
               "typedarray-to-buffer",
               "debug",
-              "readable-web-to-node-stream"
+              "readable-web-to-node-stream",
+              "node-vibrant"
             ]
           },
           "configurations": {

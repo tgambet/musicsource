@@ -14,37 +14,49 @@ export class StorageService {
     if (this.db) {
       return of(this.db);
     }
-    return this.openDB((db) => {
-      // Entries
-      const entries = db.createObjectStore('entries', { keyPath: 'path' });
-      entries.createIndex('parents', 'parent');
-      // Songs
-      const songs = db.createObjectStore('songs', { keyPath: 'entryPath' });
-      songs.createIndex('artists', 'artists', { multiEntry: true });
-      songs.createIndex('genre', 'genre', { multiEntry: true });
-      songs.createIndex('album', 'album');
-      songs.createIndex('title', 'title');
-      songs.createIndex('likedOn', 'likedOn');
-      songs.createIndex('lastModified', 'lastModified');
-      // Pictures
-      db.createObjectStore('pictures', { keyPath: 'hash' });
-      // Albums
-      const albums = db.createObjectStore('albums', { keyPath: 'name' });
-      albums.createIndex('hash', 'hash');
-      albums.createIndex('artists', 'artists', { multiEntry: true });
-      albums.createIndex('albumArtist', 'albumArtist');
-      albums.createIndex('year', 'year');
-      albums.createIndex('lastModified', 'lastModified');
-      albums.createIndex('likedOn', 'likedOn');
-      // Artists
-      const artists = db.createObjectStore('artists', { keyPath: 'name' });
-      artists.createIndex('hash', 'hash');
-      artists.createIndex('likedOn', 'likedOn');
-      artists.createIndex('lastModified', 'lastModified');
-      // Playlists
-      const playlists = db.createObjectStore('playlists', { keyPath: 'hash' });
-      playlists.createIndex('title', 'title');
-      playlists.createIndex('createdOn', 'createdOn');
+    return this.openDB((db, versionChange: IDBVersionChangeEvent) => {
+      if (versionChange.oldVersion === 0) {
+        // Entries
+        const entries = db.createObjectStore('entries', { keyPath: 'path' });
+        entries.createIndex('parents', 'parent');
+        // Songs
+        const songs = db.createObjectStore('songs', { keyPath: 'entryPath' });
+        songs.createIndex('artists', 'artists', { multiEntry: true });
+        songs.createIndex('genre', 'genre', { multiEntry: true });
+        songs.createIndex('album', 'album');
+        songs.createIndex('title', 'title');
+        songs.createIndex('likedOn', 'likedOn');
+        songs.createIndex('lastModified', 'lastModified');
+        // Pictures
+        db.createObjectStore('pictures', { keyPath: 'hash' });
+        // Albums
+        const albums = db.createObjectStore('albums', { keyPath: 'name' });
+        albums.createIndex('hash', 'hash');
+        albums.createIndex('artists', 'artists', { multiEntry: true });
+        albums.createIndex('albumArtist', 'albumArtist');
+        albums.createIndex('year', 'year');
+        albums.createIndex('lastModified', 'lastModified');
+        albums.createIndex('likedOn', 'likedOn');
+        albums.createIndex('listenedOn', 'listenedOn');
+        // Artists
+        const artists = db.createObjectStore('artists', { keyPath: 'name' });
+        artists.createIndex('hash', 'hash');
+        artists.createIndex('likedOn', 'likedOn');
+        artists.createIndex('lastModified', 'lastModified');
+        artists.createIndex('listenedOn', 'listenedOn');
+        // Playlists
+        const playlists = db.createObjectStore('playlists', {
+          keyPath: 'hash',
+        });
+        playlists.createIndex('title', 'title');
+        playlists.createIndex('createdOn', 'createdOn');
+      }
+      if (versionChange.oldVersion <= 1) {
+        // const t: IDBTransaction = (versionChange.target as any).transaction;
+        // t.objectStore('').createIndex('listenedOn', 'listenedOn');
+      }
+      if (versionChange.oldVersion <= 2) {
+      }
     }).pipe(tap((db) => (this.db = db)));
   }
 
@@ -348,11 +360,12 @@ export class StorageService {
   }
 
   private openDB(
-    onUpgradeNeeded: (_: IDBDatabase) => void
+    onUpgradeNeeded: (result: IDBDatabase, _: IDBVersionChangeEvent) => void
   ): Observable<IDBDatabase> {
     return new Observable<IDBDatabase>((subscriber) => {
       const request = indexedDB.open(this.dbName, this.dbVersion);
-      request.onupgradeneeded = (_) => onUpgradeNeeded(request.result);
+      request.onupgradeneeded = (versionChange) =>
+        onUpgradeNeeded(request.result, versionChange);
       request.onsuccess = (_) => {
         subscriber.next(request.result);
         subscriber.complete();

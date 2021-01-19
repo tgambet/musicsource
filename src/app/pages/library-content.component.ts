@@ -1,10 +1,8 @@
 import {
-  AfterViewInit,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
   ElementRef,
-  HostListener,
   Input,
   OnDestroy,
   OnInit,
@@ -15,6 +13,7 @@ import { LibraryFacade } from '@app/store/library/library.facade';
 import { ActivatedRoute, Router } from '@angular/router';
 import { tap } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
+import { ScrollerService } from '@app/services/scroller.service';
 
 @Component({
   selector: 'app-library-content',
@@ -74,8 +73,7 @@ import { Subscription } from 'rxjs';
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class LibraryContentComponent
-  implements OnInit, AfterViewInit, OnDestroy {
+export class LibraryContentComponent implements OnInit, OnDestroy {
   @ViewChild('filters', { static: true })
   filters!: ElementRef;
 
@@ -96,19 +94,9 @@ export class LibraryContentComponent
     private library: LibraryFacade,
     private router: Router,
     private route: ActivatedRoute,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private scroller: ScrollerService
   ) {}
-
-  @HostListener('window:scroll')
-  update(): void {
-    this.scrolledTop =
-      this.filters.nativeElement.getBoundingClientRect().y <= 112;
-    this.cdr.markForCheck();
-  }
-
-  ngAfterViewInit() {
-    setTimeout(() => this.update());
-  }
 
   ngOnInit(): void {
     this.subscription.add(
@@ -125,6 +113,18 @@ export class LibraryContentComponent
           tap(() => (this.sortValue = this.selectedSortOption.value)),
           tap((params) => (this.likes = params.get('likes') === '1')),
           tap(() => this.cdr.markForCheck())
+        )
+        .subscribe()
+    );
+
+    this.subscription.add(
+      this.scroller.scroll$
+        .pipe(
+          tap(() => {
+            this.scrolledTop =
+              this.filters.nativeElement.getBoundingClientRect().y <= 112;
+            this.cdr.markForCheck();
+          })
         )
         .subscribe()
     );

@@ -16,6 +16,7 @@ import { scanArray } from '@app/utils/scan-array.util';
 import { ComponentHelperService } from '@app/services/component-helper.service';
 import { MatMenuTrigger } from '@angular/material/menu';
 import { PlayerFacade } from '@app/store/player/player.facade';
+import { HistoryService } from '@app/services/history.service';
 
 @Component({
   selector: 'app-library-artists',
@@ -183,7 +184,8 @@ export class LibraryArtistsComponent implements OnInit {
     private library: LibraryFacade,
     private route: ActivatedRoute,
     private helper: ComponentHelperService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private history: HistoryService
   ) {}
 
   @HostListener('window:scroll')
@@ -241,5 +243,6 @@ export class LibraryArtistsComponent implements OnInit {
 
   shufflePlay(artist: Artist) {
     this.helper.shufflePlayArtist(artist).subscribe();
+    this.history.artistPlayed(artist);
   }
 }

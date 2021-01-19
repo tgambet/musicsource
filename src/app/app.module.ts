@@ -88,6 +88,7 @@ import { PlaylistListItemComponent } from './components/playlist-list-item.compo
 import { PlaylistListComponent } from './components/playlist-list.component';
 import { PlayerEffects } from '@app/store/player/player.effects';
 import { PlayerFacade } from '@app/store/player/player.facade';
+import { RecentActivityComponent } from './components/recent-activity.component';
 
 @NgModule({
   declarations: [
@@ -141,6 +142,7 @@ import { PlayerFacade } from '@app/store/player/player.facade';
     PlayComponent,
     PlaylistListItemComponent,
     PlaylistListComponent,
+    RecentActivityComponent,
   ],
   imports: [
     BrowserModule,

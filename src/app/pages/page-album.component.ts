@@ -19,6 +19,7 @@ import { LibraryFacade } from '@app/store/library/library.facade';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { ComponentHelperService } from '@app/services/component-helper.service';
+import { HistoryService } from '@app/services/history.service';
 
 export type PageAlbumData = {
   album: Album;
@@ -70,7 +71,11 @@ export type PageAlbumData = {
             </div>
           </div>
           <div class="actions">
-            <button mat-raised-button color="accent" (click)="play(info.songs)">
+            <button
+              mat-raised-button
+              color="accent"
+              (click)="play(info.album, info.songs)"
+            >
               <app-icon [path]="icons.play"></app-icon>
               <span>Play</span>
             </button>
@@ -139,7 +144,8 @@ export class PageAlbumComponent implements OnInit {
     private snack: MatSnackBar,
     private dialog: MatDialog,
     private helper: ComponentHelperService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private history: HistoryService
   ) {}
 
   @HostListener('window:scroll')
@@ -165,11 +171,11 @@ export class PageAlbumComponent implements OnInit {
   ngOnInit(): void {
     this.info$ = this.route.data.pipe(map((data) => data.info));
     this.menuItems$ = this.info$.pipe(
-      map((info) => this.getMenuItem(info.songs))
+      map((info) => this.getMenuItem(info.album, info.songs))
     );
   }
 
-  getMenuItem(songs: SongWithCover$[]): MenuItem[] {
+  getMenuItem(album: Album, songs: SongWithCover$[]): MenuItem[] {
     return [
       {
         text: 'Shuffle play',
@@ -179,6 +185,7 @@ export class PageAlbumComponent implements OnInit {
           this.player.setPlaylist(songs);
           this.player.shuffle();
           this.player.show();
+          this.history.albumPlayed(album);
         },
       },
       {
@@ -214,10 +221,11 @@ export class PageAlbumComponent implements OnInit {
     return hash(albumArtist);
   }
 
-  play(songs: SongWithCover$[], index = 0) {
+  play(album: Album, songs: SongWithCover$[], index = 0) {
     this.player.setPlaying();
     this.player.setPlaylist(songs, index);
     this.player.show();
+    this.history.albumPlayed(album);
   }
 
   addAlbumToPlaylist(songs: Song[]) {

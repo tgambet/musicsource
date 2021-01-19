@@ -13,6 +13,7 @@ import { AlbumWithCover$ } from '@app/models/album.model';
 import { SongWithCover$ } from '@app/models/song.model';
 import { hash } from '@app/utils/hash.util';
 import { ComponentHelperService } from '@app/services/component-helper.service';
+import { HistoryService } from '@app/services/history.service';
 
 export type PageArtistData = {
   artist: Artist;
@@ -195,7 +196,8 @@ export class PageArtistComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private cdr: ChangeDetectorRef,
-    private helper: ComponentHelperService
+    private helper: ComponentHelperService,
+    private history: HistoryService
   ) {}
 
   ngOnInit(): void {
@@ -208,6 +210,7 @@ export class PageArtistComponent implements OnInit {
 
   shufflePlay(artist: Artist) {
     this.helper.shufflePlayArtist(artist).subscribe();
+    this.history.artistPlayed(artist);
   }
 
   toggleLiked(artist: Artist) {
