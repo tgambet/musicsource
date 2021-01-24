@@ -64,18 +64,42 @@ import { SetRequired } from '@app/utils/types.util';
 import { Song } from '@app/models/song.model';
 import { hash } from '@app/utils/hash.util';
 import { reduceArray } from '@app/utils/reduce-array.util';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { ScanComponent } from '@app/dialogs/scan.component';
+import { NoopScrollStrategy } from '@angular/cdk/overlay';
 
+// noinspection JSUnusedGlobalSymbols
 @Injectable()
 export class ScannerEffects implements OnRunEffects {
+  scannerRef?: MatDialogRef<ScanComponent>;
+
   step1$ = createEffect(() =>
     this.actions$.pipe(
       ofType(openDirectorySuccess),
-      tap(async () => {
-        await this.router.navigate([{ outlets: { dialog: ['scan'] } }], {
-          skipLocationChange: true,
+      concatMap((dir) => {
+        const scanner = this.dialog.open(ScanComponent, {
+          width: '90%',
+          maxWidth: '325px',
+          hasBackdrop: true,
+          disableClose: true,
+          scrollStrategy: new NoopScrollStrategy(),
+          closeOnNavigation: false,
+          panelClass: 'scan-dialog',
         });
-      }),
-      map((dir) => scanEntries(dir))
+
+        this.scannerRef = scanner;
+
+        return scanner.afterOpened().pipe(
+          concatMap(() => this.storage.getDb()), // Open db after an abort
+          map(() => scanEntries(dir))
+        );
+      })
+      // tap(async () => {
+      //   await this.router.navigate([{ outlets: { dialog: ['scan'] } }], {
+      //     skipLocationChange: true,
+      //   });
+      // }),
+      // map((dir) => scanEntries(dir))
     )
   );
   step2$ = createEffect(() =>
@@ -103,6 +127,8 @@ export class ScannerEffects implements OnRunEffects {
     this.actions$.pipe(
       ofType(buildArtistsSuccess),
       delay(100),
+      tap(() => localStorage.setItem('scanned', '1')),
+      tap(() => this.router.navigate(['/library'])),
       mapTo(scanSuccess())
     )
   );
@@ -111,8 +137,9 @@ export class ScannerEffects implements OnRunEffects {
     () =>
       this.actions$.pipe(
         ofType(scanAborted),
-        tap(() => this.router.navigate([{ outlets: { dialog: null } }])),
-        tap(() => this.snackBar.open(`Scan aborted`, '', { duration: 2000 }))
+        tap(() => this.scannerRef?.close()),
+        tap(() => this.snackBar.open(`Scan aborted`, '', { duration: 2500 })),
+        concatMap(() => this.storage.clear())
       ),
     { dispatch: false }
   );
@@ -347,7 +374,8 @@ export class ScannerEffects implements OnRunEffects {
     private appRef: ApplicationRef,
     private router: Router,
     private snackBar: MatSnackBar,
-    private scanner: ScannerFacade
+    private scanner: ScannerFacade,
+    private dialog: MatDialog
   ) {}
 
   ngrxOnRunEffects(

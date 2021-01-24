@@ -98,7 +98,7 @@ export const slideInAnimation: AnimationTriggerMetadata = trigger(
 );
 
 @Component({
-  selector: 'app-root',
+  selector: 'app-app',
   template: `
     <app-top-bar></app-top-bar>
     <main [@routeAnimations]="prepareRoute(outlet)">
@@ -107,7 +107,6 @@ export const slideInAnimation: AnimationTriggerMetadata = trigger(
     <aside @playerAnimations *ngIf="showPlayer$ | async">
       <app-player></app-player>
     </aside>
-    <router-outlet name="dialog"></router-outlet>
     <router-outlet name="help"></router-outlet>
     <router-outlet name="feedback"></router-outlet>
   `,

@@ -14,27 +14,35 @@ export type HistoryItem =
 @Component({
   selector: 'app-recent-activity',
   template: `
-    <app-title size="small" title="Recent activity"></app-title>
-    <app-h-list buttonsTopPosition="80px">
-      <div class="item" appHListItem *ngFor="let item of a$ | async">
-        <app-album
-          *ngIf="item.t === 'album'"
-          [album]="item"
-          size="small"
-        ></app-album>
-        <app-artist
-          *ngIf="item.t === 'artist'"
-          [name]="item.name"
-          [cover]="item.cover$ | async"
-          [artistRouterLink]="['/', 'artist', item.hash]"
-        ></app-artist>
-      </div>
-    </app-h-list>
+    <div class="container" *ngIf="a$ | async as a">
+      <ng-container *ngIf="a.length > 0">
+        <app-title size="small" title="Recent activity"></app-title>
+        <app-h-list buttonsTopPosition="80px">
+          <div class="item" appHListItem *ngFor="let item of a">
+            <app-album
+              *ngIf="item.t === 'album'"
+              [album]="item"
+              size="small"
+            ></app-album>
+            <app-artist
+              *ngIf="item.t === 'artist'"
+              [name]="item.name"
+              [cover]="item.cover$ | async"
+              [artistRouterLink]="['/', 'artist', item.hash]"
+            ></app-artist>
+          </div>
+        </app-h-list>
+      </ng-container>
+    </div>
   `,
   styles: [
     `
       :host {
         display: block;
+      }
+      .container {
+        margin-top: 32px;
+        margin-bottom: 80px;
       }
       app-title {
         margin-bottom: 16px;

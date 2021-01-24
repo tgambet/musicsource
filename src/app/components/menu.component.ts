@@ -23,6 +23,7 @@ import { MatMenuTrigger } from '@angular/material/menu';
       [matRippleColor]="rippleColor"
       [matRippleCentered]="true"
       [matRippleDisabled]="disableRipple"
+      [disabled]="disabled"
     >
       <app-icon [path]="triggerIcon" [size]="24"></app-icon>
     </button>
@@ -92,6 +93,7 @@ import { MatMenuTrigger } from '@angular/material/menu';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MenuComponent {
+  @Input() disabled = false;
   @Input() hasBackdrop = false;
   @Input() triggerIcon = Icons.dotsVertical;
   @Input() menuItems!: MenuItem[] | null;

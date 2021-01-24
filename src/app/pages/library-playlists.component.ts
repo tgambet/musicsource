@@ -35,7 +35,11 @@ import { scanArray } from '@app/utils/scan-array.util';
           <app-label
             [topLabel]="{
               text: 'New playlist',
-              routerLink: ['/', { outlets: { dialog: 'new-playlist' } }]
+              routerLink: [
+                '/',
+                'library',
+                { outlets: { dialog: 'new-playlist' } }
+              ]
             }"
             size="small"
           ></app-label>

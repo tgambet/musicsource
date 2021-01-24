@@ -102,11 +102,10 @@ import { Subscription } from 'rxjs';
         margin-top: 32px;
       }
       .recent {
-        margin-top: 32px;
-        margin-bottom: 80px;
-        min-height: 274px;
+        /* min-height: 274px;*/
       }
       .container {
+        margin-top: 32px;
         position: sticky;
         top: 63px;
         z-index: 101;

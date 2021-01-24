@@ -25,7 +25,12 @@ import { ScannerFacade } from '@app/store/scanner/scanner.facade';
       <!--        <span>Search</span>-->
       <!--      </a>-->
     </nav>
-    <app-menu [menuItems]="menuItems" [hasBackdrop]="true"></app-menu>
+    <app-menu
+      [menuItems]="menuItems"
+      [hasBackdrop]="true"
+      [disabled]="true"
+      [triggerIcon]="icons.account"
+    ></app-menu>
   `,
   styles: [
     `
@@ -119,11 +124,12 @@ import { ScannerFacade } from '@app/store/scanner/scanner.facade';
 export class TopBarComponent {
   icons = Icons;
   menuItems: MenuItem[] = [
-    {
-      text: 'Quick scan a folder',
-      icon: Icons.folderSearch,
-      click: () => this.scan(),
-    },
+    { text: 'Contact' },
+    // {
+    //   text: 'Quick scan a folder',
+    //   icon: Icons.folderSearch,
+    //   click: () => this.scan(),
+    // },
     // {
     //   text: 'Library settings',
     //   icon: Icons.folderCog,

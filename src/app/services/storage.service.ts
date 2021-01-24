@@ -344,6 +344,19 @@ export class StorageService {
     );
   }
 
+  clear(): Observable<void> {
+    return new Observable((observer) => {
+      const a = indexedDB.deleteDatabase(this.dbName);
+      a.onerror = (event) => observer.error(event);
+      a.onsuccess = () => {
+        observer.next();
+        observer.complete();
+      };
+      this.db?.close();
+      this.db = undefined;
+    });
+  }
+
   private wrap<T>(
     action: (_: IDBTransaction) => IDBRequest<T>
   ): (_: IDBTransaction) => Observable<T> {

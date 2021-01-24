@@ -1,13 +1,6 @@
 import { NgModule } from '@angular/core';
 import { Event, Router, RouterModule, Routes, Scroll } from '@angular/router';
-import { HomeComponent } from '@app/pages/home.component';
 import { LibraryComponent } from '@app/pages/library.component';
-import { SearchComponent } from '@app/pages/search.component';
-import { HistoryComponent } from '@app/pages/history.component';
-import { ExplorerComponent } from '@app/pages/explorer.component';
-import { LibrarySettingsComponent } from '@app/dialogs/library-settings.component';
-import { SettingsComponent } from '@app/dialogs/settings.component';
-import { ScanComponent } from '@app/dialogs/scan.component';
 import { PageAlbumComponent } from '@app/pages/page-album.component';
 import { PageAlbumResolverService } from '@app/resolvers/page-album-resolver.service';
 import { PageArtistComponent } from '@app/pages/page-artist.component';
@@ -21,91 +14,105 @@ import { LibrarySongsComponent } from '@app/pages/library-songs.component';
 import { PlaylistNewComponent } from '@app/dialogs/playlist-new.component';
 import { PagePlaylistComponent } from '@app/pages/page-playlist.component';
 import { PagePlaylistResolver } from '@app/resolvers/page-playlist-resolver.service';
-import { PagePlaylistLikesComponent } from '@app/pages/page-playlist-likes.component';
 import { PlayComponent } from '@app/pages/play.component';
+import { WelcomeComponent } from '@app/pages/welcome.component';
+import { AppComponent } from '@app/app.component';
+import { MainGuard } from '@app/guards/main.guard';
 
 const routes: Routes = [
   //{ path: '', component: HomeComponent, data: { animation: 'default' } },
   {
-    path: '',
-    redirectTo: 'library',
-    pathMatch: 'full',
+    path: 'welcome',
+    component: WelcomeComponent,
     data: { animation: 'default' },
   },
-  { path: 'home', component: HomeComponent, data: { animation: 'default' } },
-  {
-    path: 'history',
-    component: HistoryComponent,
-    data: { animation: 'default' },
-  },
-  {
-    path: 'explorer',
-    component: ExplorerComponent,
-    data: { animation: 'default' },
-  },
-  {
-    path: 'library',
-    component: LibraryComponent,
-    data: { animation: 'default' },
-    children: [
-      { path: '', redirectTo: 'albums', pathMatch: 'full' },
-      { path: 'playlists', component: LibraryPlaylistsComponent },
-      { path: 'albums', component: LibraryAlbumsComponent },
-      { path: 'artists', component: LibraryArtistsComponent },
-      { path: 'songs', component: LibrarySongsComponent },
-    ],
-  },
-  {
-    path: 'search',
-    component: SearchComponent,
-    data: { animation: 'default' },
-  },
-  {
-    path: 'album/:id',
-    component: PageAlbumComponent,
-    data: { animation: 'default' },
-    resolve: { info: PageAlbumResolverService },
-  },
-  {
-    path: 'artist/:id',
-    component: PageArtistComponent,
-    data: { animation: 'default' },
-    resolve: { info: PageArtistResolverService },
-  },
-  {
-    path: 'likes',
-    data: { animation: 'default' },
-    component: PagePlaylistLikesComponent,
-  },
-  {
-    path: 'play',
-    component: PlayComponent,
-    data: { animation: 'PlayPage' },
-  },
-  {
-    path: 'playlist/:id',
-    component: PagePlaylistComponent,
-    data: { animation: 'default' },
-    resolve: { info: PagePlaylistResolver },
-  },
-  {
-    outlet: 'dialog',
-    path: 'settings',
-    component: SettingsComponent,
-    children: [
-      { path: '', redirectTo: 'library', pathMatch: 'full' },
-      { path: 'library', component: LibrarySettingsComponent },
-    ],
-  },
-  {
-    outlet: 'dialog',
-    path: 'scan',
-    component: ScanComponent,
-  },
+  // {
+  //   outlet: 'dialog',
+  //   path: 'settings',
+  //   component: SettingsComponent,
+  //   children: [
+  //     { path: '', redirectTo: 'library', pathMatch: 'full' },
+  //     { path: 'library', component: LibrarySettingsComponent },
+  //   ],
+  // },
   {
     outlet: 'dialog',
     path: 'new-playlist',
     component: PlaylistNewComponent,
+  },
+  {
+    path: '',
+    component: AppComponent,
+    canActivate: [MainGuard],
+    canActivateChild: [MainGuard],
+    children: [
+      {
+        path: '',
+        redirectTo: 'library',
+        pathMatch: 'full',
+        data: { animation: 'default' },
+      },
+      // {
+      //   path: 'home',
+      //   component: HomeComponent,
+      //   data: { animation: 'default' },
+      // },
+      // {
+      //   path: 'history',
+      //   component: HistoryComponent,
+      //   data: { animation: 'default' },
+      // },
+      // {
+      //   path: 'explorer',
+      //   component: ExplorerComponent,
+      //   data: { animation: 'default' },
+      // },
+      {
+        path: 'library',
+        component: LibraryComponent,
+        data: { animation: 'default' },
+        children: [
+          { path: '', redirectTo: 'albums', pathMatch: 'full' },
+          { path: 'playlists', component: LibraryPlaylistsComponent },
+          { path: 'albums', component: LibraryAlbumsComponent },
+          { path: 'artists', component: LibraryArtistsComponent },
+          { path: 'songs', component: LibrarySongsComponent },
+        ],
+      },
+      // {
+      //   path: 'search',
+      //   component: SearchComponent,
+      //   data: { animation: 'default' },
+      // },
+      {
+        path: 'album/:id',
+        component: PageAlbumComponent,
+        data: { animation: 'default' },
+        resolve: { info: PageAlbumResolverService },
+      },
+      {
+        path: 'artist/:id',
+        component: PageArtistComponent,
+        data: { animation: 'default' },
+        resolve: { info: PageArtistResolverService },
+      },
+      {
+        path: 'playlist/:id',
+        component: PagePlaylistComponent,
+        data: { animation: 'default' },
+        resolve: { info: PagePlaylistResolver },
+      },
+      // {
+      //   path: 'likes',
+      //   data: { animation: 'default' },
+      //   component: PagePlaylistLikesComponent,
+      // },
+      {
+        path: 'play',
+        component: PlayComponent,
+        data: { animation: 'PlayPage' },
+      },
+    ],
   },
 ];
 

@@ -89,6 +89,8 @@ import { PlaylistListComponent } from './components/playlist-list.component';
 import { PlayerEffects } from '@app/store/player/player.effects';
 import { PlayerFacade } from '@app/store/player/player.facade';
 import { RecentActivityComponent } from './components/recent-activity.component';
+import { WelcomeComponent } from './pages/welcome.component';
+import { RootComponent } from './root.component';
 
 @NgModule({
   declarations: [
@@ -143,6 +145,8 @@ import { RecentActivityComponent } from './components/recent-activity.component'
     PlaylistListItemComponent,
     PlaylistListComponent,
     RecentActivityComponent,
+    WelcomeComponent,
+    RootComponent,
   ],
   imports: [
     BrowserModule,
@@ -196,7 +200,7 @@ import { RecentActivityComponent } from './components/recent-activity.component'
       },
     },
   ],
-  bootstrap: [AppComponent],
+  bootstrap: [RootComponent],
 })
 export class AppModule {
   constructor(update: UpdateService) {

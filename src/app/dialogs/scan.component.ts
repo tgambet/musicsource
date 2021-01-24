@@ -1,60 +1,59 @@
-import { ChangeDetectionStrategy, Component, ViewChild } from '@angular/core';
-import { MatDialogConfig } from '@angular/material/dialog';
-import { NoopScrollStrategy } from '@angular/cdk/overlay';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { MatDialogRef } from '@angular/material/dialog';
 import { asapScheduler, combineLatest, Observable } from 'rxjs';
 import { map, throttleTime } from 'rxjs/operators';
-import { RoutedDialogDirective } from '@app/directives/routed-dialog.directive';
 import { Icons } from '@app/utils/icons.util';
 import { ScannerFacade } from '@app/store/scanner/scanner.facade';
 
 @Component({
   selector: 'app-scan',
   template: `
-    <ng-template
+    <!--    <ng-template
       appRoutedDialog
       outlet="dialog"
       [config]="config"
       #dialog="appRoutedDialog"
-    >
-      <div class="container" *ngIf="scanner$ | async as scanner">
-        <div class="progress">
-          <mat-spinner
-            [diameter]="100"
-            [strokeWidth]="8"
-            [value]="scanner.progress"
-            [mode]="scanner.progress === 0 ? 'indeterminate' : 'determinate'"
-          ></mat-spinner>
-          <div class="label" *ngIf="scanner.progressDisplay; else temp">
-            <span class="progress-display">
-              {{ scanner.progressDisplay }}
-            </span>
-            <span class="progress-display-sub">
-              {{ scanner.progressDisplaySub }}
-            </span>
+    >-->
+    <div class="container" *ngIf="scanner$ | async as scanner">
+      <div class="progress">
+        <mat-spinner
+          [diameter]="100"
+          [strokeWidth]="8"
+          [value]="scanner.progress"
+          [mode]="scanner.progress === 0 ? 'indeterminate' : 'determinate'"
+          color="accent"
+        ></mat-spinner>
+        <div class="label" *ngIf="scanner.progressDisplay; else temp">
+          <span class="progress-display">
+            {{ scanner.progressDisplay }}
+          </span>
+          <span class="progress-display-sub">
+            {{ scanner.progressDisplaySub }}
+          </span>
+        </div>
+        <ng-template #temp>
+          <div class="label" *ngIf="scanner.state === 'success'">
+            <app-icon [path]="icons.check" [size]="40"></app-icon>
           </div>
-          <ng-template #temp>
-            <div class="label" *ngIf="scanner.state === 'success'">
-              <app-icon [path]="icons.check" [size]="40"></app-icon>
-            </div>
-            <div class="label" *ngIf="scanner.state === 'error'">
-              <app-icon [path]="icons.close" [size]="40"></app-icon>
-            </div>
-          </ng-template>
-        </div>
-        <p class="step">{{ scanner.step }}</p>
-        <p class="step-sub">{{ scanner.stepSub }}</p>
-
-        <div class="actions">
-          <button
-            mat-stroked-button
-            [color]="scanner.state === 'success' ? 'primary' : 'warn'"
-            (click)="scanner.state === 'scanning' ? abort() : close()"
-          >
-            {{ scanner.state === 'scanning' ? 'Abort' : 'Close' }}
-          </button>
-        </div>
+          <div class="label" *ngIf="scanner.state === 'error'">
+            <app-icon [path]="icons.close" [size]="40"></app-icon>
+          </div>
+        </ng-template>
       </div>
-    </ng-template>
+      <p class="step">{{ scanner.step }}</p>
+      <p class="step-sub">{{ scanner.stepSub }}</p>
+
+      <div class="actions">
+        <button
+          mat-raised-button
+          [color]="scanner.state === 'success' ? 'accent' : 'warn'"
+          (click)="scanner.state === 'scanning' ? abort() : close()"
+        >
+          {{ scanner.state === 'scanning' ? 'Abort' : 'Close' }}
+        </button>
+      </div>
+    </div>
+    <!--</ng-template>-->
   `,
   styles: [
     `
@@ -105,20 +104,20 @@ import { ScannerFacade } from '@app/store/scanner/scanner.facade';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ScanComponent {
-  @ViewChild('dialog')
-  dialog!: RoutedDialogDirective;
+  // @ViewChild('dialog')
+  // dialog!: RoutedDialogDirective;
 
   icons = Icons;
 
-  config: MatDialogConfig = {
-    width: '90%',
-    maxWidth: '325px',
-    hasBackdrop: true,
-    disableClose: true,
-    scrollStrategy: new NoopScrollStrategy(),
-    closeOnNavigation: false,
-    panelClass: 'scan-dialog',
-  };
+  // config: MatDialogConfig = {
+  //   width: '90%',
+  //   maxWidth: '325px',
+  //   hasBackdrop: true,
+  //   disableClose: true,
+  //   scrollStrategy: new NoopScrollStrategy(),
+  //   closeOnNavigation: false,
+  //   panelClass: 'scan-dialog',
+  // };
 
   scanner$: Observable<{
     state?: 'scanning' | 'success' | 'error';
@@ -130,7 +129,10 @@ export class ScanComponent {
     progressDisplaySub?: string;
   }>;
 
-  constructor(private scanner: ScannerFacade) {
+  constructor(
+    private scanner: ScannerFacade,
+    public dialogRef: MatDialogRef<ScanComponent>
+  ) {
     const throttle = <T>() =>
       throttleTime<T>(25, asapScheduler, {
         leading: true,
@@ -170,7 +172,7 @@ export class ScanComponent {
   }
 
   close() {
-    this.dialog.close();
+    this.dialogRef.close();
   }
 
   abort(): void {
