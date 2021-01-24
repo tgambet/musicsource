@@ -5,11 +5,13 @@ import {
   Input,
   Output,
   EventEmitter,
+  ChangeDetectorRef,
 } from '@angular/core';
 import { Icons } from '@app/utils/icons.util';
 import { SongWithCover$ } from '@app/models/song.model';
 import { hash } from '@app/utils/hash.util';
 import { MatMenuTrigger } from '@angular/material/menu';
+import { ComponentHelperService } from '@app/services/component-helper.service';
 
 @Component({
   selector: 'app-playlist-list-item',
@@ -49,21 +51,28 @@ import { MatMenuTrigger } from '@angular/material/menu';
     </span>
     <mat-menu #menu="matMenu" [hasBackdrop]="false" [overlapTrigger]="false">
       <ng-template matMenuContent>
-        <!--        <button mat-menu-item>
-          <app-icon [path]="icons.radio"></app-icon>
-          <span>Start radio</span>
-        </button>-->
-        <button mat-menu-item>
+        <button mat-menu-item (click)="playNext(song)">
           <app-icon [path]="icons.playlistPlay"></app-icon>
           <span>Play next</span>
         </button>
-        <button mat-menu-item>
+        <button mat-menu-item (click)="addToQueue(song)">
           <app-icon [path]="icons.playlistMusic"></app-icon>
           <span>Add to queue</span>
         </button>
-        <button mat-menu-item>
+        <button mat-menu-item (click)="toggleLiked(song)">
+          <app-icon
+            [path]="!!song.likedOn ? icons.heart : icons.heartOutline"
+          ></app-icon>
+          <span *ngIf="!song.likedOn">Add to your likes</span>
+          <span *ngIf="!!song.likedOn">Remove from your likes</span>
+        </button>
+        <button mat-menu-item (click)="addToPlaylist(song)">
           <app-icon [path]="icons.playlistPlus"></app-icon>
           <span>Add to playlist</span>
+        </button>
+        <button mat-menu-item (click)="removeFromQueue(song)">
+          <app-icon [path]="icons.minusCircleOutline"></app-icon>
+          <span>Remove from queue</span>
         </button>
         <button
           mat-menu-item
@@ -164,11 +173,34 @@ export class PlaylistListItemComponent implements OnInit {
 
   icons = Icons;
 
-  constructor() {}
+  constructor(
+    private helper: ComponentHelperService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit(): void {}
 
   getHash(s: string) {
     return hash(s);
+  }
+
+  playNext(song: SongWithCover$) {
+    this.helper.playNext(song);
+  }
+
+  addToQueue(song: SongWithCover$) {
+    this.helper.addToQueue(song);
+  }
+
+  toggleLiked(song: SongWithCover$) {
+    this.helper.toggleLikedSong(song).subscribe(() => this.cdr.markForCheck());
+  }
+
+  addToPlaylist(song: SongWithCover$) {
+    this.helper.addSongsToPlaylist([song]).subscribe();
+  }
+
+  removeFromQueue(song: SongWithCover$) {
+    this.helper.removeFromQueue(song);
   }
 }

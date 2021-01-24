@@ -32,7 +32,7 @@ export class PageArtistResolverService implements Resolve<PageArtistData> {
     return this.library.getArtistByHash(id).pipe(
       concatMap((artist) => (!artist ? throwError('not found') : of(artist))),
       catchError(() => {
-        this.router.navigate(['/home']);
+        this.router.navigate(['/library']);
         return EMPTY;
       }),
       concatMap((artist) => {

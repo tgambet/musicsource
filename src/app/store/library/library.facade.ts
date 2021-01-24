@@ -141,6 +141,12 @@ export class LibraryFacade {
     );
   }
 
+  getSong(entryPath: string): Observable<Song> {
+    return this.storage
+      .get$('songs', entryPath)
+      .pipe(filter((s): s is Song => !!s));
+  }
+
   getSongs(
     index?: string,
     query?: IDBValidKey | IDBKeyRange | null,
@@ -425,7 +431,8 @@ export class LibraryFacade {
           {
             songs: [...playlist.songs, ...songs.map((song) => song.entryPath)],
             pictureKey:
-              playlist.pictureKey || songs.find((song) => song.pictureKey),
+              playlist.pictureKey ||
+              songs.find((song) => song.pictureKey)?.pictureKey,
           },
           playlist.hash
         )

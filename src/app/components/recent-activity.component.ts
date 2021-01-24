@@ -8,8 +8,8 @@ import { scanArray } from '@app/utils/scan-array.util';
 import { SetRequired } from '@app/utils/types.util';
 
 export type HistoryItem =
-  | SetRequired<ArtistWithCover$ & { t: 'artist' }, 'listenedOn'>
-  | SetRequired<AlbumWithCover$ & { t: 'album' }, 'listenedOn'>;
+  | (SetRequired<ArtistWithCover$, 'listenedOn'> & { t: 'artist' })
+  | (SetRequired<AlbumWithCover$, 'listenedOn'> & { t: 'album' });
 
 @Component({
   selector: 'app-recent-activity',

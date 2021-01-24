@@ -31,7 +31,7 @@ export class PageAlbumResolverService implements Resolve<PageAlbumData> {
     return this.library.getAlbumByHash(id).pipe(
       concatMap((album) => (!album ? throwError('not found') : of(album))),
       catchError(() => {
-        this.router.navigate(['/home']);
+        this.router.navigate(['/library']);
         return EMPTY;
       }),
       concatMap((album) => {

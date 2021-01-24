@@ -25,7 +25,13 @@ import { PagePlaylistLikesComponent } from '@app/pages/page-playlist-likes.compo
 import { PlayComponent } from '@app/pages/play.component';
 
 const routes: Routes = [
-  { path: '', component: HomeComponent, data: { animation: 'default' } },
+  //{ path: '', component: HomeComponent, data: { animation: 'default' } },
+  {
+    path: '',
+    redirectTo: 'library',
+    pathMatch: 'full',
+    data: { animation: 'default' },
+  },
   { path: 'home', component: HomeComponent, data: { animation: 'default' } },
   {
     path: 'history',

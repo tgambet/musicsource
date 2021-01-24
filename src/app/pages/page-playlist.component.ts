@@ -48,14 +48,14 @@ export interface PagePlaylistData {
           </div>
           <div class="actions">
             <ng-container *ngIf="songs$ | async as songs">
-              <button
+              <!--              <button
                 mat-stroked-button
                 color="accent"
                 *ngIf="songs.length === 0"
               >
                 <app-icon [path]="icons.playlistEdit"></app-icon>
                 <span>Edit playlist</span>
-              </button>
+              </button>-->
               <button
                 mat-raised-button
                 class="play-button"
@@ -76,7 +76,7 @@ export interface PagePlaylistData {
                 <span>Add to your likes</span>
               </button>
             </ng-container>
-            <app-menu [disableRipple]="true"></app-menu>
+            <!--<app-menu [disableRipple]="true"></app-menu>-->
           </div>
         </app-container-page>
       </header>

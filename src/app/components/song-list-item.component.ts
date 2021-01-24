@@ -7,7 +7,7 @@ import {
   OnInit,
   Output,
 } from '@angular/core';
-import { Song, SongWithCover$ } from '@app/models/song.model';
+import { SongWithCover$ } from '@app/models/song.model';
 import { hash } from '@app/utils/hash.util';
 import { Icons } from '@app/utils/icons.util';
 import { MatMenuTrigger } from '@angular/material/menu';
@@ -204,7 +204,7 @@ export class SongListItemComponent implements OnInit {
     this.helper.addToQueue(song);
   }
 
-  addSongToPlaylist(song: Song) {
+  addSongToPlaylist(song: SongWithCover$) {
     this.helper.addSongsToPlaylist([song]).subscribe();
   }
 }

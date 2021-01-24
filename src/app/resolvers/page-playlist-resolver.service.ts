@@ -34,7 +34,7 @@ export class PagePlaylistResolver implements Resolve<PagePlaylistData> {
         !playlist ? throwError('not found') : of(playlist)
       ),
       catchError(() => {
-        this.router.navigate(['/home']);
+        this.router.navigate(['/library']);
         return EMPTY;
       }),
       concatMap((playlist) => {

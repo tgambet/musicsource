@@ -27,6 +27,7 @@ import { HistoryService } from '@app/services/history.service';
       [menuItems]="menuItems"
       [coverRouterLink]="['/', 'album', album.hash]"
       (menuOpened)="menuOpened.emit($event)"
+      (playlistPlayed)="albumPlayed()"
       tabindex="-1"
       [song]="song$ | async"
       [playlist]="playlist$ | async"
@@ -202,5 +203,9 @@ export class AlbumComponent implements OnInit {
         disabled: !this.album.albumArtist,
       },
     ];
+  }
+
+  albumPlayed() {
+    this.history.albumPlayed(this.album);
   }
 }

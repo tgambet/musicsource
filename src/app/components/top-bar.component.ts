@@ -12,18 +12,18 @@ import { ScannerFacade } from '@app/store/scanner/scanner.facade';
       <span>MusicSource</span>
     </h1>
     <nav>
-      <a routerLink="/home" routerLinkActive="active">
-        <app-icon [path]="icons.home"></app-icon>
-        <span>Home</span>
-      </a>
+      <!--      <a routerLink="/home" routerLinkActive="active">-->
+      <!--        <app-icon [path]="icons.home"></app-icon>-->
+      <!--        <span>Home</span>-->
+      <!--      </a>-->
       <a routerLink="/library" routerLinkActive="active">
         <app-icon [path]="icons.library"></app-icon>
         <span>Library</span>
       </a>
-      <a routerLink="/search" routerLinkActive="active">
-        <app-icon [path]="icons.search" class="search"></app-icon>
-        <span>Search</span>
-      </a>
+      <!--      <a routerLink="/search" routerLinkActive="active">-->
+      <!--        <app-icon [path]="icons.search" class="search"></app-icon>-->
+      <!--        <span>Search</span>-->
+      <!--      </a>-->
     </nav>
     <app-menu [menuItems]="menuItems" [hasBackdrop]="true"></app-menu>
   `,

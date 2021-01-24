@@ -46,9 +46,9 @@ import { scanArray } from '@app/utils/scan-array.util';
         >
           <app-playlist [playlist]="playlist"></app-playlist>
         </div>
-        <div class="playlist likes">
+        <!--        <div class="playlist likes">
           <app-playlist-likes></app-playlist-likes>
-        </div>
+        </div>-->
         <ng-container
           *ngFor="let playlist of playlists$ | async; trackBy: trackBy"
         >

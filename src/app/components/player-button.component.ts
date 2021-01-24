@@ -4,6 +4,8 @@ import {
   HostBinding,
   Input,
   OnInit,
+  Output,
+  EventEmitter,
 } from '@angular/core';
 import { Icons } from '../utils/icons.util';
 import { SongWithCover$ } from '@app/models/song.model';
@@ -117,6 +119,8 @@ export class PlayerButtonComponent implements OnInit {
   @Input()
   spinnerPosition: 'outside' | 'inside' = 'inside';
 
+  @Output() playlistPlayed = new EventEmitter<void>();
+
   @HostBinding('class.stopped')
   stopped = true;
 
@@ -171,6 +175,7 @@ export class PlayerButtonComponent implements OnInit {
               this.playlist.indexOf(this.song)
             );
             this.player.show();
+            this.playlistPlayed.emit();
           }
         })
       )

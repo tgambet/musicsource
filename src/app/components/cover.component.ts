@@ -19,6 +19,7 @@ import { SongWithCover$ } from '@app/models/song.model';
       [song]="song"
       [playlist]="playlist"
       [playlistMode]="true"
+      (playlistPlayed)="playlistPlayed.emit()"
       spinnerPosition="outside"
       *ngIf="song && playlist"
     ></app-player-button>
@@ -139,4 +140,5 @@ export class CoverComponent {
   @Input() menuItems!: MenuItem[];
   @Input() menuTriggerIcon = Icons.dotsVertical;
   @Output() menuOpened = new EventEmitter<MatMenuTrigger>();
+  @Output() playlistPlayed = new EventEmitter<void>();
 }
