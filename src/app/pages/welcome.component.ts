@@ -26,7 +26,7 @@ import { ScannerFacade } from '@app/store/scanner/scanner.facade';
         position: relative;
       }
       .bg {
-        background: url('/assets/welcome.jpg') no-repeat;
+        background: url('/assets/welcome.jpg') no-repeat center center;
         background-size: cover;
         filter: blur(4px);
         position: absolute;

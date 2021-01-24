@@ -115,7 +115,7 @@ export const slideInAnimation: AnimationTriggerMetadata = trigger(
       :host {
         display: flex;
         flex-direction: column;
-        min-height: 100%;
+        flex: 1 1 auto;
       }
       app-top-bar {
         flex: 0 0 64px;

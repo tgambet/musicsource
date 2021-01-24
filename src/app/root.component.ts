@@ -9,7 +9,9 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
   styles: [
     `
       :host {
-        display: block;
+        display: flex;
+        flex-direction: column;
+        min-height: 100%;
       }
     `,
   ],
