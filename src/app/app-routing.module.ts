@@ -114,6 +114,7 @@ const routes: Routes = [
       },
     ],
   },
+  { path: '**', component: WelcomeComponent }, // TODO Not found component
 ];
 
 @NgModule({

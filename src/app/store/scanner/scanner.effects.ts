@@ -75,6 +75,19 @@ export class ScannerEffects implements OnRunEffects {
   handle?: any;
   scannerRef?: MatDialogRef<ScanComponent>;
 
+  step0$ = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(openDirectoryFailure),
+        concatMap(() =>
+          this.router.navigate(['/404'], { skipLocationChange: true })
+        ),
+        concatMap(() => this.router.navigate(['/welcome'])),
+        tap(() => console.log('nav'))
+      ),
+    { dispatch: false }
+  );
+
   step1$ = createEffect(() =>
     this.actions$.pipe(
       ofType(openDirectorySuccess),
@@ -143,7 +156,11 @@ export class ScannerEffects implements OnRunEffects {
         ofType(scanAborted),
         tap(() => this.scannerRef?.close()),
         tap(() => this.snackBar.open(`Scan aborted`, '', { duration: 2500 })),
-        concatMap(() => this.storage.clear())
+        concatMap(() => this.storage.clear()),
+        concatMap(() =>
+          this.router.navigate(['/404'], { skipLocationChange: true })
+        ),
+        concatMap(() => this.router.navigate(['/welcome']))
       ),
     { dispatch: false }
   );
@@ -190,9 +207,15 @@ export class ScannerEffects implements OnRunEffects {
                 catchError((error) => of(scanEntryFailure({ error })))
               )
             ),
-            takeUntil(this.actions$.pipe(ofType(abortScan)))
+            takeUntil(
+              this.actions$.pipe(
+                ofType(abortScan),
+                concatMapTo(throwError('aborted'))
+              )
+            )
           ),
-        error: (error) => scanEntriesFailure({ error }),
+        error: (error) =>
+          error === 'aborted' ? scanAborted() : scanEntriesFailure({ error }),
         complete: (count) => scanEntriesSuccess({ count }),
       })
     )
