@@ -346,14 +346,14 @@ export class StorageService {
 
   clear(): Observable<void> {
     return new Observable((observer) => {
+      this.db?.close();
+      this.db = undefined;
       const a = indexedDB.deleteDatabase(this.dbName);
       a.onerror = (event) => observer.error(event);
       a.onsuccess = () => {
         observer.next();
         observer.complete();
       };
-      this.db?.close();
-      this.db = undefined;
     });
   }
 

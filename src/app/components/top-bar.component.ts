@@ -3,6 +3,8 @@ import { Icons } from '../utils/icons.util';
 import { MenuItem } from './menu.component';
 import { Router } from '@angular/router';
 import { ScannerFacade } from '@app/store/scanner/scanner.facade';
+import { StorageService } from '@app/services/storage.service';
+import { tap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-top-bar',
@@ -28,8 +30,8 @@ import { ScannerFacade } from '@app/store/scanner/scanner.facade';
     <app-menu
       [menuItems]="menuItems"
       [hasBackdrop]="true"
-      [disabled]="true"
-      [triggerIcon]="icons.account"
+      [disabled]="false"
+      [triggerIcon]="icons.dotsVertical"
     ></app-menu>
   `,
   styles: [
@@ -124,7 +126,7 @@ import { ScannerFacade } from '@app/store/scanner/scanner.facade';
 export class TopBarComponent {
   icons = Icons;
   menuItems: MenuItem[] = [
-    { text: 'Contact' },
+    { text: 'Clear database', icon: Icons.delete, click: () => this.clear() },
     // {
     //   text: 'Quick scan a folder',
     //   icon: Icons.folderSearch,
@@ -143,7 +145,11 @@ export class TopBarComponent {
     // { text: 'Offer me a job or a beer', icon: Icons.currencyUsd },
   ];
 
-  constructor(private router: Router, private scanner: ScannerFacade) {}
+  constructor(
+    private router: Router,
+    private scanner: ScannerFacade,
+    private storage: StorageService
+  ) {}
 
   scan() {
     this.scanner.openDirectory();
@@ -152,5 +158,15 @@ export class TopBarComponent {
     //     skipLocationChange: true,
     //   })
     //   .then(() => this.store.dispatch(openDirectory()));
+  }
+
+  clear() {
+    this.storage
+      .clear()
+      .pipe(
+        tap(() => localStorage.clear()),
+        tap(() => this.router.navigate(['/welcome']))
+      )
+      .subscribe();
   }
 }

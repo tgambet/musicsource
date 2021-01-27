@@ -71,12 +71,16 @@ import { NoopScrollStrategy } from '@angular/cdk/overlay';
 // noinspection JSUnusedGlobalSymbols
 @Injectable()
 export class ScannerEffects implements OnRunEffects {
+  // https://bugs.chromium.org/p/chromium/issues/detail?id=1146886&q=component%3ABlink%3EStorage%3EFileSystem&can=2
+  handle?: any;
   scannerRef?: MatDialogRef<ScanComponent>;
 
   step1$ = createEffect(() =>
     this.actions$.pipe(
       ofType(openDirectorySuccess),
       concatMap((dir) => {
+        this.handle = dir.directory.handle;
+
         const scanner = this.dialog.open(ScanComponent, {
           width: '90%',
           maxWidth: '325px',
