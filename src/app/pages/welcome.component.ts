@@ -81,6 +81,7 @@ export class WelcomeComponent implements OnInit {
         height: 'auto',
         width: '300px',
         scrollStrategy: new NoopScrollStrategy(),
+        disableClose: true,
       })
       .afterClosed()
       .pipe(tap((res) => (res === true ? this.scan() : {})))
