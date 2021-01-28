@@ -82,8 +82,7 @@ export class ScannerEffects implements OnRunEffects {
         concatMap(() =>
           this.router.navigate(['/404'], { skipLocationChange: true })
         ),
-        concatMap(() => this.router.navigate(['/welcome'])),
-        tap(() => console.log('nav'))
+        concatMap(() => this.router.navigate(['/welcome']))
       ),
     { dispatch: false }
   );

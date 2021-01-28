@@ -74,8 +74,6 @@ export class WelcomeComponent implements OnInit {
   constructor(private scanner: ScannerFacade, private dialog: MatDialog) {}
 
   ngOnInit(): void {
-    console.log('init');
-
     this.dialog
       .open(this.welcomeDialog, {
         height: 'auto',
