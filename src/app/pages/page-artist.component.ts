@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
+  HostListener,
   OnInit,
 } from '@angular/core';
 import { Icons } from '@app/utils/icons.util';
@@ -14,6 +15,7 @@ import { SongWithCover$ } from '@app/models/song.model';
 import { hash } from '@app/utils/hash.util';
 import { ComponentHelperService } from '@app/services/component-helper.service';
 import { HistoryService } from '@app/services/history.service';
+import { WithTrigger } from '@app/classes/with-trigger';
 
 export type PageArtistData = {
   artist: Artist;
@@ -75,6 +77,7 @@ export type PageArtistData = {
               class="album"
               *ngFor="let album of albums"
               [album]="album"
+              (menuOpened)="menuOpened($event)"
             >
             </app-album>
           </app-h-list>
@@ -87,6 +90,7 @@ export type PageArtistData = {
               class="album"
               *ngFor="let album of albums"
               [album]="album"
+              (menuOpened)="menuOpened($event)"
             >
             </app-album>
           </app-h-list>
@@ -181,7 +185,7 @@ export type PageArtistData = {
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class PageArtistComponent implements OnInit {
+export class PageArtistComponent extends WithTrigger implements OnInit {
   icons = Icons;
   info$!: Observable<PageArtistData>;
 
@@ -190,7 +194,15 @@ export class PageArtistComponent implements OnInit {
     private cdr: ChangeDetectorRef,
     private helper: ComponentHelperService,
     private history: HistoryService
-  ) {}
+  ) {
+    super();
+  }
+
+  @HostListener('click')
+  @HostListener('window:scroll')
+  closeMenu() {
+    super.closeMenu();
+  }
 
   ngOnInit(): void {
     this.info$ = this.route.data.pipe(map((data) => data.info));
