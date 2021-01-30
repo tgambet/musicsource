@@ -39,13 +39,13 @@ import {
       <p *ngIf="head">{{ head }}</p>
       <h1>
         <ng-container *ngIf="titleRouterLink">
-          <a [routerLink]="titleRouterLink">{{ title }}</a>
+          <a [routerLink]="titleRouterLink"><ng-content></ng-content></a>
           <a class="more" *ngIf="extraLinkLabel" [routerLink]="titleRouterLink">
             {{ extraLinkLabel }}
           </a>
         </ng-container>
         <ng-container *ngIf="!titleRouterLink">
-          {{ title }}
+          <ng-content></ng-content>
         </ng-container>
       </h1>
     </div>
@@ -126,8 +126,6 @@ import {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TitleComponent {
-  @Input() title!: string;
-
   @Input() head?: string;
 
   @Input() titleRouterLink?: any[] | string | null | undefined;

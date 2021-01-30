@@ -8,7 +8,7 @@ import { reduceArray } from '@app/utils/reduce-array.util';
 @Component({
   selector: 'app-playlist-add',
   template: `
-    <app-title mat-dialog-title title="My playlists" size="small"></app-title>
+    <app-title mat-dialog-title size="small">My playlists</app-title>
     <mat-dialog-content>
       <ng-container *ngFor="let playlist of playlists$ | async">
         <button mat-menu-item [mat-dialog-close]="playlist.title">

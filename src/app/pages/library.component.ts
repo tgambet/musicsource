@@ -98,9 +98,6 @@ import { Subscription } from 'rxjs';
       :host {
         display: block;
       }
-      app-title {
-        margin-top: 32px;
-      }
       .recent {
         /* min-height: 274px;*/
       }

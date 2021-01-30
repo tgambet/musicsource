@@ -43,7 +43,7 @@ export type PageAlbumData = {
               ></app-icon>
             </div>
             <div class="metadata">
-              <app-title [title]="info.album.name"></app-title>
+              <app-title>{{ info.album.name }}</app-title>
               <p>
                 <span>Album</span> •
                 <a

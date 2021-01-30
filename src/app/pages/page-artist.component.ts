@@ -35,7 +35,7 @@ export type PageArtistData = {
         ></div>
         <div class="shadow"></div>
         <app-container-page class="header-container">
-          <app-title [title]="info.artist.name"></app-title>
+          <app-title>{{ info.artist.name }}</app-title>
           <div class="actions">
             <button
               mat-raised-button
@@ -63,16 +63,12 @@ export type PageArtistData = {
         </app-container-page>
       </header>
       <app-container-page class="content">
-        <app-title title="Songs" size="small"></app-title>
+        <app-title size="small">Songs</app-title>
         <ng-container *ngIf="info.songs$ | async as songs">
           <app-song-list [songs]="songs"></app-song-list>
         </ng-container>
         <ng-container *ngIf="info.albums$ | async as albums">
-          <app-title
-            title="Albums"
-            size="small"
-            *ngIf="albums.length > 0"
-          ></app-title>
+          <app-title size="small" *ngIf="albums.length > 0">Albums</app-title>
           <app-h-list buttonsTopPosition="113px" *ngIf="albums.length > 0">
             <app-album
               appHListItem
@@ -84,11 +80,7 @@ export type PageArtistData = {
           </app-h-list>
         </ng-container>
         <ng-container *ngIf="info.foundOn$ | async as albums">
-          <app-title
-            title="Found in"
-            size="small"
-            *ngIf="albums.length > 0"
-          ></app-title>
+          <app-title size="small" *ngIf="albums.length > 0">Found in</app-title>
           <app-h-list buttonsTopPosition="113px" *ngIf="albums.length > 0">
             <app-album
               appHListItem

@@ -34,7 +34,7 @@ export interface PagePlaylistData {
               </ng-template>
             </div>
             <div class="metadata">
-              <app-title [title]="info.playlist.title"></app-title>
+              <app-title>{{ info.playlist.title }}</app-title>
               <p>
                 <span>Playlist</span> • <span>{{ '2020' }}</span>
               </p>

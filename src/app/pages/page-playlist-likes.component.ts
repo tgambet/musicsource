@@ -22,7 +22,7 @@ import { SongListComponent } from '@app/components/song-list.component';
             <app-icon-likes [fullWidth]="true"></app-icon-likes>
           </div>
           <div class="metadata">
-            <app-title [title]="'Your Likes'"></app-title>
+            <app-title>Your Likes</app-title>
             <p>
               <span>Auto playlist</span>
             </p>

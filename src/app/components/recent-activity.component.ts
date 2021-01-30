@@ -16,7 +16,7 @@ export type HistoryItem =
   template: `
     <div class="container" *ngIf="a$ | async as a">
       <ng-container *ngIf="a.length > 0">
-        <app-title size="small" title="Recent activity"></app-title>
+        <app-title size="small">Recent activity</app-title>
         <app-h-list buttonsTopPosition="80px">
           <div class="item" appHListItem *ngFor="let item of a">
             <app-album

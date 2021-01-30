@@ -10,13 +10,13 @@ import { scanArray } from '@app/utils/scan-array.util';
   selector: 'app-home',
   template: `
     <app-container-home>
-      <app-title title="Albums"></app-title>
+      <app-title>Albums</app-title>
       <app-h-list buttonsTopPosition="113px">
         <div class="album" appHListItem *ngFor="let album of albums$ | async">
           <app-album [album]="album"></app-album>
         </div>
       </app-h-list>
-      <app-title title="Artists"></app-title>
+      <app-title>Artists</app-title>
       <app-h-list buttonsTopPosition="113px">
         <div
           class="artist"

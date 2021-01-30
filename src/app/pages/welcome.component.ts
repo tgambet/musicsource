@@ -16,7 +16,7 @@ import { NoopScrollStrategy } from '@angular/cdk/overlay';
     <div class="bg"></div>
     <ng-template #welcomeDialog>
       <div class="action">
-        <app-title title="MusicSource"></app-title>
+        <app-title>MusicSource</app-title>
         <p>
           Welcome to MusicSource! MusicSource is a serverless audio player for
           your music library right in your browser. Try it now!

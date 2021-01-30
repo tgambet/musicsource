@@ -48,7 +48,7 @@ import { map } from 'rxjs/operators';
       [config]="config"
       #dialog="appRoutedDialog"
     >
-      <app-title title="New playlist" size="small"></app-title>
+      <app-title size="small">New playlist</app-title>
       <form class="example-form" [formGroup]="form" (submit)="createPlaylist()">
         <mat-form-field
           class="example-full-width"

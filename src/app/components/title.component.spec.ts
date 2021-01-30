@@ -25,7 +25,7 @@ describe('TitleComponent', () => {
   });
 
   it('should have a title', () => {
-    component.title = 'Title';
+    // component.title = 'Title';
     fixture.detectChanges();
     expect(fixture.nativeElement.querySelector('h1').textContent).toContain(
       'Title'
@@ -33,7 +33,7 @@ describe('TitleComponent', () => {
   });
 
   it('should have an optional head', () => {
-    component.title = 'Title';
+    // component.title = 'Title';
     component.head = 'Head';
     fixture.detectChanges();
     expect(fixture.nativeElement.querySelector('p').textContent).toContain(
@@ -42,13 +42,13 @@ describe('TitleComponent', () => {
   });
 
   it('should not display any link by default', () => {
-    component.title = 'Title';
+    // component.title = 'Title';
     fixture.detectChanges();
     expect(fixture.nativeElement.querySelector('a')).toBeNull();
   });
 
   it('should display a link if specified', () => {
-    component.title = 'Title';
+    // component.title = 'Title';
     component.titleRouterLink = 'destination';
     fixture.detectChanges();
     expect(fixture.nativeElement.querySelectorAll('a')).toHaveSize(1);
@@ -59,7 +59,7 @@ describe('TitleComponent', () => {
   });
 
   it('should display an additional link if specified', () => {
-    component.title = 'Title';
+    // component.title = 'Title';
     component.titleRouterLink = 'destination';
     component.extraLinkLabel = 'more content';
     fixture.detectChanges();
@@ -72,13 +72,13 @@ describe('TitleComponent', () => {
   });
 
   it('should not display an avatar by default', () => {
-    component.title = 'Title';
+    // component.title = 'Title';
     fixture.detectChanges();
     expect(fixture.nativeElement.querySelector('img')).toBeNull();
   });
 
   it('should display an avatar if specified', () => {
-    component.title = 'Title';
+    // component.title = 'Title';
     component.avatarSrc = '/assets/avatar.jpg';
     fixture.detectChanges();
     expect(fixture.nativeElement.querySelector('img')).not.toBeNull();
