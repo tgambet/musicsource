@@ -88,6 +88,7 @@ export type PageAlbumData = {
             </button>
             <app-menu
               [disableRipple]="true"
+              [hasBackdrop]="true"
               [menuItems]="menuItems$ | async"
             ></app-menu>
           </div>
