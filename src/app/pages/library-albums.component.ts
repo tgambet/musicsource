@@ -13,7 +13,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { SelectOption } from '@app/components/select.component';
 import { hash } from '@app/utils/hash.util';
 import { scanArray } from '@app/utils/scan-array.util';
-import { MatMenuTrigger } from '@angular/material/menu';
+import { WithTrigger } from '@app/classes/with-trigger';
 
 @Component({
   selector: 'app-library-albums',
@@ -57,7 +57,7 @@ import { MatMenuTrigger } from '@angular/material/menu';
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class LibraryAlbumsComponent implements OnInit {
+export class LibraryAlbumsComponent extends WithTrigger implements OnInit {
   albums$!: Observable<AlbumWithCover$[]>;
 
   sortOptions: SelectOption[] = [
@@ -69,8 +69,6 @@ export class LibraryAlbumsComponent implements OnInit {
   ];
   selectedSortOption: SelectOption = this.sortOptions[0];
 
-  trigger?: MatMenuTrigger;
-
   likes?: boolean;
 
   constructor(
@@ -78,22 +76,14 @@ export class LibraryAlbumsComponent implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     private cdr: ChangeDetectorRef
-  ) {}
+  ) {
+    super();
+  }
 
   @HostListener('window:scroll')
   @HostListener('click')
   closeMenu() {
-    if (this.trigger) {
-      this.trigger.closeMenu();
-      this.trigger = undefined;
-    }
-  }
-
-  menuOpened(trigger: MatMenuTrigger) {
-    if (this.trigger && this.trigger !== trigger) {
-      this.trigger.closeMenu();
-    }
-    this.trigger = trigger;
+    super.closeMenu();
   }
 
   ngOnInit(): void {

@@ -14,12 +14,12 @@ import { Icons } from '@app/utils/icons.util';
 import { hash } from '@app/utils/hash.util';
 import { PlayerFacade } from '@app/store/player/player.facade';
 import { MenuItem } from '@app/components/menu.component';
-import { MatMenuTrigger } from '@angular/material/menu';
 import { LibraryFacade } from '@app/store/library/library.facade';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { ComponentHelperService } from '@app/services/component-helper.service';
 import { HistoryService } from '@app/services/history.service';
+import { WithTrigger } from '@app/classes/with-trigger';
 
 export type PageAlbumData = {
   album: Album;
@@ -126,7 +126,7 @@ export type PageAlbumData = {
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class PageAlbumComponent implements OnInit {
+export class PageAlbumComponent extends WithTrigger implements OnInit {
   icons = Icons;
   info$!: Observable<PageAlbumData>;
 
@@ -135,8 +135,6 @@ export class PageAlbumComponent implements OnInit {
     .pipe(map((song) => song?.entryPath));
 
   menuItems$!: Observable<MenuItem[]>;
-
-  trigger?: MatMenuTrigger;
 
   constructor(
     private route: ActivatedRoute,
@@ -147,22 +145,14 @@ export class PageAlbumComponent implements OnInit {
     private helper: ComponentHelperService,
     private cdr: ChangeDetectorRef,
     private history: HistoryService
-  ) {}
+  ) {
+    super();
+  }
 
   @HostListener('window:scroll')
   @HostListener('click')
   closeMenu() {
-    if (this.trigger) {
-      this.trigger.closeMenu();
-      this.trigger = undefined;
-    }
-  }
-
-  menuOpened(trigger: MatMenuTrigger) {
-    if (this.trigger && this.trigger !== trigger) {
-      this.trigger.closeMenu();
-    }
-    this.trigger = trigger;
+    super.closeMenu();
   }
 
   trackBy(index: number, song: SongWithCover$): string {

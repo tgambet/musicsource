@@ -14,9 +14,9 @@ import { map, shareReplay, startWith, switchMap, tap } from 'rxjs/operators';
 import { Icons } from '@app/utils/icons.util';
 import { scanArray } from '@app/utils/scan-array.util';
 import { ComponentHelperService } from '@app/services/component-helper.service';
-import { MatMenuTrigger } from '@angular/material/menu';
 import { PlayerFacade } from '@app/store/player/player.facade';
 import { HistoryService } from '@app/services/history.service';
+import { WithTrigger } from '@app/classes/with-trigger';
 
 @Component({
   selector: 'app-library-artists',
@@ -163,7 +163,7 @@ import { HistoryService } from '@app/services/history.service';
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class LibraryArtistsComponent implements OnInit {
+export class LibraryArtistsComponent extends WithTrigger implements OnInit {
   icons = Icons;
 
   artists$!: Observable<ArtistWithCover$[]>;
@@ -177,8 +177,6 @@ export class LibraryArtistsComponent implements OnInit {
 
   likes = false;
 
-  trigger?: MatMenuTrigger;
-
   constructor(
     private player: PlayerFacade,
     private library: LibraryFacade,
@@ -186,22 +184,14 @@ export class LibraryArtistsComponent implements OnInit {
     private helper: ComponentHelperService,
     private cdr: ChangeDetectorRef,
     private history: HistoryService
-  ) {}
+  ) {
+    super();
+  }
 
   @HostListener('window:scroll')
   @HostListener('click')
   closeMenu() {
-    if (this.trigger) {
-      this.trigger.closeMenu();
-      this.trigger = undefined;
-    }
-  }
-
-  menuOpened(trigger: MatMenuTrigger) {
-    if (this.trigger && this.trigger !== trigger) {
-      this.trigger.closeMenu();
-    }
-    this.trigger = trigger;
+    super.closeMenu();
   }
 
   ngOnInit(): void {

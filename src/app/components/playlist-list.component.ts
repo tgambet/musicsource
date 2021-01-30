@@ -1,12 +1,11 @@
 import {
-  Component,
-  OnInit,
   ChangeDetectionStrategy,
-  Input,
+  Component,
   HostListener,
+  Input,
 } from '@angular/core';
 import { SongWithCover$ } from '@app/models/song.model';
-import { MatMenuTrigger } from '@angular/material/menu';
+import { WithTrigger } from '@app/classes/with-trigger';
 
 @Component({
   selector: 'app-playlist-list',
@@ -68,31 +67,15 @@ import { MatMenuTrigger } from '@angular/material/menu';
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class PlaylistListComponent implements OnInit {
+export class PlaylistListComponent extends WithTrigger {
   @Input() playlist!: SongWithCover$[];
   @Input() currentSong!: SongWithCover$ | null;
   @Input() currentIndex!: number | null;
 
-  trigger?: MatMenuTrigger;
-
-  constructor() {}
-
   @HostListener('scroll')
   @HostListener('click')
   closeMenu() {
-    if (this.trigger) {
-      this.trigger.closeMenu();
-      this.trigger = undefined;
-    }
-  }
-
-  ngOnInit(): void {}
-
-  menuOpened(trigger: MatMenuTrigger) {
-    if (this.trigger && this.trigger !== trigger) {
-      this.trigger.closeMenu();
-    }
-    this.trigger = trigger;
+    super.closeMenu();
   }
 
   trackBy(index: number, song: SongWithCover$) {

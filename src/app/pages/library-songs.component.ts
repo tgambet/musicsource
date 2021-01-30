@@ -26,8 +26,8 @@ import {
 import { tapError } from '@app/utils/tap-error.util';
 import { Icons } from '@app/utils/icons.util';
 import { ActivatedRoute } from '@angular/router';
-import { MatMenuTrigger } from '@angular/material/menu';
 import { PlayerFacade } from '@app/store/player/player.facade';
+import { WithTrigger } from '@app/classes/with-trigger';
 
 @Component({
   selector: 'app-library-songs',
@@ -92,7 +92,9 @@ import { PlayerFacade } from '@app/store/player/player.facade';
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class LibrarySongsComponent implements OnInit, OnDestroy {
+export class LibrarySongsComponent
+  extends WithTrigger
+  implements OnInit, OnDestroy {
   @ViewChild('addToPlaylist', { static: true })
   addToPlaylist!: TemplateRef<any>;
 
@@ -119,8 +121,6 @@ export class LibrarySongsComponent implements OnInit, OnDestroy {
 
   subscription = new Subscription();
 
-  trigger?: MatMenuTrigger;
-
   currentSongPath$ = this.player
     .getCurrentSong$()
     .pipe(map((song) => song?.entryPath));
@@ -129,7 +129,9 @@ export class LibrarySongsComponent implements OnInit, OnDestroy {
     private library: LibraryFacade,
     private route: ActivatedRoute,
     private player: PlayerFacade
-  ) {}
+  ) {
+    super();
+  }
 
   @HostListener('window:scroll')
   update() {
@@ -140,7 +142,7 @@ export class LibrarySongsComponent implements OnInit, OnDestroy {
     ) {
       this.pushSongs(this.sort.index, this.sort.direction, this.sort.likes);
     }
-    this.closeMenu();
+    super.closeMenu();
   }
 
   ngOnInit(): void {
@@ -224,19 +226,5 @@ export class LibrarySongsComponent implements OnInit, OnDestroy {
 
   trackBy(index: number, song: SongWithCover$): string {
     return song.entryPath;
-  }
-
-  menuOpened(trigger: MatMenuTrigger) {
-    if (this.trigger && this.trigger !== trigger) {
-      this.trigger.closeMenu();
-    }
-    this.trigger = trigger;
-  }
-
-  closeMenu() {
-    if (this.trigger) {
-      this.trigger.closeMenu();
-      this.trigger = undefined;
-    }
   }
 }

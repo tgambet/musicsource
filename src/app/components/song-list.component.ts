@@ -6,9 +6,9 @@ import {
 } from '@angular/core';
 import { SongWithCover$ } from '@app/models/song.model';
 import { Icons } from '@app/utils/icons.util';
-import { MatMenuTrigger } from '@angular/material/menu';
 import { PlayerFacade } from '@app/store/player/player.facade';
 import { map } from 'rxjs/operators';
+import { WithTrigger } from '@app/classes/with-trigger';
 
 @Component({
   selector: 'app-song-list',
@@ -41,33 +41,23 @@ import { map } from 'rxjs/operators';
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SongListComponent {
+export class SongListComponent extends WithTrigger {
   @Input() songs!: SongWithCover$[];
 
   icons = Icons;
-
-  trigger?: MatMenuTrigger;
 
   currentSongPath$ = this.player
     .getCurrentSong$()
     .pipe(map((song) => song?.entryPath));
 
-  constructor(private player: PlayerFacade) {}
+  constructor(private player: PlayerFacade) {
+    super();
+  }
 
   @HostListener('window:scroll')
   @HostListener('click')
   closeMenu() {
-    if (this.trigger) {
-      this.trigger.closeMenu();
-      this.trigger = undefined;
-    }
-  }
-
-  menuOpened(trigger: MatMenuTrigger) {
-    if (this.trigger && this.trigger !== trigger) {
-      this.trigger.closeMenu();
-    }
-    this.trigger = trigger;
+    super.closeMenu();
   }
 
   trackBy(index: number, song: SongWithCover$): string {
