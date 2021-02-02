@@ -32,6 +32,7 @@ import { LibraryFacade } from '@app/store/library/library.facade';
 import { SongWithCover$ } from '@app/models/song.model';
 import { FileEntry } from '@app/models/entry.model';
 import { tapError } from '@app/utils/tap-error.util';
+import { MediaSessionService } from '@app/services/media-session.service';
 
 // noinspection JSUnusedGlobalSymbols
 @Injectable()
@@ -59,6 +60,7 @@ export class PlayerEffects implements OnRunEffects {
                     catchError(() => EMPTY),
                     concatMap(() => entry.handle.getFile()),
                     concatMap((file) => this.audio.setSrc(file)),
+                    tap(() => this.media.setMetadata(song)),
                     concatMap(() => (playing ? this.audio.resume() : EMPTY))
                   )
                 )
@@ -124,8 +126,11 @@ export class PlayerEffects implements OnRunEffects {
     private router: Router,
     private audio: AudioService,
     private player: PlayerFacade,
-    private library: LibraryFacade
-  ) {}
+    private library: LibraryFacade,
+    private media: MediaSessionService
+  ) {
+    this.media.init();
+  }
 
   ngrxOnRunEffects(
     resolvedEffects$: Observable<EffectNotification>

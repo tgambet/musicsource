@@ -33,6 +33,8 @@
             "aot": true,
             "assets": [
               "src/favicon.ico",
+              "src/apple-touch-icon.png",
+              "src/browserconfig.xml",
               "src/assets",
               "src/manifest.webmanifest"
             ],
