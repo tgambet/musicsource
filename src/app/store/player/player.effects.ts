@@ -33,6 +33,7 @@ import { SongWithCover$ } from '@app/models/song.model';
 import { FileEntry } from '@app/models/entry.model';
 import { tapError } from '@app/utils/tap-error.util';
 import { MediaSessionService } from '@app/services/media-session.service';
+import { Title } from '@angular/platform-browser';
 
 // noinspection JSUnusedGlobalSymbols
 @Injectable()
@@ -61,6 +62,11 @@ export class PlayerEffects implements OnRunEffects {
                     concatMap(() => entry.handle.getFile()),
                     concatMap((file) => this.audio.setSrc(file)),
                     tap(() => this.media.setMetadata(song)),
+                    tap(() =>
+                      this.title.setTitle(
+                        `${song.title} • ${song.artist} - MusicSource`
+                      )
+                    ),
                     concatMap(() => (playing ? this.audio.resume() : EMPTY))
                   )
                 )
@@ -127,7 +133,8 @@ export class PlayerEffects implements OnRunEffects {
     private audio: AudioService,
     private player: PlayerFacade,
     private library: LibraryFacade,
-    private media: MediaSessionService
+    private media: MediaSessionService,
+    private title: Title
   ) {
     this.media.init();
   }
