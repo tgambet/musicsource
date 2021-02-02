@@ -361,7 +361,7 @@ export class LibraryFacade {
   }
 
   getPlaylist(title: string): Observable<Playlist | undefined> {
-    return this.storage.get$<Playlist>('playlists', title);
+    return this.storage.get$<Playlist>('playlists', title, 'title');
   }
 
   getPlaylists(

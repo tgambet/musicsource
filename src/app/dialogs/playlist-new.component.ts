@@ -78,9 +78,7 @@ import { map } from 'rxjs/operators';
           <button mat-button color="accent" matDialogClose type="reset">
             Cancel
           </button>
-          <button mat-raised-button color="accent">
-            Save
-          </button>
+          <button mat-raised-button color="accent">Save</button>
         </div>
       </form>
     </ng-template>
