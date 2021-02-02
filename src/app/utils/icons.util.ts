@@ -46,6 +46,7 @@ import {
   mdiSkipNext,
   mdiSkipPrevious,
   mdiSync,
+  mdiThumbUp,
   mdiVolumeHigh,
 } from '@mdi/js';
 
@@ -99,4 +100,5 @@ export class Icons {
   static sync = mdiSync;
   static volumeHigh = mdiVolumeHigh;
   static minusCircleOutline = mdiMinusCircleOutline;
+  static thumbUp = mdiThumbUp;
 }

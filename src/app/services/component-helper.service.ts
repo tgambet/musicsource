@@ -159,4 +159,21 @@ export class ComponentHelperService {
       )
       .subscribe();
   }
+
+  shufflePlaySongs(songs: SongWithCover$[]) {
+    this.player.setPlaying();
+    this.player.setPlaylist(songs);
+    this.player.shuffle();
+    this.player.show();
+  }
+
+  addSongsToQueue(songs: SongWithCover$[], next = false) {
+    this.player.addToPlaylist(songs, next);
+    this.player.show();
+    if (next) {
+      this.openSnack('Songs will play next');
+    } else {
+      this.openSnack('Songs added to queue');
+    }
+  }
 }

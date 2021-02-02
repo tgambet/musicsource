@@ -10,7 +10,7 @@ import { MenuItem } from '@app/components/menu.component';
       [menuItems]="menuItems"
       [coverRouterLink]="['/', 'likes']"
     >
-      <app-icon-likes></app-icon-likes>
+      <app-icon-likes2></app-icon-likes2>
     </app-cover>
     <app-label
       [topLabel]="{
@@ -28,7 +28,6 @@ import { MenuItem } from '@app/components/menu.component';
       }
       app-cover {
         margin-bottom: 16px;
-        background-color: #f88dae;
       }
     `,
   ],

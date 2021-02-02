@@ -7,10 +7,12 @@ import {
 import { Song, SongWithCover$ } from '@app/models/song.model';
 import { Observable } from 'rxjs';
 import { LibraryFacade } from '@app/store/library/library.facade';
-import { map, shareReplay, startWith } from 'rxjs/operators';
+import { first, map, shareReplay, startWith, tap } from 'rxjs/operators';
 import { Icons } from '@app/utils/icons.util';
 import { scanArray } from '@app/utils/scan-array.util';
 import { SongListComponent } from '@app/components/song-list.component';
+import { ComponentHelperService } from '@app/services/component-helper.service';
+import { MenuItem } from '@app/components/menu.component';
 
 @Component({
   selector: 'app-page-playlist-likes',
@@ -19,7 +21,7 @@ import { SongListComponent } from '@app/components/song-list.component';
       <app-container-page class="header-container">
         <div class="info">
           <div class="cover" style="--aspect-ratio:1">
-            <app-icon-likes [fullWidth]="true"></app-icon-likes>
+            <app-icon-likes2 [fullWidth]="true"></app-icon-likes2>
           </div>
           <div class="metadata">
             <app-title>Your Likes</app-title>
@@ -30,7 +32,7 @@ import { SongListComponent } from '@app/components/song-list.component';
               {{ songs.length }} songs • {{ getLength(songs) }} minutes
             </p>
             <p class="description">
-              All the music you liked in MusicSource appears here.
+              All the songs you liked in MusicSource appears here.
             </p>
           </div>
         </div>
@@ -41,12 +43,17 @@ import { SongListComponent } from '@app/components/song-list.component';
               class="play-button"
               color="accent"
               [disabled]="songs.length === 0"
+              (click)="shuffle(songs)"
             >
               <app-icon [path]="icons.shuffle"></app-icon>
               <span>Shuffle</span>
             </button>
           </ng-container>
-          <app-menu [disableRipple]="true"></app-menu>
+          <app-menu
+            [disableRipple]="true"
+            [menuItems]="menuItems"
+            [hasBackdrop]="true"
+          ></app-menu>
         </div>
       </app-container-page>
     </header>
@@ -67,9 +74,6 @@ import { SongListComponent } from '@app/components/song-list.component';
       :host {
         display: block;
       }
-      .cover {
-        background-color: #f88dae;
-      }
     `,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -82,7 +86,37 @@ export class PagePlaylistLikesComponent implements OnInit {
 
   icons = Icons;
 
-  constructor(private library: LibraryFacade) {}
+  menuItems: MenuItem[] = [
+    {
+      text: 'Play next',
+      icon: Icons.playlistPlay,
+      click: () => {
+        this.songs$
+          .pipe(
+            first(),
+            tap((songs) => this.helper.addSongsToQueue(songs, true))
+          )
+          .subscribe();
+      },
+    },
+    {
+      text: 'Add to queue',
+      icon: Icons.playlistPlus,
+      click: () => {
+        this.songs$
+          .pipe(
+            first(),
+            tap((songs) => this.helper.addSongsToQueue(songs, false))
+          )
+          .subscribe();
+      },
+    },
+  ];
+
+  constructor(
+    private library: LibraryFacade,
+    private helper: ComponentHelperService
+  ) {}
 
   ngOnInit(): void {
     this.songs$ = this.library.getSongs('likedOn', undefined, 'prev').pipe(
@@ -96,5 +130,9 @@ export class PagePlaylistLikesComponent implements OnInit {
   getLength(songs: Song[]): number {
     const sec = songs.reduce((acc, song) => acc + (song.duration || 0), 0);
     return Math.floor(sec / 60);
+  }
+
+  shuffle(songs: SongWithCover$[]) {
+    this.helper.shufflePlaySongs(songs);
   }
 }

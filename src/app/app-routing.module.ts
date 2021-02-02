@@ -27,6 +27,7 @@ import { WelcomeComponent } from '@app/pages/welcome.component';
 import { AppComponent } from '@app/app.component';
 import { MainGuard } from '@app/guards/main.guard';
 import { defer, EMPTY, fromEvent, merge, of, throwError, timer } from 'rxjs';
+import { PagePlaylistLikesComponent } from '@app/pages/page-playlist-likes.component';
 
 const routes: Routes = [
   //{ path: '', component: HomeComponent, data: { animation: 'default' } },
@@ -111,11 +112,11 @@ const routes: Routes = [
         data: { animation: 'default' },
         resolve: { info: PagePlaylistResolver },
       },
-      // {
-      //   path: 'likes',
-      //   data: { animation: 'default' },
-      //   component: PagePlaylistLikesComponent,
-      // },
+      {
+        path: 'likes',
+        data: { animation: 'default' },
+        component: PagePlaylistLikesComponent,
+      },
       {
         path: 'play',
         component: PlayComponent,

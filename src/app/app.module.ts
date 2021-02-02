@@ -91,6 +91,7 @@ import { PlayerFacade } from '@app/store/player/player.facade';
 import { RecentActivityComponent } from './components/recent-activity.component';
 import { WelcomeComponent } from './pages/welcome.component';
 import { RootComponent } from './root.component';
+import { IconLikes2Component } from '@app/components/icon-likes2.component';
 
 @NgModule({
   declarations: [
@@ -136,6 +137,7 @@ import { RootComponent } from './root.component';
     PlaylistNewComponent,
     PagePlaylistComponent,
     IconLikesComponent,
+    IconLikes2Component,
     PlaylistLikesComponent,
     PagePlaylistLikesComponent,
     SongListItemComponent,
