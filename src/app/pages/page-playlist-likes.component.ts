@@ -48,12 +48,14 @@ import { MenuItem } from '@app/components/menu.component';
               <app-icon [path]="icons.shuffle"></app-icon>
               <span>Shuffle</span>
             </button>
+            <app-menu
+              [disableRipple]="true"
+              [menuItems]="menuItems"
+              [hasBackdrop]="true"
+              [disabled]="songs.length === 0"
+              *ngIf="songs.length > 0"
+            ></app-menu>
           </ng-container>
-          <app-menu
-            [disableRipple]="true"
-            [menuItems]="menuItems"
-            [hasBackdrop]="true"
-          ></app-menu>
         </div>
       </app-container-page>
     </header>
