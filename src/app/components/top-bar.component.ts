@@ -162,7 +162,7 @@ export class TopBarComponent {
 
   clear() {
     this.storage
-      .clear()
+      .clear$()
       .pipe(
         tap(() => localStorage.clear()),
         tap(() => this.router.navigate(['/welcome']))

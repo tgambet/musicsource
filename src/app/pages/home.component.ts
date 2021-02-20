@@ -1,10 +1,8 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { LibraryFacade } from '@app/store/library/library.facade';
-import { take } from 'rxjs/operators';
-import { Observable } from 'rxjs';
+import { EMPTY, Observable } from 'rxjs';
 import { AlbumWithCover$ } from '@app/models/album.model';
 import { hash } from '@app/utils/hash.util';
-import { scanArray } from '@app/utils/scan-array.util';
 
 @Component({
   selector: 'app-home',
@@ -59,16 +57,9 @@ import { scanArray } from '@app/utils/scan-array.util';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HomeComponent implements OnInit {
-  albums$: Observable<AlbumWithCover$[]> = this.library.albums$.pipe(
-    // filter((album) => !!album.cover),
-    take(20),
-    scanArray()
-  );
+  albums$: Observable<AlbumWithCover$[]> = EMPTY;
 
-  artists$ = this.library.artists$.pipe(
-    // take(20),
-    scanArray()
-  );
+  artists$ = EMPTY;
 
   constructor(private library: LibraryFacade) {}
 

@@ -62,16 +62,16 @@ export class ScannerFacade {
           );
         }
 
-        return this.storage
-          .exec$<IDBValidKey | undefined>(
-            transaction.objectStore('pictures').getKey(pictures[0].hash)
-          )
+        return transaction
+          .objectStore('pictures')
+          .getKey$(pictures[0].hash)
           .pipe(
             concatMap((key) =>
               key
                 ? saveSong(key)
-                : this.storage
-                    .exec$(transaction.objectStore('pictures').add(pictures[0]))
+                : transaction
+                    .objectStore('pictures')
+                    .add$(pictures[0])
                     .pipe(concatMap((pictKey) => saveSong(pictKey)))
             )
           );
@@ -86,18 +86,17 @@ export class ScannerFacade {
 
     return this.storage.open$(['entries']).pipe(
       concatMap((t) =>
-        this.storage
-          .exec$<FileEntry>(t.objectStore('entries').get(song.entryPath))
+        t
+          .objectStore<Entry>('entries')
+          .get$(song.entryPath)
           .pipe(
+            filter((entry): entry is FileEntry => !!entry && !!entry.parent),
             map((entry) => entry.parent),
-            filter((parent) => !!parent),
             concatMap((parent) =>
-              this.storage.exec$<Entry[]>(
-                t
-                  .objectStore('entries')
-                  .index('parents')
-                  .getAll(parent as string)
-              )
+              t
+                .objectStore<Entry>('entries')
+                .index('parents')
+                .getAll$(parent as string)
             ),
             map((files) =>
               files.filter(

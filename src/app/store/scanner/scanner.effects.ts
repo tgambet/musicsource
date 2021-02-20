@@ -105,10 +105,7 @@ export class ScannerEffects implements OnRunEffects {
 
         this.scannerRef = scanner;
 
-        return scanner.afterOpened().pipe(
-          concatMap(() => this.storage.getDb()), // Open db after an abort
-          map(() => scanEntries(dir))
-        );
+        return scanner.afterOpened().pipe(map(() => scanEntries(dir)));
       })
       // tap(async () => {
       //   await this.router.navigate([{ outlets: { dialog: ['scan'] } }], {
@@ -155,7 +152,7 @@ export class ScannerEffects implements OnRunEffects {
         ofType(scanAborted),
         tap(() => this.scannerRef?.close()),
         tap(() => this.snackBar.open(`Scan aborted`, '', { duration: 2500 })),
-        concatMap(() => this.storage.clear()),
+        concatMap(() => this.storage.clear$()),
         concatMap(() =>
           this.router.navigate(['/404'], { skipLocationChange: true })
         ),
@@ -225,10 +222,7 @@ export class ScannerEffects implements OnRunEffects {
       ofType(extractEntries),
       act({
         project: () =>
-          this.storage.open$(['entries']).pipe(
-            concatMap((transaction) =>
-              this.storage.walk$<Entry>(transaction, 'entries')
-            ),
+          this.storage.walk$<Entry>('entries').pipe(
             map(({ value }) => value),
             filter(isFile),
             // TODO perf: check in db before extracting
@@ -271,59 +265,48 @@ export class ScannerEffects implements OnRunEffects {
       ofType(buildAlbums),
       act({
         project: () =>
-          this.storage.open$(['songs']).pipe(
-            concatMap((transaction) =>
-              this.storage
-                .walk$<SetRequired<Song, 'album'>>(
-                  transaction,
-                  'songs',
-                  'album'
-                )
-                .pipe(
-                  filter(({ key }) => !!key.toString().trim()), // Prevent empty strings
-                  groupBy(
-                    ({ value: song }) => song.album,
-                    ({ value: song }) => song
-                  ),
-                  mergeMap((groups$) =>
-                    groups$.pipe(
-                      reduceArray(),
-                      map((songs) => ({
-                        album: groups$.key,
-                        songs,
-                      }))
-                    )
-                  ),
-                  map(({ album, songs }) => {
-                    const artists = songs
-                      .map((song) => song.artists || [])
-                      .reduce((acc, cur) => [...acc, ...cur], [] as string[])
-                      .filter((song, i, arr) => arr.indexOf(song) === i);
-
-                    const lastModified = [...songs].sort(
-                      (s1, s2) =>
-                        s2.lastModified.getTime() - s1.lastModified.getTime()
-                    )[0].lastModified;
-
-                    const albumArtist =
-                      songs.find((song) => song.albumartist)?.albumartist ||
-                      artists.length === 1
-                        ? artists[0]
-                        : undefined;
-
-                    return {
-                      name: album,
-                      hash: hash(`${album}`),
-                      albumArtist,
-                      artists,
-                      year: songs[0].year,
-                      pictureKey: songs.find((song) => song.pictureKey)
-                        ?.pictureKey,
-                      lastModified: new Date(lastModified),
-                    };
-                  })
-                )
+          this.storage.walk$<SetRequired<Song, 'album'>>('songs', 'album').pipe(
+            filter(({ key }) => !!key.toString().trim()), // Prevent empty strings
+            groupBy(
+              ({ value: song }) => song.album,
+              ({ value: song }) => song
             ),
+            mergeMap((groups$) =>
+              groups$.pipe(
+                reduceArray(),
+                map((songs) => ({
+                  album: groups$.key,
+                  songs,
+                }))
+              )
+            ),
+            map(({ album, songs }) => {
+              const artists = songs
+                .map((song) => song.artists || [])
+                .reduce((acc, cur) => [...acc, ...cur], [] as string[])
+                .filter((song, i, arr) => arr.indexOf(song) === i);
+
+              const lastModified = [...songs].sort(
+                (s1, s2) =>
+                  s2.lastModified.getTime() - s1.lastModified.getTime()
+              )[0].lastModified;
+
+              const albumArtist =
+                songs.find((song) => song.albumartist)?.albumartist ||
+                artists.length === 1
+                  ? artists[0]
+                  : undefined;
+
+              return {
+                name: album,
+                hash: hash(`${album}`),
+                albumArtist,
+                artists,
+                year: songs[0].year,
+                pictureKey: songs.find((song) => song.pictureKey)?.pictureKey,
+                lastModified: new Date(lastModified),
+              };
+            }),
             concatMap((album) =>
               this.storage.add$('albums', album).pipe(
                 mapTo(buildAlbumSuccess({ album })),
@@ -342,42 +325,38 @@ export class ScannerEffects implements OnRunEffects {
       ofType(buildArtists),
       act({
         project: () =>
-          this.storage.open$(['albums']).pipe(
-            concatMap((transaction) =>
-              this.storage.walk$<Album>(transaction, 'albums', 'artists').pipe(
-                filter(({ key }) => !!key.toString().trim()), // Prevent empty strings
-                groupBy(
-                  ({ key }) => key,
-                  ({ value: album }) => album
-                ),
-                mergeMap((groups$) =>
-                  groups$.pipe(
-                    reduceArray(),
-                    map((albums) => ({
-                      artist: groups$.key,
-                      albums,
-                    }))
-                  )
-                ),
-                map(({ artist, albums }) => {
-                  const latestAlbum: Album | undefined = albums
-                    .filter((album) => album.pictureKey)
-                    .sort((a1, a2) => (a2.year || 0) - (a1.year || 0))[0];
-
-                  const lastModified = [...albums].sort(
-                    (a1, a2) =>
-                      a2.lastModified.getTime() - a1.lastModified.getTime()
-                  )[0].lastModified;
-
-                  return {
-                    hash: hash(artist.toString()),
-                    name: artist.toString(),
-                    pictureKey: latestAlbum?.pictureKey,
-                    lastModified: new Date(lastModified),
-                  };
-                })
+          this.storage.walk$<Album>('albums', 'artists').pipe(
+            filter(({ key }) => !!key.toString().trim()), // Prevent empty strings
+            groupBy(
+              ({ key }) => key,
+              ({ value: album }) => album
+            ),
+            mergeMap((groups$) =>
+              groups$.pipe(
+                reduceArray(),
+                map((albums) => ({
+                  artist: groups$.key,
+                  albums,
+                }))
               )
             ),
+            map(({ artist, albums }) => {
+              const latestAlbum: Album | undefined = albums
+                .filter((album) => album.pictureKey)
+                .sort((a1, a2) => (a2.year || 0) - (a1.year || 0))[0];
+
+              const lastModified = [...albums].sort(
+                (a1, a2) =>
+                  a2.lastModified.getTime() - a1.lastModified.getTime()
+              )[0].lastModified;
+
+              return {
+                hash: hash(artist.toString()),
+                name: artist.toString(),
+                pictureKey: latestAlbum?.pictureKey,
+                lastModified: new Date(lastModified),
+              };
+            }),
             concatMap((artist) =>
               this.storage.add$('artists', artist).pipe(
                 mapTo(buildArtistSuccess({ artist })),
@@ -385,7 +364,6 @@ export class ScannerEffects implements OnRunEffects {
               )
             )
           ),
-
         complete: (count) => buildArtistsSuccess({ count }),
         error: (error) => buildArtistsFailure({ error }),
       })

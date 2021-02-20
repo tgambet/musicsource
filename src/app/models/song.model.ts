@@ -11,5 +11,5 @@ export type Song = Omit<ICommonTagsResult, 'picture'> & {
 };
 
 export type SongWithCover$ = Except<Song, 'pictureKey'> & {
-  cover$: Observable<string>;
+  cover$: Observable<string | undefined>;
 };

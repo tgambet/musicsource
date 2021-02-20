@@ -193,8 +193,7 @@ export class LibrarySettingsComponent {
     // this.parent.close().then(() => this.router.navigate(['/', 'explorer']));
   }
 
-  getChildren = (folder: DirectoryEntry): Observable<Entry[]> =>
-    this.library.getChildrenEntries(folder);
+  getChildren = (folder: DirectoryEntry): Observable<Entry[]> => EMPTY; //this.library.getChildrenEntries(folder);
 
   test() {
     // this.files

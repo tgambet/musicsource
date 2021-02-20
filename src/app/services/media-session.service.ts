@@ -52,7 +52,7 @@ export class MediaSessionService {
                   title: song.title,
                   artist: song.artist,
                   album: song.album,
-                  artwork: [{ src: cover }],
+                  artwork: cover ? [{ src: cover }] : [],
                 }
               ))
           )
