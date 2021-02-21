@@ -95,7 +95,7 @@ export class ScannerFacade {
             concatMap((parent) =>
               t
                 .objectStore<Entry>('entries')
-                .index('parents')
+                .index('parent')
                 .getAll$(parent as string)
             ),
             map((files) =>

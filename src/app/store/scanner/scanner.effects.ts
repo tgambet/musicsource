@@ -234,6 +234,7 @@ export class ScannerEffects implements OnRunEffects {
                   concatMap(({ song, pictures }) =>
                     this.scanner.saveSong(song, pictures).pipe(
                       mapTo(extractEntrySuccess({ song })),
+                      // tapError((err) => console.error(err)),
                       catchError((error) => of(extractEntryFailure({ error })))
                     )
                   )
