@@ -1,7 +1,5 @@
-import { clearIndexedDb } from '../common/indexeddb';
-
 describe('MusicSource', () => {
-  before(() => clearIndexedDb());
+  before(() => cy.deleteDatabase('musicsource'));
 
   it('should redirect to /welcome', () => {
     cy.visit('/');

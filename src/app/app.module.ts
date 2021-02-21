@@ -92,6 +92,7 @@ import { RecentActivityComponent } from './components/recent-activity.component'
 import { WelcomeComponent } from './pages/welcome.component';
 import { RootComponent } from './root.component';
 import { IconLikes2Component } from '@app/components/icon-likes2.component';
+import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 
 @NgModule({
   declarations: [
@@ -182,7 +183,7 @@ import { IconLikes2Component } from '@app/components/icon-likes2.component';
       },
     }),
     EffectsModule.forRoot([LibraryEffects, ScannerEffects, PlayerEffects]),
-    // StoreDevtoolsModule.instrument({ maxAge: 150, logOnly: true }),
+    StoreDevtoolsModule.instrument({ maxAge: 150, logOnly: true }),
   ],
   providers: [
     FileService,
