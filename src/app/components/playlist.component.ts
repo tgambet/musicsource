@@ -13,7 +13,6 @@ import { Playlist } from '@app/models/playlist.model';
 import { from, Observable, of } from 'rxjs';
 import { LibraryFacade } from '@app/store/library/library.facade';
 import { concatMap, map, tap } from 'rxjs/operators';
-import { getCover } from '@app/models/picture.model';
 import { MenuItem } from '@app/components/menu.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { PlayerFacade } from '@app/store/player/player.facade';
@@ -101,9 +100,7 @@ export class PlaylistComponent implements OnInit {
   ngOnInit(): void {
     this.updateMenu();
 
-    this.cover$ = this.library
-      .getPicture(this.playlist.pictureKey)
-      .pipe(map((picture) => (picture ? getCover(picture) : undefined)));
+    this.cover$ = this.library.getCover(this.playlist.pictureKey);
 
     this.color$ = this.cover$.pipe(
       concatMap((cover) =>
@@ -112,8 +109,8 @@ export class PlaylistComponent implements OnInit {
           : from(import('node-vibrant')).pipe(
               concatMap((vibrant) => vibrant.from(cover).getPalette()),
               map((palette) => palette.Vibrant?.getRgb()),
-              map((hsl) =>
-                !!hsl ? `rgba(${hsl[0]}, ${hsl[1]}, ${hsl[2]}, 0.5)` : undefined
+              map((rgb) =>
+                !!rgb ? `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, 0.5)` : undefined
               )
             )
       )

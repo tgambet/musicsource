@@ -5,7 +5,7 @@ describe('MusicSource', () => {
     cy.visit('/');
     cy.url().should('include', '/welcome');
     cy.contains('MusicSource');
-    expect(localStorage.getItem('scanned')).to.be.null;
+    return expect(localStorage.getItem('scanned')).to.be.null;
   });
 
   it('should display library when scanned=1', () => {
@@ -14,9 +14,9 @@ describe('MusicSource', () => {
     cy.url().should('include', '/library');
     cy.contains('MusicSource');
     expect(localStorage.getItem('scanned')).to.eq('1');
-    cy.clearLocalStorage().should((ls) => {
-      expect(ls.getItem('scanned')).to.be.null;
-    });
+    cy.clearLocalStorage().should(
+      (ls) => expect(ls.getItem('scanned')).to.be.null
+    );
   });
 
   it('should clear database and redirect to /welcome', () => {
