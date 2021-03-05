@@ -164,7 +164,7 @@ export class LibraryComponent implements OnInit, OnDestroy {
     this.subscription.add(scrollSub);
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.subscription.unsubscribe();
   }
 }

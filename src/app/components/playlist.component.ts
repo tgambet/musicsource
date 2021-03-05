@@ -117,7 +117,7 @@ export class PlaylistComponent implements OnInit {
     );
   }
 
-  play() {
+  play(): void {
     // this.state = 'loading';
     // setTimeout(() => {
     //   this.state = 'playing';
@@ -136,7 +136,7 @@ export class PlaylistComponent implements OnInit {
       .subscribe();
   }
 
-  toggleLikePlaylist() {
+  toggleLikePlaylist(): void {
     this.library
       .togglePlaylistFavorite(this.playlist)
       .pipe(
@@ -160,7 +160,7 @@ export class PlaylistComponent implements OnInit {
       .subscribe();
   }
 
-  updateMenu() {
+  updateMenu(): void {
     this.menuItems = [
       {
         icon: Icons.shuffle,

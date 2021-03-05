@@ -112,7 +112,8 @@ export class ExplorerComponent {
   ) {}
 
   @HostListener('window:scroll', ['$event'])
-  setScrolledTop(event: any) {
+  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+  setScrolledTop(event: any): void {
     this.scrolledTop = event.target.scrollingElement.scrollTop === 0;
   }
 
@@ -120,7 +121,7 @@ export class ExplorerComponent {
 
   trackByFn = (index: number, node: FileSystemTreeNode): string => node.path;
 
-  test() {
+  test(): void {
     this.files
       .scan()
       .pipe(

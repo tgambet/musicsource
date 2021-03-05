@@ -1,6 +1,5 @@
 import {
   Component,
-  OnInit,
   ChangeDetectionStrategy,
   Input,
   Output,
@@ -165,7 +164,7 @@ import { ComponentHelperService } from '@app/services/component-helper.service';
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class PlaylistListItemComponent implements OnInit {
+export class PlaylistListItemComponent {
   @Input() song!: SongWithCover$;
   @Input() playlist!: SongWithCover$[];
 
@@ -178,29 +177,27 @@ export class PlaylistListItemComponent implements OnInit {
     private cdr: ChangeDetectorRef
   ) {}
 
-  ngOnInit(): void {}
-
-  getHash(s: string) {
+  getHash(s: string): string {
     return hash(s);
   }
 
-  playNext(song: SongWithCover$) {
+  playNext(song: SongWithCover$): void {
     this.helper.playNext(song);
   }
 
-  addToQueue(song: SongWithCover$) {
+  addToQueue(song: SongWithCover$): void {
     this.helper.addToQueue(song);
   }
 
-  toggleLiked(song: SongWithCover$) {
+  toggleLiked(song: SongWithCover$): void {
     this.helper.toggleLikedSong(song).subscribe(() => this.cdr.markForCheck());
   }
 
-  addToPlaylist(song: SongWithCover$) {
+  addToPlaylist(song: SongWithCover$): void {
     this.helper.addSongsToPlaylist([song]).subscribe();
   }
 
-  removeFromQueue(song: SongWithCover$) {
+  removeFromQueue(song: SongWithCover$): void {
     this.helper.removeFromQueue(song);
   }
 }

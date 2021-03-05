@@ -171,7 +171,7 @@ export class ScanComponent {
     );
   }
 
-  close() {
+  close(): void {
     this.dialogRef.close();
   }
 

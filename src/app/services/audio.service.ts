@@ -63,7 +63,7 @@ export class AudioService {
     );
   }
 
-  seek(n: number) {
+  seek(n: number): void {
     this.audio.currentTime = n;
   }
 
@@ -71,7 +71,7 @@ export class AudioService {
     this.audio.pause();
   }
 
-  async resume() {
+  async resume(): Promise<void> {
     if (this.audio.src) {
       await this.audio.play();
     }

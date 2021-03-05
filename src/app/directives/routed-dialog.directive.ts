@@ -33,6 +33,7 @@ export class RoutedDialogDirective implements OnInit, OnDestroy {
     private router: Router
   ) {}
 
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   @Input() afterClose: (_?: any) => void = () => {};
 
   ngOnInit(): void {
@@ -73,7 +74,7 @@ export class RoutedDialogDirective implements OnInit, OnDestroy {
     );
   }
 
-  close(result?: any): void {
+  close(result?: unknown): void {
     this.dialogRef.close(result);
     // return this.router
     //   .navigate([{ outlets: { [this.outlet]: null } }], {

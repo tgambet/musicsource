@@ -102,7 +102,7 @@ export class PlayComponent implements OnInit {
   ) {}
 
   @HostListener('click')
-  closeMenu() {
+  closeMenu(): void {
     this.playlistList.closeMenu();
   }
 
@@ -119,7 +119,7 @@ export class PlayComponent implements OnInit {
       .subscribe();
   }
 
-  getHash(artist: string) {
+  getHash(artist: string): string {
     return hash(artist);
   }
 
@@ -127,7 +127,7 @@ export class PlayComponent implements OnInit {
     playlist: SongWithCover$[],
     currentSong: SongWithCover$,
     event: CdkDragDrop<SongWithCover$[]>
-  ) {
+  ): void {
     const newPlaylist = [...playlist];
     moveItemInArray(newPlaylist, event.previousIndex, event.currentIndex);
     this.player.setPlaylist(newPlaylist, newPlaylist.indexOf(currentSong));

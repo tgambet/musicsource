@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { Icons } from '@app/utils/icons.util';
 import { MenuItem } from '@app/components/menu.component';
 
@@ -33,12 +33,8 @@ import { MenuItem } from '@app/components/menu.component';
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class PlaylistLikesComponent implements OnInit {
+export class PlaylistLikesComponent {
   icons = Icons;
 
   menuItems!: MenuItem[];
-
-  constructor() {}
-
-  ngOnInit(): void {}
 }

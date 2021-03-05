@@ -1,10 +1,5 @@
 import { Injectable } from '@angular/core';
-import {
-  ActivatedRouteSnapshot,
-  Resolve,
-  Router,
-  RouterStateSnapshot,
-} from '@angular/router';
+import { ActivatedRouteSnapshot, Resolve, Router } from '@angular/router';
 import { combineLatest, EMPTY, Observable, of, throwError } from 'rxjs';
 import { LibraryFacade } from '@app/store/library/library.facade';
 import { catchError, concatMap, map } from 'rxjs/operators';
@@ -18,8 +13,8 @@ export class PageAlbumResolverService implements Resolve<PageAlbumData> {
   constructor(private library: LibraryFacade, private router: Router) {}
 
   resolve(
-    route: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot
+    route: ActivatedRouteSnapshot
+    // state: RouterStateSnapshot
   ): Observable<PageAlbumData> | Observable<never> {
     const id = route.paramMap.get('id');
 

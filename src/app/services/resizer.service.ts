@@ -3,8 +3,6 @@ import { Observable } from 'rxjs';
 
 @Injectable()
 export class ResizerService {
-  constructor() {}
-
   resize(
     imageUrl: string,
     sizes: { height: number; width: number }[]
@@ -46,8 +44,6 @@ export class ResizerService {
       };
 
       img.onerror = (error) => observer.error(error);
-
-      return () => {};
     });
   }
 

@@ -94,8 +94,6 @@ export class LibraryEffects implements OnRunEffects {
   //   )
   // );
 
-  constructor() {}
-
   ngrxOnRunEffects(
     resolvedEffects$: Observable<EffectNotification>
   ): Observable<EffectNotification> {

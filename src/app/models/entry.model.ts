@@ -31,7 +31,7 @@ export const isChild = (parent: DirectoryEntry, child: Entry): boolean =>
 export const requestPermissionPromise = async (
   fileHandle: FileSystemHandle,
   readWrite = false
-) => {
+): Promise<boolean> => {
   let options = {};
   if (readWrite) {
     options = { mode: 'readwrite' };

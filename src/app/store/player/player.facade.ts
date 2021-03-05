@@ -122,7 +122,7 @@ export class PlayerFacade {
     this.store.dispatch(hide());
   }
 
-  shuffle() {
+  shuffle(): void {
     this.store.dispatch(shuffle());
   }
 }

@@ -24,11 +24,13 @@
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
 
-Cypress.Commands.add('deleteDatabase', (name) => {
-  return new Cypress.Promise((resolve, reject) => {
-    const r = window.indexedDB.deleteDatabase(name);
-    r.onsuccess = () => resolve();
-    r.onblocked = () => resolve();
-    r.onerror = () => reject();
-  });
-});
+Cypress.Commands.add(
+  'deleteDatabase',
+  (name) =>
+    new Cypress.Promise((resolve, reject) => {
+      const r = window.indexedDB.deleteDatabase(name);
+      r.onsuccess = () => resolve();
+      r.onblocked = () => resolve();
+      r.onerror = () => reject();
+    })
+);

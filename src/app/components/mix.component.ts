@@ -70,7 +70,7 @@ export class MixComponent {
     {
       icon: Icons.shuffle,
       text: 'Shuffle play',
-      click: () => alert('clicked'),
+      click: (): void => alert('clicked'),
     },
     {
       icon: Icons.playlistPlay,

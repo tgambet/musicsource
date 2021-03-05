@@ -151,7 +151,7 @@ export class PageAlbumComponent extends WithTrigger implements OnInit {
 
   @HostListener('window:scroll')
   @HostListener('click')
-  closeMenu() {
+  closeMenu(): void {
     super.closeMenu();
   }
 
@@ -208,22 +208,22 @@ export class PageAlbumComponent extends WithTrigger implements OnInit {
     return Math.floor(sec / 60);
   }
 
-  getHash(albumArtist: string) {
+  getHash(albumArtist: string): string {
     return hash(albumArtist);
   }
 
-  play(album: Album, songs: SongWithCover$[], index = 0) {
+  play(album: Album, songs: SongWithCover$[], index = 0): void {
     this.player.setPlaying();
     this.player.setPlaylist(songs, index);
     this.player.show();
     this.history.albumPlayed(album);
   }
 
-  addAlbumToPlaylist(songs: Song[]) {
+  addAlbumToPlaylist(songs: Song[]): void {
     this.helper.addSongsToPlaylist(songs).subscribe();
   }
 
-  toggleLiked(album: Album) {
+  toggleLiked(album: Album): void {
     this.helper
       .toggleLikedAlbum(album)
       .subscribe(() => this.cdr.markForCheck());

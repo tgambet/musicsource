@@ -24,7 +24,7 @@ export class StorageService {
     this.init();
   }
 
-  init() {
+  init(): void {
     this.db$ = ReactiveIDBDatabase.create({
       name: 'musicsource',
       schema: [
@@ -154,18 +154,18 @@ export class StorageService {
     );
   }
 
-  add$(store: string, value: any, key?: IDBValidKey): Observable<IDBValidKey> {
+  add$<T>(store: string, value: T, key?: IDBValidKey): Observable<IDBValidKey> {
     return this.db$.pipe(
       concatMap((db) => db.transaction$(store, 'readwrite')),
-      map((transaction) => transaction.objectStore(store)),
+      map((transaction) => transaction.objectStore<T>(store)),
       concatMap((s) => s.add$(value, key))
     );
   }
 
-  put$(store: string, value: any, key?: IDBValidKey): Observable<IDBValidKey> {
+  put$<T>(store: string, value: T, key?: IDBValidKey): Observable<IDBValidKey> {
     return this.db$.pipe(
       concatMap((db) => db.transaction$(store, 'readwrite')),
-      map((transaction) => transaction.objectStore(store)),
+      map((transaction) => transaction.objectStore<T>(store)),
       concatMap((s) => s.put$(value, key))
     );
   }

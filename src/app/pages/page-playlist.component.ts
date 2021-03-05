@@ -153,7 +153,7 @@ export class PagePlaylistComponent implements OnInit {
     return Math.floor(sec / 60);
   }
 
-  shufflePlay(songs: SongWithCover$[]) {
+  shufflePlay(songs: SongWithCover$[]): void {
     this.player.setPlaying();
     this.player.setPlaylist(songs);
     this.player.shuffle();

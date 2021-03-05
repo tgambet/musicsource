@@ -130,11 +130,11 @@ export class LibraryContentComponent implements OnInit, OnDestroy {
     );
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.subscription.unsubscribe();
   }
 
-  async sort() {
+  async sort(): Promise<void> {
     const [sort, dir] = this.sortValue.split('_');
     await this.router.navigate([], {
       queryParams: { sort, dir, likes: this.likes ? '1' : '0' },

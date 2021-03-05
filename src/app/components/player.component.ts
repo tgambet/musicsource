@@ -343,29 +343,29 @@ export class PlayerComponent implements OnInit, OnDestroy {
     this.subscription.unsubscribe();
   }
 
-  seek(n: MatSliderChange) {
+  seek(n: MatSliderChange): void {
     if (n.value !== null) {
       this.player.seek(n.value);
     }
   }
 
-  resume() {
+  resume(): void {
     this.player.resume();
   }
 
-  pause() {
+  pause(): void {
     this.player.pause();
   }
 
-  playNextSong() {
+  playNextSong(): void {
     this.player.setNextIndex();
   }
 
-  playPreviousSong() {
+  playPreviousSong(): void {
     this.player.setPrevIndex();
   }
 
-  shuffle() {
+  shuffle(): void {
     this.player.setCurrentIndex(0);
     this.player.shuffle();
   }
@@ -380,7 +380,7 @@ export class PlayerComponent implements OnInit, OnDestroy {
     return await this.router.navigate(['/', 'play']);
   }
 
-  getHash(s: string) {
+  getHash(s: string): string {
     return hash(s);
   }
 
@@ -391,7 +391,7 @@ export class PlayerComponent implements OnInit, OnDestroy {
     });
   }
 
-  updateMenu(song: SongWithCover$) {
+  updateMenu(song: SongWithCover$): void {
     this.menuItems = [
       {
         text: 'Play next',

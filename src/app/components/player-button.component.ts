@@ -132,7 +132,7 @@ export class PlayerButtonComponent implements OnInit {
 
   constructor(private player: PlayerFacade) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.isCurrent$ = this.playlistMode
       ? this.player
           .getPlaylist$()

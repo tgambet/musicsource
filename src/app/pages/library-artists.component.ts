@@ -190,7 +190,7 @@ export class LibraryArtistsComponent extends WithTrigger implements OnInit {
 
   @HostListener('window:scroll')
   @HostListener('click')
-  closeMenu() {
+  closeMenu(): void {
     super.closeMenu();
   }
 
@@ -223,7 +223,7 @@ export class LibraryArtistsComponent extends WithTrigger implements OnInit {
     );
   }
 
-  trackBy = (index: number, artist: ArtistWithCover$) => artist.name;
+  trackBy = (index: number, artist: ArtistWithCover$): string => artist.name;
 
   toggleLiked(artist: Artist): void {
     this.helper
@@ -231,7 +231,7 @@ export class LibraryArtistsComponent extends WithTrigger implements OnInit {
       .subscribe(() => this.cdr.markForCheck());
   }
 
-  shufflePlay(artist: Artist) {
+  shufflePlay(artist: Artist): void {
     this.helper.shufflePlayArtist(artist).subscribe();
     this.history.artistPlayed(artist);
   }

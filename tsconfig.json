@@ -23,12 +23,13 @@
     "typeRoots": ["node_modules/@types"],
     "paths": {
       "@app/*": ["src/app/*"],
-      "@env/*": ["src/environments/*"],
+      "@env/*": ["src/environments/*"]
     }
   },
   "angularCompilerOptions": {
     "strictInjectionParameters": true,
     "strictInputAccessModifiers": true,
     "strictTemplates": true
-  }
+  },
+  "exclude": ["cypress/**/*"]
 }

@@ -14,7 +14,7 @@ export class UpdateService {
     @Inject(DOCUMENT) private document: Document
   ) {}
 
-  register() {
+  register(): void {
     this.updates.available
       .pipe(
         concatMap(() =>

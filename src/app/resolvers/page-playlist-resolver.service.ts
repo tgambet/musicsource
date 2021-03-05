@@ -1,10 +1,5 @@
 import { Injectable } from '@angular/core';
-import {
-  ActivatedRouteSnapshot,
-  Resolve,
-  Router,
-  RouterStateSnapshot,
-} from '@angular/router';
+import { ActivatedRouteSnapshot, Resolve, Router } from '@angular/router';
 import { PagePlaylistData } from '@app/pages/page-playlist.component';
 import { LibraryFacade } from '@app/store/library/library.facade';
 import { EMPTY, Observable, of, throwError } from 'rxjs';
@@ -19,8 +14,8 @@ export class PagePlaylistResolver implements Resolve<PagePlaylistData> {
   constructor(private library: LibraryFacade, private router: Router) {}
 
   resolve(
-    route: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot
+    route: ActivatedRouteSnapshot
+    // state: RouterStateSnapshot
   ): Observable<PagePlaylistData> {
     const id = route.paramMap.get('id');
 

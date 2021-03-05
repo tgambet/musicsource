@@ -122,7 +122,7 @@ export class AlbumComponent implements OnInit {
     return hash(s);
   }
 
-  updateMenu() {
+  updateMenu(): void {
     this.menuItems = [
       {
         icon: Icons.shuffle,
@@ -205,7 +205,7 @@ export class AlbumComponent implements OnInit {
     ];
   }
 
-  albumPlayed() {
+  albumPlayed(): void {
     this.history.albumPlayed(this.album);
   }
 }

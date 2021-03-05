@@ -39,7 +39,6 @@ import { SearchComponent } from './pages/search.component';
 import { HistoryComponent } from './pages/history.component';
 import { ExplorerComponent } from './pages/explorer.component';
 import { RoutedDialogDirective } from '@app/directives/routed-dialog.directive';
-import { LibrarySettingsComponent } from './dialogs/library-settings.component';
 import { MatDialogModule } from '@angular/material/dialog';
 import { SettingsComponent } from './dialogs/settings.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
@@ -118,7 +117,6 @@ import { StoreDevtoolsModule } from '@ngrx/store-devtools';
     HistoryComponent,
     ExplorerComponent,
     RoutedDialogDirective,
-    LibrarySettingsComponent,
     SettingsComponent,
     ScanComponent,
     PageAlbumComponent,
