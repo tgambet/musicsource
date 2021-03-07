@@ -5,7 +5,7 @@
   "background_color": "#131313",
   "display": "minimal-ui",
   "scope": "./",
-  "start_url": "./",
+  "start_url": "/index.html",
   "icons": [
     {
       "src": "assets/icons/icon-72x72.png",
