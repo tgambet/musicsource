@@ -118,19 +118,19 @@ export class ComponentHelperService {
     );
   }
 
-  playNext(song: SongWithCover$) {
+  playNext(song: SongWithCover$): void {
     this.player.addToPlaylist([song], true);
     this.player.show();
     this.openSnack('Song will play next');
   }
 
-  addToQueue(song: SongWithCover$) {
+  addToQueue(song: SongWithCover$): void {
     this.player.addToPlaylist([song]);
     this.player.show();
     this.openSnack('Song added to queue');
   }
 
-  removeFromQueue(song: SongWithCover$) {
+  removeFromQueue(song: SongWithCover$): void {
     combineLatest([this.player.getPlaylist$(), this.player.getCurrentIndex$()])
       .pipe(
         first(),
@@ -146,7 +146,7 @@ export class ComponentHelperService {
       .subscribe();
   }
 
-  openSnack(message: string) {
+  openSnack(message: string): void {
     this.player
       .isShown$()
       .pipe(
@@ -160,14 +160,14 @@ export class ComponentHelperService {
       .subscribe();
   }
 
-  shufflePlaySongs(songs: SongWithCover$[]) {
+  shufflePlaySongs(songs: SongWithCover$[]): void {
     this.player.setPlaying();
     this.player.setPlaylist(songs);
     this.player.shuffle();
     this.player.show();
   }
 
-  addSongsToQueue(songs: SongWithCover$[], next = false) {
+  addSongsToQueue(songs: SongWithCover$[], next = false): void {
     this.player.addToPlaylist(songs, next);
     this.player.show();
     if (next) {

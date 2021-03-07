@@ -1,10 +1,5 @@
 import { Injectable } from '@angular/core';
-import {
-  ActivatedRouteSnapshot,
-  Resolve,
-  Router,
-  RouterStateSnapshot,
-} from '@angular/router';
+import { ActivatedRouteSnapshot, Resolve, Router } from '@angular/router';
 import { PageArtistData } from '@app/pages/page-artist.component';
 import { EMPTY, Observable, of, throwError } from 'rxjs';
 import { LibraryFacade } from '@app/store/library/library.facade';
@@ -19,8 +14,8 @@ export class PageArtistResolverService implements Resolve<PageArtistData> {
   constructor(private library: LibraryFacade, private router: Router) {}
 
   resolve(
-    route: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot
+    route: ActivatedRouteSnapshot
+    // state: RouterStateSnapshot
   ): Observable<PageArtistData> | Observable<never> {
     const id = route.paramMap.get('id');
 

@@ -74,11 +74,11 @@ export class PlaylistListComponent extends WithTrigger {
 
   @HostListener('scroll')
   @HostListener('click')
-  closeMenu() {
+  closeMenu(): void {
     super.closeMenu();
   }
 
-  trackBy(index: number, song: SongWithCover$) {
+  trackBy(index: number, song: SongWithCover$): string {
     return song.entryPath;
   }
 }

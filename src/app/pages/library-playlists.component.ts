@@ -160,11 +160,11 @@ export class LibraryPlaylistsComponent implements OnInit, OnDestroy {
     this.subscription.unsubscribe();
   }
 
-  trackBy(index: number, playlist: Playlist) {
+  trackBy(index: number, playlist: Playlist): string {
     return playlist.title;
   }
 
-  playlistUpdate() {
+  playlistUpdate(): void {
     this.cdr.markForCheck();
   }
 }

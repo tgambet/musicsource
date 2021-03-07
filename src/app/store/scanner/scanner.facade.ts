@@ -30,11 +30,11 @@ export class ScannerFacade {
 
   constructor(private store: Store, private storage: StorageService) {}
 
-  abort() {
+  abort(): void {
     this.store.dispatch(abortScan());
   }
 
-  openDirectory() {
+  openDirectory(): void {
     this.store.dispatch(openDirectory());
   }
 

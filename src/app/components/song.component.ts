@@ -1,12 +1,8 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 
 @Component({
   selector: 'app-song',
-  template: `
-    <p>
-      song works!
-    </p>
-  `,
+  template: ` <p>song works!</p> `,
   styles: [
     `
       :host {
@@ -16,8 +12,4 @@ import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SongComponent implements OnInit {
-  constructor() {}
-
-  ngOnInit(): void {}
-}
+export class SongComponent {}

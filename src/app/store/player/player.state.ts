@@ -7,6 +7,8 @@ export interface PlayerState {
   playing: boolean;
   loading: boolean;
   duration?: number;
+  muted: boolean;
+  volume: number;
 }
 
 export const initialState: PlayerState = {
@@ -16,4 +18,6 @@ export const initialState: PlayerState = {
   playing: false,
   loading: false,
   duration: undefined,
+  muted: false,
+  volume: 1,
 };

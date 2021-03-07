@@ -134,7 +134,7 @@ export class LibrarySongsComponent
   }
 
   @HostListener('window:scroll')
-  update() {
+  update(): void {
     if (
       window.innerHeight + window.scrollY >= document.body.scrollHeight - 64 &&
       this.loadMore &&

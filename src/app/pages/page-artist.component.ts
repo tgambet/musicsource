@@ -200,7 +200,7 @@ export class PageArtistComponent extends WithTrigger implements OnInit {
 
   @HostListener('click')
   @HostListener('window:scroll')
-  closeMenu() {
+  closeMenu(): void {
     super.closeMenu();
   }
 
@@ -208,16 +208,16 @@ export class PageArtistComponent extends WithTrigger implements OnInit {
     this.info$ = this.route.data.pipe(map((data) => data.info));
   }
 
-  getHash(albumArtist: string) {
+  getHash(albumArtist: string): string {
     return hash(albumArtist);
   }
 
-  shufflePlay(artist: Artist) {
+  shufflePlay(artist: Artist): void {
     this.helper.shufflePlayArtist(artist).subscribe();
     this.history.artistPlayed(artist);
   }
 
-  toggleLiked(artist: Artist) {
+  toggleLiked(artist: Artist): void {
     this.helper
       .toggleLikedArtist(artist)
       .subscribe(() => this.cdr.markForCheck());

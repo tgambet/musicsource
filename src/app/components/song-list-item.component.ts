@@ -4,7 +4,6 @@ import {
   Component,
   EventEmitter,
   Input,
-  OnInit,
   Output,
 } from '@angular/core';
 import { SongWithCover$ } from '@app/models/song.model';
@@ -173,7 +172,7 @@ import { ComponentHelperService } from '@app/services/component-helper.service';
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SongListItemComponent implements OnInit {
+export class SongListItemComponent {
   @Input() song!: SongWithCover$;
   @Input() playlist!: SongWithCover$[];
 
@@ -186,13 +185,11 @@ export class SongListItemComponent implements OnInit {
     private helper: ComponentHelperService
   ) {}
 
-  ngOnInit(): void {}
-
   getHash(s: string): string {
     return hash(s);
   }
 
-  toggleLiked(song: SongWithCover$) {
+  toggleLiked(song: SongWithCover$): void {
     this.helper.toggleLikedSong(song).subscribe(() => this.cdr.markForCheck());
   }
 
@@ -204,7 +201,7 @@ export class SongListItemComponent implements OnInit {
     this.helper.addToQueue(song);
   }
 
-  addSongToPlaylist(song: SongWithCover$) {
+  addSongToPlaylist(song: SongWithCover$): void {
     this.helper.addSongsToPlaylist([song]).subscribe();
   }
 }

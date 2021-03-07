@@ -56,7 +56,7 @@ export class SongListComponent extends WithTrigger {
 
   @HostListener('window:scroll')
   @HostListener('click')
-  closeMenu() {
+  closeMenu(): void {
     super.closeMenu();
   }
 

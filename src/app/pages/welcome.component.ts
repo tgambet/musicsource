@@ -86,7 +86,7 @@ export class WelcomeComponent implements OnInit {
       .subscribe();
   }
 
-  scan() {
+  scan(): void {
     this.scanner.openDirectory();
   }
 }

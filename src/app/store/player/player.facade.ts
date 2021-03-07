@@ -7,9 +7,11 @@ import {
   selectHasNextSong,
   selectHasPrevSong,
   selectLoading,
+  selectMuted,
   selectPlaying,
   selectPlaylist,
   selectShow,
+  selectVolume,
 } from '@app/store/player/player.selectors';
 import { Observable } from 'rxjs';
 import { SongWithCover$ } from '@app/models/song.model';
@@ -24,8 +26,10 @@ import {
   setPlaying,
   setPlaylist,
   setPrevIndex,
+  setVolume,
   show,
   shuffle,
+  toggleMute,
 } from '@app/store/player/player.actions';
 import { AudioService } from '@app/services/audio.service';
 
@@ -69,6 +73,14 @@ export class PlayerFacade {
     return this.store.select(selectLoading);
   }
 
+  getMuted$(): Observable<boolean> {
+    return this.store.select(selectMuted);
+  }
+
+  getVolume$(): Observable<number> {
+    return this.store.select(selectVolume);
+  }
+
   hasNextSong$(): Observable<boolean> {
     return this.store.select(selectHasNextSong);
   }
@@ -101,6 +113,10 @@ export class PlayerFacade {
     this.store.dispatch(setPlaying({ playing }));
   }
 
+  setVolume(volume: number): void {
+    this.store.dispatch(setVolume({ volume }));
+  }
+
   resume(): void {
     this.store.dispatch(resume());
   }
@@ -122,7 +138,11 @@ export class PlayerFacade {
     this.store.dispatch(hide());
   }
 
-  shuffle() {
+  shuffle(): void {
     this.store.dispatch(shuffle());
+  }
+
+  toggleMute(): void {
+    this.store.dispatch(toggleMute());
   }
 }

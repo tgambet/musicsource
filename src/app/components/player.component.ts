@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
+  HostListener,
   OnDestroy,
   OnInit,
   ViewChild,
@@ -30,7 +31,7 @@ import { MenuItem } from '@app/components/menu.component';
   template: `
     <a (click)="toggleMenu()" class="back-link"></a>
     <mat-slider
-      class="back"
+      class="main back"
       color="primary"
       [step]="1"
       [min]="0"
@@ -39,7 +40,7 @@ import { MenuItem } from '@app/components/menu.component';
       [tabIndex]="-1"
     ></mat-slider>
     <mat-slider
-      class="front"
+      class="main front"
       color="primary"
       [step]="1"
       [min]="0"
@@ -121,9 +122,32 @@ import { MenuItem } from '@app/components/menu.component';
       </div>
     </div>
     <div class="right">
-      <button mat-icon-button [disableRipple]="true" color="accent">
-        <app-icon [path]="icons.volumeHigh"></app-icon>
-      </button>
+      <div class="volume">
+        <button
+          mat-icon-button
+          [disableRipple]="true"
+          color="accent"
+          (mouseenter)="showVolume()"
+          (click)="toggleMute()"
+        >
+          <app-icon
+            [path]="icons.volumeHigh"
+            *ngIf="(muted$ | async) === false"
+          ></app-icon>
+          <app-icon
+            [path]="icons.volumeOff"
+            *ngIf="(muted$ | async) === true"
+          ></app-icon>
+        </button>
+        <mat-slider
+          [class.hidden]="!isVolumeShown"
+          [min]="0"
+          [max]="1"
+          [step]="0.01"
+          (input)="setVolume($event.value === null ? 1 : $event.value)"
+          [value]="volume$ | async"
+        ></mat-slider>
+      </div>
       <button mat-icon-button [disableRipple]="true" color="accent">
         <app-icon [path]="icons.repeat"></app-icon>
       </button>
@@ -173,7 +197,7 @@ import { MenuItem } from '@app/components/menu.component';
         bottom: 0;
         left: 0;
       }
-      :host mat-slider {
+      :host mat-slider.main {
         position: absolute;
         top: -15px;
         width: calc(100% - 12px);
@@ -237,6 +261,7 @@ import { MenuItem } from '@app/components/menu.component';
       }
       .right {
         margin-left: auto;
+        padding-left: 86px;
       }
       .right button {
         margin-right: 8px;
@@ -251,6 +276,22 @@ import { MenuItem } from '@app/components/menu.component';
       .menu app-icon.up {
         transform: rotate(180deg);
         transform-origin: center center;
+      }
+      .volume {
+        display: inline-flex;
+        position: relative;
+      }
+      .volume mat-slider {
+        position: absolute;
+        right: 54px;
+        top: -4px;
+        transition: opacity 300ms ease;
+        cursor: pointer;
+        min-width: 80px;
+        width: 80px;
+      }
+      .volume mat-slider.hidden {
+        opacity: 0;
       }
       a[href] {
         text-decoration: none;
@@ -276,8 +317,11 @@ export class PlayerComponent implements OnInit, OnDestroy {
   playing$!: Observable<{ value: boolean }>;
   nextEnabled$!: Observable<boolean>;
   prevEnabled$!: Observable<boolean>;
+  muted$!: Observable<boolean>;
+  volume$!: Observable<number>;
 
   isPlayRoute!: boolean;
+  isVolumeShown = false;
 
   subscription = new Subscription();
 
@@ -289,6 +333,15 @@ export class PlayerComponent implements OnInit, OnDestroy {
     private helper: ComponentHelperService,
     private cdr: ChangeDetectorRef
   ) {}
+
+  @HostListener('mouseleave')
+  hideVolume(): void {
+    this.isVolumeShown = false;
+  }
+
+  showVolume(): void {
+    this.isVolumeShown = true;
+  }
 
   ngOnInit(): void {
     const r1$ = this.router.events
@@ -327,6 +380,8 @@ export class PlayerComponent implements OnInit, OnDestroy {
     this.playing$ = this.player.getPlaying$().pipe(map((value) => ({ value })));
     this.nextEnabled$ = this.player.hasNextSong$();
     this.prevEnabled$ = this.player.hasPrevSong$();
+    this.muted$ = this.player.getMuted$();
+    this.volume$ = this.player.getVolume$();
 
     this.seekerDisabled$ = this.player
       .getDuration$()
@@ -343,29 +398,29 @@ export class PlayerComponent implements OnInit, OnDestroy {
     this.subscription.unsubscribe();
   }
 
-  seek(n: MatSliderChange) {
+  seek(n: MatSliderChange): void {
     if (n.value !== null) {
       this.player.seek(n.value);
     }
   }
 
-  resume() {
+  resume(): void {
     this.player.resume();
   }
 
-  pause() {
+  pause(): void {
     this.player.pause();
   }
 
-  playNextSong() {
+  playNextSong(): void {
     this.player.setNextIndex();
   }
 
-  playPreviousSong() {
+  playPreviousSong(): void {
     this.player.setPrevIndex();
   }
 
-  shuffle() {
+  shuffle(): void {
     this.player.setCurrentIndex(0);
     this.player.shuffle();
   }
@@ -380,7 +435,7 @@ export class PlayerComponent implements OnInit, OnDestroy {
     return await this.router.navigate(['/', 'play']);
   }
 
-  getHash(s: string) {
+  getHash(s: string): string {
     return hash(s);
   }
 
@@ -391,7 +446,7 @@ export class PlayerComponent implements OnInit, OnDestroy {
     });
   }
 
-  updateMenu(song: SongWithCover$) {
+  updateMenu(song: SongWithCover$): void {
     this.menuItems = [
       {
         text: 'Play next',
@@ -437,5 +492,13 @@ export class PlayerComponent implements OnInit, OnDestroy {
           : undefined,
       },
     ];
+  }
+
+  toggleMute(): void {
+    this.player.toggleMute();
+  }
+
+  setVolume(volume: number): void {
+    this.player.setVolume(volume);
   }
 }

@@ -126,7 +126,11 @@ import { tap } from 'rxjs/operators';
 export class TopBarComponent {
   icons = Icons;
   menuItems: MenuItem[] = [
-    { text: 'Clear database', icon: Icons.delete, click: () => this.clear() },
+    {
+      text: 'Clear database',
+      icon: Icons.delete,
+      click: (): void => this.clear(),
+    },
     // {
     //   text: 'Quick scan a folder',
     //   icon: Icons.folderSearch,
@@ -151,7 +155,7 @@ export class TopBarComponent {
     private storage: StorageService
   ) {}
 
-  scan() {
+  scan(): void {
     this.scanner.openDirectory();
     // this.router
     //   .navigate([{ outlets: { dialog: ['scan'] } }], {
@@ -160,7 +164,7 @@ export class TopBarComponent {
     //   .then(() => this.store.dispatch(openDirectory()));
   }
 
-  clear() {
+  clear(): void {
     this.storage
       .clear$()
       .pipe(

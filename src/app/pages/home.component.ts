@@ -1,5 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { LibraryFacade } from '@app/store/library/library.facade';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { EMPTY, Observable } from 'rxjs';
 import { AlbumWithCover$ } from '@app/models/album.model';
 import { hash } from '@app/utils/hash.util';
@@ -56,16 +55,12 @@ import { hash } from '@app/utils/hash.util';
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent {
   albums$: Observable<AlbumWithCover$[]> = EMPTY;
 
   artists$ = EMPTY;
 
-  constructor(private library: LibraryFacade) {}
-
-  ngOnInit(): void {}
-
-  getHash(albumArtist: string) {
+  getHash(albumArtist: string): string {
     return hash(albumArtist);
   }
 }

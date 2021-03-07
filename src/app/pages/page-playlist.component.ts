@@ -140,8 +140,8 @@ export class PagePlaylistComponent implements OnInit {
           : from(import('node-vibrant')).pipe(
               concatMap((vibrant) => vibrant.from(cover).getPalette()),
               map((palette) => palette.Vibrant?.getRgb()),
-              map((hsl) =>
-                !!hsl ? `rgba(${hsl[0]}, ${hsl[1]}, ${hsl[2]}, 0.5)` : undefined
+              map((rgb) =>
+                !!rgb ? `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, 0.5)` : undefined
               )
             )
       )
@@ -153,7 +153,7 @@ export class PagePlaylistComponent implements OnInit {
     return Math.floor(sec / 60);
   }
 
-  shufflePlay(songs: SongWithCover$[]) {
+  shufflePlay(songs: SongWithCover$[]): void {
     this.player.setPlaying();
     this.player.setPlaylist(songs);
     this.player.shuffle();

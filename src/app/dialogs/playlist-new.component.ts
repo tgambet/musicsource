@@ -1,9 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  OnInit,
-  ViewChild,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, ViewChild } from '@angular/core';
 import { MatDialogConfig } from '@angular/material/dialog';
 import { NoopScrollStrategy } from '@angular/cdk/overlay';
 import {
@@ -108,7 +103,7 @@ import { map } from 'rxjs/operators';
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class PlaylistNewComponent implements OnInit {
+export class PlaylistNewComponent {
   @ViewChild('dialog', { static: true })
   dialog!: RoutedDialogDirective;
 
@@ -141,9 +136,7 @@ export class PlaylistNewComponent implements OnInit {
     private library: LibraryFacade
   ) {}
 
-  ngOnInit(): void {}
-
-  async createPlaylist() {
+  async createPlaylist(): Promise<void> {
     if (this.form.valid) {
       await this.library.createPlaylist(this.form.getRawValue()).toPromise();
       await this.dialog.close();

@@ -1,9 +1,4 @@
-import {
-  Component,
-  OnInit,
-  ChangeDetectionStrategy,
-  Input,
-} from '@angular/core';
+import { Component, ChangeDetectionStrategy, Input } from '@angular/core';
 import { Icons } from '@app/utils/icons.util';
 
 @Component({
@@ -54,13 +49,9 @@ import { Icons } from '@app/utils/icons.util';
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class IconLikesComponent implements OnInit {
+export class IconLikesComponent {
   @Input() size = 160;
   @Input() fullWidth?: boolean;
 
   icons = Icons;
-
-  constructor() {}
-
-  ngOnInit(): void {}
 }

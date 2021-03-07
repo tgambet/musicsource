@@ -158,7 +158,7 @@ export class TrackListItemComponent {
     return hash(s);
   }
 
-  toggleLiked(song: SongWithCover$) {
+  toggleLiked(song: SongWithCover$): void {
     this.helper.toggleLikedSong(song).subscribe(() => this.cdr.markForCheck());
   }
 
@@ -170,7 +170,7 @@ export class TrackListItemComponent {
     this.helper.addToQueue(song);
   }
 
-  addSongToPlaylist(song: Song) {
+  addSongToPlaylist(song: Song): void {
     this.helper.addSongsToPlaylist([song]).subscribe();
   }
 }

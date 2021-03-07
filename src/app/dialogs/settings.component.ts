@@ -91,7 +91,7 @@ export class SettingsComponent {
     closeOnNavigation: false,
   };
 
-  close() {
+  close(): void {
     this.routed.close();
   }
 }

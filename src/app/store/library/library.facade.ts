@@ -318,7 +318,7 @@ export class LibraryFacade {
       .pipe(map(() => void 0));
   }
 
-  addSongsToPlaylist(songs: Song[], title: string) {
+  addSongsToPlaylist(songs: Song[], title: string): Observable<IDBValidKey> {
     return this.storage.get$('playlists', title, 'title').pipe(
       filter((playlist): playlist is Playlist => !!playlist),
       concatMap((playlist) =>

@@ -151,12 +151,12 @@ export class HListComponent implements OnInit, OnDestroy, AfterContentInit {
   }
 
   @HostListener('window:resize', ['$event'])
-  update() {
+  update(): void {
     this.zone.runOutsideAngular(() => (this.translation = this.translationP));
   }
 
   @HostListener('keydown.arrowRight', ['$event'])
-  scrollRight(event?: KeyboardEvent) {
+  scrollRight(event?: KeyboardEvent): void {
     if (!this.isNextDisabled) {
       const items = this.items.toArray().reverse();
       const firstVisibleIndex = items.findIndex((item) =>
@@ -170,7 +170,7 @@ export class HListComponent implements OnInit, OnDestroy, AfterContentInit {
   }
 
   @HostListener('keydown.arrowLeft', ['$event'])
-  scrollLeft(event?: KeyboardEvent) {
+  scrollLeft(event?: KeyboardEvent): void {
     if (!this.isPrevDisabled) {
       const items = this.items.toArray();
       const firstVisibleIndex = items.findIndex((item) =>
@@ -215,7 +215,7 @@ export class HListComponent implements OnInit, OnDestroy, AfterContentInit {
     event: KeyboardEvent,
     current: HListItemDirective,
     scroll = false
-  ) {
+  ): void | boolean {
     const index = this.items.toArray().findIndex((item) => item === current);
     const next = this.items.toArray()[index + 1];
     if (next) {
@@ -236,7 +236,7 @@ export class HListComponent implements OnInit, OnDestroy, AfterContentInit {
     event: KeyboardEvent,
     current: HListItemDirective,
     scroll = false
-  ) {
+  ): void | boolean {
     const index = this.items.toArray().findIndex((item) => item === current);
     const prev = this.items.toArray()[index - 1];
     if (prev) {
@@ -327,7 +327,8 @@ export class HListComponent implements OnInit, OnDestroy, AfterContentInit {
 @Directive({
   selector: '[appHListItem]',
 })
-export class HListItemDirective extends ElementRef<HTMLElement>
+export class HListItemDirective
+  extends ElementRef<HTMLElement>
   implements AfterViewInit, OnDestroy {
   private firstTabbable: HTMLElement | null = null;
   private lastTabbable: HTMLElement | null = null;
@@ -357,13 +358,13 @@ export class HListItemDirective extends ElementRef<HTMLElement>
     }
   }
 
-  focusFirstTabbable() {
+  focusFirstTabbable(): void {
     if (this.firstTabbable) {
       this.firstTabbable.focus({ preventScroll: true });
     }
   }
 
-  focusLastTabbable() {
+  focusLastTabbable(): void {
     if (this.lastTabbable) {
       this.lastTabbable.focus({ preventScroll: true });
     }
@@ -466,6 +467,8 @@ export class HListItemDirective extends ElementRef<HTMLElement>
     return null;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   private tabListener: (event: KeyboardEvent) => void = () => {};
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   private shiftTabListener: (event: KeyboardEvent) => void = () => {};
 }

@@ -3,7 +3,6 @@ import {
   Component,
   HostBinding,
   HostListener,
-  OnInit,
 } from '@angular/core';
 import { ExtractorService } from '@app/services/extractor.service';
 import { FileService } from '@app/services/file.service';
@@ -20,15 +19,15 @@ import { ScrollerService } from '@app/services/scroller.service';
 import { Observable } from 'rxjs';
 import { PlayerFacade } from '@app/store/player/player.facade';
 
-export const debugAnimation = (name: string) => (
-  from: any,
-  to: any,
-  el: any,
-  params: any
-) => {
-  console.log('ANIMATION (' + name + '):', from, '=>', to, el, params);
-  return false;
-};
+// export const debugAnimation = (name: string) => (
+//   from: any,
+//   to: any,
+//   el: any,
+//   params: any
+// ) => {
+//   console.log('ANIMATION (' + name + '):', from, '=>', to, el, params);
+//   return false;
+// };
 
 export const playerAnimation: AnimationTriggerMetadata = trigger(
   'playerAnimations',
@@ -140,7 +139,7 @@ export const slideInAnimation: AnimationTriggerMetadata = trigger(
   changeDetection: ChangeDetectionStrategy.OnPush,
   animations: [slideInAnimation, playerAnimation],
 })
-export class AppComponent implements OnInit {
+export class AppComponent {
   @HostBinding('class.scrolled-top')
   scrolledTop = true;
   @HostBinding('class.with-background')
@@ -154,12 +153,11 @@ export class AppComponent implements OnInit {
   ) {}
 
   @HostListener('window:scroll', ['$event'])
-  setScrolledTop(event: any) {
+  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+  setScrolledTop(event: any): void {
     this.scroller.scroll$.next(event.target.scrollingElement.scrollTop);
     this.scrolledTop = event.target.scrollingElement.scrollTop === 0;
   }
-
-  ngOnInit(): void {}
 
   prepareRoute(outlet: RouterOutlet): string {
     const v =

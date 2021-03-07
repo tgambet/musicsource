@@ -21,4 +21,4 @@ export const collectLeft = <T>(): OperatorFunction<Either<T>, any> =>
 
 export const right = <T>(result: T): Right<T> => ({ tag: 'right', result });
 
-export const left = (error: any): Left => ({ tag: 'left', error });
+export const left = (error: unknown): Left => ({ tag: 'left', error });

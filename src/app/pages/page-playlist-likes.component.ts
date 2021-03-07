@@ -92,7 +92,7 @@ export class PagePlaylistLikesComponent implements OnInit {
     {
       text: 'Play next',
       icon: Icons.playlistPlay,
-      click: () => {
+      click: (): void => {
         this.songs$
           .pipe(
             first(),
@@ -104,7 +104,7 @@ export class PagePlaylistLikesComponent implements OnInit {
     {
       text: 'Add to queue',
       icon: Icons.playlistPlus,
-      click: () => {
+      click: (): void => {
         this.songs$
           .pipe(
             first(),
@@ -134,7 +134,7 @@ export class PagePlaylistLikesComponent implements OnInit {
     return Math.floor(sec / 60);
   }
 
-  shuffle(songs: SongWithCover$[]) {
+  shuffle(songs: SongWithCover$[]): void {
     this.helper.shufflePlaySongs(songs);
   }
 }
