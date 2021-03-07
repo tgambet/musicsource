@@ -198,31 +198,31 @@ h6 {
   padding-bottom: 0 !important;
 }
 
-app-player .mat-slider .mat-slider-wrapper {
+app-player > .mat-slider .mat-slider-wrapper {
   top: 15px;
   right: 0;
   left: 0;
 }
 
-app-player .mat-slider-horizontal .mat-slider-thumb {
+app-player > .mat-slider-horizontal .mat-slider-thumb {
   cursor: pointer !important;
 }
 
-app-player .mat-slider.back .mat-slider-thumb-container {
+app-player > .mat-slider.back .mat-slider-thumb-container {
   display: none;
 }
 
-app-player .mat-slider.front .mat-slider-track-wrapper,
-app-player .mat-slider.front .mat-slider-track-background,
-app-player .mat-slider.front .mat-slider-track-fill {
+app-player > .mat-slider.front .mat-slider-track-wrapper,
+app-player > .mat-slider.front .mat-slider-track-background,
+app-player > .mat-slider.front .mat-slider-track-fill {
   height: 4px;
 }
 
-app-player .mat-slider.front .mat-slider-track-background {
+app-player > .mat-slider.front .mat-slider-track-background {
   background-color: #4c4c4c;
 }
 
-app-player .mat-slider.back .mat-slider-track-background {
+app-player > .mat-slider.back .mat-slider-track-background {
   transform: translateX(0) scale3d(1, 1, 1) !important;
 }
 

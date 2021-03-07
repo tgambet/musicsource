@@ -23,9 +23,11 @@ export class AudioService {
   playing$: Subject<boolean> = new ReplaySubject(1);
   ended$: Subject<void> = new Subject();
   loading$: Subject<boolean> = new ReplaySubject(1);
+  volume$: Subject<number> = new ReplaySubject(1);
 
   private context!: AudioContext;
   private audio!: HTMLMediaElement;
+
   private objectUrl!: string;
 
   constructor(@Inject(DOCUMENT) document: Document) {
@@ -44,6 +46,19 @@ export class AudioService {
           // this.audio.load();
           this.context = context;
           this.isInitialized = true;
+
+          // this.audioMotion = new AudioMotionAnalyzer(undefined, {
+          //   source,
+          //   audioCtx: context,
+          //   radial: true,
+          //   mode: 2,
+          //   showScaleX: false,
+          //   overlay: true,
+          //   showBgColor: true,
+          //   bgAlpha: 0.7,
+          //   showPeaks: false,
+          //   start: false,
+          // });
         })
       )
       .subscribe();
@@ -69,6 +84,14 @@ export class AudioService {
 
   pause(): void {
     this.audio.pause();
+  }
+
+  setVolume(volume: number): void {
+    this.audio.volume = volume;
+  }
+
+  toggleMute(): void {
+    this.audio.muted = !this.audio.muted;
   }
 
   async resume(): Promise<void> {
@@ -99,6 +122,9 @@ export class AudioService {
         audio.addEventListener('ended', () => this.ended$.next());
         audio.addEventListener('loadstart', () => this.loading$.next(true));
         audio.addEventListener('canplay', () => this.loading$.next(false));
+        audio.addEventListener('volumechange', (event) =>
+          this.volume$.next((event.target as HTMLMediaElement)?.volume)
+        );
         const source = context.createMediaElementSource(audio);
         return of({ context, source /*, gain*/, audio });
         //})
