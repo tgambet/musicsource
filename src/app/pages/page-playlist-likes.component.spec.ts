@@ -8,9 +8,8 @@ describe('PagePlaylistLikesComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ PagePlaylistLikesComponent ]
-    })
-    .compileComponents();
+      declarations: [PagePlaylistLikesComponent],
+    }).compileComponents();
   });
 
   beforeEach(() => {

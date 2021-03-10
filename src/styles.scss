@@ -57,7 +57,7 @@ $red: (
     A200: $light-primary-text,
     A400: $light-primary-text,
     A700: $light-primary-text,
-  )
+  ),
 );
 
 $musicsource-theme: (
@@ -237,35 +237,35 @@ app-player .mat-slider:not(.mat-slider-sliding).cdk-focused .mat-slider-thumb {
 }
 *::-webkit-scrollbar-track {
   background-color: #181818;
-  border-left: 1px solid rgba(255,255,255,0.1);
+  border-left: 1px solid rgba(255, 255, 255, 0.1);
   box-sizing: border-box;
 }
 *::-webkit-scrollbar-thumb {
   background-color: mat-color(
-      map-get($musicsource-theme, foreground),
-      disabled-button
+    map-get($musicsource-theme, foreground),
+    disabled-button
   );
 }
 *::-webkit-scrollbar-button {
   display: none;
 }
 
-[style*='--aspect-ratio'] > :first-child {
+[style*="--aspect-ratio"] > :first-child {
   width: 100%;
 }
-[style*='--aspect-ratio'] > img {
+[style*="--aspect-ratio"] > img {
   height: auto !important;
 }
 @supports (--custom: property) {
-  [style*='--aspect-ratio'] {
+  [style*="--aspect-ratio"] {
     position: relative;
   }
-  [style*='--aspect-ratio']::before {
-    content: '';
+  [style*="--aspect-ratio"]::before {
+    content: "";
     display: block;
     padding-bottom: calc(100% / (var(--aspect-ratio)));
   }
-  [style*='--aspect-ratio'] > :first-child {
+  [style*="--aspect-ratio"] > :first-child {
     position: absolute;
     top: 0;
     left: 0;
