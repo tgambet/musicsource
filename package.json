@@ -7,6 +7,7 @@
     "build": "ng build",
     "test": "ng test",
     "lint": "ng lint",
+    "prettier": "prettier -l -u src/**/*",
     "docs": "compodoc -p ./tsconfig.json",
     "cypress:open": "start-server-and-test start 4200 \"cypress open\"",
     "cypress:verify": "cypress verify",
