@@ -8,9 +8,8 @@ describe('LibraryContentComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ LibraryContentComponent ]
-    })
-    .compileComponents();
+      declarations: [LibraryContentComponent],
+    }).compileComponents();
   });
 
   beforeEach(() => {

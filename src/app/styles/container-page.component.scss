@@ -10,7 +10,7 @@ $container-margin: 24px;
 
 @for $n from 3 through 6 {
   $width: $n * $base-item-width;
-  @media (min-width: $width + 2 * $container-margin + 12px) { // Account for scrollbar
+  @media (min-width: $width + 2 * $container-margin + 12px) {
     :host {
       width: $width;
     }
