@@ -1,12 +1,12 @@
 // Custom Theming for Angular Material
+@use '~@angular/material' as mat;
 // For more information: https://material.angular.io/guide/theming
-@import "~@angular/material/theming";
 // Plus imports for other components in your app.
 
 // Include the common styles for Angular Material. We include this here so that you only
 // have to load a single css file for Angular Material in your app.
 // Be sure that you only ever include this mixin once!
-@include mat-core();
+@include mat.core();
 
 // Define the palettes for your theme using the Material Design palettes available in palette.scss
 // (imported above). For each palette, you can optionally specify a default, lighter, and darker
@@ -43,52 +43,52 @@ $red: (
   A400: #ff1744,
   A700: #ff0000,
   contrast: (
-    50: $dark-primary-text,
-    100: $dark-primary-text,
-    200: $dark-primary-text,
-    300: $dark-primary-text,
-    400: $dark-primary-text,
-    500: $light-primary-text,
-    600: $light-primary-text,
-    700: $light-primary-text,
-    800: $light-primary-text,
-    900: $light-primary-text,
-    A100: $dark-primary-text,
-    A200: $light-primary-text,
-    A400: $light-primary-text,
-    A700: $light-primary-text,
+    50: rgba(black, 0.87),
+    100: rgba(black, 0.87),
+    200: rgba(black, 0.87),
+    300: rgba(black, 0.87),
+    400: rgba(black, 0.87),
+    500: white,
+    600: white,
+    700: white,
+    800: white,
+    900: white,
+    A100: rgba(black, 0.87),
+    A200: white,
+    A400: white,
+    A700: white,
   ),
 );
 
 $musicsource-theme: (
-  primary: mat-palette($red, A700),
-  accent: mat-palette($mat-grey, 200),
-  warn: mat-palette($mat-deep-orange, A200),
+  primary: mat.define-palette($red, A700),
+  accent: mat.define-palette(mat.$grey-palette, 200),
+  warn: mat.define-palette(mat.$deep-orange-palette, A200),
   is-dark: true,
-  foreground: $mat-dark-theme-foreground,
+  foreground: mat.$dark-theme-foreground-palette,
   background: (
     status-bar: black,
-    app-bar: map_get($mat-grey, 900),
+    app-bar: map_get(mat.$grey-palette, 900),
     background: black,
     hover: rgba(white, 0.04),
     card: #333,
-    dialog: map_get($mat-grey, 900),
+    dialog: map_get(mat.$grey-palette, 900),
     disabled-button: rgba(white, 0.12),
-    raised-button: map-get($mat-grey, 800),
-    focused-button: $light-focused,
-    selected-button: map_get($mat-grey, 900),
-    selected-disabled-button: map_get($mat-grey, 800),
+    raised-button: map-get(mat.$grey-palette, 800),
+    focused-button: rgba(white, 0.12),
+    selected-button: map_get(mat.$grey-palette, 900),
+    selected-disabled-button: map_get(mat.$grey-palette, 800),
     disabled-button-toggle: black,
-    unselected-chip: map_get($mat-grey, 700),
+    unselected-chip: map_get(mat.$grey-palette, 700),
     disabled-list-option: black,
-    tooltip: map_get($mat-grey, 700),
+    tooltip: map_get(mat.$grey-palette, 700),
   ),
 );
 
 // Include theme styles for core and each component used in your app.
 // Alternatively, you can import and @include the theme mixins for each component
 // that you are using.
-@include angular-material-theme($musicsource-theme);
+@include mat.all-component-themes($musicsource-theme);
 
 /* You can add global styles to this file, and also import other style files */
 
@@ -152,8 +152,8 @@ $musicsource-theme: (
   font-display: swap;
 }
 
-$text-color: mat-color(map-get($musicsource-theme, foreground), text);
-$background-color: mat-color(
+$text-color: mat.get-color-from-palette(map-get($musicsource-theme, foreground), text);
+$background-color: mat.get-color-from-palette(
   map-get($musicsource-theme, background),
   background
 );
@@ -241,7 +241,7 @@ app-player .mat-slider:not(.mat-slider-sliding).cdk-focused .mat-slider-thumb {
   box-sizing: border-box;
 }
 *::-webkit-scrollbar-thumb {
-  background-color: mat-color(
+  background-color: mat.get-color-from-palette(
     map-get($musicsource-theme, foreground),
     disabled-button
   );
