@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Entry, requestPermissionPromise } from '@app/models/entry.model';
-import { from, Observable, of, Subject, throwError } from 'rxjs';
+import { from, Observable, of, Subject, throwError, toArray } from 'rxjs';
 import { concatMap, filter, map, tap } from 'rxjs/operators';
 import { StorageService } from '@app/services/storage.service';
 import { Album, AlbumWithCover$ } from '@app/models/album.model';
@@ -9,7 +9,6 @@ import { getCover, Picture } from '@app/models/picture.model';
 import { Song, SongWithCover$ } from '@app/models/song.model';
 import { Playlist } from '@app/models/playlist.model';
 import { hash } from '@app/utils/hash.util';
-import { reduceArray } from '@app/utils/reduce-array.util';
 
 @Injectable()
 export class LibraryFacade {
@@ -190,7 +189,7 @@ export class LibraryFacade {
 
   getAlbumTracks = (album: Album): Observable<SongWithCover$[]> =>
     this.getAlbumTitles(album).pipe(
-      reduceArray(),
+      toArray(),
       map((songs) =>
         songs.sort((s1, s2) => (s1.track.no || 0) - (s2.track.no || 0))
       )

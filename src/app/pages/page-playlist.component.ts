@@ -138,7 +138,7 @@ export class PagePlaylistComponent implements OnInit {
         !cover
           ? of(undefined)
           : from(import('node-vibrant')).pipe(
-              concatMap((vibrant) => vibrant.from(cover).getPalette()),
+              concatMap((vibrant) => vibrant.default.from(cover).getPalette()),
               map((palette) => palette.Vibrant?.getRgb()),
               map((rgb) =>
                 !!rgb ? `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, 0.5)` : undefined

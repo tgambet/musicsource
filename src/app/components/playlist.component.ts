@@ -10,13 +10,12 @@ import {
 } from '@angular/core';
 import { Icons } from '../utils/icons.util';
 import { Playlist } from '@app/models/playlist.model';
-import { from, Observable, of } from 'rxjs';
+import { from, Observable, of, toArray } from 'rxjs';
 import { LibraryFacade } from '@app/store/library/library.facade';
 import { concatMap, map, tap } from 'rxjs/operators';
 import { MenuItem } from '@app/components/menu.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { PlayerFacade } from '@app/store/player/player.facade';
-import { reduceArray } from '@app/utils/reduce-array.util';
 
 @Component({
   selector: 'app-playlist',
@@ -107,7 +106,7 @@ export class PlaylistComponent implements OnInit {
         !cover
           ? of(undefined)
           : from(import('node-vibrant')).pipe(
-              concatMap((vibrant) => vibrant.from(cover).getPalette()),
+              concatMap((vibrant) => vibrant.default.from(cover).getPalette()),
               map((palette) => palette.Vibrant?.getRgb()),
               map((rgb) =>
                 !!rgb ? `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, 0.5)` : undefined
@@ -126,7 +125,7 @@ export class PlaylistComponent implements OnInit {
     this.library
       .getPlaylistSongs(this.playlist)
       .pipe(
-        reduceArray(),
+        toArray(),
         tap((songs) => {
           this.player.setPlaying();
           this.player.setPlaylist(songs, 0);

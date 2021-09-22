@@ -7,7 +7,7 @@ import {
   ofType,
   OnRunEffects,
 } from '@ngrx/effects';
-import { EMPTY, merge, Observable, of, throwError } from 'rxjs';
+import { EMPTY, merge, Observable, of, throwError, toArray } from 'rxjs';
 import {
   catchError,
   concatMap,
@@ -63,7 +63,6 @@ import { Album } from '@app/models/album.model';
 import { SetRequired } from '@app/utils/types.util';
 import { Song } from '@app/models/song.model';
 import { hash } from '@app/utils/hash.util';
-import { reduceArray } from '@app/utils/reduce-array.util';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { ScanComponent } from '@app/dialogs/scan.component';
 import { NoopScrollStrategy } from '@angular/cdk/overlay';
@@ -274,7 +273,7 @@ export class ScannerEffects implements OnRunEffects {
             ),
             mergeMap((groups$) =>
               groups$.pipe(
-                reduceArray(),
+                toArray(),
                 map((songs) => ({
                   album: groups$.key,
                   songs,
@@ -334,7 +333,7 @@ export class ScannerEffects implements OnRunEffects {
             ),
             mergeMap((groups$) =>
               groups$.pipe(
-                reduceArray(),
+                toArray(),
                 map((albums) => ({
                   artist: groups$.key,
                   albums,

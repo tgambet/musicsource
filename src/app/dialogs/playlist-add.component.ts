@@ -1,9 +1,8 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { Icons } from '@app/utils/icons.util';
-import { Observable } from 'rxjs';
+import { Observable, toArray } from 'rxjs';
 import { Playlist } from '@app/models/playlist.model';
 import { LibraryFacade } from '@app/store/library/library.facade';
-import { reduceArray } from '@app/utils/reduce-array.util';
 
 @Component({
   selector: 'app-playlist-add',
@@ -57,7 +56,7 @@ export class PlaylistAddComponent {
 
   playlists$: Observable<Playlist[]> = this.library
     .getPlaylists('title')
-    .pipe(reduceArray());
+    .pipe(toArray());
 
   constructor(private library: LibraryFacade) {}
 }
