@@ -3,12 +3,11 @@ import { Artist } from '@app/models/artist.model';
 import { concatMap, first, map, tap } from 'rxjs/operators';
 import { LibraryFacade } from '@app/store/library/library.facade';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { combineLatest, EMPTY, Observable } from 'rxjs';
+import { combineLatest, EMPTY, Observable, toArray } from 'rxjs';
 import { Song, SongWithCover$ } from '@app/models/song.model';
 import { PlaylistAddComponent } from '@app/dialogs/playlist-add.component';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
-import { reduceArray } from '@app/utils/reduce-array.util';
 import { shuffleArray } from '@app/utils/shuffle-array.util';
 import { PlayerFacade } from '@app/store/player/player.facade';
 import { Album } from '@app/models/album.model';
@@ -107,7 +106,7 @@ export class ComponentHelperService {
 
   shufflePlayArtist(artist: Artist): Observable<SongWithCover$[]> {
     return this.library.getArtistTitles(artist).pipe(
-      reduceArray(),
+      toArray(),
       map((songs) => shuffleArray(songs)),
       map((songs) => songs.slice(0, 100)),
       tap((songs) => {
