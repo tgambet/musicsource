@@ -1,5 +1,5 @@
 [build]
-  command = "yarn build --prod"
+  command = "yarn build --configuration production"
   publish = "dist/musicsource"
 
 [[redirects]]
