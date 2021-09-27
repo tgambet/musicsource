@@ -4,8 +4,6 @@ import {
   HostBinding,
   HostListener,
 } from '@angular/core';
-import { ExtractorService } from '@app/services/extractor.service';
-import { FileService } from '@app/services/file.service';
 import { RouterOutlet } from '@angular/router';
 import {
   animate,
@@ -15,9 +13,9 @@ import {
   transition,
   trigger,
 } from '@angular/animations';
-import { ScrollerService } from '@app/services/scroller.service';
+import { ScrollerService } from '@app/core/services/scroller.service';
 import { Observable } from 'rxjs';
-import { PlayerFacade } from '@app/store/player/player.facade';
+import { PlayerFacade } from '@app/player/store/player.facade';
 
 // export const debugAnimation = (name: string) => (
 //   from: any,
@@ -135,7 +133,6 @@ export const slideInAnimation: AnimationTriggerMetadata = trigger(
       }
     `,
   ],
-  providers: [FileService, ExtractorService],
   changeDetection: ChangeDetectionStrategy.OnPush,
   animations: [slideInAnimation, playerAnimation],
 })

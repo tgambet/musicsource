@@ -1,174 +1,135 @@
-import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 
-import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { ServiceWorkerModule } from '@angular/service-worker';
-import { environment } from '@env/environment';
-import { TitleComponent } from './components/title.component';
-import { LabelComponent } from './components/label.component';
-import { ArtistComponent } from './components/artist.component';
-import { MatRippleModule } from '@angular/material/core';
-import { AlbumComponent } from './components/album.component';
-import { MatButtonModule } from '@angular/material/button';
-import { GenreComponent } from './components/genre.component';
-import { MenuComponent } from './components/menu.component';
-import { MatMenuModule } from '@angular/material/menu';
-import { IconComponent } from './components/icon.component';
-import { PlayerButtonComponent } from './components/player-button.component';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { SongComponent } from './components/song.component';
-import { PlaylistComponent } from './components/playlist.component';
-import { A11yModule } from '@angular/cdk/a11y';
-import { CoverComponent } from './components/cover.component';
-import { MixComponent } from './components/mix.component';
-import { TopBarComponent } from './components/top-bar.component';
-import {
-  HListComponent,
-  HListItemDirective,
-} from './components/h-list.component';
-import {
-  MAT_SNACK_BAR_DEFAULT_OPTIONS,
-  MatSnackBarModule,
-} from '@angular/material/snack-bar';
-import { CdkTreeModule } from '@angular/cdk/tree';
-import { HomeComponent } from './pages/home.component';
-import { LibraryComponent } from './pages/library.component';
-import { SearchComponent } from './pages/search.component';
-import { HistoryComponent } from './pages/history.component';
-import { ExplorerComponent } from './pages/explorer.component';
-import { RoutedDialogDirective } from '@app/directives/routed-dialog.directive';
-import { MatDialogModule } from '@angular/material/dialog';
-import { SettingsComponent } from './dialogs/settings.component';
-import { DragDropModule } from '@angular/cdk/drag-drop';
-import { StoreModule } from '@ngrx/store';
-import { reducers } from '@app/store';
+import { MAT_SNACK_BAR_DEFAULT_OPTIONS } from '@angular/material/snack-bar';
+import { IndexedDBModule } from '@creasource/ngx-idb';
+import { CoreModule } from '@app/core/core.module';
+import { PlayerModule } from '@app/player/player.module';
+import { ScannerModule } from '@app/scanner/scanner.module';
+import { RouterModule, Routes } from '@angular/router';
+import { MainGuard } from '@app/core/guards/main.guard';
+import { PagePlaylistLikesComponent } from '@app/playlist/page-playlist-likes.component';
 import { EffectsModule } from '@ngrx/effects';
-import { LibraryEffects } from '@app/store/library';
-import { FileService } from '@app/services/file.service';
-import { ScanComponent } from '@app/dialogs/scan.component';
-import { ScannerEffects } from '@app/store/scanner';
-import { ExtractorService } from '@app/services/extractor.service';
-import { ResizerService } from '@app/services/resizer.service';
-import { LibraryFacade } from '@app/store/library/library.facade';
-import { ScannerFacade } from '@app/store/scanner/scanner.facade';
-import { PageAlbumComponent } from './pages/page-album.component';
-import { PageArtistComponent } from './pages/page-artist.component';
-import { ContainerComponent } from './components/container.component';
-import { ContainerHomeComponent } from './components/container-home.component';
-import { ContainerPageComponent } from './components/container-page.component';
-import { SongListComponent } from './components/song-list.component';
-import { DurationPipe } from '@app/pipes/duration.pipe';
-import { TrackListItemComponent } from '@app/components/track-list-item.component';
-import { MatTabsModule } from '@angular/material/tabs';
-import { LibraryAlbumsComponent } from './pages/library-albums.component';
-import { SelectComponent } from './components/select.component';
-import { LibraryArtistsComponent } from './pages/library-artists.component';
-import { LibraryPlaylistsComponent } from './pages/library-playlists.component';
-import { LibraryContentComponent } from './pages/library-content.component';
-import { UpdateService } from '@app/services/update.service';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { LibrarySongsComponent } from './pages/library-songs.component';
-import { PlaylistNewComponent } from './dialogs/playlist-new.component';
-import { MatInputModule } from '@angular/material/input';
-import { ReactiveFormsModule } from '@angular/forms';
-import { PagePlaylistComponent } from './pages/page-playlist.component';
-import { IconLikesComponent } from './components/icon-likes.component';
-import { PlaylistLikesComponent } from './components/playlist-likes.component';
-import { PagePlaylistLikesComponent } from './pages/page-playlist-likes.component';
-import { SongListItemComponent } from './components/song-list-item.component';
-import { PlaylistAddComponent } from './dialogs/playlist-add.component';
-import { PlayerComponent } from './components/player.component';
-import { MatSliderModule } from '@angular/material/slider';
-import { AudioService } from '@app/services/audio.service';
-import { PlayComponent } from './pages/play.component';
-import { PlaylistListItemComponent } from './components/playlist-list-item.component';
-import { PlaylistListComponent } from './components/playlist-list.component';
-import { PlayerEffects } from '@app/store/player/player.effects';
-import { PlayerFacade } from '@app/store/player/player.facade';
-import { RecentActivityComponent } from './components/recent-activity.component';
-import { WelcomeComponent } from './pages/welcome.component';
-import { RootComponent } from './root.component';
-import { IconLikes2Component } from '@app/components/icon-likes2.component';
+import { StoreModule } from '@ngrx/store';
+import { reducers } from '@app/core/store';
+import { ScrollerService } from '@app/core/services/scroller.service';
+
+/*const routes: Routes = [
+  {
+    path: 'welcome',
+    loadChildren: () =>
+      import('./welcome/welcome.module').then((m) => m.WelcomeModule),
+  },
+  // {
+  //   outlet: 'dialog',
+  //   path: 'settings',
+  //   component: SettingsComponent,
+  //   children: [
+  //     { path: '', redirectTo: 'library', pathMatch: 'full' },
+  //     { path: 'library', component: LibrarySettingsComponent },
+  //   ],
+  // },
+  {
+    outlet: 'dialog',
+    path: 'new-playlist',
+    component: PlaylistNewComponent,
+  },
+  {
+    path: '',
+    component: AppComponent,
+    canActivate: [MainGuard],
+    canActivateChild: [MainGuard],
+    children: [
+      {
+        path: '',
+        redirectTo: 'library',
+        pathMatch: 'full',
+        data: { animation: 'default' },
+      },
+      {
+        path: 'library',
+        loadChildren: () =>
+          import('./library/library.module').then((m) => m.LibraryModule),
+      },
+      {
+        path: 'album',
+        loadChildren: () =>
+          import('./album/album.module').then((m) => m.AlbumModule),
+      },
+      {
+        path: 'artist',
+        loadChildren: () =>
+          import('./artist/artist.module').then((m) => m.ArtistModule),
+      },
+      {
+        path: 'playlist',
+        loadChildren: () =>
+          import('./playlist/playlist.module').then((m) => m.PlaylistModule),
+      },
+      {
+        path: 'likes',
+        data: { animation: 'default' },
+        component: PagePlaylistLikesComponent,
+      },
+      {
+        path: 'play',
+        loadChildren: () => PlayerModule,
+      },
+    ],
+  },
+  { path: '**', component: WelcomeComponent }, // TODO Not found component
+];*/
+
+const routes: Routes = [
+  {
+    path: '',
+    component: AppComponent,
+    canActivate: [MainGuard],
+    canActivateChild: [MainGuard],
+    children: [
+      {
+        path: '',
+        redirectTo: 'library',
+        pathMatch: 'full',
+        data: { animation: 'default' },
+      },
+      {
+        path: 'library',
+        loadChildren: () =>
+          import('./library/library.module').then((m) => m.LibraryModule),
+      },
+      {
+        path: 'album',
+        loadChildren: () =>
+          import('./album/album.module').then((m) => m.AlbumModule),
+      },
+      {
+        path: 'artist',
+        loadChildren: () =>
+          import('./artist/artist.module').then((m) => m.ArtistModule),
+      },
+      {
+        path: 'playlist',
+        loadChildren: () =>
+          import('./playlist/playlist.module').then((m) => m.PlaylistModule),
+      },
+      {
+        path: 'likes',
+        data: { animation: 'default' },
+        component: PagePlaylistLikesComponent,
+      },
+      {
+        path: 'play',
+        loadChildren: () => PlayerModule,
+      },
+    ],
+  },
+];
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    TitleComponent,
-    LabelComponent,
-    ArtistComponent,
-    AlbumComponent,
-    GenreComponent,
-    MenuComponent,
-    IconComponent,
-    PlayerButtonComponent,
-    SongComponent,
-    PlaylistComponent,
-    CoverComponent,
-    MixComponent,
-    TopBarComponent,
-    HListItemDirective,
-    HListComponent,
-    HomeComponent,
-    LibraryComponent,
-    SearchComponent,
-    HistoryComponent,
-    ExplorerComponent,
-    RoutedDialogDirective,
-    SettingsComponent,
-    ScanComponent,
-    PageAlbumComponent,
-    PageArtistComponent,
-    ContainerComponent,
-    ContainerHomeComponent,
-    ContainerPageComponent,
-    SongListComponent,
-    TrackListItemComponent,
-    DurationPipe,
-    LibraryAlbumsComponent,
-    SelectComponent,
-    LibraryArtistsComponent,
-    LibraryPlaylistsComponent,
-    LibraryContentComponent,
-    LibrarySongsComponent,
-    PlaylistNewComponent,
-    PagePlaylistComponent,
-    IconLikesComponent,
-    IconLikes2Component,
-    PlaylistLikesComponent,
-    PagePlaylistLikesComponent,
-    SongListItemComponent,
-    PlaylistAddComponent,
-    PlayerComponent,
-    PlayComponent,
-    PlaylistListItemComponent,
-    PlaylistListComponent,
-    RecentActivityComponent,
-    WelcomeComponent,
-    RootComponent,
-  ],
+  declarations: [AppComponent],
   imports: [
-    BrowserModule,
-    AppRoutingModule,
-    BrowserAnimationsModule,
-    ServiceWorkerModule.register('ngsw-worker.js', {
-      enabled: environment.production,
-    }),
-    MatRippleModule,
-    MatButtonModule,
-    MatMenuModule,
-    MatProgressSpinnerModule,
-    MatSnackBarModule,
-    CdkTreeModule,
-    DragDropModule,
-    A11yModule,
-    MatDialogModule,
-    MatTabsModule,
-    MatSlideToggleModule,
-    MatInputModule,
-    MatSliderModule,
-    ReactiveFormsModule,
+    RouterModule.forChild(routes),
     StoreModule.forRoot(reducers, {
       runtimeChecks: {
         strictStateSerializability: false,
@@ -179,18 +140,69 @@ import { IconLikes2Component } from '@app/components/icon-likes2.component';
         strictActionTypeUniqueness: false,
       },
     }),
-    EffectsModule.forRoot([LibraryEffects, ScannerEffects, PlayerEffects]),
+    EffectsModule.forRoot([]),
     // StoreDevtoolsModule.instrument({ maxAge: 150, logOnly: true }),
+    CoreModule,
+    PlayerModule,
+    ScannerModule,
+    IndexedDBModule.forRoot({
+      name: 'musicsource',
+      schema: [
+        {
+          version: 1,
+          stores: [
+            {
+              name: 'entries',
+              options: { keyPath: 'path' },
+              indexes: ['parent'],
+            },
+            {
+              name: 'songs',
+              options: { keyPath: 'entryPath' },
+              indexes: [
+                { name: 'artists', options: { multiEntry: true } },
+                { name: 'genre', options: { multiEntry: true } },
+                'album',
+                'title',
+                'likedOn',
+                'lastModified',
+              ],
+            },
+            {
+              name: 'pictures',
+              options: { keyPath: 'hash' },
+            },
+            {
+              name: 'albums',
+              options: { keyPath: 'name' },
+              indexes: [
+                { name: 'artists', options: { multiEntry: true } },
+                'hash',
+                'year',
+                'albumArtist',
+                'likedOn',
+                'listenedOn',
+                'lastModified',
+              ],
+            },
+            {
+              name: 'artists',
+              options: { keyPath: 'name' },
+              indexes: ['hash', 'likedOn', 'listenedOn', 'lastModified'],
+            },
+            {
+              name: 'playlists',
+              options: { keyPath: 'hash' },
+              indexes: ['title', 'createdOn', 'listenedOn'],
+            },
+          ],
+        },
+      ],
+    }),
   ],
   providers: [
-    FileService,
-    ExtractorService,
-    ResizerService,
-    LibraryFacade,
-    ScannerFacade,
-    UpdateService,
-    AudioService,
-    PlayerFacade,
+    MainGuard,
+    ScrollerService,
     {
       provide: MAT_SNACK_BAR_DEFAULT_OPTIONS,
       useValue: {
@@ -200,10 +212,5 @@ import { IconLikes2Component } from '@app/components/icon-likes2.component';
       },
     },
   ],
-  bootstrap: [RootComponent],
 })
-export class AppModule {
-  constructor(update: UpdateService) {
-    update.register();
-  }
-}
+export class AppModule {}
