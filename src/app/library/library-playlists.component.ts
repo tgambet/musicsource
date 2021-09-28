@@ -9,7 +9,7 @@ import { SelectOption } from '@app/core/components/select.component';
 import { Icons } from '@app/core/utils/icons.util';
 import { LibraryFacade } from '@app/library/store/library.facade';
 import { map, startWith, switchMap, tap } from 'rxjs/operators';
-import { Playlist } from '@app/playlist/playlist.model';
+import { Playlist } from '@app/database/playlist.model';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, Subscription } from 'rxjs';
 import { scanArray } from '@app/core/utils/scan-array.util';

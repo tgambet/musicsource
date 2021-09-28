@@ -1,13 +1,13 @@
 import { Injectable } from '@angular/core';
-import { Entry, requestPermissionPromise } from '@app/core/models/entry.model';
+import { Entry, requestPermissionPromise } from '@app/database/entry.model';
 import { from, Observable, of, Subject, throwError, toArray } from 'rxjs';
 import { concatMap, filter, map, tap } from 'rxjs/operators';
-import { StorageService } from '@app/core/services/storage.service';
-import { Album, AlbumWithCover$ } from '@app/album/album.model';
-import { Artist, ArtistWithCover$ } from '@app/artist/artist.model';
-import { getCover, Picture } from '@app/core/models/picture.model';
-import { Song, SongWithCover$ } from '@app/core/song/song.model';
-import { Playlist } from '@app/playlist/playlist.model';
+import { StorageService } from '@app/database/storage.service';
+import { Album, AlbumWithCover$ } from '@app/database/album.model';
+import { Artist, ArtistWithCover$ } from '@app/database/artist.model';
+import { getCover, Picture } from '@app/database/picture.model';
+import { Song, SongWithCover$ } from '@app/database/song.model';
+import { Playlist } from '@app/database/playlist.model';
 import { hash } from '@app/core/utils/hash.util';
 
 @Injectable()
@@ -231,7 +231,9 @@ export class LibraryFacade {
 
   requestPermission(handle: FileSystemHandle): Observable<void> {
     return from(requestPermissionPromise(handle)).pipe(
-      concatMap((perm) => (perm ? of(void 0) : throwError('Permission denied')))
+      concatMap((perm) =>
+        perm ? of(void 0) : throwError(() => 'Permission denied')
+      )
     );
   }
 

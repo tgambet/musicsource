@@ -2,8 +2,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { Icons } from '@app/core/utils';
 import { MenuItem } from './menu.component';
 import { Router } from '@angular/router';
-import { ScannerFacade } from '@app/scanner/store/scanner.facade';
-import { StorageService } from '@app/core/services/storage.service';
+import { StorageService } from '@app/database/storage.service';
 import { tap } from 'rxjs/operators';
 
 @Component({
@@ -151,18 +150,18 @@ export class TopBarComponent {
 
   constructor(
     private router: Router,
-    private scanner: ScannerFacade,
+    // private scanner: ScannerFacade,
     private storage: StorageService
   ) {}
 
-  scan(): void {
-    this.scanner.openDirectory();
-    // this.router
-    //   .navigate([{ outlets: { dialog: ['scan'] } }], {
-    //     skipLocationChange: true,
-    //   })
-    //   .then(() => this.store.dispatch(openDirectory()));
-  }
+  // scan(): void {
+  //   this.scanner.openDirectory();
+  //   // this.router
+  //   //   .navigate([{ outlets: { dialog: ['scan'] } }], {
+  //   //     skipLocationChange: true,
+  //   //   })
+  //   //   .then(() => this.store.dispatch(openDirectory()));
+  // }
 
   clear(): void {
     this.storage

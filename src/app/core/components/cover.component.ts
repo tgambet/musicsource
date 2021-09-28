@@ -8,7 +8,7 @@ import {
 import { Icons } from '@app/core/utils';
 import { MenuItem } from './menu.component';
 import { MatMenuTrigger } from '@angular/material/menu';
-import { SongWithCover$ } from '@app/core/song/song.model';
+import { SongWithCover$ } from '@app/database/song.model';
 
 @Component({
   selector: 'app-cover',

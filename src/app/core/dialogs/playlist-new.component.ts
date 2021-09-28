@@ -9,7 +9,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { RoutedDialogDirective } from '@app/core/directives/routed-dialog.directive';
-import { Observable } from 'rxjs';
+import { firstValueFrom, Observable } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { LibraryFacade } from '@app/library/store/library.facade';
 import { map } from 'rxjs/operators';
@@ -138,7 +138,9 @@ export class PlaylistNewComponent {
 
   async createPlaylist(): Promise<void> {
     if (this.form.valid) {
-      await this.library.createPlaylist(this.form.getRawValue()).toPromise();
+      await firstValueFrom(
+        this.library.createPlaylist(this.form.getRawValue())
+      );
       await this.dialog.close();
     }
   }

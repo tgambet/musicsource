@@ -9,7 +9,7 @@ import {
   Output,
 } from '@angular/core';
 import { Icons } from '@app/core/utils';
-import { Playlist } from '@app/playlist/playlist.model';
+import { Playlist } from '@app/database/playlist.model';
 import { from, Observable, of, toArray } from 'rxjs';
 import { LibraryFacade } from '@app/library/store/library.facade';
 import { concatMap, map, tap } from 'rxjs/operators';

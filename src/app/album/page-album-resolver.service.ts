@@ -3,7 +3,7 @@ import { ActivatedRouteSnapshot, Resolve, Router } from '@angular/router';
 import { combineLatest, EMPTY, Observable, of, throwError } from 'rxjs';
 import { LibraryFacade } from '@app/library/store/library.facade';
 import { catchError, concatMap, map } from 'rxjs/operators';
-import { getCover } from '@app/core/models/picture.model';
+import { getCover } from '@app/database/picture.model';
 import { PageAlbumData } from '@app/album/page-album.component';
 
 @Injectable()
@@ -22,7 +22,9 @@ export class PageAlbumResolverService implements Resolve<PageAlbumData> {
     }
 
     return this.library.getAlbumByHash(id).pipe(
-      concatMap((album) => (!album ? throwError('not found') : of(album))),
+      concatMap((album) =>
+        !album ? throwError(() => 'not found') : of(album)
+      ),
       catchError(() => {
         this.router.navigate(['/library']);
         return EMPTY;

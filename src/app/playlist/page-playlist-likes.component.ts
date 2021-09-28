@@ -4,7 +4,7 @@ import {
   OnInit,
   ViewChild,
 } from '@angular/core';
-import { Song, SongWithCover$ } from '@app/core/song/song.model';
+import { Song, SongWithCover$ } from '@app/database/song.model';
 import { Observable } from 'rxjs';
 import { LibraryFacade } from '@app/library/store/library.facade';
 import { first, map, shareReplay, startWith, tap } from 'rxjs/operators';

@@ -7,11 +7,11 @@ import {
 } from '@angular/core';
 import { Icons } from '@app/core/utils/icons.util';
 import { Observable } from 'rxjs';
-import { Artist } from '@app/artist/artist.model';
+import { Artist } from '@app/database/artist.model';
 import { ActivatedRoute } from '@angular/router';
 import { map } from 'rxjs/operators';
-import { AlbumWithCover$ } from '@app/album/album.model';
-import { SongWithCover$ } from '@app/core/song/song.model';
+import { AlbumWithCover$ } from '@app/database/album.model';
+import { SongWithCover$ } from '@app/database/song.model';
 import { hash } from '@app/core/utils/hash.util';
 import { ComponentHelperService } from '@app/core/services/component-helper.service';
 import { HistoryService } from '@app/core/services/history.service';

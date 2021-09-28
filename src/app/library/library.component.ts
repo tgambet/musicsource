@@ -7,7 +7,7 @@ import {
   OnInit,
   ViewChild,
 } from '@angular/core';
-import { ScrollerService } from '@app/core/services/scroller.service';
+import { ScrollerService } from '@app/main/scroller.service';
 import { tap, throttleTime } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
 
@@ -19,7 +19,7 @@ import { Subscription } from 'rxjs';
     </app-container>
     <div class="container" #navContainer [class.scrolled-top]="scrolledTop">
       <app-container>
-        <nav mat-tab-nav-bar #nav color="accent">
+        <nav mat-tab-nav-bar color="accent">
           <a
             mat-tab-link
             disableRipple

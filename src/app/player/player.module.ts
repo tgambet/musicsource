@@ -7,6 +7,11 @@ import { PlaylistListItemComponent } from '@app/player/playlist-list-item.compon
 import { RouterModule, Routes } from '@angular/router';
 import { EffectsModule } from '@ngrx/effects';
 import { PlayerEffects } from '@app/player/store/player.effects';
+import { StoreModule } from '@ngrx/store';
+import { playerReducer } from '@app/player/store/player.reducer';
+import { PlayerFacade } from '@app/player/store/player.facade';
+import { MediaSessionService } from '@app/player/media-session.service';
+import { AudioService } from '@app/player/audio.service';
 
 const routes: Routes = [
   {
@@ -26,8 +31,10 @@ const routes: Routes = [
   imports: [
     CoreModule,
     RouterModule.forChild(routes),
+    StoreModule.forFeature('player', playerReducer),
     EffectsModule.forFeature([PlayerEffects]),
   ],
+  providers: [PlayerFacade, MediaSessionService, AudioService],
   exports: [PlayerComponent],
 })
 export class PlayerModule {}

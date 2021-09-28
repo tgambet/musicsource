@@ -1,12 +1,14 @@
 import { NgModule } from '@angular/core';
 import { RootComponent } from '@app/root.component';
-import { UpdateService } from '@app/core/services/update.service';
+import { UpdateService } from '@app/update.service';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '@env/environment';
 import { RouterModule, Routes } from '@angular/router';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { StoreModule } from '@ngrx/store';
+import { EffectsModule } from '@ngrx/effects';
 
 const routes: Routes = [
   {
@@ -16,7 +18,7 @@ const routes: Routes = [
   },
   {
     path: '',
-    loadChildren: () => import('./app.module').then((m) => m.AppModule),
+    loadChildren: () => import('./main/main.module').then((m) => m.MainModule),
   },
   // { path: '**', component: WelcomeComponent }, // TODO Not found component
 ];
@@ -35,6 +37,21 @@ const routes: Routes = [
       // anchorScrolling: 'enabled',
       // onSameUrlNavigation: 'reload',
     }),
+    StoreModule.forRoot(
+      {},
+      {
+        runtimeChecks: {
+          strictStateSerializability: false,
+          strictActionSerializability: false,
+          strictStateImmutability: false,
+          strictActionImmutability: false,
+          strictActionWithinNgZone: false,
+          strictActionTypeUniqueness: false,
+        },
+      }
+    ),
+    EffectsModule.forRoot([]),
+
     MatSnackBarModule,
   ],
   providers: [UpdateService],

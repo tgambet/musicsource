@@ -1,16 +1,16 @@
 import { Injectable } from '@angular/core';
-import { Artist } from '@app/artist/artist.model';
+import { Artist } from '@app/database/artist.model';
 import { concatMap, first, map, tap } from 'rxjs/operators';
 import { LibraryFacade } from '@app/library/store/library.facade';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { combineLatest, EMPTY, Observable, toArray } from 'rxjs';
-import { Song, SongWithCover$ } from '@app/core/song/song.model';
+import { Song, SongWithCover$ } from '@app/database/song.model';
 import { PlaylistAddComponent } from '@app/core/dialogs/playlist-add.component';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { shuffleArray } from '@app/core/utils/shuffle-array.util';
 import { PlayerFacade } from '@app/player/store/player.facade';
-import { Album } from '@app/album/album.model';
+import { Album } from '@app/database/album.model';
 
 @Injectable()
 export class ComponentHelperService {

@@ -2,8 +2,8 @@ import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { HistoryService } from '@app/core/services/history.service';
 import { merge, Observable } from 'rxjs';
 import { map, take } from 'rxjs/operators';
-import { AlbumWithCover$ } from '@app/album/album.model';
-import { ArtistWithCover$ } from '@app/artist/artist.model';
+import { AlbumWithCover$ } from '@app/database/album.model';
+import { ArtistWithCover$ } from '@app/database/artist.model';
 import { scanArray } from '@app/core/utils/scan-array.util';
 import { SetRequired } from '@app/core/utils/types.util';
 

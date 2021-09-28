@@ -13,7 +13,7 @@ import { LibraryFacade } from '@app/library/store/library.facade';
 import { ActivatedRoute, Router } from '@angular/router';
 import { tap } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
-import { ScrollerService } from '@app/core/services/scroller.service';
+import { ScrollerService } from '@app/main/scroller.service';
 
 @Component({
   selector: 'app-library-content',

@@ -14,7 +14,7 @@ import {
   selectVolume,
 } from '@app/player/store/player.selectors';
 import { Observable } from 'rxjs';
-import { SongWithCover$ } from '@app/core/song/song.model';
+import { SongWithCover$ } from '@app/database/song.model';
 import {
   addToPlaylist,
   hide,
@@ -31,7 +31,7 @@ import {
   shuffle,
   toggleMute,
 } from '@app/player/store/player.actions';
-import { AudioService } from '@app/core/services/audio.service';
+import { AudioService } from '@app/player/audio.service';
 
 @Injectable()
 export class PlayerFacade {

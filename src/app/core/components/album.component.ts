@@ -7,7 +7,7 @@ import {
   Output,
 } from '@angular/core';
 import { Icons } from '@app/core/utils';
-import { Album, AlbumWithCover$ } from '@app/album/album.model';
+import { Album, AlbumWithCover$ } from '@app/database/album.model';
 import { hash } from '@app/core/utils/hash.util';
 import { MatMenuTrigger } from '@angular/material/menu';
 import { MenuItem } from '@app/core/components/menu.component';
@@ -16,7 +16,7 @@ import { ComponentHelperService } from '@app/core/services/component-helper.serv
 import { LibraryFacade } from '@app/library/store/library.facade';
 import { concatMap, map, shareReplay, tap } from 'rxjs/operators';
 import { Observable } from 'rxjs';
-import { SongWithCover$ } from '@app/core/song/song.model';
+import { SongWithCover$ } from '@app/database/song.model';
 import { HistoryService } from '@app/core/services/history.service';
 
 @Component({

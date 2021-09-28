@@ -7,7 +7,7 @@ import {
 } from '@angular/core';
 import { LibraryFacade } from '@app/library/store/library.facade';
 import { Observable } from 'rxjs';
-import { Album, AlbumWithCover$ } from '@app/album/album.model';
+import { Album, AlbumWithCover$ } from '@app/database/album.model';
 import { map, switchMap, tap } from 'rxjs/operators';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SelectOption } from '@app/core/components/select.component';

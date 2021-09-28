@@ -23,10 +23,10 @@ import {
   takeUntil,
   tap,
 } from 'rxjs/operators';
-import { FileService } from '@app/core/services/file.service';
-import { ExtractorService } from '@app/core/services/extractor.service';
-import { StorageService } from '@app/core/services/storage.service';
-import { Entry, isFile } from '@app/core/models/entry.model';
+import { FileService } from '@app/scanner/file.service';
+import { ExtractorService } from '@app/scanner/extractor.service';
+import { StorageService } from '@app/database/storage.service';
+import { Entry, isFile } from '@app/database/entry.model';
 import {
   abortScan,
   buildAlbumFailure,
@@ -59,9 +59,9 @@ import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ScannerFacade } from '@app/scanner/store/scanner.facade';
 import { collectLeft, collectRight } from '@app/core/utils/either.util';
-import { Album } from '@app/album/album.model';
+import { Album } from '@app/database/album.model';
 import { SetRequired } from '@app/core/utils/types.util';
-import { Song } from '@app/core/song/song.model';
+import { Song } from '@app/database/song.model';
 import { hash } from '@app/core/utils/hash.util';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { ScanComponent } from '@app/scanner/scan.component';
@@ -205,7 +205,7 @@ export class ScannerEffects implements OnRunEffects {
             takeUntil(
               this.actions$.pipe(
                 ofType(abortScan),
-                concatMapTo(throwError('aborted'))
+                concatMapTo(throwError(() => 'aborted'))
               )
             )
           ),
@@ -247,7 +247,7 @@ export class ScannerEffects implements OnRunEffects {
             takeUntil(
               this.actions$.pipe(
                 ofType(abortScan),
-                concatMapTo(throwError('aborted'))
+                concatMapTo(throwError(() => 'aborted'))
               )
             )
           ),
@@ -267,10 +267,9 @@ export class ScannerEffects implements OnRunEffects {
         project: () =>
           this.storage.walk$<SetRequired<Song, 'album'>>('songs', 'album').pipe(
             filter(({ key }) => !!key.toString().trim()), // Prevent empty strings
-            groupBy(
-              ({ value: song }) => song.album,
-              ({ value: song }) => song
-            ),
+            groupBy(({ value: song }) => song.album, {
+              element: ({ value: song }) => song,
+            }),
             mergeMap((groups$) =>
               groups$.pipe(
                 toArray(),

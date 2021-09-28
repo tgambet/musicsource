@@ -13,13 +13,10 @@ import {
   mdiDelete,
   mdiDotsVertical,
   mdiFolderAlertOutline,
-  mdiFolderCogOutline,
   mdiFolderMusicOutline,
-  mdiFolderOpenOutline,
   mdiFolderOutline,
   mdiFolderPlusOutline,
   mdiFolderSearchOutline,
-  mdiFolderSyncOutline,
   mdiHeart,
   mdiHeartOutline,
   mdiHelpCircle,
@@ -28,10 +25,8 @@ import {
   mdiMagnify,
   mdiMenuDown,
   mdiMenuUp,
-  mdiMessageAlert,
   mdiMinusCircleOutline,
   mdiMusicBoxMultiple,
-  mdiMusicNote,
   mdiPause,
   mdiPencil,
   mdiPlay,
@@ -41,7 +36,6 @@ import {
   mdiPlaylistPlus,
   mdiPlus,
   mdiRepeat,
-  mdiSecurity,
   mdiShuffleVariant,
   mdiSkipNext,
   mdiSkipPrevious,
@@ -52,6 +46,13 @@ import {
 } from '@mdi/js';
 
 export class Icons {
+  // static fileMusic = mdiMusicNote;
+  // static folderCog = mdiFolderCogOutline;
+  // static folderOpen = mdiFolderOpenOutline;
+  // static folderOutline = mdiFolderOutline;
+  // static folderRefresh = mdiFolderSyncOutline;
+  // static messageAlert = mdiMessageAlert;
+  // static security = mdiSecurity;
   static account = mdiAccount;
   static accountMusic = mdiAccountMusic;
   static album = mdiAlbum;
@@ -64,15 +65,10 @@ export class Icons {
   static currencyUsd = mdiCurrencyUsd;
   static delete = mdiDelete;
   static dotsVertical = mdiDotsVertical;
-  static fileMusic = mdiMusicNote;
   static folder = mdiFolderOutline;
   static folderAlert = mdiFolderAlertOutline;
-  static folderCog = mdiFolderCogOutline;
   static folderMusic = mdiFolderMusicOutline;
-  static folderOpen = mdiFolderOpenOutline;
-  static folderOutline = mdiFolderOutline;
   static folderPlus = mdiFolderPlusOutline;
-  static folderRefresh = mdiFolderSyncOutline;
   static folderSearch = mdiFolderSearchOutline;
   static heart = mdiHeart;
   static heartOutline = mdiHeartOutline;
@@ -82,7 +78,7 @@ export class Icons {
   static library = mdiMusicBoxMultiple;
   static menuDown = mdiMenuDown;
   static menuUp = mdiMenuUp;
-  static messageAlert = mdiMessageAlert;
+  static minusCircleOutline = mdiMinusCircleOutline;
   static pause = mdiPause;
   static pencil = mdiPencil;
   static play = mdiPlay;
@@ -94,13 +90,11 @@ export class Icons {
   static radio = mdiAccessPoint;
   static repeat = mdiRepeat;
   static search = mdiMagnify;
-  static security = mdiSecurity;
   static shuffle = mdiShuffleVariant;
   static skipNext = mdiSkipNext;
   static skipPrevious = mdiSkipPrevious;
   static sync = mdiSync;
+  static thumbUp = mdiThumbUp;
   static volumeHigh = mdiVolumeHigh;
   static volumeOff = mdiVolumeOff;
-  static minusCircleOutline = mdiMinusCircleOutline;
-  static thumbUp = mdiThumbUp;
 }

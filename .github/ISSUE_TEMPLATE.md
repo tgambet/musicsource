@@ -6,4 +6,4 @@
 
 - **Summary**
 
-- **Other information** (e.g. detailed explanation, stack traces, related issues, suggestions how to fix, links for us to have context, eg. StackOverflow, personal fork, etc.)
+- **Other information** (e.g. detailed explanation, stack traces, related issues, suggestions how to fix, links for us to have context, e.g. StackOverflow, personal fork, etc.)
