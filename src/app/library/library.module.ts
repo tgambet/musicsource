@@ -7,8 +7,6 @@ import { LibraryPlaylistsComponent } from '@app/library/library-playlists.compon
 import { LibrarySongsComponent } from '@app/library/library-songs.component';
 import { CoreModule } from '@app/core/core.module';
 import { RouterModule, Routes } from '@angular/router';
-import { EffectsModule } from '@ngrx/effects';
-import { LibraryEffects } from '@app/library/store';
 
 const routes: Routes = [
   {
@@ -34,10 +32,6 @@ const routes: Routes = [
     LibraryPlaylistsComponent,
     LibrarySongsComponent,
   ],
-  imports: [
-    CoreModule,
-    RouterModule.forChild(routes),
-    EffectsModule.forFeature([LibraryEffects]),
-  ],
+  imports: [CoreModule, RouterModule.forChild(routes)],
 })
 export class LibraryModule {}

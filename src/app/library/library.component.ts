@@ -14,7 +14,7 @@ import { Subscription } from 'rxjs';
 @Component({
   selector: 'app-library',
   template: `
-    <app-container>
+    <app-container class="recent">
       <app-recent-activity></app-recent-activity>
     </app-container>
     <div class="container" #navContainer [class.scrolled-top]="scrolledTop">
@@ -97,6 +97,9 @@ import { Subscription } from 'rxjs';
     `
       :host {
         display: block;
+      }
+      .recent {
+        height: 291px;
       }
       .container {
         margin-top: 32px;
