@@ -1,4 +1,9 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  HostListener,
+  OnInit,
+} from '@angular/core';
 import { HistoryService } from '@app/core/services/history.service';
 import { merge, Observable } from 'rxjs';
 import { map, take } from 'rxjs/operators';
@@ -6,6 +11,7 @@ import { AlbumWithCover$ } from '@app/database/album.model';
 import { ArtistWithCover$ } from '@app/database/artist.model';
 import { scanArray } from '@app/core/utils/scan-array.util';
 import { SetRequired } from '@app/core/utils/types.util';
+import { WithTrigger } from '@app/core/classes/with-trigger';
 
 export type HistoryItem =
   | (SetRequired<ArtistWithCover$, 'listenedOn'> & { t: 'artist' })
@@ -23,6 +29,7 @@ export type HistoryItem =
               *ngIf="item.t === 'album'"
               [album]="item"
               size="small"
+              (menuOpened)="menuOpened($event)"
             ></app-album>
             <app-artist
               *ngIf="item.t === 'artist'"
@@ -42,7 +49,7 @@ export type HistoryItem =
       }
       .container {
         margin-top: 32px;
-        margin-bottom: 80px;
+        /* margin-bottom: 80px; */
         min-height: 291px;
       }
       app-title {
@@ -59,10 +66,18 @@ export type HistoryItem =
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class RecentActivityComponent implements OnInit {
+export class RecentActivityComponent extends WithTrigger implements OnInit {
   a$!: Observable<HistoryItem[]>;
 
-  constructor(private history: HistoryService) {}
+  constructor(private history: HistoryService) {
+    super();
+  }
+
+  @HostListener('window:scroll')
+  @HostListener('click')
+  closeMenu(): void {
+    super.closeMenu();
+  }
 
   ngOnInit(): void {
     this.a$ = merge(

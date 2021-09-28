@@ -292,6 +292,7 @@ import { MenuItem } from '@app/core/components/menu.component';
       }
       .volume mat-slider.hidden {
         opacity: 0;
+        display: none;
       }
       a[href] {
         text-decoration: none;

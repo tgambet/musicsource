@@ -11,7 +11,7 @@ import {
 import { SelectOption } from '@app/core/components/select.component';
 import { LibraryFacade } from '@app/library/store/library.facade';
 import { ActivatedRoute, Router } from '@angular/router';
-import { tap } from 'rxjs/operators';
+import { tap, throttleTime } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
 import { ScrollerService } from '@app/main/scroller.service';
 
@@ -42,7 +42,7 @@ import { ScrollerService } from '@app/main/scroller.service';
     `
       :host {
         display: block;
-        min-height: calc(100vh - 64px - 48px);
+        min-height: calc(100vh - 64px - 48px - 72px);
       }
       #top {
         position: relative;
@@ -60,6 +60,7 @@ import { ScrollerService } from '@app/main/scroller.service';
       .filters.scrolled-top {
         background-color: #212121;
         border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        margin-bottom: -1px;
         box-shadow: rgba(0, 0, 0, 0.4) 0 5px 6px -3px;
       }
       .filters app-container {
@@ -117,16 +118,19 @@ export class LibraryContentComponent implements OnInit, OnDestroy {
         .subscribe()
     );
 
-    this.subscription.add(
-      this.scroller.scroll$
-        .pipe(
-          tap(() => {
-            this.scrolledTop =
-              this.filters.nativeElement.getBoundingClientRect().y <= 112;
-            this.cdr.markForCheck();
-          })
-        )
-        .subscribe()
+    setTimeout(() =>
+      this.subscription.add(
+        this.scroller.scroll$
+          .pipe(
+            throttleTime(100, undefined, { leading: true, trailing: true }),
+            tap(() => {
+              this.scrolledTop =
+                this.filters.nativeElement.getBoundingClientRect().y <= 112;
+              this.cdr.markForCheck();
+            })
+          )
+          .subscribe()
+      )
     );
   }
 

@@ -95,7 +95,7 @@ export const slideInAnimation: AnimationTriggerMetadata = trigger(
 );
 
 @Component({
-  selector: 'app-app',
+  selector: 'app-main',
   template: `
     <app-top-bar></app-top-bar>
     <main [@routeAnimations]="prepareRoute(outlet)">
