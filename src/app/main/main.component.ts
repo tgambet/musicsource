@@ -13,7 +13,7 @@ import {
   transition,
   trigger,
 } from '@angular/animations';
-import { ScrollerService } from '@app/core/services/scroller.service';
+import { ScrollerService } from '@app/main/scroller.service';
 import { Observable } from 'rxjs';
 import { PlayerFacade } from '@app/player/store/player.facade';
 
@@ -136,7 +136,7 @@ export const slideInAnimation: AnimationTriggerMetadata = trigger(
   changeDetection: ChangeDetectionStrategy.OnPush,
   animations: [slideInAnimation, playerAnimation],
 })
-export class AppComponent {
+export class MainComponent {
   @HostBinding('class.scrolled-top')
   scrolledTop = true;
   @HostBinding('class.with-background')

@@ -1,4 +1,4 @@
-import { SongWithCover$ } from '@app/core/song/song.model';
+import { SongWithCover$ } from '@app/database/song.model';
 
 export interface PlayerState {
   show: boolean;

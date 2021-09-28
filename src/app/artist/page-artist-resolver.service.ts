@@ -4,7 +4,7 @@ import { PageArtistData } from '@app/artist/page-artist.component';
 import { EMPTY, Observable, of, throwError } from 'rxjs';
 import { LibraryFacade } from '@app/library/store/library.facade';
 import { catchError, concatMap, map, take } from 'rxjs/operators';
-import { getCover } from '@app/core/models/picture.model';
+import { getCover } from '@app/database/picture.model';
 import { scanArray } from '@app/core/utils/scan-array.util';
 
 @Injectable()
@@ -23,7 +23,9 @@ export class PageArtistResolverService implements Resolve<PageArtistData> {
     }
 
     return this.library.getArtistByHash(id).pipe(
-      concatMap((artist) => (!artist ? throwError('not found') : of(artist))),
+      concatMap((artist) =>
+        !artist ? throwError(() => 'not found') : of(artist)
+      ),
       catchError(() => {
         this.router.navigate(['/library']);
         return EMPTY;

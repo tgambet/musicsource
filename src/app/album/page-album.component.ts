@@ -7,9 +7,9 @@ import {
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
-import { Album } from '@app/album/album.model';
+import { Album } from '@app/database/album.model';
 import { map } from 'rxjs/operators';
-import { Song, SongWithCover$ } from '@app/core/song/song.model';
+import { Song, SongWithCover$ } from '@app/database/song.model';
 import { Icons } from '@app/core/utils/icons.util';
 import { hash } from '@app/core/utils/hash.util';
 import { PlayerFacade } from '@app/player/store/player.facade';
@@ -99,7 +99,7 @@ export type PageAlbumData = {
           <app-track-list-item
             [song]="song"
             [playlist]="info.songs"
-            *ngFor="let song of info.songs; let i = index"
+            *ngFor="let song of info.songs; let i = index; trackBy: trackBy"
             [trackNumber]="i + 1"
             [class.selected]="(currentSongPath$ | async) === song.entryPath"
             (menuOpened)="menuOpened($event)"

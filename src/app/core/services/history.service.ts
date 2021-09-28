@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { Album, AlbumWithCover$ } from '@app/album/album.model';
-import { StorageService } from '@app/core/services/storage.service';
-import { Artist, ArtistWithCover$ } from '@app/artist/artist.model';
+import { Album, AlbumWithCover$ } from '@app/database/album.model';
+import { StorageService } from '@app/database/storage.service';
+import { Artist, ArtistWithCover$ } from '@app/database/artist.model';
 import { Observable } from 'rxjs';
 import { LibraryFacade } from '@app/library/store/library.facade';
 

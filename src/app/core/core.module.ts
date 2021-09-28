@@ -46,15 +46,8 @@ import { PlaylistLikesComponent } from '@app/core/components/playlist-likes.comp
 import { PlaylistNewComponent } from '@app/core/dialogs/playlist-new.component';
 import { PlaylistAddComponent } from '@app/core/dialogs/playlist-add.component';
 import { ComponentHelperService } from '@app/core/services/component-helper.service';
-import { AudioService } from '@app/core/services/audio.service';
-import { ExtractorService } from '@app/core/services/extractor.service';
-import { FileService } from '@app/core/services/file.service';
 import { HistoryService } from '@app/core/services/history.service';
-import { MediaSessionService } from '@app/core/services/media-session.service';
-import { ResizerService } from '@app/core/services/resizer.service';
-import { StorageService } from '@app/core/services/storage.service';
 import { LibraryFacade } from '@app/library/store/library.facade';
-import { PlayerFacade } from '@app/player/store/player.facade';
 
 const IMPORTS = [
   CommonModule,
@@ -107,16 +100,16 @@ const DECLARATIONS = [
 ];
 
 const PROVIDERS = [
-  AudioService,
+  // AudioService,
   ComponentHelperService,
-  ExtractorService,
-  FileService,
+  // ExtractorService,
+  // FileService,
   HistoryService,
-  MediaSessionService,
-  ResizerService,
-  StorageService,
+  // MediaSessionService,
+  // ResizerService,
+  // StorageService,
   LibraryFacade,
-  PlayerFacade,
+  // PlayerFacade,
 ];
 
 @NgModule({

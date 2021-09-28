@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { Icons } from '@app/core/utils/icons.util';
 import { Observable, toArray } from 'rxjs';
-import { Playlist } from '@app/playlist/playlist.model';
+import { Playlist } from '@app/database/playlist.model';
 import { LibraryFacade } from '@app/library/store/library.facade';
 
 @Component({

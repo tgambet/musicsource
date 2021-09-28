@@ -28,13 +28,13 @@ import {
   tap,
 } from 'rxjs/operators';
 import { Router } from '@angular/router';
-import { AudioService } from '@app/core/services/audio.service';
+import { AudioService } from '@app/player/audio.service';
 import { PlayerFacade } from '@app/player/store/player.facade';
 import { LibraryFacade } from '@app/library/store/library.facade';
-import { SongWithCover$ } from '@app/core/song/song.model';
-import { FileEntry } from '@app/core/models/entry.model';
+import { SongWithCover$ } from '@app/database/song.model';
+import { FileEntry } from '@app/database/entry.model';
 import { tapError } from '@app/core/utils/tap-error.util';
-import { MediaSessionService } from '@app/core/services/media-session.service';
+import { MediaSessionService } from '@app/player/media-session.service';
 import { Title } from '@angular/platform-browser';
 
 // noinspection JSUnusedGlobalSymbols

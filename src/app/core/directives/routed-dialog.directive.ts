@@ -66,7 +66,9 @@ export class RoutedDialogDirective implements OnInit, OnDestroy {
             const elem = document.getElementById(this.dialogRef.id);
             return elem
               ? fromEvent(elem, 'click')
-              : throwError('cannot find element with id: ' + this.dialogRef.id);
+              : throwError(
+                  () => 'cannot find element with id: ' + this.dialogRef.id
+                );
           }),
           tap(() => this.focus())
         )

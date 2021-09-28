@@ -4,7 +4,7 @@ import {
   HostListener,
   Input,
 } from '@angular/core';
-import { SongWithCover$ } from '@app/core/song/song.model';
+import { SongWithCover$ } from '@app/database/song.model';
 import { Icons } from '@app/core/utils/icons.util';
 import { PlayerFacade } from '@app/player/store/player.facade';
 import { map } from 'rxjs/operators';

@@ -1,18 +1,18 @@
 import { NgModule } from '@angular/core';
 
-import { AppComponent } from './app.component';
+import { MainComponent } from './main.component';
 import { MAT_SNACK_BAR_DEFAULT_OPTIONS } from '@angular/material/snack-bar';
-import { IndexedDBModule } from '@creasource/ngx-idb';
 import { CoreModule } from '@app/core/core.module';
 import { PlayerModule } from '@app/player/player.module';
-import { ScannerModule } from '@app/scanner/scanner.module';
 import { RouterModule, Routes } from '@angular/router';
 import { MainGuard } from '@app/core/guards/main.guard';
 import { PagePlaylistLikesComponent } from '@app/playlist/page-playlist-likes.component';
-import { EffectsModule } from '@ngrx/effects';
-import { StoreModule } from '@ngrx/store';
-import { reducers } from '@app/core/store';
-import { ScrollerService } from '@app/core/services/scroller.service';
+import { ScrollerService } from '@app/main/scroller.service';
+import { LibraryModule } from '@app/library/library.module';
+import { AlbumModule } from '@app/album/album.module';
+import { ArtistModule } from '@app/artist/artist.module';
+import { PlaylistModule } from '@app/playlist/playlist.module';
+import { DatabaseModule } from '@app/database/database.module';
 
 /*const routes: Routes = [
   {
@@ -83,7 +83,7 @@ import { ScrollerService } from '@app/core/services/scroller.service';
 const routes: Routes = [
   {
     path: '',
-    component: AppComponent,
+    component: MainComponent,
     canActivate: [MainGuard],
     canActivateChild: [MainGuard],
     children: [
@@ -95,23 +95,19 @@ const routes: Routes = [
       },
       {
         path: 'library',
-        loadChildren: () =>
-          import('./library/library.module').then((m) => m.LibraryModule),
+        loadChildren: () => LibraryModule,
       },
       {
         path: 'album',
-        loadChildren: () =>
-          import('./album/album.module').then((m) => m.AlbumModule),
+        loadChildren: () => AlbumModule,
       },
       {
         path: 'artist',
-        loadChildren: () =>
-          import('./artist/artist.module').then((m) => m.ArtistModule),
+        loadChildren: () => ArtistModule,
       },
       {
         path: 'playlist',
-        loadChildren: () =>
-          import('./playlist/playlist.module').then((m) => m.PlaylistModule),
+        loadChildren: () => PlaylistModule,
       },
       {
         path: 'likes',
@@ -127,78 +123,24 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  declarations: [AppComponent],
+  declarations: [MainComponent],
   imports: [
     RouterModule.forChild(routes),
-    StoreModule.forRoot(reducers, {
-      runtimeChecks: {
-        strictStateSerializability: false,
-        strictActionSerializability: false,
-        strictStateImmutability: false,
-        strictActionImmutability: false,
-        strictActionWithinNgZone: false,
-        strictActionTypeUniqueness: false,
-      },
-    }),
-    EffectsModule.forRoot([]),
+    // StoreModule.forRoot(reducers, {
+    //   runtimeChecks: {
+    //     strictStateSerializability: false,
+    //     strictActionSerializability: false,
+    //     strictStateImmutability: false,
+    //     strictActionImmutability: false,
+    //     strictActionWithinNgZone: false,
+    //     strictActionTypeUniqueness: false,
+    //   },
+    // }),
+    // EffectsModule.forRoot([]),
     // StoreDevtoolsModule.instrument({ maxAge: 150, logOnly: true }),
     CoreModule,
     PlayerModule,
-    ScannerModule,
-    IndexedDBModule.forRoot({
-      name: 'musicsource',
-      schema: [
-        {
-          version: 1,
-          stores: [
-            {
-              name: 'entries',
-              options: { keyPath: 'path' },
-              indexes: ['parent'],
-            },
-            {
-              name: 'songs',
-              options: { keyPath: 'entryPath' },
-              indexes: [
-                { name: 'artists', options: { multiEntry: true } },
-                { name: 'genre', options: { multiEntry: true } },
-                'album',
-                'title',
-                'likedOn',
-                'lastModified',
-              ],
-            },
-            {
-              name: 'pictures',
-              options: { keyPath: 'hash' },
-            },
-            {
-              name: 'albums',
-              options: { keyPath: 'name' },
-              indexes: [
-                { name: 'artists', options: { multiEntry: true } },
-                'hash',
-                'year',
-                'albumArtist',
-                'likedOn',
-                'listenedOn',
-                'lastModified',
-              ],
-            },
-            {
-              name: 'artists',
-              options: { keyPath: 'name' },
-              indexes: ['hash', 'likedOn', 'listenedOn', 'lastModified'],
-            },
-            {
-              name: 'playlists',
-              options: { keyPath: 'hash' },
-              indexes: ['title', 'createdOn', 'listenedOn'],
-            },
-          ],
-        },
-      ],
-    }),
+    DatabaseModule,
   ],
   providers: [
     MainGuard,
@@ -213,4 +155,4 @@ const routes: Routes = [
     },
   ],
 })
-export class AppModule {}
+export class MainModule {}
