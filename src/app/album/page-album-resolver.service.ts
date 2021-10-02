@@ -2,8 +2,8 @@ import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, Resolve, Router } from '@angular/router';
 import { combineLatest, EMPTY, Observable, of, throwError } from 'rxjs';
 import { LibraryFacade } from '@app/library/store/library.facade';
-import { catchError, concatMap, map } from 'rxjs/operators';
-import { getCover } from '@app/database/picture.model';
+import { catchError, concatMap, first, map } from 'rxjs/operators';
+import { getCover } from '@app/database/pictures/picture.model';
 import { PageAlbumData } from '@app/album/page-album.component';
 
 @Injectable()
@@ -31,9 +31,10 @@ export class PageAlbumResolverService implements Resolve<PageAlbumData> {
       }),
       concatMap((album) => {
         const songs$ = this.library.getAlbumTracks(album);
-        const cover$ = this.library
-          .getPicture(album.pictureKey)
-          .pipe(map((picture) => (picture ? getCover(picture) : undefined)));
+        const cover$ = this.library.getPicture(album.pictureKey).pipe(
+          first(),
+          map((picture) => (picture ? getCover(picture) : undefined))
+        );
         return combineLatest([songs$, cover$]).pipe(
           map(([songs, cover]) => ({
             album,

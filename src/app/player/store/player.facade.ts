@@ -14,7 +14,7 @@ import {
   selectVolume,
 } from '@app/player/store/player.selectors';
 import { Observable } from 'rxjs';
-import { SongWithCover$ } from '@app/database/song.model';
+import { SongWithCover$ } from '@app/database/songs/song.model';
 import {
   addToPlaylist,
   hide,

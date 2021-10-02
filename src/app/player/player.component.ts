@@ -20,7 +20,7 @@ import {
 import { LibraryFacade } from '@app/library/store/library.facade';
 import { MatSlider, MatSliderChange } from '@angular/material/slider';
 import { merge, Observable, of, Subscription } from 'rxjs';
-import { SongWithCover$ } from '@app/database/song.model';
+import { SongWithCover$ } from '@app/database/songs/song.model';
 import { PlayerFacade } from '@app/player/store/player.facade';
 import { hash } from '@app/core/utils/hash.util';
 import { ComponentHelperService } from '@app/core/services/component-helper.service';

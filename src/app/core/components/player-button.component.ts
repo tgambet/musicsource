@@ -8,7 +8,7 @@ import {
   EventEmitter,
 } from '@angular/core';
 import { Icons } from '@app/core/utils';
-import { SongWithCover$ } from '@app/database/song.model';
+import { SongWithCover$ } from '@app/database/songs/song.model';
 import { PlayerFacade } from '@app/player/store/player.facade';
 import { first, map, switchMap, tap, throttleTime } from 'rxjs/operators';
 import { combineLatest, Observable, of } from 'rxjs';

@@ -4,7 +4,7 @@ import {
   HostListener,
   Input,
 } from '@angular/core';
-import { SongWithCover$ } from '@app/database/song.model';
+import { SongWithCover$ } from '@app/database/songs/song.model';
 import { WithTrigger } from '@app/core/classes/with-trigger';
 
 @Component({

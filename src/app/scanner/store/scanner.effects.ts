@@ -25,8 +25,8 @@ import {
 } from 'rxjs/operators';
 import { FileService } from '@app/scanner/file.service';
 import { ExtractorService } from '@app/scanner/extractor.service';
-import { StorageService } from '@app/database/storage.service';
-import { Entry, isFile } from '@app/database/entry.model';
+import { DatabaseService } from '@app/database/database.service';
+import { Entry, isFile } from '@app/database/entries/entry.model';
 import {
   abortScan,
   buildAlbumFailure,
@@ -59,9 +59,9 @@ import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ScannerFacade } from '@app/scanner/store/scanner.facade';
 import { collectLeft, collectRight } from '@app/core/utils/either.util';
-import { Album } from '@app/database/album.model';
+import { Album } from '@app/database/albums/album.model';
 import { SetRequired } from '@app/core/utils/types.util';
-import { Song } from '@app/database/song.model';
+import { Song } from '@app/database/songs/song.model';
 import { hash } from '@app/core/utils/hash.util';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { ScanComponent } from '@app/scanner/scan.component';
@@ -373,7 +373,7 @@ export class ScannerEffects implements OnRunEffects {
     private actions$: Actions,
     private files: FileService,
     private extractor: ExtractorService,
-    private storage: StorageService,
+    private storage: DatabaseService,
     private appRef: ApplicationRef,
     private router: Router,
     private snackBar: MatSnackBar,

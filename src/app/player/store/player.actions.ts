@@ -1,5 +1,5 @@
 import { createAction, props } from '@ngrx/store';
-import { SongWithCover$ } from '@app/database/song.model';
+import { SongWithCover$ } from '@app/database/songs/song.model';
 
 export const show = createAction('player/show');
 export const hide = createAction('player/hide');

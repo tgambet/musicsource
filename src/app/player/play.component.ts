@@ -12,7 +12,7 @@ import { PlaylistListComponent } from '@app/player/playlist-list.component';
 import { PlayerFacade } from '@app/player/store/player.facade';
 import { take, tap } from 'rxjs/operators';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
-import { SongWithCover$ } from '@app/database/song.model';
+import { SongWithCover$ } from '@app/database/songs/song.model';
 
 @Component({
   selector: 'app-play',

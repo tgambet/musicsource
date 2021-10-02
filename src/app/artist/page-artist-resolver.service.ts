@@ -3,8 +3,8 @@ import { ActivatedRouteSnapshot, Resolve, Router } from '@angular/router';
 import { PageArtistData } from '@app/artist/page-artist.component';
 import { EMPTY, Observable, of, throwError } from 'rxjs';
 import { LibraryFacade } from '@app/library/store/library.facade';
-import { catchError, concatMap, map, take } from 'rxjs/operators';
-import { getCover } from '@app/database/picture.model';
+import { catchError, concatMap, first, map, take } from 'rxjs/operators';
+import { getCover } from '@app/database/pictures/picture.model';
 import { scanArray } from '@app/core/utils/scan-array.util';
 
 @Injectable()
@@ -31,9 +31,10 @@ export class PageArtistResolverService implements Resolve<PageArtistData> {
         return EMPTY;
       }),
       concatMap((artist) => {
-        const cover$ = this.library
-          .getPicture(artist.pictureKey)
-          .pipe(map((picture) => (picture ? getCover(picture) : undefined)));
+        const cover$ = this.library.getPicture(artist.pictureKey).pipe(
+          first(),
+          map((picture) => (picture ? getCover(picture) : undefined))
+        );
         return cover$.pipe(
           map((cover) => ({
             artist,

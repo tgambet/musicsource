@@ -1,8 +1,8 @@
 import { createAction, props } from '@ngrx/store';
-import { DirectoryEntry, Entry } from '@app/database/entry.model';
-import { Album } from '@app/database/album.model';
-import { Artist } from '@app/database/artist.model';
-import { Song } from '@app/database/song.model';
+import { DirectoryEntry, Entry } from '@app/database/entries/entry.model';
+import { Album } from '@app/database/albums/album.model';
+import { Artist } from '@app/database/artists/artist.model';
+import { Song } from '@app/database/songs/song.model';
 
 export const abortScan = createAction('scanner/abort');
 export const scanAborted = createAction('scanner/aborted');

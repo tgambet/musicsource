@@ -7,9 +7,9 @@ import {
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
-import { Album } from '@app/database/album.model';
+import { Album } from '@app/database/albums/album.model';
 import { map } from 'rxjs/operators';
-import { Song, SongWithCover$ } from '@app/database/song.model';
+import { Song, SongWithCover$ } from '@app/database/songs/song.model';
 import { Icons } from '@app/core/utils/icons.util';
 import { hash } from '@app/core/utils/hash.util';
 import { PlayerFacade } from '@app/player/store/player.facade';
@@ -224,8 +224,7 @@ export class PageAlbumComponent extends WithTrigger implements OnInit {
   }
 
   toggleLiked(album: Album): void {
-    this.helper
-      .toggleLikedAlbum(album)
-      .subscribe(() => this.cdr.markForCheck());
+    this.helper.toggleLikedAlbum(album);
+    // .subscribe(() => this.cdr.markForCheck());
   }
 }

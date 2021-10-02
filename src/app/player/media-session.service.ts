@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { SongWithCover$ } from '@app/database/song.model';
+import { SongWithCover$ } from '@app/database/songs/song.model';
 import { tap } from 'rxjs/operators';
 import { PlayerFacade } from '@app/player/store/player.facade';
 

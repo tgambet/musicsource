@@ -7,8 +7,8 @@ import {
 import { HistoryService } from '@app/core/services/history.service';
 import { merge, Observable } from 'rxjs';
 import { map, take } from 'rxjs/operators';
-import { AlbumWithCover$ } from '@app/database/album.model';
-import { ArtistWithCover$ } from '@app/database/artist.model';
+import { AlbumWithCover$ } from '@app/database/albums/album.model';
+import { ArtistWithCover$ } from '@app/database/artists/artist.model';
 import { scanArray } from '@app/core/utils/scan-array.util';
 import { SetRequired } from '@app/core/utils/types.util';
 import { WithTrigger } from '@app/core/classes/with-trigger';

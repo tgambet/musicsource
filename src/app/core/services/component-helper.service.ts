@@ -1,16 +1,16 @@
 import { Injectable } from '@angular/core';
-import { Artist } from '@app/database/artist.model';
+import { Artist } from '@app/database/artists/artist.model';
 import { concatMap, first, map, tap } from 'rxjs/operators';
 import { LibraryFacade } from '@app/library/store/library.facade';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { combineLatest, EMPTY, Observable, toArray } from 'rxjs';
-import { Song, SongWithCover$ } from '@app/database/song.model';
+import { Song, SongWithCover$ } from '@app/database/songs/song.model';
 import { PlaylistAddComponent } from '@app/core/dialogs/playlist-add.component';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { shuffleArray } from '@app/core/utils/shuffle-array.util';
 import { PlayerFacade } from '@app/player/store/player.facade';
-import { Album } from '@app/database/album.model';
+import { Album } from '@app/database/albums/album.model';
 
 @Injectable()
 export class ComponentHelperService {
@@ -35,17 +35,20 @@ export class ComponentHelperService {
       );
   }
 
-  toggleLikedAlbum(album: Album): Observable<Album> {
-    return this.library
-      .toggleLikedAlbum(album)
-      .pipe(tap((updated) => (album.likedOn = updated.likedOn)))
-      .pipe(
-        tap(() =>
-          this.openSnack(
-            !!album.likedOn ? 'Added to your likes' : 'Removed from your likes'
-          )
-        )
-      );
+  toggleLikedAlbum(album: Album): void {
+    this.library.toggleLikedAlbum(album);
+    // return (
+
+    // .pipe(tap((updated) => (album.likedOn = updated.likedOn)))
+    // .pipe(
+    //   tap(() =>
+    // TODO move to effects
+    this.openSnack(
+      !!album.likedOn ? 'Added to your likes' : 'Removed from your likes'
+    );
+    // )
+    // )
+    // );
   }
 
   toggleLikedArtist(artist: Artist): Observable<any> {
