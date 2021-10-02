@@ -5,7 +5,7 @@ import { MAT_SNACK_BAR_DEFAULT_OPTIONS } from '@angular/material/snack-bar';
 import { CoreModule } from '@app/core/core.module';
 import { PlayerModule } from '@app/player/player.module';
 import { RouterModule, Routes } from '@angular/router';
-import { MainGuard } from '@app/core/guards/main.guard';
+import { MainGuard } from '@app/main/main.guard';
 import { PagePlaylistLikesComponent } from '@app/playlist/page-playlist-likes.component';
 import { ScrollerService } from '@app/main/scroller.service';
 import { LibraryModule } from '@app/library/library.module';
@@ -126,18 +126,6 @@ const routes: Routes = [
   declarations: [MainComponent],
   imports: [
     RouterModule.forChild(routes),
-    // StoreModule.forRoot(reducers, {
-    //   runtimeChecks: {
-    //     strictStateSerializability: false,
-    //     strictActionSerializability: false,
-    //     strictStateImmutability: false,
-    //     strictActionImmutability: false,
-    //     strictActionWithinNgZone: false,
-    //     strictActionTypeUniqueness: false,
-    //   },
-    // }),
-    // EffectsModule.forRoot([]),
-    // StoreDevtoolsModule.instrument({ maxAge: 150, logOnly: true }),
     CoreModule,
     PlayerModule,
     DatabaseModule,

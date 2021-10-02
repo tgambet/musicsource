@@ -3,6 +3,7 @@ import {
   Component,
   HostBinding,
   HostListener,
+  OnInit,
 } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import {
@@ -16,6 +17,10 @@ import {
 import { ScrollerService } from '@app/main/scroller.service';
 import { Observable } from 'rxjs';
 import { PlayerFacade } from '@app/player/store/player.facade';
+import { Store } from '@ngrx/store';
+import { loadPictures } from '@app/database/pictures/picture.actions';
+import { loadAlbums } from '@app/database/albums/album.actions';
+import { AlbumFacade } from '@app/database/albums/album.facade';
 
 // export const debugAnimation = (name: string) => (
 //   from: any,
@@ -136,7 +141,7 @@ export const slideInAnimation: AnimationTriggerMetadata = trigger(
   changeDetection: ChangeDetectionStrategy.OnPush,
   animations: [slideInAnimation, playerAnimation],
 })
-export class MainComponent {
+export class MainComponent implements OnInit {
   @HostBinding('class.scrolled-top')
   scrolledTop = true;
   @HostBinding('class.with-background')
@@ -146,7 +151,9 @@ export class MainComponent {
 
   constructor(
     private scroller: ScrollerService,
-    private player: PlayerFacade
+    private player: PlayerFacade,
+    private albums: AlbumFacade,
+    private store: Store
   ) {}
 
   @HostListener('window:scroll', ['$event'])
@@ -154,6 +161,12 @@ export class MainComponent {
   setScrolledTop(event: any): void {
     this.scroller.scroll$.next(event.target.scrollingElement.scrollTop);
     this.scrolledTop = event.target.scrollingElement.scrollTop === 0;
+  }
+
+  ngOnInit(): void {
+    this.store.dispatch(loadAlbums());
+    this.store.dispatch(loadPictures());
+    // this.albums.getByYear(2020).subscribe((years) => console.log(years));
   }
 
   prepareRoute(outlet: RouterOutlet): string {

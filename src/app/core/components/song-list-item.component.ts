@@ -6,7 +6,7 @@ import {
   Input,
   Output,
 } from '@angular/core';
-import { SongWithCover$ } from '@app/database/song.model';
+import { SongWithCover$ } from '@app/database/songs/song.model';
 import { hash } from '@app/core/utils/hash.util';
 import { Icons } from '@app/core/utils/icons.util';
 import { MatMenuTrigger } from '@angular/material/menu';

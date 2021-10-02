@@ -9,7 +9,7 @@ import { SelectOption } from '@app/core/components/select.component';
 import { LibraryFacade } from '@app/library/store/library.facade';
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
-import { Artist, ArtistWithCover$ } from '@app/database/artist.model';
+import { Artist, ArtistWithCover$ } from '@app/database/artists/artist.model';
 import { map, shareReplay, startWith, switchMap, tap } from 'rxjs/operators';
 import { Icons } from '@app/core/utils/icons.util';
 import { scanArray } from '@app/core/utils/scan-array.util';

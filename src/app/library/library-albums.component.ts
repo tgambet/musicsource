@@ -1,4 +1,5 @@
 import {
+  AfterContentInit,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
@@ -6,14 +7,22 @@ import {
   OnInit,
 } from '@angular/core';
 import { LibraryFacade } from '@app/library/store/library.facade';
-import { Observable } from 'rxjs';
-import { Album, AlbumWithCover$ } from '@app/database/album.model';
-import { map, switchMap, tap } from 'rxjs/operators';
+import {
+  animationFrameScheduler,
+  bufferWhen,
+  EMPTY,
+  mergeMap,
+  Observable,
+  of,
+  scan,
+  scheduled,
+} from 'rxjs';
+import { Album } from '@app/database/albums/album.model';
+import { delay, filter, map, switchMap, tap } from 'rxjs/operators';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SelectOption } from '@app/core/components/select.component';
-import { hash } from '@app/core/utils/hash.util';
-import { scanArray } from '@app/core/utils/scan-array.util';
 import { WithTrigger } from '@app/core/classes/with-trigger';
+import { AlbumFacade } from '@app/database/albums/album.facade';
 
 @Component({
   selector: 'app-library-albums',
@@ -24,12 +33,11 @@ import { WithTrigger } from '@app/core/classes/with-trigger';
     >
       <div class="albums">
         <ng-container *ngFor="let album of albums$ | async; trackBy: trackBy">
-          <div class="album" *ngIf="!likes || !!album.likedOn">
+          <div class="album" *ngIf="!likes || !!album.value.likedOn">
             <app-album
-              [album]="album"
+              [album]="album.value"
               size="small"
               (menuOpened)="menuOpened($event)"
-              (update)="update()"
             ></app-album>
           </div>
         </ng-container>
@@ -57,11 +65,14 @@ import { WithTrigger } from '@app/core/classes/with-trigger';
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class LibraryAlbumsComponent extends WithTrigger implements OnInit {
-  albums$!: Observable<AlbumWithCover$[]>;
+export class LibraryAlbumsComponent
+  extends WithTrigger
+  implements OnInit, AfterContentInit
+{
+  albums$!: Observable<{ value: Album; key: string | number }[]>;
 
   sortOptions: SelectOption[] = [
-    { name: 'Recently added', value: 'lastModified_desc' },
+    // { name: 'Recently added', value: 'lastModified_desc' },
     { name: 'Latest releases', value: 'year_desc' },
     { name: 'Oldest releases', value: 'year_asc' },
     { name: 'A to Z', value: 'name_asc' },
@@ -75,7 +86,8 @@ export class LibraryAlbumsComponent extends WithTrigger implements OnInit {
     private library: LibraryFacade,
     private router: Router,
     private route: ActivatedRoute,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private albums: AlbumFacade
   ) {
     super();
   }
@@ -87,12 +99,29 @@ export class LibraryAlbumsComponent extends WithTrigger implements OnInit {
   }
 
   ngOnInit(): void {
+    // this.albums$ = sort$.pipe(
+    //   switchMap((sort) => {
+    //     const predicate = sort.likes
+    //       ? (album: Album) => !!album.likedOn
+    //       : undefined;
+    //
+    //     return this.library
+    //       .getAlbums(sort.index, null, sort.direction, predicate)
+    //       .pipe(scanArray());
+    //   })
+    // );
+    this.albums$ = EMPTY;
+  }
+
+  trackBy = (
+    index: number,
+    album: { value: Album; key: string | number }
+  ): string => album.value.hash;
+
+  ngAfterContentInit(): void {
     const sort$ = this.route.queryParamMap.pipe(
       map((params) => ({
-        index:
-          params.get('sort') === 'name'
-            ? undefined
-            : params.get('sort') || 'lastModified',
+        index: params.get('sort') || 'year',
         direction: ((params.get('dir') || 'desc') === 'asc'
           ? 'next'
           : 'prev') as IDBCursorDirection,
@@ -102,25 +131,37 @@ export class LibraryAlbumsComponent extends WithTrigger implements OnInit {
     );
 
     this.albums$ = sort$.pipe(
-      switchMap((sort) => {
-        const predicate = sort.likes
-          ? (album: Album) => !!album.likedOn
-          : undefined;
-
-        return this.library
-          .getAlbums(sort.index, null, sort.direction, predicate)
-          .pipe(scanArray());
-      })
+      switchMap((sort, i) =>
+        this.albums.getAll(sort.index).pipe(
+          filter((albums) => albums.length > 0),
+          switchMap((albums) => {
+            let albs;
+            if (sort.likes) {
+              albs = albums.filter((a) => !!a.value.likedOn);
+            } else {
+              albs = [...albums];
+            }
+            if (sort.direction === 'prev') {
+              albs.reverse();
+            }
+            return i === 0
+              ? of(...albs).pipe(
+                  mergeMap((album, index) => of(album).pipe(delay(10 * index))),
+                  bufferWhen(() => scheduled(of(1), animationFrameScheduler)),
+                  scan((acc, curr) => [...acc, ...curr])
+                )
+              : of(albs);
+          })
+        )
+      )
     );
   }
 
-  trackBy = (index: number, album: AlbumWithCover$): string => album.name;
-
-  getHash(albumArtist: string): string {
-    return hash(albumArtist);
-  }
-
-  update(): void {
-    this.cdr.markForCheck();
-  }
+  // getHash(albumArtist: string): string {
+  //   return hash(albumArtist);
+  // }
+  //
+  // update(): void {
+  //   this.cdr.markForCheck();
+  // }
 }

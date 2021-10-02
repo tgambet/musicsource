@@ -1,14 +1,14 @@
 import { Injectable } from '@angular/core';
-import { Album, AlbumWithCover$ } from '@app/database/album.model';
-import { StorageService } from '@app/database/storage.service';
-import { Artist, ArtistWithCover$ } from '@app/database/artist.model';
+import { Album, AlbumWithCover$ } from '@app/database/albums/album.model';
+import { DatabaseService } from '@app/database/database.service';
+import { Artist, ArtistWithCover$ } from '@app/database/artists/artist.model';
 import { Observable } from 'rxjs';
 import { LibraryFacade } from '@app/library/store/library.facade';
 
 @Injectable()
 export class HistoryService {
   constructor(
-    private storage: StorageService,
+    private storage: DatabaseService,
     private library: LibraryFacade
   ) {}
 
@@ -20,9 +20,10 @@ export class HistoryService {
     return this.library.getArtists('listenedOn', undefined, 'prev');
   }
 
-  albumPlayed(album: Album): void {
+  // TODO
+  albumPlayed(album: Album, key?: string | number): void {
     this.storage
-      .update$<Album>('albums', { listenedOn: new Date() }, album.name)
+      .update$<Album>('albums', { listenedOn: new Date() }, key as number) // TODO
       .subscribe();
   }
 

@@ -3,11 +3,11 @@ import { defer, from, Observable, of } from 'rxjs';
 import { catchError, concatMap, map } from 'rxjs/operators';
 import { Either, left, right } from '@app/core/utils/either.util';
 import { DOCUMENT } from '@angular/common';
-import { FileEntry } from '@app/database/entry.model';
+import { FileEntry } from '@app/database/entries/entry.model';
 import { IPicture } from 'music-metadata/lib/type';
 import { hash } from '@app/core/utils/hash.util';
-import { Song } from '@app/database/song.model';
-import { Picture } from '@app/database/picture.model';
+import { Song } from '@app/database/songs/song.model';
+import { Picture } from '@app/database/pictures/picture.model';
 
 @Injectable()
 export class ExtractorService {

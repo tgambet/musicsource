@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 import { SelectOption } from '@app/core/components/select.component';
 import { EMPTY, merge, Observable, Subscription } from 'rxjs';
-import { Song, SongWithCover$ } from '@app/database/song.model';
+import { Song, SongWithCover$ } from '@app/database/songs/song.model';
 import { LibraryFacade } from '@app/library/store/library.facade';
 import {
   catchError,

@@ -15,7 +15,7 @@ import {
 import { Database, IndexedDBService } from '@creasource/ngx-idb';
 
 @Injectable()
-export class StorageService {
+export class DatabaseService {
   get db$(): Observable<ReactiveIDBDatabase> {
     return this.databaseService.database;
   }
@@ -126,6 +126,18 @@ export class StorageService {
           : transaction.objectStore<T>(store)
       ),
       concatMap((s) => s.get$(key))
+    );
+  }
+
+  getAll$<T>(store: string, index?: string): Observable<T[]> {
+    return this.db$.pipe(
+      concatMap((db) => db.transaction$(store)),
+      map((transaction) =>
+        index
+          ? transaction.objectStore<T>(store).index(index)
+          : transaction.objectStore<T>(store)
+      ),
+      concatMap((s) => s.getAll$(undefined, 200))
     );
   }
 

@@ -7,7 +7,7 @@ import {
   Output,
 } from '@angular/core';
 import { Icons } from '@app/core/utils';
-import { Album, AlbumWithCover$ } from '@app/database/album.model';
+import { Album } from '@app/database/albums/album.model';
 import { hash } from '@app/core/utils/hash.util';
 import { MatMenuTrigger } from '@angular/material/menu';
 import { MenuItem } from '@app/core/components/menu.component';
@@ -15,9 +15,11 @@ import { PlayerFacade } from '@app/player/store/player.facade';
 import { ComponentHelperService } from '@app/core/services/component-helper.service';
 import { LibraryFacade } from '@app/library/store/library.facade';
 import { concatMap, map, shareReplay, tap } from 'rxjs/operators';
-import { Observable } from 'rxjs';
-import { SongWithCover$ } from '@app/database/song.model';
+import { Observable, of } from 'rxjs';
+import { SongWithCover$ } from '@app/database/songs/song.model';
 import { HistoryService } from '@app/core/services/history.service';
+import { PictureFacade } from '@app/database/pictures/picture.facade';
+import { getCover } from '@app/database/pictures/picture.model';
 
 @Component({
   selector: 'app-album',
@@ -33,7 +35,7 @@ import { HistoryService } from '@app/core/services/history.service';
       [playlist]="playlist$ | async"
     >
       <img
-        *ngIf="album.cover$ | async as cover; else icon"
+        *ngIf="cover$ | async as cover; else icon"
         [src]="cover"
         [alt]="album.name"
       />
@@ -77,22 +79,25 @@ import { HistoryService } from '@app/core/services/history.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AlbumComponent implements OnInit {
-  @Input() album!: AlbumWithCover$;
+  @Input() album!: Album;
+  @Input() key!: string | number;
   @Input() size: 'small' | 'large' = 'large';
   @Output() menuOpened = new EventEmitter<MatMenuTrigger>();
-  @Output() update = new EventEmitter<Album>();
+  // @Output() update = new EventEmitter<Album>();
 
   icons = Icons;
   menuItems!: MenuItem[];
 
   song$!: Observable<SongWithCover$>;
   playlist$!: Observable<SongWithCover$[]>;
+  cover$!: Observable<string | undefined>;
 
   constructor(
     private library: LibraryFacade,
     private player: PlayerFacade,
     private helper: ComponentHelperService,
-    private history: HistoryService
+    private history: HistoryService,
+    private pictures: PictureFacade
   ) {}
 
   ngOnInit(): void {
@@ -103,6 +108,13 @@ export class AlbumComponent implements OnInit {
       .pipe(shareReplay(1));
 
     this.song$ = this.playlist$.pipe(map((pl) => pl[0]));
+
+    this.cover$ = this.pictures.getByHash(this.album.pictureKey as string).pipe(
+      concatMap((p) =>
+        p ? of(p) : this.library.getPicture(this.album.pictureKey)
+      ),
+      map((p) => (p ? getCover(p) : undefined))
+    );
   }
 
   /*play() {
@@ -139,7 +151,7 @@ export class AlbumComponent implements OnInit {
               })
             )
             .subscribe();
-          this.history.albumPlayed(this.album);
+          this.history.albumPlayed(this.album, this.key);
         },
       },
       {
@@ -178,10 +190,10 @@ export class AlbumComponent implements OnInit {
           ? 'Remove from your likes'
           : 'Add to your likes',
         click: () => {
-          this.helper.toggleLikedAlbum(this.album).subscribe(() => {
+          this.helper.toggleLikedAlbum(this.album); /*.subscribe(() => {
             this.updateMenu();
-            this.update.next(this.album);
-          });
+            // this.update.next(this.album);
+          });*/
         },
       },
       {
@@ -206,6 +218,6 @@ export class AlbumComponent implements OnInit {
   }
 
   albumPlayed(): void {
-    this.history.albumPlayed(this.album);
+    this.history.albumPlayed(this.album, this.key);
   }
 }

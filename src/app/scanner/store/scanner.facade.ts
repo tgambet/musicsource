@@ -11,11 +11,11 @@ import {
 } from '@app/scanner/store/scanner.selectors';
 import { abortScan, openDirectory } from '@app/scanner/store/scanner.actions';
 import { concatMap, filter, map, mapTo } from 'rxjs/operators';
-import { StorageService } from '@app/database/storage.service';
+import { DatabaseService } from '@app/database/database.service';
 import { from, Observable, of } from 'rxjs';
-import { Song } from '@app/database/song.model';
-import { Picture } from '@app/database/picture.model';
-import { Entry, FileEntry } from '@app/database/entry.model';
+import { Song } from '@app/database/songs/song.model';
+import { Picture } from '@app/database/pictures/picture.model';
+import { Entry, FileEntry } from '@app/database/entries/entry.model';
 import { hash } from '@app/core/utils/hash.util';
 
 @Injectable()
@@ -28,7 +28,7 @@ export class ScannerFacade {
   progressDisplay$ = this.store.select(selectProgressDisplay);
   progressDisplaySub$ = this.store.select(selectProgressDisplaySub);
 
-  constructor(private store: Store, private storage: StorageService) {}
+  constructor(private store: Store, private storage: DatabaseService) {}
 
   abort(): void {
     this.store.dispatch(abortScan());

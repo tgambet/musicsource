@@ -4,7 +4,7 @@ import { PagePlaylistData } from '@app/playlist/page-playlist.component';
 import { LibraryFacade } from '@app/library/store/library.facade';
 import { EMPTY, Observable, of, throwError } from 'rxjs';
 import { catchError, concatMap, map, startWith } from 'rxjs/operators';
-import { getCover } from '@app/database/picture.model';
+import { getCover } from '@app/database/pictures/picture.model';
 import { scanArray } from '@app/core/utils/scan-array.util';
 
 @Injectable({

@@ -1,7 +1,7 @@
 import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
-import { Playlist } from '@app/database/playlist.model';
+import { Playlist } from '@app/database/playlists/playlist.model';
 import { from, Observable, of } from 'rxjs';
-import { Song, SongWithCover$ } from '@app/database/song.model';
+import { Song, SongWithCover$ } from '@app/database/songs/song.model';
 import { ActivatedRoute } from '@angular/router';
 import { concatMap, map, shareReplay, switchMap } from 'rxjs/operators';
 import { Icons } from '@app/core/utils/icons.util';

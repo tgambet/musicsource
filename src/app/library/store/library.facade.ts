@@ -1,14 +1,27 @@
 import { Injectable } from '@angular/core';
-import { Entry, requestPermissionPromise } from '@app/database/entry.model';
-import { from, Observable, of, Subject, throwError, toArray } from 'rxjs';
-import { concatMap, filter, map, tap } from 'rxjs/operators';
-import { StorageService } from '@app/database/storage.service';
-import { Album, AlbumWithCover$ } from '@app/database/album.model';
-import { Artist, ArtistWithCover$ } from '@app/database/artist.model';
-import { getCover, Picture } from '@app/database/picture.model';
-import { Song, SongWithCover$ } from '@app/database/song.model';
-import { Playlist } from '@app/database/playlist.model';
+import {
+  Entry,
+  requestPermissionPromise,
+} from '@app/database/entries/entry.model';
+import {
+  concat,
+  from,
+  Observable,
+  of,
+  Subject,
+  throwError,
+  toArray,
+} from 'rxjs';
+import { concatMap, filter, first, map, tap } from 'rxjs/operators';
+import { DatabaseService } from '@app/database/database.service';
+import { Album, AlbumWithCover$ } from '@app/database/albums/album.model';
+import { Artist, ArtistWithCover$ } from '@app/database/artists/artist.model';
+import { getCover, Picture } from '@app/database/pictures/picture.model';
+import { Song, SongWithCover$ } from '@app/database/songs/song.model';
+import { Playlist } from '@app/database/playlists/playlist.model';
 import { hash } from '@app/core/utils/hash.util';
+import { PictureFacade } from '@app/database/pictures/picture.facade';
+import { AlbumFacade } from '@app/database/albums/album.facade';
 
 @Injectable()
 export class LibraryFacade {
@@ -60,7 +73,11 @@ export class LibraryFacade {
 
   private playlistsSubject: Subject<Playlist> = new Subject<Playlist>();
 
-  constructor(private storage: StorageService) {}
+  constructor(
+    private storage: DatabaseService,
+    private pictures: PictureFacade,
+    private albums: AlbumFacade
+  ) {}
 
   getAlbums(
     index?: string,
@@ -174,7 +191,26 @@ export class LibraryFacade {
     this.storage.get$('albums', h, 'hash');
 
   getPicture = (id: IDBValidKey | undefined): Observable<Picture | undefined> =>
-    id ? this.storage.get$('pictures', id) : of(undefined);
+    id
+      ? this.pictures.getByHash(id as string).pipe(
+          //filter((p) => !!p)
+          first(),
+          concatMap((p) =>
+            p
+              ? concat(of(p), this.pictures.getByHash(id as string))
+              : concat(
+                  this.storage.get$<Picture>('pictures', id),
+                  this.pictures
+                    .getByHash(id as string)
+                    .pipe(filter((p2) => !!p2))
+                )
+          )
+        )
+      : // race<[Picture | undefined, Picture | undefined]>(
+        //     this.pictures.getByHash(id as string).pipe(filter((p) => !!p)),
+        //     this.storage.get$<Picture>('pictures', id)
+        //   ).pipe(first())
+        of(undefined);
 
   getCover(
     pictureKey: IDBValidKey | undefined
@@ -247,14 +283,15 @@ export class LibraryFacade {
     );
   }
 
-  toggleLikedAlbum(album: Album): Observable<Album> {
+  toggleLikedAlbum(album: Album): void {
     const update = { likedOn: !!album.likedOn ? undefined : new Date() };
-    return this.storage.update$<Album>('albums', update, album.name).pipe(
-      map(() => ({
-        ...album,
-        ...update,
-      }))
-    );
+    return this.albums.update({ key: album.name, changes: update });
+    // return this.storage.update$<Album>('albums', update, album.name).pipe(
+    //   map(() => ({
+    //     ...album,
+    //     ...update,
+    //   }))
+    // );
   }
 
   toggleArtistFavorite(artist: Artist): Observable<void> {
