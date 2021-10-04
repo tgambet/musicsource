@@ -218,8 +218,6 @@ export class PageArtistComponent extends WithTrigger implements OnInit {
   }
 
   toggleLiked(artist: Artist): void {
-    this.helper
-      .toggleLikedArtist(artist)
-      .subscribe(() => this.cdr.markForCheck());
+    this.helper.toggleLikedArtist(artist);
   }
 }

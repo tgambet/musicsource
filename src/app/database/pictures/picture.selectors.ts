@@ -10,22 +10,15 @@ import {
 export const selectPictureState =
   createFeatureSelector<PictureState>(pictureFeatureKey);
 
-export const { selectIds, selectEntities, selectAll, selectTotal } =
-  pictureAdapter.getSelectors();
-
-export const selectAllPictures = createSelector(selectPictureState, selectAll);
-
-export const selectPictureEntities = createSelector(
-  selectPictureState,
-  selectEntities
-);
-
-export const selectPictureIds = createSelector(selectPictureState, selectIds);
-
-export const selectPictureTotal = createSelector(
-  selectPictureState,
-  selectTotal
-);
+export const {
+  selectIndexKeys: selectPictureIndexKeys,
+  selectIndexEntities: selectPictureIndexEntities,
+  selectIndexAll: selectPictureIndexAll,
+  selectKeys: selectPictureKeys,
+  selectEntities: selectPictureEntities,
+  selectAll: selectPictureAll,
+  selectTotal: selectPictureTotal,
+} = pictureAdapter.getSelectors(selectPictureState);
 
 export const selectPictureByHash = (hash: string) =>
   createSelector(selectPictureEntities, (entities) => entities[hash]);

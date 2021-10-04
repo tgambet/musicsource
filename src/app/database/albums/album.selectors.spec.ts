@@ -3,7 +3,7 @@ import { selectAlbumState } from './album.selectors';
 
 describe('Album Selectors', () => {
   it('should select the feature state', () => {
-    const result = selectAlbumState({
+    const result: any = selectAlbumState({
       [fromAlbum.albumFeatureKey]: {},
     });
 

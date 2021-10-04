@@ -1,23 +1,37 @@
 import { createReducer, on } from '@ngrx/store';
-import * as PlaylistActions from './playlist.actions';
-import { createEntityAdapter, EntityAdapter, EntityState } from '@ngrx/entity';
+import {
+  loadPlaylists,
+  loadPlaylistsFailure,
+  loadPlaylistsSuccess,
+  updatePlaylist,
+} from './playlist.actions';
 import { Playlist } from '@app/database/playlists/playlist.model';
+import { createIDBEntityAdapter, IDBEntityState } from '@creasource/ngrx-idb';
 
-export const playlistFeatureKey = 'playlist';
+export const playlistFeatureKey = 'playlists';
 
-export type PlaylistState = EntityState<Playlist>;
+const indexes = ['title', 'createdOn', 'listenedOn'] as const;
 
-export const playlistAdapter: EntityAdapter<Playlist> =
-  createEntityAdapter<Playlist>({
-    selectId: (model) => model.hash,
-  });
+export type PlaylistIndex = typeof indexes[number];
+
+export type PlaylistState = IDBEntityState<Playlist, PlaylistIndex>;
+
+export const playlistAdapter = createIDBEntityAdapter<Playlist, PlaylistIndex>({
+  keySelector: (model) => model.hash,
+  indexes,
+});
 
 export const initialState: PlaylistState = playlistAdapter.getInitialState();
 
 export const playlistReducer = createReducer(
   initialState,
 
-  on(PlaylistActions.loadPlaylists, (state) => state),
-  on(PlaylistActions.loadPlaylistsSuccess, (state, action) => state),
-  on(PlaylistActions.loadPlaylistsFailure, (state, action) => state)
+  on(loadPlaylists, (state) => state),
+  on(loadPlaylistsSuccess, (state, action) =>
+    playlistAdapter.addMany(action.data, state)
+  ),
+  on(loadPlaylistsFailure, (state, action) => state),
+  on(updatePlaylist, (state, action) =>
+    playlistAdapter.updateOne(action.update, state)
+  )
 );

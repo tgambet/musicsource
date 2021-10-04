@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import {
-  selectAllPictures,
+  selectPictureAll,
   selectPictureByHash,
   selectPictureTotal,
 } from '@app/database/pictures/picture.selectors';
@@ -13,7 +13,7 @@ export class PictureFacade {
   constructor(private store: Store) {}
 
   getAll(): Observable<Picture[]> {
-    return this.store.select(selectAllPictures);
+    return this.store.select(selectPictureAll);
   }
 
   getTotal(): Observable<number> {

@@ -3,16 +3,8 @@ import {
   Entry,
   requestPermissionPromise,
 } from '@app/database/entries/entry.model';
-import {
-  concat,
-  from,
-  Observable,
-  of,
-  Subject,
-  throwError,
-  toArray,
-} from 'rxjs';
-import { concatMap, filter, first, map, tap } from 'rxjs/operators';
+import { from, Observable, of, Subject, throwError, toArray } from 'rxjs';
+import { concatMap, filter, map, tap } from 'rxjs/operators';
 import { DatabaseService } from '@app/database/database.service';
 import { Album, AlbumWithCover$ } from '@app/database/albums/album.model';
 import { Artist, ArtistWithCover$ } from '@app/database/artists/artist.model';
@@ -22,6 +14,7 @@ import { Playlist } from '@app/database/playlists/playlist.model';
 import { hash } from '@app/core/utils/hash.util';
 import { PictureFacade } from '@app/database/pictures/picture.facade';
 import { AlbumFacade } from '@app/database/albums/album.facade';
+import { ArtistFacade } from '@app/database/artists/artist.facade';
 
 @Injectable()
 export class LibraryFacade {
@@ -76,7 +69,8 @@ export class LibraryFacade {
   constructor(
     private storage: DatabaseService,
     private pictures: PictureFacade,
-    private albums: AlbumFacade
+    private albums: AlbumFacade,
+    private artists: ArtistFacade
   ) {}
 
   getAlbums(
@@ -188,24 +182,26 @@ export class LibraryFacade {
     this.storage.get$('albums', title);
 
   getAlbumByHash = (h: string): Observable<Album | undefined> =>
-    this.storage.get$('albums', h, 'hash');
+    this.storage.get$('albums', h);
 
   getPicture = (id: IDBValidKey | undefined): Observable<Picture | undefined> =>
     id
-      ? this.pictures.getByHash(id as string).pipe(
+      ? this.pictures
+          .getByHash(id as string)
+          .pipe
           //filter((p) => !!p)
-          first(),
-          concatMap((p) =>
-            p
-              ? concat(of(p), this.pictures.getByHash(id as string))
-              : concat(
-                  this.storage.get$<Picture>('pictures', id),
-                  this.pictures
-                    .getByHash(id as string)
-                    .pipe(filter((p2) => !!p2))
-                )
-          )
-        )
+          // first(),
+          // concatMap((p) =>
+          //   p
+          //     ? concat(of(p), this.pictures.getByHash(id as string))
+          //     : concat(
+          //         this.storage.get$<Picture>('pictures', id),
+          //         this.pictures
+          //           .getByHash(id as string)
+          //           .pipe(filter((p2) => !!p2))
+          //       )
+          // )
+          ()
       : // race<[Picture | undefined, Picture | undefined]>(
         //     this.pictures.getByHash(id as string).pipe(filter((p) => !!p)),
         //     this.storage.get$<Picture>('pictures', id)
@@ -221,7 +217,7 @@ export class LibraryFacade {
   }
 
   getAlbumTitles = (album: Album): Observable<SongWithCover$> =>
-    this.getSongs('album', album.name).pipe(map(({ value }) => value));
+    this.getSongs('albumHash', album.hash).pipe(map(({ value }) => value));
 
   getAlbumTracks = (album: Album): Observable<SongWithCover$[]> =>
     this.getAlbumTitles(album).pipe(
@@ -285,7 +281,7 @@ export class LibraryFacade {
 
   toggleLikedAlbum(album: Album): void {
     const update = { likedOn: !!album.likedOn ? undefined : new Date() };
-    return this.albums.update({ key: album.name, changes: update });
+    return this.albums.update({ key: album.hash, changes: update });
     // return this.storage.update$<Album>('albums', update, album.name).pipe(
     //   map(() => ({
     //     ...album,
@@ -294,14 +290,17 @@ export class LibraryFacade {
     // );
   }
 
-  toggleArtistFavorite(artist: Artist): Observable<void> {
-    return this.storage
-      .update$<Artist>(
-        'artists',
-        { likedOn: !!artist.likedOn ? undefined : new Date() },
-        artist.name
-      )
-      .pipe(map(() => void 0));
+  toggleArtistFavorite(artist: Artist): void {
+    const update = { likedOn: !!artist.likedOn ? undefined : new Date() };
+    return this.artists.update({ key: artist.hash, changes: update });
+
+    // return this.storage
+    //   .update$<Artist>(
+    //     'artists',
+    //     { likedOn: !!artist.likedOn ? undefined : new Date() },
+    //     artist.name
+    //   )
+    //   .pipe(map(() => void 0));
   }
 
   getPlaylist(title: string): Observable<Playlist | undefined> {

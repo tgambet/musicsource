@@ -1,24 +1,32 @@
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { catchError, concatMap, map } from 'rxjs/operators';
-import { EMPTY, of } from 'rxjs';
-
-import * as EntryActions from './entry.actions';
+import { of, toArray } from 'rxjs';
+import {
+  loadEntries,
+  loadEntriesFailure,
+  loadEntriesSuccess,
+} from '@app/database/entries/entry.actions';
+import { DatabaseService } from '@app/database/database.service';
+import { Entry } from '@app/database/entries/entry.model';
 
 @Injectable()
 export class EntryEffects {
   loadEntries$ = createEffect(() =>
     this.actions$.pipe(
-      ofType(EntryActions.loadEntries),
+      ofType(loadEntries),
       concatMap(() =>
-        /** An EMPTY observable only emits completion. Replace with your own observable API request */
-        EMPTY.pipe(
-          map((data) => EntryActions.loadEntriesSuccess({ data })),
-          catchError((error) => of(EntryActions.loadEntriesFailure({ error })))
+        this.database.walk$<Entry>('entries').pipe(
+          map(({ value }) => value),
+          // bufferTime(100),
+          // filter((arr) => arr.length > 0),
+          toArray(),
+          map((data) => loadEntriesSuccess({ data })),
+          catchError((error) => of(loadEntriesFailure({ error })))
         )
       )
     )
   );
 
-  constructor(private actions$: Actions) {}
+  constructor(private actions$: Actions, private database: DatabaseService) {}
 }

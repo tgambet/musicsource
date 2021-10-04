@@ -44,26 +44,28 @@ export class ComponentHelperService {
     //   tap(() =>
     // TODO move to effects
     this.openSnack(
-      !!album.likedOn ? 'Added to your likes' : 'Removed from your likes'
+      !!album.likedOn ? 'Removed from your likes' : 'Added to your likes'
     );
     // )
     // )
     // );
   }
 
-  toggleLikedArtist(artist: Artist): Observable<any> {
-    return this.library
-      .toggleArtistFavorite(artist)
-      .pipe(
-        tap(() => (artist.likedOn = !!artist.likedOn ? undefined : new Date()))
-      )
-      .pipe(
-        tap(() =>
-          this.openSnack(
-            !!artist.likedOn ? 'Added to your likes' : 'Removed from your likes'
-          )
-        )
-      );
+  toggleLikedArtist(artist: Artist): void {
+    this.library.toggleArtistFavorite(artist);
+    this.openSnack(
+      !!artist.likedOn ? 'Removed from your likes' : 'Added to your likes'
+    );
+    // .pipe(
+    //   tap(() => (artist.likedOn = !!artist.likedOn ? undefined : new Date()))
+    // )
+    // .pipe(
+    //   tap(() =>
+    //     this.openSnack(
+    //       !!artist.likedOn ? 'Added to your likes' : 'Removed from your likes'
+    //     )
+    //   )
+    // );
   }
 
   addSongsToPlaylist(songs: Song[]): Observable<void> {

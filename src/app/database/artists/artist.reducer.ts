@@ -1,24 +1,44 @@
 import { createReducer, on } from '@ngrx/store';
-import * as ArtistActions from './artist.actions';
-import { createEntityAdapter, EntityAdapter, EntityState } from '@ngrx/entity';
 import { Artist } from '@app/database/artists/artist.model';
+import { createIDBEntityAdapter, IDBEntityState } from '@creasource/ngrx-idb';
+import {
+  loadArtists,
+  loadArtistsFailure,
+  loadArtistsSuccess,
+  updateArtist,
+} from './artist.actions';
 
 export const artistFeatureKey = 'artists';
 
-export const artistAdapter: EntityAdapter<Artist> = createEntityAdapter<Artist>(
-  {
-    selectId: (model) => model.hash,
-  }
-);
+export const artistIndexes = [
+  { name: 'name' },
+  { name: 'likedOn' },
+  { name: 'listenedOn' },
+  { name: 'lastModified' },
+] as const;
 
-export type ArtistState = EntityState<Artist>;
+const indexNames = artistIndexes.map((i) => i.name);
 
-export const initialState: ArtistState = artistAdapter.getInitialState();
+export type ArtistIndex = typeof indexNames[number];
+
+export const artistAdapter = createIDBEntityAdapter({
+  keySelector: (artist: Artist) => artist.hash,
+  indexes: artistIndexes,
+});
+
+export type ArtistState = IDBEntityState<Artist, ArtistIndex>;
+
+export const initialState = artistAdapter.getInitialState();
 
 export const artistReducer = createReducer(
   initialState,
 
-  on(ArtistActions.loadArtists, (state) => state),
-  on(ArtistActions.loadArtistsSuccess, (state, action) => state),
-  on(ArtistActions.loadArtistsFailure, (state, action) => state)
+  on(loadArtists, (state) => state),
+  on(loadArtistsSuccess, (state, action) =>
+    artistAdapter.addMany(action.data, state)
+  ),
+  on(loadArtistsFailure, (state, action) => state),
+  on(updateArtist, (state, action) =>
+    artistAdapter.updateOne(action.update, state)
+  )
 );

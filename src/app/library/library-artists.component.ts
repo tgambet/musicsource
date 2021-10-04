@@ -8,15 +8,23 @@ import {
 import { SelectOption } from '@app/core/components/select.component';
 import { LibraryFacade } from '@app/library/store/library.facade';
 import { ActivatedRoute } from '@angular/router';
-import { Observable } from 'rxjs';
-import { Artist, ArtistWithCover$ } from '@app/database/artists/artist.model';
-import { map, shareReplay, startWith, switchMap, tap } from 'rxjs/operators';
+import {
+  animationFrameScheduler,
+  bufferWhen,
+  mergeMap,
+  Observable,
+  of,
+  scan,
+  scheduled,
+} from 'rxjs';
+import { Artist } from '@app/database/artists/artist.model';
+import { delay, filter, map, switchMap, tap } from 'rxjs/operators';
 import { Icons } from '@app/core/utils/icons.util';
-import { scanArray } from '@app/core/utils/scan-array.util';
 import { ComponentHelperService } from '@app/core/services/component-helper.service';
 import { PlayerFacade } from '@app/player/store/player.facade';
 import { HistoryService } from '@app/core/services/history.service';
 import { WithTrigger } from '@app/core/classes/with-trigger';
+import { ArtistFacade } from '@app/database/artists/artist.facade';
 
 @Component({
   selector: 'app-library-artists',
@@ -27,69 +35,28 @@ import { WithTrigger } from '@app/core/classes/with-trigger';
     >
       <div class="artists">
         <ng-container *ngFor="let artist of artists$ | async; trackBy: trackBy">
-          <div
+          <!--<div
             *ngIf="!likes || !!artist.likedOn"
             class="artist"
             cdkMonitorSubtreeFocus
-          >
-            <a [routerLink]="['/', 'artist', artist.hash]" matRipple>
-              <div class="cover" style="--aspect-ratio:1">
-                <img
-                  [src]="cover"
-                  [alt]="artist.name"
-                  *ngIf="artist.cover$ | async as cover; else icon"
-                />
-                <ng-template #icon>
-                  <app-icon [path]="icons.account" [size]="56"></app-icon>
-                </ng-template>
-              </div>
-              <div class="meta">
-                <span>{{ artist.name }}</span>
-              </div>
-            </a>
-            <div class="controls">
-              <button
-                [class.liked]="!!artist.likedOn"
-                mat-icon-button
-                [disableRipple]="true"
-                (click)="toggleLiked(artist)"
-              >
-                <app-icon
-                  [path]="!!artist.likedOn ? icons.heart : icons.heartOutline"
-                ></app-icon>
-              </button>
-              <button
-                class="trigger"
-                aria-label="Other actions"
-                title="Other actions"
-                mat-icon-button
-                [disableRipple]="true"
-                [matMenuTriggerFor]="menu"
-                #trigger="matMenuTrigger"
-                (menuOpened)="menuOpened(trigger)"
-                (click)="$event.stopPropagation()"
-              >
-                <app-icon [path]="icons.dotsVertical" [size]="24"></app-icon>
-              </button>
-            </div>
-            <mat-menu #menu="matMenu" [hasBackdrop]="false">
-              <ng-template matMenuContent>
-                <button mat-menu-item (click)="shufflePlay(artist)">
-                  <app-icon [path]="icons.shuffle"></app-icon>
-                  <span>Shuffle play</span>
-                </button>
-              </ng-template>
-            </mat-menu>
-          </div>
+          >-->
+          <app-artist-list-item
+            [artist]="artist"
+            (menuOpened)="menuOpened($event)"
+            (shufflePlay)="shufflePlay(artist)"
+            (toggleLiked)="toggleLiked(artist)"
+            cdkMonitorSubtreeFocus
+          ></app-artist-list-item>
+          <!--</div>-->
         </ng-container>
-        <p
-          class="empty"
-          *ngIf="
-            (artists$ | async) === null || (artists$ | async)?.length === 0
-          "
-        >
-          Nothing to display
-        </p>
+        <!--        <p-->
+        <!--          class="empty"-->
+        <!--          *ngIf="-->
+        <!--            (artists$ | async) === null || (artists$ | async)?.length === 0-->
+        <!--          "-->
+        <!--        >-->
+        <!--          Nothing to display-->
+        <!--        </p>-->
       </div>
     </app-library-content>
   `,
@@ -103,62 +70,6 @@ import { WithTrigger } from '@app/core/classes/with-trigger';
         flex-direction: column;
         padding: 0 0 64px;
       }
-      .artist {
-        flex: 0 0 80px;
-        position: relative;
-      }
-      .artist a {
-        display: flex;
-        align-items: center;
-        box-sizing: border-box;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        padding: 0 104px 0 8px;
-        height: 80px;
-        text-decoration: none;
-      }
-      .artist:last-of-type a {
-        border: none;
-      }
-      .cover {
-        width: 56px;
-        border-radius: 50%;
-        overflow: hidden;
-        margin-right: 16px;
-        position: relative;
-        z-index: 1;
-      }
-      .meta {
-        display: flex;
-        flex-direction: column;
-      }
-      .controls {
-        color: #aaa;
-        position: absolute;
-        top: 50%;
-        right: 8px;
-        transform: translateY(-50%);
-      }
-      .controls button:not(:last-of-type) {
-        margin-right: 8px;
-      }
-      .controls button:not(.liked) {
-        opacity: 0;
-      }
-      .artist:hover .controls button,
-      .artist.cdk-focused button {
-        opacity: 1;
-      }
-      .artist ~ .empty {
-        display: none;
-      }
-      .empty {
-        color: #aaa;
-        padding: 24px 0;
-        text-align: center;
-      }
-      .mat-menu-item app-icon {
-        margin-right: 16px;
-      }
     `,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -166,7 +77,7 @@ import { WithTrigger } from '@app/core/classes/with-trigger';
 export class LibraryArtistsComponent extends WithTrigger implements OnInit {
   icons = Icons;
 
-  artists$!: Observable<ArtistWithCover$[]>;
+  artists$!: Observable<Artist[]>;
 
   sortOptions: SelectOption[] = [
     { name: 'Recently added', value: 'lastModified_desc' },
@@ -183,7 +94,8 @@ export class LibraryArtistsComponent extends WithTrigger implements OnInit {
     private route: ActivatedRoute,
     private helper: ComponentHelperService,
     private cdr: ChangeDetectorRef,
-    private history: HistoryService
+    private history: HistoryService,
+    private artists: ArtistFacade
   ) {
     super();
   }
@@ -197,10 +109,7 @@ export class LibraryArtistsComponent extends WithTrigger implements OnInit {
   ngOnInit(): void {
     const sort$ = this.route.queryParamMap.pipe(
       map((params) => ({
-        index:
-          params.get('sort') === 'name'
-            ? undefined
-            : params.get('sort') || 'lastModified',
+        index: params.get('sort') || 'lastModified',
         direction: ((params.get('dir') || 'desc') === 'asc'
           ? 'next'
           : 'prev') as IDBCursorDirection,
@@ -209,26 +118,50 @@ export class LibraryArtistsComponent extends WithTrigger implements OnInit {
       tap((sort) => (this.likes = sort.likes))
     );
 
-    this.artists$ = sort$.pipe(
-      switchMap((sort) => {
-        const predicate: ((artist: Artist) => boolean) | undefined = sort.likes
-          ? (artist) => !!artist.likedOn
-          : undefined;
+    // this.artists$ = sort$.pipe(
+    //   switchMap((sort) => {
+    //     const predicate: ((artist: Artist) => boolean) | undefined = sort.likes
+    //       ? (artist) => !!artist.likedOn
+    //       : undefined;
+    //
+    //     return this.library
+    //       .getArtists(sort.index, null, sort.direction, predicate)
+    //       .pipe(scanArray(), startWith([]));
+    //   }),
+    //   shareReplay(1)
+    // );
 
-        return this.library
-          .getArtists(sort.index, null, sort.direction, predicate)
-          .pipe(scanArray(), startWith([]));
-      }),
-      shareReplay(1)
+    this.artists$ = sort$.pipe(
+      switchMap((sort, i) =>
+        this.artists.getAll(sort.index as any).pipe(
+          filter((models) => models.length > 0),
+          switchMap((models, j) => {
+            let mods;
+            if (sort.likes) {
+              mods = models.filter((a) => !!a.likedOn);
+            } else {
+              mods = [...models];
+            }
+            if (sort.direction === 'prev') {
+              mods.reverse();
+            }
+            return j === 0 && i === 0
+              ? of(...mods).pipe(
+                  mergeMap((model, index) => of(model).pipe(delay(10 * index))),
+                  bufferWhen(() => scheduled(of(1), animationFrameScheduler)),
+                  scan((acc, curr) => [...acc, ...curr])
+                )
+              : of(mods);
+          })
+        )
+      )
     );
   }
 
-  trackBy = (index: number, artist: ArtistWithCover$): string => artist.name;
+  trackBy = (index: number, artist: Artist): string => artist.hash;
 
   toggleLiked(artist: Artist): void {
-    this.helper
-      .toggleLikedArtist(artist)
-      .subscribe(() => this.cdr.markForCheck());
+    this.helper.toggleLikedArtist(artist);
   }
 
   shufflePlay(artist: Artist): void {

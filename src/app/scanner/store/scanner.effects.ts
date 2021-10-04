@@ -296,18 +296,21 @@ export class ScannerEffects implements OnRunEffects {
                   ? artists[0]
                   : undefined;
 
+              const modifiedDate = new Date(lastModified);
+              modifiedDate.setMinutes(0, 0, 0);
+
               return {
                 name: album,
-                hash: hash(`${album}`),
                 albumArtist,
                 artists,
                 year: songs[0].year,
                 pictureKey: songs.find((song) => song.pictureKey)?.pictureKey,
-                lastModified: new Date(lastModified),
+                lastModified: modifiedDate,
+                hash: Album.getHash(albumArtist, album),
               };
             }),
             concatMap((album) =>
-              this.storage.add$('albums', album).pipe(
+              this.storage.add$<Album>('albums', album).pipe(
                 mapTo(buildAlbumSuccess({ album })),
                 catchError((error) => of(buildAlbumFailure({ error })))
               )

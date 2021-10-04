@@ -33,9 +33,9 @@ import { AlbumFacade } from '@app/database/albums/album.facade';
     >
       <div class="albums">
         <ng-container *ngFor="let album of albums$ | async; trackBy: trackBy">
-          <div class="album" *ngIf="!likes || !!album.value.likedOn">
+          <div class="album" *ngIf="!likes || !!album.likedOn">
             <app-album
-              [album]="album.value"
+              [album]="album"
               size="small"
               (menuOpened)="menuOpened($event)"
             ></app-album>
@@ -69,10 +69,10 @@ export class LibraryAlbumsComponent
   extends WithTrigger
   implements OnInit, AfterContentInit
 {
-  albums$!: Observable<{ value: Album; key: string | number }[]>;
+  albums$!: Observable<Album[]>;
 
   sortOptions: SelectOption[] = [
-    // { name: 'Recently added', value: 'lastModified_desc' },
+    { name: 'Recently added', value: 'lastModified_desc' },
     { name: 'Latest releases', value: 'year_desc' },
     { name: 'Oldest releases', value: 'year_asc' },
     { name: 'A to Z', value: 'name_asc' },
@@ -113,10 +113,7 @@ export class LibraryAlbumsComponent
     this.albums$ = EMPTY;
   }
 
-  trackBy = (
-    index: number,
-    album: { value: Album; key: string | number }
-  ): string => album.value.hash;
+  trackBy = (index: number, album: Album): string => album.hash;
 
   ngAfterContentInit(): void {
     const sort$ = this.route.queryParamMap.pipe(
@@ -132,19 +129,19 @@ export class LibraryAlbumsComponent
 
     this.albums$ = sort$.pipe(
       switchMap((sort, i) =>
-        this.albums.getAll(sort.index).pipe(
+        this.albums.getAll(sort.index as any).pipe(
           filter((albums) => albums.length > 0),
-          switchMap((albums) => {
+          switchMap((albums, j) => {
             let albs;
             if (sort.likes) {
-              albs = albums.filter((a) => !!a.value.likedOn);
+              albs = albums.filter((a) => !!a.likedOn);
             } else {
               albs = [...albums];
             }
             if (sort.direction === 'prev') {
               albs.reverse();
             }
-            return i === 0
+            return i === 0 && j === 0
               ? of(...albs).pipe(
                   mergeMap((album, index) => of(album).pipe(delay(10 * index))),
                   bufferWhen(() => scheduled(of(1), animationFrameScheduler)),

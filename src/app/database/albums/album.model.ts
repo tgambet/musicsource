@@ -1,6 +1,7 @@
 import { Observable } from 'rxjs';
+import { hash } from '@app/core/utils';
 
-export interface Album {
+export type Album = {
   name: string;
   hash: string;
   albumArtist?: string;
@@ -10,7 +11,13 @@ export interface Album {
   lastModified: Date;
   likedOn?: Date;
   listenedOn?: Date;
-}
+};
+
+// eslint-disable-next-line @typescript-eslint/naming-convention
+export const Album = {
+  getHash: (albumArtist?: string, albumName?: string): string =>
+    hash(`${albumArtist}|${albumName}}`),
+};
 
 export type AlbumWithCover$ = Omit<Album, 'pictureKey'> & {
   cover$: Observable<string | undefined>;

@@ -20,16 +20,15 @@ export class HistoryService {
     return this.library.getArtists('listenedOn', undefined, 'prev');
   }
 
-  // TODO
-  albumPlayed(album: Album, key?: string | number): void {
+  albumPlayed(album: Album): void {
     this.storage
-      .update$<Album>('albums', { listenedOn: new Date() }, key as number) // TODO
+      .update$<Album>('albums', { listenedOn: new Date() }, album.hash)
       .subscribe();
   }
 
   artistPlayed(artist: Artist): void {
     this.storage
-      .update$<Artist>('artists', { listenedOn: new Date() }, artist.name)
+      .update$<Artist>('artists', { listenedOn: new Date() }, artist.hash)
       .subscribe();
   }
 }

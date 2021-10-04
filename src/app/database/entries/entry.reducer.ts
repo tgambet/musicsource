@@ -1,14 +1,23 @@
 import { createReducer, on } from '@ngrx/store';
-import * as EntryActions from './entry.actions';
-import { createEntityAdapter, EntityAdapter, EntityState } from '@ngrx/entity';
 import { Entry } from '@app/database/entries/entry.model';
+import { createIDBEntityAdapter, IDBEntityState } from '@creasource/ngrx-idb';
+import {
+  loadEntries,
+  loadEntriesFailure,
+  loadEntriesSuccess,
+} from '@app/database/entries/entry.actions';
 
 export const entryFeatureKey = 'entries';
 
-export type EntryState = EntityState<Entry>;
+export const indexes = ['parent'] as const;
 
-export const entryAdapter: EntityAdapter<Entry> = createEntityAdapter<Entry>({
-  selectId: (model) => model.path,
+export type EntryIndex = typeof indexes[number];
+
+export type EntryState = IDBEntityState<Entry, EntryIndex>;
+
+export const entryAdapter = createIDBEntityAdapter<Entry, EntryIndex>({
+  keySelector: (model) => model.path,
+  indexes,
 });
 
 export const initialState: EntryState = entryAdapter.getInitialState();
@@ -16,7 +25,9 @@ export const initialState: EntryState = entryAdapter.getInitialState();
 export const entryReducer = createReducer(
   initialState,
 
-  on(EntryActions.loadEntries, (state) => state),
-  on(EntryActions.loadEntriesSuccess, (state, action) => state),
-  on(EntryActions.loadEntriesFailure, (state, action) => state)
+  on(loadEntries, (state) => state),
+  on(loadEntriesSuccess, (state, action) =>
+    entryAdapter.addMany(action.data, state)
+  ),
+  on(loadEntriesFailure, (state, action) => state)
 );

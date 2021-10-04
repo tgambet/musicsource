@@ -3,7 +3,7 @@ import { selectSongState } from './song.selectors';
 
 describe('Song Selectors', () => {
   it('should select the feature state', () => {
-    const result = selectSongState({
+    const result: any = selectSongState({
       [fromSong.songFeatureKey]: {},
     });
 
