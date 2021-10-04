@@ -1,35 +1,47 @@
 import { createReducer, on } from '@ngrx/store';
-import * as AlbumActions from './album.actions';
 import { Album } from '@app/database/albums/album.model';
+import { createIDBEntityAdapter, IDBEntityState } from '@creasource/ngrx-idb';
 import {
-  createIDBEntityAdapter,
-  IDBEntityAdapter,
-  IDBEntityState,
-} from '@creasource/ngrx-idb';
+  loadAlbums,
+  loadAlbumsFailure,
+  loadAlbumsSuccess,
+  updateAlbum,
+} from '@app/database/albums/album.actions';
 
 export const albumFeatureKey = 'albums';
 
-export const albumAdapter: IDBEntityAdapter<Album> =
-  createIDBEntityAdapter<Album>({
-    autoIncrement: true,
-    indexes: ['name', 'year', 'hash', 'albumArtist', 'likedOn'],
-  });
+const indexes = [
+  { name: 'name' },
+  { name: 'year' },
+  { name: 'albumArtist' },
+  { name: 'artists', multiEntry: true },
+  { name: 'likedOn' },
+  { name: 'listenedOn' },
+  { name: 'lastModified' },
+] as const;
 
-export type AlbumState = IDBEntityState<Album>; /* & {
-  index: { [key: string]: string };
-};*/
+const indexNames = indexes.map((i) => i.name);
 
-export const initialState: AlbumState = albumAdapter.getInitialState();
+export type AlbumIndex = typeof indexNames[number];
+
+export const albumAdapter = createIDBEntityAdapter<Album, AlbumIndex>({
+  keySelector: (album: Album) => album.hash,
+  indexes,
+});
+
+export type AlbumState = IDBEntityState<Album, AlbumIndex>;
+
+export const initialState = albumAdapter.getInitialState();
 
 export const albumReducer = createReducer(
   initialState,
 
-  on(AlbumActions.loadAlbums, (state) => state),
-  on(AlbumActions.loadAlbumSuccess, (state, action) =>
+  on(loadAlbums, (state) => state),
+  on(loadAlbumsSuccess, (state, action) =>
     albumAdapter.addMany(action.data, state)
   ),
-  on(AlbumActions.loadAlbumsFailure, (state, action) => state),
-  on(AlbumActions.updateAlbum, (state, action) =>
+  on(loadAlbumsFailure, (state, action) => state),
+  on(updateAlbum, (state, action) =>
     albumAdapter.updateOne(action.update, state)
   )
 );

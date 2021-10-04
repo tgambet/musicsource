@@ -16,7 +16,14 @@ import { ComponentHelperService } from '@app/core/services/component-helper.serv
   selector: 'app-song-list-item',
   template: `
     <div class="cover" style="--aspect-ratio:1">
-      <img *ngIf="song.cover$ | async as cover" [src]="cover" alt="cover" />
+      <img
+        *ngIf="song.cover$ | async as cover; else icon"
+        [src]="cover"
+        alt="cover"
+      />
+      <ng-template #icon>
+        <app-icon [path]="icons.fileMusic" [size]="24"></app-icon>
+      </ng-template>
       <app-player-button
         size="small"
         [song]="song"

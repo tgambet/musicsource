@@ -3,7 +3,7 @@ import { selectPlaylistState } from './playlist.selectors';
 
 describe('Playlist Selectors', () => {
   it('should select the feature state', () => {
-    const result = selectPlaylistState({
+    const result: any = selectPlaylistState({
       [fromPlaylist.playlistFeatureKey]: {},
     });
 

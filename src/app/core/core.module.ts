@@ -48,6 +48,7 @@ import { PlaylistAddComponent } from '@app/core/dialogs/playlist-add.component';
 import { ComponentHelperService } from '@app/core/services/component-helper.service';
 import { HistoryService } from '@app/core/services/history.service';
 import { LibraryFacade } from '@app/library/store/library.facade';
+import { ArtistListItemComponent } from '@app/core/components/artist-list-item.component';
 
 const IMPORTS = [
   CommonModule,
@@ -71,6 +72,7 @@ const IMPORTS = [
 const DECLARATIONS = [
   AlbumComponent,
   ArtistComponent,
+  ArtistListItemComponent,
   ContainerComponent,
   ContainerHomeComponent,
   ContainerPageComponent,

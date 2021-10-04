@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { bufferTime, catchError, concatMap, filter, map } from 'rxjs/operators';
-import { of } from 'rxjs';
+import { catchError, concatMap, map } from 'rxjs/operators';
+import { of, toArray } from 'rxjs';
 
 import {
   loadPictures,
@@ -19,8 +19,9 @@ export class PictureEffects {
       concatMap(() =>
         this.database.walk$<Picture>('pictures').pipe(
           map(({ value }) => value),
-          bufferTime(100),
-          filter((arr) => arr.length > 0),
+          // bufferTime(100),
+          // filter((arr) => arr.length > 0),
+          toArray(),
           map((data) => loadPicturesSuccess({ data })),
           catchError((error) => of(loadPicturesFailure({ error })))
         )

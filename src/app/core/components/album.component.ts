@@ -80,7 +80,6 @@ import { getCover } from '@app/database/pictures/picture.model';
 })
 export class AlbumComponent implements OnInit {
   @Input() album!: Album;
-  @Input() key!: string | number;
   @Input() size: 'small' | 'large' = 'large';
   @Output() menuOpened = new EventEmitter<MatMenuTrigger>();
   // @Output() update = new EventEmitter<Album>();
@@ -151,7 +150,7 @@ export class AlbumComponent implements OnInit {
               })
             )
             .subscribe();
-          this.history.albumPlayed(this.album, this.key);
+          this.history.albumPlayed(this.album);
         },
       },
       {
@@ -218,6 +217,6 @@ export class AlbumComponent implements OnInit {
   }
 
   albumPlayed(): void {
-    this.history.albumPlayed(this.album, this.key);
+    this.history.albumPlayed(this.album);
   }
 }

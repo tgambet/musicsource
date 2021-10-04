@@ -3,7 +3,7 @@ import { selectEntryState } from './entry.selectors';
 
 describe('Entry Selectors', () => {
   it('should select the feature state', () => {
-    const result = selectEntryState({
+    const result: any = selectEntryState({
       [fromEntry.entryFeatureKey]: {},
     });
 

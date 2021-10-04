@@ -1,22 +1,45 @@
 import { createReducer, on } from '@ngrx/store';
-import * as SongActions from './song.actions';
-import { createEntityAdapter, EntityAdapter, EntityState } from '@ngrx/entity';
 import { Song } from '@app/database/songs/song.model';
+import { createIDBEntityAdapter, IDBEntityState } from '@creasource/ngrx-idb';
+import {
+  loadSongs,
+  loadSongsFailure,
+  loadSongsSuccess,
+  updateSong,
+} from './song.actions';
 
-export const songFeatureKey = 'song';
+export const songFeatureKey = 'songs';
 
-export type SongState = EntityState<Song>;
+const indexes = [
+  { name: 'artists', options: { multiEntry: true } },
+  { name: 'genre', options: { multiEntry: true } },
+  { name: 'album' },
+  { name: 'albumHash' },
+  { name: 'title' },
+  { name: 'likedOn' },
+  { name: 'lastModified' },
+] as const;
 
-export const songAdapter: EntityAdapter<Song> = createEntityAdapter<Song>({
-  selectId: (model) => model.entryPath,
+const indexNames = indexes.map((i) => i.name);
+
+export type SongIndex = typeof indexNames[number];
+
+export const songAdapter = createIDBEntityAdapter<Song, SongIndex>({
+  keySelector: (model) => model.entryPath,
+  indexes,
 });
+
+export type SongState = IDBEntityState<Song, SongIndex>;
 
 export const initialState: SongState = songAdapter.getInitialState();
 
 export const songReducer = createReducer(
   initialState,
 
-  on(SongActions.loadSongs, (state) => state),
-  on(SongActions.loadSongsSuccess, (state, action) => state),
-  on(SongActions.loadSongsFailure, (state, action) => state)
+  on(loadSongs, (state) => state),
+  on(loadSongsSuccess, (state, action) =>
+    songAdapter.addMany(action.data, state)
+  ),
+  on(loadSongsFailure, (state, action) => state),
+  on(updateSong, (state, action) => songAdapter.updateOne(action.update, state))
 );

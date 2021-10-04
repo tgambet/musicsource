@@ -3,7 +3,7 @@ import { selectPictureState } from './picture.selectors';
 
 describe('Picture Selectors', () => {
   it('should select the feature state', () => {
-    const result = selectPictureState({
+    const result: any = selectPictureState({
       [fromPicture.pictureFeatureKey]: {},
     });
 

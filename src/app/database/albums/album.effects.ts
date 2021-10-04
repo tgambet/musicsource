@@ -2,11 +2,10 @@ import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { catchError, concatMap, map } from 'rxjs/operators';
 import { of, toArray } from 'rxjs';
-
 import {
   loadAlbums,
   loadAlbumsFailure,
-  loadAlbumSuccess,
+  loadAlbumsSuccess,
 } from './album.actions';
 import { Album } from '@app/database/albums/album.model';
 import { DatabaseService } from '@app/database/database.service';
@@ -22,7 +21,7 @@ export class AlbumEffects {
           // bufferTime(100),
           // filter((arr) => arr.length > 0),
           toArray(),
-          map((data) => loadAlbumSuccess({ data })),
+          map((data) => loadAlbumsSuccess({ data })),
           catchError((error) => of(loadAlbumsFailure({ error })))
         )
       )

@@ -27,6 +27,7 @@ import {
   mdiMenuUp,
   mdiMinusCircleOutline,
   mdiMusicBoxMultiple,
+  mdiMusicNote,
   mdiPause,
   mdiPencil,
   mdiPlay,
@@ -46,7 +47,7 @@ import {
 } from '@mdi/js';
 
 export class Icons {
-  // static fileMusic = mdiMusicNote;
+  static fileMusic = mdiMusicNote;
   // static folderCog = mdiFolderCogOutline;
   // static folderOpen = mdiFolderOpenOutline;
   // static folderOutline = mdiFolderOutline;

@@ -18,9 +18,12 @@ import { ScrollerService } from '@app/main/scroller.service';
 import { Observable } from 'rxjs';
 import { PlayerFacade } from '@app/player/store/player.facade';
 import { Store } from '@ngrx/store';
-import { loadPictures } from '@app/database/pictures/picture.actions';
 import { loadAlbums } from '@app/database/albums/album.actions';
 import { AlbumFacade } from '@app/database/albums/album.facade';
+import { loadArtists } from '@app/database/artists/artist.actions';
+import { loadSongs } from '@app/database/songs/song.actions';
+import { loadPlaylists } from '@app/database/playlists/playlist.actions';
+import { loadEntries } from '@app/database/entries/entry.actions';
 
 // export const debugAnimation = (name: string) => (
 //   from: any,
@@ -165,7 +168,12 @@ export class MainComponent implements OnInit {
 
   ngOnInit(): void {
     this.store.dispatch(loadAlbums());
-    this.store.dispatch(loadPictures());
+    this.store.dispatch(loadArtists());
+    this.store.dispatch(loadEntries());
+    // this.store.dispatch(loadPictures());
+    this.store.dispatch(loadPlaylists());
+    this.store.dispatch(loadSongs());
+    // this.store.dispatch(loadPictures());
     // this.albums.getByYear(2020).subscribe((years) => console.log(years));
   }
 
