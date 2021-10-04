@@ -277,11 +277,17 @@ app-player .mat-slider:not(.mat-slider-sliding).cdk-focused .mat-slider-thumb {
 .snack {
   color: $text-color;
   background-color: #212121;
+  position: absolute;
+  bottom: 0;
+  left: 0;
 }
 
 .snack-top {
   color: $text-color;
   background-color: #212121;
+  position: absolute;
+  bottom: 0;
+  left: 0;
   margin-bottom: 88px !important;
   margin-left: 16px !important;
 }
