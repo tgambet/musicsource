@@ -1,9 +1,8 @@
 import { createFeatureSelector } from '@ngrx/store';
 import { LibraryState } from './library.state';
 
-export const selectLibraryState = createFeatureSelector<LibraryState>(
-  'library'
-);
+export const selectLibraryState =
+  createFeatureSelector<LibraryState>('library');
 
 // export const selectEntries = createSelector(selectLibraryState, (state) =>
 //   entryAdapter.getSelectors().selectAll(state.entries)
