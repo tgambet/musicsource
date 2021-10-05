@@ -5,18 +5,21 @@ import {
   Output,
   EventEmitter,
   ChangeDetectorRef,
+  OnInit,
 } from '@angular/core';
 import { Icons } from '@app/core/utils/icons.util';
-import { SongWithCover$ } from '@app/database/songs/song.model';
+import { Song } from '@app/database/songs/song.model';
 import { hash } from '@app/core/utils/hash.util';
 import { MatMenuTrigger } from '@angular/material/menu';
 import { ComponentHelperService } from '@app/core/services/component-helper.service';
+import { Observable } from 'rxjs';
+import { LibraryFacade } from '@app/library/store/library.facade';
 
 @Component({
   selector: 'app-playlist-list-item',
   template: `
     <div class="cover" style="--aspect-ratio:1">
-      <img *ngIf="song.cover$ | async as cover" [src]="cover" alt="cover" />
+      <img *ngIf="cover$ | async as cover" [src]="cover" alt="cover" />
       <app-player-button
         size="small"
         [song]="song"
@@ -164,40 +167,47 @@ import { ComponentHelperService } from '@app/core/services/component-helper.serv
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class PlaylistListItemComponent {
-  @Input() song!: SongWithCover$;
-  @Input() playlist!: SongWithCover$[];
+export class PlaylistListItemComponent implements OnInit {
+  @Input() song!: Song;
+  @Input() playlist!: Song[];
 
   @Output() menuOpened = new EventEmitter<MatMenuTrigger>();
+
+  cover$!: Observable<string | undefined>;
 
   icons = Icons;
 
   constructor(
     private helper: ComponentHelperService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private library: LibraryFacade
   ) {}
+
+  ngOnInit(): void {
+    this.cover$ = this.library.getCover(this.song.pictureKey);
+  }
 
   getHash(s: string): string {
     return hash(s);
   }
 
-  playNext(song: SongWithCover$): void {
+  playNext(song: Song): void {
     this.helper.playNext(song);
   }
 
-  addToQueue(song: SongWithCover$): void {
+  addToQueue(song: Song): void {
     this.helper.addToQueue(song);
   }
 
-  toggleLiked(song: SongWithCover$): void {
+  toggleLiked(song: Song): void {
     this.helper.toggleLikedSong(song).subscribe(() => this.cdr.markForCheck());
   }
 
-  addToPlaylist(song: SongWithCover$): void {
+  addToPlaylist(song: Song): void {
     this.helper.addSongsToPlaylist([song]).subscribe();
   }
 
-  removeFromQueue(song: SongWithCover$): void {
+  removeFromQueue(song: Song): void {
     this.helper.removeFromQueue(song);
   }
 }

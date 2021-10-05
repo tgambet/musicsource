@@ -4,7 +4,7 @@ import {
   HostListener,
   Input,
 } from '@angular/core';
-import { SongWithCover$ } from '@app/database/songs/song.model';
+import { Song } from '@app/database/songs/song.model';
 import { WithTrigger } from '@app/core/classes/with-trigger';
 
 @Component({
@@ -68,8 +68,8 @@ import { WithTrigger } from '@app/core/classes/with-trigger';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PlaylistListComponent extends WithTrigger {
-  @Input() playlist!: SongWithCover$[];
-  @Input() currentSong!: SongWithCover$ | null;
+  @Input() playlist!: Song[];
+  @Input() currentSong!: Song | null;
   @Input() currentIndex!: number | null;
 
   @HostListener('scroll')
@@ -78,7 +78,7 @@ export class PlaylistListComponent extends WithTrigger {
     super.closeMenu();
   }
 
-  trackBy(index: number, song: SongWithCover$): string {
+  trackBy(index: number, song: Song): string {
     return song.entryPath;
   }
 }

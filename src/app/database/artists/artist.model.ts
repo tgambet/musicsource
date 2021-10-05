@@ -1,4 +1,3 @@
-import { Observable } from 'rxjs';
 import { hash } from '@app/core/utils';
 
 export type Artist = {
@@ -13,8 +12,4 @@ export type Artist = {
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export const Artist = {
   getHash: (name: string): string => hash(name),
-};
-
-export type ArtistWithCover$ = Omit<Artist, 'pictureKey'> & {
-  cover$: Observable<string | undefined>;
 };

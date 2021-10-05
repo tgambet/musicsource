@@ -4,7 +4,7 @@ import {
   HostListener,
   Input,
 } from '@angular/core';
-import { SongWithCover$ } from '@app/database/songs/song.model';
+import { Song } from '@app/database/songs/song.model';
 import { Icons } from '@app/core/utils/icons.util';
 import { PlayerFacade } from '@app/player/store/player.facade';
 import { map } from 'rxjs/operators';
@@ -42,7 +42,7 @@ import { WithTrigger } from '@app/core/classes/with-trigger';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SongListComponent extends WithTrigger {
-  @Input() songs!: SongWithCover$[];
+  @Input() songs!: Song[];
 
   icons = Icons;
 
@@ -60,7 +60,7 @@ export class SongListComponent extends WithTrigger {
     super.closeMenu();
   }
 
-  trackBy(index: number, song: SongWithCover$): string {
+  trackBy(index: number, song: Song): string {
     return song.entryPath;
   }
 }

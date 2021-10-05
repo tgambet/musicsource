@@ -1,8 +1,8 @@
-import { SongWithCover$ } from '@app/database/songs/song.model';
+import { Song } from '@app/database/songs/song.model';
 
 export interface PlayerState {
   show: boolean;
-  playlist: SongWithCover$[];
+  playlist: Song[];
   currentIndex: number;
   playing: boolean;
   loading: boolean;

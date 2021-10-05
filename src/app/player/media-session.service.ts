@@ -1,11 +1,12 @@
 import { Injectable } from '@angular/core';
-import { SongWithCover$ } from '@app/database/songs/song.model';
-import { tap } from 'rxjs/operators';
+import { Song } from '@app/database/songs/song.model';
 import { PlayerFacade } from '@app/player/store/player.facade';
+import { LibraryFacade } from '@app/library/store/library.facade';
+import { tap } from 'rxjs/operators';
 
 @Injectable()
 export class MediaSessionService {
-  constructor(private player: PlayerFacade) {}
+  constructor(private player: PlayerFacade, private library: LibraryFacade) {}
 
   init(): void {
     if ('mediaSession' in navigator) {
@@ -39,9 +40,10 @@ export class MediaSessionService {
     }
   }
 
-  setMetadata(song: SongWithCover$): void {
+  setMetadata(song: Song): void {
     if ('mediaSession' in navigator) {
-      song.cover$
+      this.library
+        .getCover(song.pictureKey)
         .pipe(
           tap(
             (cover) =>

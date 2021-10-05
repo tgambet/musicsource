@@ -10,8 +10,8 @@ import { Observable } from 'rxjs';
 import { Artist } from '@app/database/artists/artist.model';
 import { ActivatedRoute } from '@angular/router';
 import { map } from 'rxjs/operators';
-import { AlbumWithCover$ } from '@app/database/albums/album.model';
-import { SongWithCover$ } from '@app/database/songs/song.model';
+import { Album } from '@app/database/albums/album.model';
+import { Song } from '@app/database/songs/song.model';
 import { hash } from '@app/core/utils/hash.util';
 import { ComponentHelperService } from '@app/core/services/component-helper.service';
 import { HistoryService } from '@app/core/services/history.service';
@@ -20,9 +20,9 @@ import { WithTrigger } from '@app/core/classes/with-trigger';
 export type PageArtistData = {
   artist: Artist;
   cover: string | undefined;
-  albums$: Observable<AlbumWithCover$[]>;
-  foundOn$: Observable<AlbumWithCover$[]>;
-  songs$: Observable<SongWithCover$[]>;
+  albums$: Observable<Album[]>;
+  foundOn$: Observable<Album[]>;
+  songs$: Observable<Song[]>;
 };
 
 @Component({

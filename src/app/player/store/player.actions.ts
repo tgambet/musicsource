@@ -1,17 +1,17 @@
 import { createAction, props } from '@ngrx/store';
-import { SongWithCover$ } from '@app/database/songs/song.model';
+import { Song } from '@app/database/songs/song.model';
 
 export const show = createAction('player/show');
 export const hide = createAction('player/hide');
 
 export const setPlaylist = createAction(
   'player/set-playlist',
-  props<{ playlist: SongWithCover$[]; currentIndex: number }>()
+  props<{ playlist: Song[]; currentIndex: number }>()
 );
 
 export const addToPlaylist = createAction(
   'player/add-to-playlist',
-  props<{ playlist: SongWithCover$[]; next: boolean }>()
+  props<{ playlist: Song[]; next: boolean }>()
 );
 
 export const setCurrentIndex = createAction(

@@ -31,7 +31,7 @@ import { Router } from '@angular/router';
 import { AudioService } from '@app/player/audio.service';
 import { PlayerFacade } from '@app/player/store/player.facade';
 import { LibraryFacade } from '@app/library/store/library.facade';
-import { SongWithCover$ } from '@app/database/songs/song.model';
+import { Song } from '@app/database/songs/song.model';
 import { FileEntry } from '@app/database/entries/entry.model';
 import { tapError } from '@app/core/utils/tap-error.util';
 import { MediaSessionService } from '@app/player/media-session.service';
@@ -47,7 +47,7 @@ export class PlayerEffects implements OnRunEffects {
     () =>
       this.player.getCurrentSong$().pipe(
         // distinctUntilChanged((s1, s2) => s1?.entryPath === s2?.entryPath),
-        filter((song): song is SongWithCover$ => !!song),
+        filter((song): song is Song => !!song),
         tap(() => this.player.setLoading()),
         switchMap((song) =>
           this.player.getPlaying$().pipe(

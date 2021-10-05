@@ -1,6 +1,6 @@
 // import { ChangeDetectionStrategy, Component } from '@angular/core';
 // import { EMPTY, Observable } from 'rxjs';
-// import { AlbumWithCover$ } from '@app/database/album.model';
+// import { Album } from '@app/database/album.model';
 // import { hash } from '@app/core/utils/hash.util';
 //
 // @Component({
@@ -56,7 +56,7 @@
 //   changeDetection: ChangeDetectionStrategy.OnPush,
 // })
 // export class HomeComponent {
-//   albums$: Observable<AlbumWithCover$[]> = EMPTY;
+//   albums$: Observable<Album[]> = EMPTY;
 //
 //   artists$ = EMPTY;
 //

@@ -4,7 +4,7 @@ import { concatMap, first, map, tap } from 'rxjs/operators';
 import { LibraryFacade } from '@app/library/store/library.facade';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { combineLatest, EMPTY, Observable, toArray } from 'rxjs';
-import { Song, SongWithCover$ } from '@app/database/songs/song.model';
+import { Song } from '@app/database/songs/song.model';
 import { PlaylistAddComponent } from '@app/core/dialogs/playlist-add.component';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
@@ -107,7 +107,7 @@ export class ComponentHelperService {
       );
   }
 
-  shufflePlayArtist(artist: Artist): Observable<SongWithCover$[]> {
+  shufflePlayArtist(artist: Artist): Observable<Song[]> {
     return this.library.getArtistTitles(artist).pipe(
       toArray(),
       map((songs) => shuffleArray(songs)),
@@ -120,19 +120,19 @@ export class ComponentHelperService {
     );
   }
 
-  playNext(song: SongWithCover$): void {
+  playNext(song: Song): void {
     this.player.addToPlaylist([song], true);
     this.player.show();
     this.openSnack('Song will play next');
   }
 
-  addToQueue(song: SongWithCover$): void {
+  addToQueue(song: Song): void {
     this.player.addToPlaylist([song]);
     this.player.show();
     this.openSnack('Song added to queue');
   }
 
-  removeFromQueue(song: SongWithCover$): void {
+  removeFromQueue(song: Song): void {
     combineLatest([this.player.getPlaylist$(), this.player.getCurrentIndex$()])
       .pipe(
         first(),
@@ -162,14 +162,14 @@ export class ComponentHelperService {
       .subscribe();
   }
 
-  shufflePlaySongs(songs: SongWithCover$[]): void {
+  shufflePlaySongs(songs: Song[]): void {
     this.player.setPlaying();
     this.player.setPlaylist(songs);
     this.player.shuffle();
     this.player.show();
   }
 
-  addSongsToQueue(songs: SongWithCover$[], next = false): void {
+  addSongsToQueue(songs: Song[], next = false): void {
     this.player.addToPlaylist(songs, next);
     this.player.show();
     if (next) {

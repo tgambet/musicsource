@@ -4,20 +4,23 @@ import {
   Component,
   EventEmitter,
   Input,
+  OnInit,
   Output,
 } from '@angular/core';
-import { SongWithCover$ } from '@app/database/songs/song.model';
+import { Song } from '@app/database/songs/song.model';
 import { hash } from '@app/core/utils/hash.util';
 import { Icons } from '@app/core/utils/icons.util';
 import { MatMenuTrigger } from '@angular/material/menu';
 import { ComponentHelperService } from '@app/core/services/component-helper.service';
+import { Observable } from 'rxjs';
+import { LibraryFacade } from '@app/library/store/library.facade';
 
 @Component({
   selector: 'app-song-list-item',
   template: `
     <div class="cover" style="--aspect-ratio:1">
       <img
-        *ngIf="song.cover$ | async as cover; else icon"
+        *ngIf="cover$ | async as cover; else icon"
         [src]="cover"
         alt="cover"
       />
@@ -179,36 +182,43 @@ import { ComponentHelperService } from '@app/core/services/component-helper.serv
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SongListItemComponent {
-  @Input() song!: SongWithCover$;
-  @Input() playlist!: SongWithCover$[];
+export class SongListItemComponent implements OnInit {
+  @Input() song!: Song;
+  @Input() playlist!: Song[];
 
   @Output() menuOpened = new EventEmitter<MatMenuTrigger>();
+
+  cover$!: Observable<string | undefined>;
 
   icons = Icons;
 
   constructor(
     private cdr: ChangeDetectorRef,
-    private helper: ComponentHelperService
+    private helper: ComponentHelperService,
+    private library: LibraryFacade
   ) {}
+
+  ngOnInit(): void {
+    this.cover$ = this.library.getCover(this.song.pictureKey);
+  }
 
   getHash(s: string): string {
     return hash(s);
   }
 
-  toggleLiked(song: SongWithCover$): void {
+  toggleLiked(song: Song): void {
     this.helper.toggleLikedSong(song).subscribe(() => this.cdr.markForCheck());
   }
 
-  playNext(song: SongWithCover$): void {
+  playNext(song: Song): void {
     this.helper.playNext(song);
   }
 
-  addToQueue(song: SongWithCover$): void {
+  addToQueue(song: Song): void {
     this.helper.addToQueue(song);
   }
 
-  addSongToPlaylist(song: SongWithCover$): void {
+  addSongToPlaylist(song: Song): void {
     this.helper.addSongsToPlaylist([song]).subscribe();
   }
 }

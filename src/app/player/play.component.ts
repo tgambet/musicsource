@@ -10,9 +10,11 @@ import { hash } from '@app/core/utils/hash.util';
 import { Icons } from '@app/core/utils/icons.util';
 import { PlaylistListComponent } from '@app/player/playlist-list.component';
 import { PlayerFacade } from '@app/player/store/player.facade';
-import { take, tap } from 'rxjs/operators';
+import { concatMap, take, tap } from 'rxjs/operators';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
-import { SongWithCover$ } from '@app/database/songs/song.model';
+import { Song } from '@app/database/songs/song.model';
+import { LibraryFacade } from '@app/library/store/library.facade';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-play',
@@ -21,7 +23,7 @@ import { SongWithCover$ } from '@app/database/songs/song.model';
       <div class="img-container" *ngIf="currentSong$ | async as currentSong">
         <img
           class="img"
-          *ngIf="currentSong.cover$ | async as cover"
+          *ngIf="currentCover$ | async as cover"
           [src]="cover"
           alt="cover"
         />
@@ -90,6 +92,7 @@ export class PlayComponent implements OnInit {
 
   currentSong$ = this.player.getCurrentSong$();
   currentIndex$ = this.player.getCurrentIndex$();
+  currentCover$!: Observable<string | undefined>;
 
   playlist$ = this.player.getPlaylist$();
 
@@ -98,7 +101,8 @@ export class PlayComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private player: PlayerFacade
+    private player: PlayerFacade,
+    private library: LibraryFacade
   ) {}
 
   @HostListener('click')
@@ -117,17 +121,17 @@ export class PlayComponent implements OnInit {
         })
       )
       .subscribe();
+
+    this.currentCover$ = this.currentSong$.pipe(
+      concatMap((song) => this.library.getCover(song?.pictureKey))
+    );
   }
 
   getHash(artist: string): string {
     return hash(artist);
   }
 
-  drop(
-    playlist: SongWithCover$[],
-    currentSong: SongWithCover$,
-    event: CdkDragDrop<SongWithCover$[]>
-  ): void {
+  drop(playlist: Song[], currentSong: Song, event: CdkDragDrop<Song[]>): void {
     const newPlaylist = [...playlist];
     moveItemInArray(newPlaylist, event.previousIndex, event.currentIndex);
     this.player.setPlaylist(newPlaylist, newPlaylist.indexOf(currentSong));

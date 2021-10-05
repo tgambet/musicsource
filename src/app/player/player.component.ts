@@ -20,7 +20,7 @@ import {
 import { LibraryFacade } from '@app/library/store/library.facade';
 import { MatSlider, MatSliderChange } from '@angular/material/slider';
 import { merge, Observable, of, Subscription } from 'rxjs';
-import { SongWithCover$ } from '@app/database/songs/song.model';
+import { Song } from '@app/database/songs/song.model';
 import { PlayerFacade } from '@app/player/store/player.facade';
 import { hash } from '@app/core/utils/hash.util';
 import { ComponentHelperService } from '@app/core/services/component-helper.service';
@@ -88,7 +88,11 @@ import { MenuItem } from '@app/core/components/menu.component';
     </div>
     <div class="center" *ngIf="currentSong$ | async as song">
       <div class="cover" style="--aspect-ratio:1">
-        <img *ngIf="song.cover$ | async as cover" [src]="cover" alt="cover" />
+        <img
+          *ngIf="currentSongCover$ | async as cover"
+          [src]="cover"
+          alt="cover"
+        />
       </div>
       <div class="meta">
         <span class="top">{{ song.title }}</span>
@@ -313,7 +317,8 @@ export class PlayerComponent implements OnInit, OnDestroy {
   value$!: Observable<number>;
   max$!: Observable<number>;
   seekerDisabled$!: Observable<boolean>;
-  currentSong$!: Observable<SongWithCover$>;
+  currentSong$!: Observable<Song>;
+  currentSongCover$!: Observable<string | undefined>;
   menuItems!: MenuItem[];
   playing$!: Observable<{ value: boolean }>;
   nextEnabled$!: Observable<boolean>;
@@ -394,9 +399,13 @@ export class PlayerComponent implements OnInit, OnDestroy {
 
     this.currentSong$ = this.player
       .getCurrentSong$()
-      .pipe(filter((song): song is SongWithCover$ => !!song));
+      .pipe(filter((song): song is Song => !!song));
 
     this.currentSong$.pipe(tap((song) => this.updateMenu(song))).subscribe();
+
+    this.currentSongCover$ = this.currentSong$.pipe(
+      switchMap((song) => this.library.getCover(song.pictureKey))
+    );
   }
 
   ngOnDestroy(): void {
@@ -444,14 +453,14 @@ export class PlayerComponent implements OnInit, OnDestroy {
     return hash(s);
   }
 
-  toggleLiked(song: SongWithCover$): void {
+  toggleLiked(song: Song): void {
     this.helper.toggleLikedSong(song).subscribe(() => {
       this.updateMenu(song);
       this.cdr.markForCheck();
     });
   }
 
-  updateMenu(song: SongWithCover$): void {
+  updateMenu(song: Song): void {
     this.menuItems = [
       {
         text: 'Play next',

@@ -1,4 +1,3 @@
-import { Observable } from 'rxjs';
 import { hash } from '@app/core/utils';
 
 export type Album = {
@@ -17,8 +16,4 @@ export type Album = {
 export const Album = {
   getHash: (albumArtist?: string, albumName?: string): string =>
     hash(`${albumArtist}|${albumName}}`),
-};
-
-export type AlbumWithCover$ = Omit<Album, 'pictureKey'> & {
-  cover$: Observable<string | undefined>;
 };

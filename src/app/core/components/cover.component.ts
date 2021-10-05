@@ -8,7 +8,7 @@ import {
 import { Icons } from '@app/core/utils';
 import { MenuItem } from './menu.component';
 import { MatMenuTrigger } from '@angular/material/menu';
-import { SongWithCover$ } from '@app/database/songs/song.model';
+import { Song } from '@app/database/songs/song.model';
 
 @Component({
   selector: 'app-cover',
@@ -133,8 +133,8 @@ import { SongWithCover$ } from '@app/database/songs/song.model';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CoverComponent {
-  @Input() song!: SongWithCover$ | null;
-  @Input() playlist!: SongWithCover$[] | null;
+  @Input() song!: Song | null;
+  @Input() playlist!: Song[] | null;
   @Input() title!: string;
   @Input() coverRouterLink!: any[] | string;
   @Input() menuItems!: MenuItem[];
