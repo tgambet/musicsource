@@ -9,7 +9,7 @@ import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
 import { Album } from '@app/database/albums/album.model';
 import { map } from 'rxjs/operators';
-import { Song, SongWithCover$ } from '@app/database/songs/song.model';
+import { Song } from '@app/database/songs/song.model';
 import { Icons } from '@app/core/utils/icons.util';
 import { hash } from '@app/core/utils/hash.util';
 import { PlayerFacade } from '@app/player/store/player.facade';
@@ -23,7 +23,7 @@ import { WithTrigger } from '@app/core/classes/with-trigger';
 
 export type PageAlbumData = {
   album: Album;
-  songs: SongWithCover$[];
+  songs: Song[];
   cover: string | undefined;
 };
 
@@ -155,7 +155,7 @@ export class PageAlbumComponent extends WithTrigger implements OnInit {
     super.closeMenu();
   }
 
-  trackBy(index: number, song: SongWithCover$): string {
+  trackBy(index: number, song: Song): string {
     return song.entryPath;
   }
 
@@ -166,7 +166,7 @@ export class PageAlbumComponent extends WithTrigger implements OnInit {
     );
   }
 
-  getMenuItem(album: Album, songs: SongWithCover$[]): MenuItem[] {
+  getMenuItem(album: Album, songs: Song[]): MenuItem[] {
     return [
       {
         text: 'Shuffle play',
@@ -212,7 +212,7 @@ export class PageAlbumComponent extends WithTrigger implements OnInit {
     return hash(albumArtist);
   }
 
-  play(album: Album, songs: SongWithCover$[], index = 0): void {
+  play(album: Album, songs: Song[], index = 0): void {
     this.player.setPlaying();
     this.player.setPlaylist(songs, index);
     this.player.show();

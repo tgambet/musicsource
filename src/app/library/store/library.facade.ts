@@ -6,10 +6,10 @@ import {
 import { from, Observable, of, Subject, throwError, toArray } from 'rxjs';
 import { concatMap, filter, map, tap } from 'rxjs/operators';
 import { DatabaseService } from '@app/database/database.service';
-import { Album, AlbumWithCover$ } from '@app/database/albums/album.model';
-import { Artist, ArtistWithCover$ } from '@app/database/artists/artist.model';
+import { Album } from '@app/database/albums/album.model';
+import { Artist } from '@app/database/artists/artist.model';
 import { getCover, Picture } from '@app/database/pictures/picture.model';
-import { Song, SongWithCover$ } from '@app/database/songs/song.model';
+import { Song } from '@app/database/songs/song.model';
 import { Playlist } from '@app/database/playlists/playlist.model';
 import { hash } from '@app/core/utils/hash.util';
 import { PictureFacade } from '@app/database/pictures/picture.facade';
@@ -18,7 +18,7 @@ import { ArtistFacade } from '@app/database/artists/artist.facade';
 
 @Injectable()
 export class LibraryFacade {
-  // albums$: Observable<AlbumWithCover$> = this.storage
+  // albums$: Observable<Album> = this.storage
   //   .open$(['albums', 'pictures'])
   //   .pipe(
   //     concatMap((transaction) =>
@@ -78,16 +78,10 @@ export class LibraryFacade {
     query?: IDBValidKey | IDBKeyRange | null,
     direction?: IDBCursorDirection,
     predicate?: (_: Album) => boolean
-  ): Observable<AlbumWithCover$> {
+  ): Observable<Album> {
     return this.storage
       .walk$<Album>('albums', index, query, direction || 'next', predicate)
-      .pipe(
-        map(({ value }) => value),
-        map((album) => ({
-          ...album,
-          cover$: this.getCover(album.pictureKey),
-        }))
-      );
+      .pipe(map(({ value }) => value));
   }
 
   getArtists(
@@ -95,16 +89,10 @@ export class LibraryFacade {
     query?: IDBValidKey | IDBKeyRange | null,
     direction?: IDBCursorDirection,
     predicate?: (_: Artist) => boolean
-  ): Observable<ArtistWithCover$> {
+  ): Observable<Artist> {
     return this.storage
       .walk$<Artist>('artists', index, query, direction || 'next', predicate)
-      .pipe(
-        map(({ value }) => value),
-        map((artist) => ({
-          ...artist,
-          cover$: this.getCover(artist.pictureKey),
-        }))
-      );
+      .pipe(map(({ value }) => value));
   }
 
   getSong(entryPath: string): Observable<Song> {
@@ -119,7 +107,7 @@ export class LibraryFacade {
     direction?: IDBCursorDirection,
     predicate?: (song: Song) => boolean
   ): Observable<{
-    value: SongWithCover$;
+    value: Song;
     key: IDBValidKey;
     primaryKey: IDBValidKey;
   }> {
@@ -137,7 +125,7 @@ export class LibraryFacade {
       );
   }
 
-  getPlaylistSongs(playlist: Playlist): Observable<SongWithCover$> {
+  getPlaylistSongs(playlist: Playlist): Observable<Song> {
     return this.storage
       .getAllValues$<Song>([...playlist.songs].reverse(), 'songs')
       .pipe(
@@ -176,7 +164,7 @@ export class LibraryFacade {
     this.storage.get$('artists', name);
 
   getArtistByHash = (h: string): Observable<Artist | undefined> =>
-    this.storage.get$('artists', h, 'hash');
+    this.storage.get$('artists', h);
 
   getAlbum = (title: string): Observable<Album | undefined> =>
     this.storage.get$('albums', title);
@@ -216,10 +204,10 @@ export class LibraryFacade {
     );
   }
 
-  getAlbumTitles = (album: Album): Observable<SongWithCover$> =>
+  getAlbumTitles = (album: Album): Observable<Song> =>
     this.getSongs('albumHash', album.hash).pipe(map(({ value }) => value));
 
-  getAlbumTracks = (album: Album): Observable<SongWithCover$[]> =>
+  getAlbumTracks = (album: Album): Observable<Song[]> =>
     this.getAlbumTitles(album).pipe(
       toArray(),
       map((songs) =>
@@ -227,7 +215,7 @@ export class LibraryFacade {
       )
     );
 
-  getArtistAlbums(artist: Artist): Observable<AlbumWithCover$> {
+  getArtistAlbums(artist: Artist): Observable<Album> {
     return this.storage.walk$<Album>('albums', 'albumArtist', artist.name).pipe(
       map(({ value }) => value),
       map((album) => ({
@@ -237,7 +225,7 @@ export class LibraryFacade {
     );
   }
 
-  getAlbumsWithArtist(artist: Artist): Observable<AlbumWithCover$> {
+  getAlbumsWithArtist(artist: Artist): Observable<Album> {
     return this.storage
       .walk$<Album>(
         'albums',
@@ -255,7 +243,7 @@ export class LibraryFacade {
       );
   }
 
-  getArtistTitles(artist: Artist): Observable<SongWithCover$> {
+  getArtistTitles(artist: Artist): Observable<Song> {
     return this.getSongs('artists', artist.name).pipe(
       map(({ value }) => value)
     );

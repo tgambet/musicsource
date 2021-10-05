@@ -16,7 +16,7 @@ import { ComponentHelperService } from '@app/core/services/component-helper.serv
 import { LibraryFacade } from '@app/library/store/library.facade';
 import { concatMap, map, shareReplay, tap } from 'rxjs/operators';
 import { Observable, of } from 'rxjs';
-import { SongWithCover$ } from '@app/database/songs/song.model';
+import { Song } from '@app/database/songs/song.model';
 import { HistoryService } from '@app/core/services/history.service';
 import { PictureFacade } from '@app/database/pictures/picture.facade';
 import { getCover } from '@app/database/pictures/picture.model';
@@ -87,8 +87,8 @@ export class AlbumComponent implements OnInit {
   icons = Icons;
   menuItems!: MenuItem[];
 
-  song$!: Observable<SongWithCover$>;
-  playlist$!: Observable<SongWithCover$[]>;
+  song$!: Observable<Song>;
+  playlist$!: Observable<Song[]>;
   cover$!: Observable<string | undefined>;
 
   constructor(

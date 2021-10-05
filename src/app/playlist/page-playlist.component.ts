@@ -1,7 +1,7 @@
 import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { Playlist } from '@app/database/playlists/playlist.model';
 import { from, Observable, of } from 'rxjs';
-import { Song, SongWithCover$ } from '@app/database/songs/song.model';
+import { Song } from '@app/database/songs/song.model';
 import { ActivatedRoute } from '@angular/router';
 import { concatMap, map, shareReplay, switchMap } from 'rxjs/operators';
 import { Icons } from '@app/core/utils/icons.util';
@@ -10,7 +10,7 @@ import { PlayerFacade } from '@app/player/store/player.facade';
 export interface PagePlaylistData {
   playlist: Playlist;
   cover: string | undefined;
-  songs$: Observable<SongWithCover$[]>;
+  songs$: Observable<Song[]>;
 }
 
 @Component({
@@ -120,7 +120,7 @@ export interface PagePlaylistData {
 export class PagePlaylistComponent implements OnInit {
   info$!: Observable<PagePlaylistData>;
 
-  songs$!: Observable<SongWithCover$[]>;
+  songs$!: Observable<Song[]>;
   color$!: Observable<string | undefined>;
 
   icons = Icons;
@@ -153,7 +153,7 @@ export class PagePlaylistComponent implements OnInit {
     return Math.floor(sec / 60);
   }
 
-  shufflePlay(songs: SongWithCover$[]): void {
+  shufflePlay(songs: Song[]): void {
     this.player.setPlaying();
     this.player.setPlaylist(songs);
     this.player.shuffle();

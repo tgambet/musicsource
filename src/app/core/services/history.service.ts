@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { Album, AlbumWithCover$ } from '@app/database/albums/album.model';
+import { Album } from '@app/database/albums/album.model';
 import { DatabaseService } from '@app/database/database.service';
-import { Artist, ArtistWithCover$ } from '@app/database/artists/artist.model';
+import { Artist } from '@app/database/artists/artist.model';
 import { Observable } from 'rxjs';
 import { LibraryFacade } from '@app/library/store/library.facade';
 
@@ -12,11 +12,11 @@ export class HistoryService {
     private library: LibraryFacade
   ) {}
 
-  latestPlayedAlbums$(): Observable<AlbumWithCover$> {
+  latestPlayedAlbums$(): Observable<Album> {
     return this.library.getAlbums('listenedOn', undefined, 'prev');
   }
 
-  latestPlayedArtists$(): Observable<ArtistWithCover$> {
+  latestPlayedArtists$(): Observable<Artist> {
     return this.library.getArtists('listenedOn', undefined, 'prev');
   }
 

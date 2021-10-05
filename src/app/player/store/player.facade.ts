@@ -14,7 +14,7 @@ import {
   selectVolume,
 } from '@app/player/store/player.selectors';
 import { Observable } from 'rxjs';
-import { SongWithCover$ } from '@app/database/songs/song.model';
+import { Song } from '@app/database/songs/song.model';
 import {
   addToPlaylist,
   hide,
@@ -53,7 +53,7 @@ export class PlayerFacade {
     return this.store.select(selectDuration);
   }
 
-  getPlaylist$(): Observable<SongWithCover$[]> {
+  getPlaylist$(): Observable<Song[]> {
     return this.store.select(selectPlaylist);
   }
 
@@ -61,7 +61,7 @@ export class PlayerFacade {
     return this.store.select(selectCurrentIndex);
   }
 
-  getCurrentSong$(): Observable<SongWithCover$ | undefined> {
+  getCurrentSong$(): Observable<Song | undefined> {
     return this.store.select(selectCurrentSong);
   }
 
@@ -89,11 +89,11 @@ export class PlayerFacade {
     return this.store.select(selectHasPrevSong);
   }
 
-  setPlaylist(playlist: SongWithCover$[], currentIndex = 0): void {
+  setPlaylist(playlist: Song[], currentIndex = 0): void {
     this.store.dispatch(setPlaylist({ playlist, currentIndex }));
   }
 
-  addToPlaylist(playlist: SongWithCover$[], next = false): void {
+  addToPlaylist(playlist: Song[], next = false): void {
     this.store.dispatch(addToPlaylist({ playlist, next }));
   }
 

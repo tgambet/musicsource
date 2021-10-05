@@ -1,24 +1,36 @@
 import { Component, ChangeDetectionStrategy, Input } from '@angular/core';
 import { Icons } from '@app/core/utils/icons.util';
+import { Artist } from '@app/database/artists/artist.model';
+import { Observable } from 'rxjs';
+import { LibraryFacade } from '@app/library/store/library.facade';
 
 @Component({
   selector: 'app-artist',
   template: `
     <div class="image">
       <a
-        [routerLink]="artistRouterLink"
+        [routerLink]="['/', 'artist', artist.hash]"
         matRipple
-        [title]="name"
+        [title]="artist.name"
         style="--aspect-ratio:1"
       >
-        <img *ngIf="cover" [src]="cover" [alt]="name" />
-        <app-icon *ngIf="!cover" [path]="icons.account" [size]="200"></app-icon>
+        <img
+          *ngIf="cover$ | async as cover; else icon"
+          [src]="cover"
+          [alt]="artist.name"
+        />
+        <ng-template #icon>
+          <app-icon [path]="icons.account" [size]="200"></app-icon
+        ></ng-template>
       </a>
     </div>
     <app-label
       align="center"
-      [topLabel]="{ text: name, routerLink: artistRouterLink }"
-      [bottomLabel]="legend"
+      [topLabel]="{
+        text: artist.name,
+        routerLink: ['/', 'artist', artist.hash]
+      }"
+      [bottomLabel]=""
     ></app-label>
   `,
   styles: [
@@ -50,10 +62,13 @@ import { Icons } from '@app/core/utils/icons.util';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ArtistComponent {
-  @Input() name!: string;
-  @Input() legend!: string;
-  @Input() cover?: string | null;
-  @Input() artistRouterLink!: any[] | string;
+  @Input() artist!: Artist;
+
+  cover$!: Observable<string | undefined>;
 
   icons = Icons;
+
+  constructor(private library: LibraryFacade) {
+    this.cover$ = this.library.getCover(this.artist.pictureKey);
+  }
 }

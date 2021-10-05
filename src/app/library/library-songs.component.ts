@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 import { SelectOption } from '@app/core/components/select.component';
 import { EMPTY, merge, Observable, Subscription } from 'rxjs';
-import { Song, SongWithCover$ } from '@app/database/songs/song.model';
+import { Song } from '@app/database/songs/song.model';
 import { LibraryFacade } from '@app/library/store/library.facade';
 import {
   catchError,
@@ -109,7 +109,7 @@ export class LibrarySongsComponent
 
   icons = Icons;
 
-  songsObs: Observable<SongWithCover$[]>[] = [];
+  songsObs: Observable<Song[]>[] = [];
 
   sort!: { index: string; direction: IDBCursorDirection; likes: boolean };
 
@@ -202,7 +202,7 @@ export class LibrarySongsComponent
         scan(
           (acc, cur) => [...acc, cur],
           [] as {
-            value: SongWithCover$;
+            value: Song;
             key: IDBValidKey;
             primaryKey: IDBValidKey;
           }[]
@@ -225,7 +225,7 @@ export class LibrarySongsComponent
     );
   }
 
-  trackBy(index: number, song: SongWithCover$): string {
+  trackBy(index: number, song: Song): string {
     return song.entryPath;
   }
 }

@@ -7,15 +7,15 @@ import {
 import { HistoryService } from '@app/core/services/history.service';
 import { merge, Observable } from 'rxjs';
 import { map, take } from 'rxjs/operators';
-import { AlbumWithCover$ } from '@app/database/albums/album.model';
-import { ArtistWithCover$ } from '@app/database/artists/artist.model';
+import { Album } from '@app/database/albums/album.model';
+import { Artist } from '@app/database/artists/artist.model';
 import { scanArray } from '@app/core/utils/scan-array.util';
 import { SetRequired } from '@app/core/utils/types.util';
 import { WithTrigger } from '@app/core/classes/with-trigger';
 
 export type HistoryItem =
-  | (SetRequired<ArtistWithCover$, 'listenedOn'> & { t: 'artist' })
-  | (SetRequired<AlbumWithCover$, 'listenedOn'> & { t: 'album' });
+  | (SetRequired<Artist, 'listenedOn'> & { t: 'artist' })
+  | (SetRequired<Album, 'listenedOn'> & { t: 'album' });
 
 @Component({
   selector: 'app-recent-activity',
@@ -33,9 +33,7 @@ export type HistoryItem =
             ></app-album>
             <app-artist
               *ngIf="item.t === 'artist'"
-              [name]="item.name"
-              [cover]="item.cover$ | async"
-              [artistRouterLink]="['/', 'artist', item.hash]"
+              [artist]="item"
             ></app-artist>
           </div>
         </app-h-list>
@@ -68,6 +66,7 @@ export type HistoryItem =
 })
 export class RecentActivityComponent extends WithTrigger implements OnInit {
   a$!: Observable<HistoryItem[]>;
+  cover$!: Observable<string | undefined>;
 
   constructor(private history: HistoryService) {
     super();

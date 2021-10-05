@@ -6,7 +6,7 @@ import {
   Input,
   Output,
 } from '@angular/core';
-import { Song, SongWithCover$ } from '@app/database/songs/song.model';
+import { Song } from '@app/database/songs/song.model';
 import { Icons } from '@app/core/utils/icons.util';
 import { hash } from '@app/core/utils/hash.util';
 import { MatMenuTrigger } from '@angular/material/menu';
@@ -139,8 +139,8 @@ import { ComponentHelperService } from '@app/core/services/component-helper.serv
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TrackListItemComponent {
-  @Input() song!: SongWithCover$;
-  @Input() playlist!: SongWithCover$[];
+  @Input() song!: Song;
+  @Input() playlist!: Song[];
 
   @Input() trackNumber!: number;
 
@@ -158,15 +158,15 @@ export class TrackListItemComponent {
     return hash(s);
   }
 
-  toggleLiked(song: SongWithCover$): void {
+  toggleLiked(song: Song): void {
     this.helper.toggleLikedSong(song).subscribe(() => this.cdr.markForCheck());
   }
 
-  playNext(song: SongWithCover$): void {
+  playNext(song: Song): void {
     this.helper.playNext(song);
   }
 
-  addToQueue(song: SongWithCover$): void {
+  addToQueue(song: Song): void {
     this.helper.addToQueue(song);
   }
 
