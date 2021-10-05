@@ -12,7 +12,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: bahmutov/npm-install@v1
-      - run: yarn build --prod
+      - run: yarn build --configuration production
 
   test-eslint:
     name: Lint
