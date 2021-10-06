@@ -1,12 +1,7 @@
 import { Injectable } from '@angular/core';
-import {
-  Entry,
-  requestPermissionPromise,
-} from '@app/database/entries/entry.model';
-import { from, Observable, of, throwError, toArray } from 'rxjs';
-import { concatMap, map } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { DatabaseService } from '@app/database/database.service';
-import { Album } from '@app/database/albums/album.model';
 import { Artist } from '@app/database/artists/artist.model';
 import { Song } from '@app/database/songs/song.model';
 
@@ -70,8 +65,8 @@ export class LibraryFacade {
   //   );
   // }
 
-  getEntry = (path: string): Observable<Entry | undefined> =>
-    this.storage.get$('entries', path);
+  // getEntry = (path: string): Observable<Entry | undefined> =>
+  //   this.storage.get$('entries', path);
 
   // getRootEntry(): Observable<Entry | undefined> {
   //   return this.storage
@@ -138,34 +133,34 @@ export class LibraryFacade {
   //   );
   // }
 
-  getAlbumTitles = (album: Album): Observable<Song> =>
-    this.getSongs('albumHash', album.hash).pipe(map(({ value }) => value));
+  // getAlbumTitles = (album: Album): Observable<Song> =>
+  //   this.getSongs('albumHash', album.hash).pipe(map(({ value }) => value));
+  //
+  // getAlbumTracks = (album: Album): Observable<Song[]> =>
+  //   this.getAlbumTitles(album).pipe(
+  //     toArray(),
+  //     map((songs) =>
+  //       songs.sort((s1, s2) => (s1.track.no || 0) - (s2.track.no || 0))
+  //     )
+  //   );
 
-  getAlbumTracks = (album: Album): Observable<Song[]> =>
-    this.getAlbumTitles(album).pipe(
-      toArray(),
-      map((songs) =>
-        songs.sort((s1, s2) => (s1.track.no || 0) - (s2.track.no || 0))
-      )
-    );
+  // getArtistAlbums(artist: Artist): Observable<Album> {
+  //   return this.storage
+  //     .walk$<Album>('albums', 'albumArtist', artist.name)
+  //     .pipe(map(({ value }) => value));
+  // }
 
-  getArtistAlbums(artist: Artist): Observable<Album> {
-    return this.storage
-      .walk$<Album>('albums', 'albumArtist', artist.name)
-      .pipe(map(({ value }) => value));
-  }
-
-  getAlbumsWithArtist(artist: Artist): Observable<Album> {
-    return this.storage
-      .walk$<Album>(
-        'albums',
-        'artists',
-        artist.name,
-        'next',
-        (album) => album.albumArtist !== artist.name
-      )
-      .pipe(map(({ value }) => value));
-  }
+  // getAlbumsWithArtist(artist: Artist): Observable<Album> {
+  //   return this.storage
+  //     .walk$<Album>(
+  //       'albums',
+  //       'artists',
+  //       artist.name,
+  //       'next',
+  //       (album) => album.albumArtist !== artist.name
+  //     )
+  //     .pipe(map(({ value }) => value));
+  // }
 
   getArtistTitles(artist: Artist): Observable<Song> {
     return this.getSongs('artists', artist.name).pipe(
@@ -173,23 +168,23 @@ export class LibraryFacade {
     );
   }
 
-  requestPermission(handle: FileSystemHandle): Observable<void> {
-    return from(requestPermissionPromise(handle)).pipe(
-      concatMap((perm) =>
-        perm ? of(void 0) : throwError(() => 'Permission denied')
-      )
-    );
-  }
+  // requestPermission(handle: FileSystemHandle): Observable<void> {
+  //   return from(requestPermissionPromise(handle)).pipe(
+  //     concatMap((perm) =>
+  //       perm ? of(void 0) : throwError(() => 'Permission denied')
+  //     )
+  //   );
+  // }
 
-  toggleSongFavorite(song: Song): Observable<Song> {
-    const update = { likedOn: !!song.likedOn ? undefined : new Date() };
-    return this.storage.update$<Song>('songs', update, song.entryPath).pipe(
-      map(() => ({
-        ...song,
-        ...update,
-      }))
-    );
-  }
+  // toggleSongFavorite(song: Song): Observable<Song> {
+  //   const update = { likedOn: !!song.likedOn ? undefined : new Date() };
+  //   return this.storage.update$<Song>('songs', update, song.entryPath).pipe(
+  //     map(() => ({
+  //       ...song,
+  //       ...update,
+  //     }))
+  //   );
+  // }
 
   // toggleLikedAlbum(album: Album): void {
   //   const update = { likedOn: !!album.likedOn ? undefined : new Date() };

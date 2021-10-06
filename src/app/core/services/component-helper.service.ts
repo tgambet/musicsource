@@ -23,18 +23,18 @@ export class ComponentHelperService {
     private playlists: PlaylistFacade
   ) {}
 
-  toggleLikedSong(song: Song): Observable<Song> {
-    return this.library
-      .toggleSongFavorite(song)
-      .pipe(tap((updated) => (song.likedOn = updated.likedOn)))
-      .pipe(
-        tap(() =>
-          this.openSnack(
-            !!song.likedOn ? 'Added to your likes' : 'Removed from your likes'
-          )
-        )
-      );
-  }
+  // toggleLikedSong(song: Song): Observable<Song> {
+  //   return this.library
+  //     .toggleSongFavorite(song)
+  //     .pipe(tap((updated) => (song.likedOn = updated.likedOn)))
+  //     .pipe(
+  //       tap(() =>
+  //         this.openSnack(
+  //           !!song.likedOn ? 'Added to your likes' : 'Removed from your likes'
+  //         )
+  //       )
+  //     );
+  // }
 
   // toggleLikedAlbum(album: Album): void {
   //   this.library.toggleLikedAlbum(album);

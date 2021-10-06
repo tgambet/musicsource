@@ -5,11 +5,10 @@ import {
   ViewChild,
 } from '@angular/core';
 import { Song } from '@app/database/songs/song.model';
-import { Observable } from 'rxjs';
+import { EMPTY, Observable } from 'rxjs';
 import { LibraryFacade } from '@app/library/store/library.facade';
-import { first, map, shareReplay, startWith, tap } from 'rxjs/operators';
+import { first, tap } from 'rxjs/operators';
 import { Icons } from '@app/core/utils/icons.util';
-import { scanArray } from '@app/core/utils/scan-array.util';
 import { SongListComponent } from '@app/core/components/song-list.component';
 import { ComponentHelperService } from '@app/core/services/component-helper.service';
 import { MenuItem } from '@app/core/components/menu.component';
@@ -121,12 +120,14 @@ export class PagePlaylistLikesComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.songs$ = this.library.getSongs('likedOn', undefined, 'prev').pipe(
-      map(({ value }) => value),
-      scanArray(),
-      startWith([]),
-      shareReplay(1)
-    );
+    this.songs$ = EMPTY;
+
+    // this.songs$ = this.library.getSongs('likedOn', undefined, 'prev').pipe(
+    //   map(({ value }) => value),
+    //   scanArray(),
+    //   startWith([]),
+    //   shareReplay(1)
+    // );
   }
 
   getLength(songs: Song[]): number {

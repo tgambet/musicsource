@@ -4,7 +4,6 @@ import {
   Input,
   Output,
   EventEmitter,
-  ChangeDetectorRef,
   OnInit,
 } from '@angular/core';
 import { Icons } from '@app/core/utils/icons.util';
@@ -14,6 +13,7 @@ import { MatMenuTrigger } from '@angular/material/menu';
 import { ComponentHelperService } from '@app/core/services/component-helper.service';
 import { Observable } from 'rxjs';
 import { PictureFacade } from '@app/database/pictures/picture.facade';
+import { SongFacade } from '@app/database/songs/song.facade';
 
 @Component({
   selector: 'app-playlist-list-item',
@@ -179,8 +179,8 @@ export class PlaylistListItemComponent implements OnInit {
 
   constructor(
     private helper: ComponentHelperService,
-    private cdr: ChangeDetectorRef,
-    private pictures: PictureFacade
+    private pictures: PictureFacade,
+    private songs: SongFacade
   ) {}
 
   ngOnInit(): void {
@@ -200,7 +200,7 @@ export class PlaylistListItemComponent implements OnInit {
   }
 
   toggleLiked(song: Song): void {
-    this.helper.toggleLikedSong(song).subscribe(() => this.cdr.markForCheck());
+    this.songs.toggleLiked(song); // .subscribe(() => this.cdr.markForCheck());
   }
 
   addToPlaylist(song: Song): void {

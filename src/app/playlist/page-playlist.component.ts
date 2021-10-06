@@ -8,11 +8,9 @@ import { PlayerFacade } from '@app/player/store/player.facade';
 import { PictureFacade } from '@app/database/pictures/picture.facade';
 import { SongFacade } from '@app/database/songs/song.facade';
 
-export interface PagePlaylistData {
+export type PagePlaylistData = {
   playlist: Playlist;
-  // cover: string | undefined;
-  // songs$: Observable<Song[]>;
-}
+};
 
 @Component({
   selector: 'app-playlist-page',
@@ -138,7 +136,7 @@ export class PagePlaylistComponent implements OnInit {
 
     this.color$ = of('red');
 
-    this.songs$ = this.songs.getAllKeys(this.playlist.songs);
+    this.songs$ = this.songs.getByKeys(this.playlist.songs);
 
     // this.songs$ = this.info$.pipe(
     //   switchMap(({ songs$ }) => songs$),

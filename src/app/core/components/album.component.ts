@@ -14,12 +14,13 @@ import { MenuItem } from '@app/core/components/menu.component';
 import { PlayerFacade } from '@app/player/store/player.facade';
 import { ComponentHelperService } from '@app/core/services/component-helper.service';
 import { LibraryFacade } from '@app/library/store/library.facade';
-import { map, shareReplay, tap } from 'rxjs/operators';
+import { first, map, tap } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { Song } from '@app/database/songs/song.model';
 import { HistoryService } from '@app/core/services/history.service';
 import { PictureFacade } from '@app/database/pictures/picture.facade';
 import { AlbumFacade } from '@app/database/albums/album.facade';
+import { SongFacade } from '@app/database/songs/song.facade';
 
 @Component({
   selector: 'app-album',
@@ -97,15 +98,14 @@ export class AlbumComponent implements OnInit {
     private helper: ComponentHelperService,
     private history: HistoryService,
     private pictures: PictureFacade,
-    private albums: AlbumFacade
+    private albums: AlbumFacade,
+    private songs: SongFacade
   ) {}
 
   ngOnInit(): void {
     this.updateMenu();
 
-    this.playlist$ = this.library
-      .getAlbumTracks(this.album)
-      .pipe(shareReplay(1));
+    this.playlist$ = this.songs.getByAlbumKey(this.album.hash);
 
     this.song$ = this.playlist$.pipe(map((pl) => pl[0]));
 
@@ -135,9 +135,10 @@ export class AlbumComponent implements OnInit {
         icon: Icons.shuffle,
         text: 'Shuffle play',
         click: () => {
-          this.library
-            .getAlbumTracks(this.album)
+          this.songs
+            .getByAlbumKey(this.album.hash)
             .pipe(
+              first(),
               tap((tracks) => {
                 this.player.setPlaying();
                 this.player.setPlaylist(tracks);
@@ -146,16 +147,17 @@ export class AlbumComponent implements OnInit {
               })
             )
             .subscribe();
-          this.history.albumPlayed(this.album);
+          // this.history.albumPlayed(this.album);
         },
       },
       {
         icon: Icons.playlistPlay,
         text: 'Play next',
         click: () => {
-          this.library
-            .getAlbumTracks(this.album)
+          this.songs
+            .getByAlbumKey(this.album.hash)
             .pipe(
+              first(),
               tap((tracks) => {
                 this.player.addToPlaylist(tracks, true);
                 this.player.show();
@@ -168,9 +170,10 @@ export class AlbumComponent implements OnInit {
         icon: Icons.playlistMusic,
         text: 'Add to queue',
         click: () => {
-          this.library
-            .getAlbumTracks(this.album)
+          this.songs
+            .getByAlbumKey(this.album.hash)
             .pipe(
+              first(),
               tap((tracks) => {
                 this.player.addToPlaylist(tracks);
                 this.player.show();
@@ -195,8 +198,8 @@ export class AlbumComponent implements OnInit {
         icon: Icons.playlistPlus,
         text: 'Add to playlist',
         click: () => {
-          this.library
-            .getAlbumTracks(this.album)
+          this.songs
+            .getByAlbumKey(this.album.hash)
             .pipe(tap((tracks) => this.helper.addSongsToPlaylist(tracks)))
             .subscribe();
         },
@@ -213,6 +216,6 @@ export class AlbumComponent implements OnInit {
   }
 
   albumPlayed(): void {
-    this.history.albumPlayed(this.album);
+    // this.history.albumPlayed(this.album);
   }
 }

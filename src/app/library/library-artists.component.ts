@@ -166,6 +166,6 @@ export class LibraryArtistsComponent extends WithTrigger implements OnInit {
 
   shufflePlay(artist: Artist): void {
     this.helper.shufflePlayArtist(artist).subscribe();
-    this.history.artistPlayed(artist);
+    // this.history.artistPlayed(artist);
   }
 }

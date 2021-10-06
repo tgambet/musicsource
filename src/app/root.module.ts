@@ -9,6 +9,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { StoreModule } from '@ngrx/store';
 import { EffectsModule } from '@ngrx/effects';
+import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 
 const routes: Routes = [
   {
@@ -51,7 +52,7 @@ const routes: Routes = [
       }
     ),
     EffectsModule.forRoot([]),
-    // StoreDevtoolsModule.instrument({ maxAge: 150, logOnly: true }),
+    StoreDevtoolsModule.instrument({ maxAge: 150, logOnly: true }),
     MatSnackBarModule,
   ],
   providers: [UpdateService],

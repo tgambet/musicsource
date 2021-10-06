@@ -1,5 +1,7 @@
-import { createFeatureSelector } from '@ngrx/store';
+import { createFeatureSelector, createSelector } from '@ngrx/store';
 import { entryAdapter, entryFeatureKey, EntryState } from './entry.reducer';
+
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 
 export const selectEntryState =
   createFeatureSelector<EntryState>(entryFeatureKey);
@@ -13,3 +15,6 @@ export const {
   selectAll: selectEntryAll,
   selectTotal: selectEntryTotal,
 } = entryAdapter.getSelectors(selectEntryState);
+
+export const selectEntryByKey = (key: string) =>
+  createSelector(selectEntryEntities, (entities) => entities[key]);
