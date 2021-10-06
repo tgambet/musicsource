@@ -1,6 +1,5 @@
 import {
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
   EventEmitter,
   Input,
@@ -12,12 +11,13 @@ import { hash } from '@app/core/utils/hash.util';
 import { MatMenuTrigger } from '@angular/material/menu';
 import { PlayerFacade } from '@app/player/store/player.facade';
 import { ComponentHelperService } from '@app/core/services/component-helper.service';
+import { SongFacade } from '@app/database/songs/song.facade';
 
 @Component({
   selector: 'app-track-list-item',
   template: `
     <span class="index">
-      <span>{{ trackNumber }}</span>
+      <span>{{ trackNumber || '-' }}</span>
       <app-player-button
         class="player-button"
         size="small"
@@ -142,7 +142,7 @@ export class TrackListItemComponent {
   @Input() song!: Song;
   @Input() playlist!: Song[];
 
-  @Input() trackNumber!: number;
+  @Input() trackNumber!: number | null;
 
   @Output() menuOpened = new EventEmitter<MatMenuTrigger>();
 
@@ -150,8 +150,8 @@ export class TrackListItemComponent {
 
   constructor(
     private player: PlayerFacade,
-    private cdr: ChangeDetectorRef,
-    private helper: ComponentHelperService
+    private helper: ComponentHelperService,
+    private songs: SongFacade
   ) {}
 
   getHash(s: string): string {
@@ -159,7 +159,7 @@ export class TrackListItemComponent {
   }
 
   toggleLiked(song: Song): void {
-    this.helper.toggleLikedSong(song).subscribe(() => this.cdr.markForCheck());
+    this.songs.toggleLiked(song);
   }
 
   playNext(song: Song): void {

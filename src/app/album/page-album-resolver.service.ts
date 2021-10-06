@@ -2,15 +2,14 @@ import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, Resolve, Router } from '@angular/router';
 import { EMPTY, Observable, of, throwError } from 'rxjs';
 import { LibraryFacade } from '@app/library/store/library.facade';
-import { catchError, concatMap, first } from 'rxjs/operators';
-import { PageAlbumData } from '@app/album/page-album.component';
+import { catchError, concatMap } from 'rxjs/operators';
 import { PictureFacade } from '@app/database/pictures/picture.facade';
 import { AlbumFacade } from '@app/database/albums/album.facade';
 import { Album } from '@app/database/albums/album.model';
 import { DatabaseService } from '@app/database/database.service';
 
 @Injectable()
-export class PageAlbumResolverService implements Resolve<PageAlbumData> {
+export class PageAlbumResolverService implements Resolve<string> {
   constructor(
     private library: LibraryFacade,
     private pictures: PictureFacade,
@@ -22,7 +21,7 @@ export class PageAlbumResolverService implements Resolve<PageAlbumData> {
   resolve(
     route: ActivatedRouteSnapshot
     // state: RouterStateSnapshot
-  ): Observable<PageAlbumData> | Observable<never> {
+  ): Observable<string> | Observable<never> {
     const id = route.paramMap.get('id');
 
     if (!id) {
@@ -30,12 +29,10 @@ export class PageAlbumResolverService implements Resolve<PageAlbumData> {
       return EMPTY;
     }
 
-    return this.albums.getByKey(id).pipe(
-      first(),
-      concatMap((playlist) =>
-        playlist ? of(playlist) : this.storage.get$<Album>('albums', id)
+    return this.storage.get$<Album>('albums', id).pipe(
+      concatMap((p) =>
+        p ? of(p.hash as string) : throwError(() => 'not found')
       ),
-      concatMap((p) => (p ? of({ album: p }) : throwError(() => 'not found'))),
       catchError(() => {
         this.router.navigate(['/library/playlists']);
         return EMPTY;

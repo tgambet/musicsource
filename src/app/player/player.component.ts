@@ -26,6 +26,7 @@ import { hash } from '@app/core/utils/hash.util';
 import { ComponentHelperService } from '@app/core/services/component-helper.service';
 import { MenuItem } from '@app/core/components/menu.component';
 import { PictureFacade } from '@app/database/pictures/picture.facade';
+import { SongFacade } from '@app/database/songs/song.facade';
 
 @Component({
   selector: 'app-player',
@@ -338,6 +339,7 @@ export class PlayerComponent implements OnInit, OnDestroy {
     private library: LibraryFacade,
     private player: PlayerFacade,
     private pictures: PictureFacade,
+    private songs: SongFacade,
     private helper: ComponentHelperService,
     private cdr: ChangeDetectorRef
   ) {}
@@ -456,10 +458,12 @@ export class PlayerComponent implements OnInit, OnDestroy {
   }
 
   toggleLiked(song: Song): void {
-    this.helper.toggleLikedSong(song).subscribe(() => {
-      this.updateMenu(song);
-      this.cdr.markForCheck();
-    });
+    this.songs.toggleLiked(song);
+
+    // this.helper.toggleLikedSong(song).subscribe(() => {
+    //   this.updateMenu(song);
+    //   this.cdr.markForCheck();
+    // });
   }
 
   updateMenu(song: Song): void {
@@ -477,11 +481,7 @@ export class PlayerComponent implements OnInit, OnDestroy {
       {
         text: !!song.likedOn ? 'Remove from your likes' : 'Add to your likes',
         icon: !!song.likedOn ? this.icons.heart : this.icons.heartOutline,
-        click: () =>
-          this.helper.toggleLikedSong(song).subscribe(() => {
-            this.updateMenu(song);
-            this.cdr.markForCheck();
-          }),
+        click: () => this.toggleLiked(song),
       },
       {
         text: 'Add to playlist',

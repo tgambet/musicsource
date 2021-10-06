@@ -30,12 +30,15 @@ import {
 import { Router } from '@angular/router';
 import { AudioService } from '@app/player/audio.service';
 import { PlayerFacade } from '@app/player/store/player.facade';
-import { LibraryFacade } from '@app/library/store/library.facade';
 import { Song } from '@app/database/songs/song.model';
-import { FileEntry } from '@app/database/entries/entry.model';
+import {
+  FileEntry,
+  requestPermission,
+} from '@app/database/entries/entry.model';
 import { tapError } from '@app/core/utils/tap-error.util';
 import { MediaSessionService } from '@app/player/media-session.service';
 import { Title } from '@angular/platform-browser';
+import { EntryFacade } from '@app/database/entries/entry.facade';
 
 // noinspection JSUnusedGlobalSymbols
 @Injectable()
@@ -54,11 +57,11 @@ export class PlayerEffects implements OnRunEffects {
             first(),
             tap(() => this.player.pause()),
             concatMap((playing) =>
-              this.library.getEntry(song.entryPath).pipe(
+              this.entries.getByKey(song.entryPath).pipe(
                 filter((entry): entry is FileEntry => !!entry),
                 tap((entry) => (this.handle = entry.handle)),
                 concatMap((entry) =>
-                  this.library.requestPermission(entry.handle).pipe(
+                  requestPermission(entry.handle).pipe(
                     tapError(() => this.player.hide()),
                     catchError(() => EMPTY),
                     concatMap(() => entry.handle.getFile()),
@@ -160,7 +163,7 @@ export class PlayerEffects implements OnRunEffects {
     private router: Router,
     private audio: AudioService,
     private player: PlayerFacade,
-    private library: LibraryFacade,
+    private entries: EntryFacade,
     private media: MediaSessionService,
     private title: Title
   ) {

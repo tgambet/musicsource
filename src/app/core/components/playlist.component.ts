@@ -125,7 +125,7 @@ export class PlaylistComponent implements OnInit {
     // }, 1000);
 
     this.songs
-      .getAllKeys(this.playlist.songs)
+      .getByKeys(this.playlist.songs)
       .pipe(
         first(),
         tap((songs) => {

@@ -40,6 +40,6 @@ export const songReducer = createReducer(
   on(loadSongsSuccess, (state, action) =>
     songAdapter.addMany(action.data, state)
   ),
-  on(loadSongsFailure, (state, action) => state),
+  on(loadSongsFailure, (state) => state),
   on(updateSong, (state, action) => songAdapter.updateOne(action.update, state))
 );

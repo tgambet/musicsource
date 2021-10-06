@@ -1,3 +1,6 @@
+import { from, Observable, of, throwError } from 'rxjs';
+import { concatMap } from 'rxjs/operators';
+
 export type FileEntry = {
   kind: 'file';
   name: string;
@@ -47,3 +50,10 @@ export const requestPermissionPromise = async (
   // The user didn't grant permission, so return false.
   return false;
 };
+
+export const requestPermission = (handle: FileSystemHandle): Observable<void> =>
+  from(requestPermissionPromise(handle)).pipe(
+    concatMap((perm) =>
+      perm ? of(void 0) : throwError(() => 'Permission denied')
+    )
+  );
