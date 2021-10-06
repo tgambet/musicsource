@@ -1,16 +1,29 @@
 import { Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import {
   selectPictureAll,
-  selectPictureByHash,
+  selectPictureByKey,
   selectPictureTotal,
 } from '@app/database/pictures/picture.selectors';
-import { Picture } from '@app/database/pictures/picture.model';
+import { getCover, Picture } from '@app/database/pictures/picture.model';
+import { map } from 'rxjs/operators';
 
 @Injectable()
 export class PictureFacade {
   constructor(private store: Store) {}
+
+  getByKey(key: string): Observable<Picture | undefined> {
+    return this.store.select(selectPictureByKey(key));
+  }
+
+  getCover(hash?: string): Observable<string | undefined> {
+    return !hash
+      ? of(undefined)
+      : this.store
+          .select(selectPictureByKey(hash))
+          .pipe(map((picture) => picture && getCover(picture)));
+  }
 
   getAll(): Observable<Picture[]> {
     return this.store.select(selectPictureAll);
@@ -21,6 +34,6 @@ export class PictureFacade {
   }
 
   getByHash(hash: string): Observable<Picture | undefined> {
-    return this.store.select(selectPictureByHash(hash));
+    return this.store.select(selectPictureByKey(hash));
   }
 }

@@ -2,7 +2,7 @@ import { Component, ChangeDetectionStrategy, Input } from '@angular/core';
 import { Icons } from '@app/core/utils/icons.util';
 import { Artist } from '@app/database/artists/artist.model';
 import { Observable } from 'rxjs';
-import { LibraryFacade } from '@app/library/store/library.facade';
+import { PictureFacade } from '@app/database/pictures/picture.facade';
 
 @Component({
   selector: 'app-artist',
@@ -68,7 +68,7 @@ export class ArtistComponent {
 
   icons = Icons;
 
-  constructor(private library: LibraryFacade) {
-    this.cover$ = this.library.getCover(this.artist.pictureKey);
+  constructor(private pictures: PictureFacade) {
+    this.cover$ = this.pictures.getCover(this.artist.pictureKey);
   }
 }

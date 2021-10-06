@@ -25,6 +25,7 @@ import { PlayerFacade } from '@app/player/store/player.facade';
 import { hash } from '@app/core/utils/hash.util';
 import { ComponentHelperService } from '@app/core/services/component-helper.service';
 import { MenuItem } from '@app/core/components/menu.component';
+import { PictureFacade } from '@app/database/pictures/picture.facade';
 
 @Component({
   selector: 'app-player',
@@ -336,6 +337,7 @@ export class PlayerComponent implements OnInit, OnDestroy {
     private router: Router,
     private library: LibraryFacade,
     private player: PlayerFacade,
+    private pictures: PictureFacade,
     private helper: ComponentHelperService,
     private cdr: ChangeDetectorRef
   ) {}
@@ -404,7 +406,7 @@ export class PlayerComponent implements OnInit, OnDestroy {
     this.currentSong$.pipe(tap((song) => this.updateMenu(song))).subscribe();
 
     this.currentSongCover$ = this.currentSong$.pipe(
-      switchMap((song) => this.library.getCover(song.pictureKey))
+      switchMap((song) => this.pictures.getCover(song.pictureKey))
     );
   }
 
@@ -484,7 +486,7 @@ export class PlayerComponent implements OnInit, OnDestroy {
       {
         text: 'Add to playlist',
         icon: this.icons.playlistPlus,
-        click: () => this.helper.addSongsToPlaylist([song]).subscribe(),
+        click: () => this.helper.addSongsToPlaylist([song]),
       },
       {
         text: 'Remove from queue',

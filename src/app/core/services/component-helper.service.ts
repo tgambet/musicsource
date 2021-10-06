@@ -1,16 +1,16 @@
 import { Injectable } from '@angular/core';
 import { Artist } from '@app/database/artists/artist.model';
-import { concatMap, first, map, tap } from 'rxjs/operators';
+import { first, map, tap } from 'rxjs/operators';
 import { LibraryFacade } from '@app/library/store/library.facade';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { combineLatest, EMPTY, Observable, toArray } from 'rxjs';
+import { combineLatest, Observable, toArray } from 'rxjs';
 import { Song } from '@app/database/songs/song.model';
 import { PlaylistAddComponent } from '@app/core/dialogs/playlist-add.component';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { shuffleArray } from '@app/core/utils/shuffle-array.util';
 import { PlayerFacade } from '@app/player/store/player.facade';
-import { Album } from '@app/database/albums/album.model';
+import { PlaylistFacade } from '@app/database/playlists/playlist.facade';
 
 @Injectable()
 export class ComponentHelperService {
@@ -19,7 +19,8 @@ export class ComponentHelperService {
     private library: LibraryFacade,
     private snack: MatSnackBar,
     private dialog: MatDialog,
-    private router: Router
+    private router: Router,
+    private playlists: PlaylistFacade
   ) {}
 
   toggleLikedSong(song: Song): Observable<Song> {
@@ -35,76 +36,100 @@ export class ComponentHelperService {
       );
   }
 
-  toggleLikedAlbum(album: Album): void {
-    this.library.toggleLikedAlbum(album);
-    // return (
+  // toggleLikedAlbum(album: Album): void {
+  //   this.library.toggleLikedAlbum(album);
+  //   // return (
+  //
+  //   // .pipe(tap((updated) => (album.likedOn = updated.likedOn)))
+  //   // .pipe(
+  //   //   tap(() =>
+  //   // TODO move to effects
+  //   this.openSnack(
+  //     !!album.likedOn ? 'Removed from your likes' : 'Added to your likes'
+  //   );
+  //   // )
+  //   // )
+  //   // );
+  // }
 
-    // .pipe(tap((updated) => (album.likedOn = updated.likedOn)))
-    // .pipe(
-    //   tap(() =>
-    // TODO move to effects
-    this.openSnack(
-      !!album.likedOn ? 'Removed from your likes' : 'Added to your likes'
-    );
-    // )
-    // )
-    // );
-  }
+  // toggleLikedArtist(artist: Artist): void {
+  //   this.library.toggleArtistFavorite(artist);
+  // TODO
+  //   this.openSnack(
+  //     !!artist.likedOn ? 'Removed from your likes' : 'Added to your likes'
+  //   );
+  //   // .pipe(
+  //   //   tap(() => (artist.likedOn = !!artist.likedOn ? undefined : new Date()))
+  //   // )
+  //   // .pipe(
+  //   //   tap(() =>
+  //   //     this.openSnack(
+  //   //       !!artist.likedOn ? 'Added to your likes' : 'Removed from your likes'
+  //   //     )
+  //   //   )
+  //   // );
+  // }
 
-  toggleLikedArtist(artist: Artist): void {
-    this.library.toggleArtistFavorite(artist);
-    this.openSnack(
-      !!artist.likedOn ? 'Removed from your likes' : 'Added to your likes'
-    );
-    // .pipe(
-    //   tap(() => (artist.likedOn = !!artist.likedOn ? undefined : new Date()))
-    // )
-    // .pipe(
-    //   tap(() =>
-    //     this.openSnack(
-    //       !!artist.likedOn ? 'Added to your likes' : 'Removed from your likes'
-    //     )
-    //   )
-    // );
-  }
+  addSongsToPlaylist(songs: Song[]): void {
+    const dialog = this.dialog.open(PlaylistAddComponent, {
+      width: '275px',
+      maxHeight: '80%',
+      height: 'auto',
+      panelClass: 'playlists-dialog',
+    });
 
-  addSongsToPlaylist(songs: Song[]): Observable<void> {
-    return this.dialog
-      .open(PlaylistAddComponent, {
-        width: '275px',
-        maxHeight: '80%',
-        height: 'auto',
-        panelClass: 'playlists-dialog',
-      })
+    dialog
       .afterClosed()
       .pipe(
-        concatMap((result) =>
-          result === undefined
-            ? EMPTY
-            : result === true
-            ? EMPTY // TODO Redirect to new playlist and add song
-            : this.library
-                .addSongsToPlaylist([...songs].reverse(), result)
-                .pipe(
-                  concatMap((key) =>
-                    this.player.isShown$().pipe(
-                      first(),
-                      concatMap((shown) =>
-                        this.snack
-                          .open(`Added to ${result}`, 'VIEW', {
-                            panelClass: shown ? 'snack-top' : 'snack',
-                          })
-                          .onAction()
-                      ),
-                      tap(() =>
-                        this.router.navigate(['/', 'playlist', key.toString()])
-                      )
-                    )
-                  )
-                )
-        ),
-        map(() => void 0)
-      );
+        tap((result) => {
+          if (result === undefined) {
+            return;
+          }
+          if (result === true) {
+            // TODO Redirect to new playlist and add song
+          } else {
+            const snack = this.snack.open(`Added to ${result.title}`, 'VIEW', {
+              panelClass: 'snack-top', // TODO
+            });
+
+            snack
+              .onAction()
+              .pipe(
+                tap(() => this.router.navigate(['/', 'playlist', result.hash]))
+              )
+              .subscribe();
+
+            this.playlists.addSongsTo(result, songs);
+          }
+        })
+        // concatTap(
+        //   (result) =>
+        //     result === undefined
+        //       ? EMPTY
+        //       : result === true
+        //       ? EMPTY // TODO Redirect to new playlist and add song
+        //       : of(this.playlists.addSongsToPlaylist(result, songs))
+        //   // .pipe(
+        //   //   concatMap((key) =>
+        //   //     this.player.isShown$().pipe(
+        //   //       first(),
+        //   //       concatMap((shown) =>
+        //   //         this.snack
+        //   //           .open(`Added to ${result}`, 'VIEW', {
+        //   //             panelClass: shown ? 'snack-top' : 'snack',
+        //   //           })
+        //   //           .onAction()
+        //   //       ),
+        //   //       tap(() =>
+        //   //         this.router.navigate(['/', 'playlist', key.toString()])
+        //   //       )
+        //   //     )
+        //   //   )
+        //   // )
+        // ),
+        // map(() => void 0)
+      )
+      .subscribe();
   }
 
   shufflePlayArtist(artist: Artist): Observable<Song[]> {

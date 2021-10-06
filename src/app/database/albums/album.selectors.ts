@@ -1,4 +1,4 @@
-import { createFeatureSelector } from '@ngrx/store';
+import { createFeatureSelector, createSelector } from '@ngrx/store';
 import {
   albumAdapter,
   albumFeatureKey,
@@ -19,3 +19,6 @@ export const {
   selectAll: selectAlbumAll,
   selectTotal: selectAlbumTotal,
 } = albumAdapter.getSelectors(selectAlbumState);
+
+export const selectAlbumByKey = (key: string) =>
+  createSelector(selectAlbumEntities, (entities) => entities[key]);

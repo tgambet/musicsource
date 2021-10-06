@@ -16,6 +16,7 @@ import { hash } from '@app/core/utils/hash.util';
 import { ComponentHelperService } from '@app/core/services/component-helper.service';
 import { HistoryService } from '@app/core/services/history.service';
 import { WithTrigger } from '@app/core/classes/with-trigger';
+import { ArtistFacade } from '@app/database/artists/artist.facade';
 
 export type PageArtistData = {
   artist: Artist;
@@ -193,7 +194,8 @@ export class PageArtistComponent extends WithTrigger implements OnInit {
     private route: ActivatedRoute,
     private cdr: ChangeDetectorRef,
     private helper: ComponentHelperService,
-    private history: HistoryService
+    private history: HistoryService,
+    private artists: ArtistFacade
   ) {
     super();
   }
@@ -218,6 +220,6 @@ export class PageArtistComponent extends WithTrigger implements OnInit {
   }
 
   toggleLiked(artist: Artist): void {
-    this.helper.toggleLikedArtist(artist);
+    this.artists.toggleLiked(artist);
   }
 }

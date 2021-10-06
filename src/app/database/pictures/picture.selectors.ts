@@ -20,5 +20,5 @@ export const {
   selectTotal: selectPictureTotal,
 } = pictureAdapter.getSelectors(selectPictureState);
 
-export const selectPictureByHash = (hash: string) =>
-  createSelector(selectPictureEntities, (entities) => entities[hash]);
+export const selectPictureByKey = (key: string) =>
+  createSelector(selectPictureEntities, (entities) => entities[key]);

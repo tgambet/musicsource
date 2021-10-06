@@ -4,7 +4,7 @@ export type Song = Omit<ICommonTagsResult, 'picture'> & {
   albumHash: string;
   entryPath: string;
   lastModified: Date;
-  pictureKey?: IDBValidKey;
+  pictureKey?: string;
   duration?: number;
   likedOn?: Date;
 };

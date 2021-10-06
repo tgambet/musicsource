@@ -1,18 +1,19 @@
-import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  OnDestroy,
-  OnInit,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { SelectOption } from '@app/core/components/select.component';
 import { Icons } from '@app/core/utils/icons.util';
-import { LibraryFacade } from '@app/library/store/library.facade';
-import { map, startWith, switchMap, tap } from 'rxjs/operators';
+import { delay, map, switchMap, tap } from 'rxjs/operators';
 import { Playlist } from '@app/database/playlists/playlist.model';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Observable, Subscription } from 'rxjs';
-import { scanArray } from '@app/core/utils/scan-array.util';
+import {
+  animationFrameScheduler,
+  bufferWhen,
+  mergeMap,
+  Observable,
+  of,
+  scan,
+  scheduled,
+} from 'rxjs';
+import { PlaylistFacade } from '@app/database/playlists/playlist.facade';
 
 @Component({
   selector: 'app-library-playlists',
@@ -44,23 +45,20 @@ import { scanArray } from '@app/core/utils/scan-array.util';
             size="small"
           ></app-label>
         </div>
-        <div
-          class="playlist"
-          *ngFor="let playlist of newPlaylists$ | async; trackBy: trackBy"
-        >
-          <app-playlist [playlist]="playlist"></app-playlist>
-        </div>
-        <div class="playlist likes">
-          <app-playlist-likes></app-playlist-likes>
-        </div>
+        <!--        <div-->
+        <!--          class="playlist"-->
+        <!--          *ngFor="let playlist of newPlaylists$ | async; trackBy: trackBy"-->
+        <!--        >-->
+        <!--          <app-playlist [playlist]="playlist"></app-playlist>-->
+        <!--        </div>-->
+        <!--        <div class="playlist likes">-->
+        <!--          <app-playlist-likes></app-playlist-likes>-->
+        <!--        </div>-->
         <ng-container
           *ngFor="let playlist of playlists$ | async; trackBy: trackBy"
         >
           <div class="playlist" *ngIf="!likes || !!playlist.likedOn">
-            <app-playlist
-              [playlist]="playlist"
-              (update)="playlistUpdate()"
-            ></app-playlist>
+            <app-playlist [playlist]="playlist"></app-playlist>
           </div>
         </ng-container>
       </div>
@@ -95,7 +93,7 @@ import { scanArray } from '@app/core/utils/scan-array.util';
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class LibraryPlaylistsComponent implements OnInit, OnDestroy {
+export class LibraryPlaylistsComponent implements OnInit {
   sortOptions: SelectOption[] = [
     { name: 'Recently added', value: 'createdOn_desc' },
     { name: 'A to Z', value: 'title_asc' },
@@ -106,19 +104,16 @@ export class LibraryPlaylistsComponent implements OnInit, OnDestroy {
   icons = Icons;
 
   playlists$!: Observable<Playlist[]>;
-  newPlaylists$!: Observable<Playlist[]>;
-
-  subscription = new Subscription();
 
   sort!: any;
 
   likes?: boolean;
 
   constructor(
-    private library: LibraryFacade,
+    // private library: LibraryFacade,
+    private playlists: PlaylistFacade,
     private router: Router,
-    private route: ActivatedRoute,
-    private cdr: ChangeDetectorRef
+    private route: ActivatedRoute
   ) {}
 
   ngOnInit(): void {
@@ -134,37 +129,57 @@ export class LibraryPlaylistsComponent implements OnInit, OnDestroy {
     );
 
     this.playlists$ = sort$.pipe(
-      switchMap((sort) => {
-        const predicate = sort.likes
-          ? (playlist: Playlist) => !!playlist.likedOn
-          : undefined;
-
-        return this.library
-          .getPlaylists(sort.index, null, sort.direction, predicate)
-          .pipe(scanArray(), startWith([]));
-      })
-    );
-
-    this.newPlaylists$ = sort$.pipe(
-      switchMap(() =>
-        this.library.getNewlyCreatedPlaylists().pipe(
-          scanArray(),
-          startWith([]),
-          map((pl) => pl.reverse())
+      switchMap((sort, i) =>
+        this.playlists.getAll(sort.index as any).pipe(
+          // filter((models) => models.length > 0),
+          switchMap((models, j) => {
+            let mods;
+            if (sort.likes) {
+              mods = models.filter((a) => !!a.likedOn);
+            } else {
+              mods = [...models];
+            }
+            if (sort.direction === 'prev') {
+              mods.reverse();
+            }
+            return j === 0 && i === 0
+              ? of(...mods).pipe(
+                  mergeMap((model, index) => of(model).pipe(delay(10 * index))),
+                  bufferWhen(() => scheduled(of(1), animationFrameScheduler)),
+                  scan((acc, curr) => [...acc, ...curr])
+                )
+              : of(mods);
+          })
         )
       )
-    );
-  }
 
-  ngOnDestroy(): void {
-    this.subscription.unsubscribe();
+      // switchMap((sort) => {
+      //   const predicate = sort.likes
+      //     ? (playlist: Playlist) => !!playlist.likedOn
+      //     : undefined;
+      //
+      //   return this.playlists
+      //     .getPlaylists(sort.index, null, sort.direction, predicate)
+      //     .pipe(scanArray(), startWith([]));
+      // })
+    );
+
+    // this.newPlaylists$ = sort$.pipe(
+    //   switchMap(() =>
+    //     this.library.getNewlyCreatedPlaylists().pipe(
+    //       scanArray(),
+    //       startWith([]),
+    //       map((pl) => pl.reverse())
+    //     )
+    //   )
+    // );
   }
 
   trackBy(index: number, playlist: Playlist): string {
     return playlist.title;
   }
 
-  playlistUpdate(): void {
-    this.cdr.markForCheck();
-  }
+  // playlistUpdate(): void {
+  //   this.cdr.markForCheck();
+  // }
 }

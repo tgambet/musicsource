@@ -1,4 +1,4 @@
-import { createFeatureSelector } from '@ngrx/store';
+import { createFeatureSelector, createSelector } from '@ngrx/store';
 import { artistAdapter, artistFeatureKey, ArtistState } from './artist.reducer';
 
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
@@ -15,3 +15,6 @@ export const {
   selectAll: selectArtistAll,
   selectTotal: selectArtistTotal,
 } = artistAdapter.getSelectors(selectArtistState);
+
+export const selectArtistByKey = (key: string) =>
+  createSelector(selectArtistEntities, (entities) => entities[key]);

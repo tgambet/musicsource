@@ -8,7 +8,7 @@ import {
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
 import { Album } from '@app/database/albums/album.model';
-import { map } from 'rxjs/operators';
+import { first, map, shareReplay, tap } from 'rxjs/operators';
 import { Song } from '@app/database/songs/song.model';
 import { Icons } from '@app/core/utils/icons.util';
 import { hash } from '@app/core/utils/hash.util';
@@ -20,94 +20,83 @@ import { MatDialog } from '@angular/material/dialog';
 import { ComponentHelperService } from '@app/core/services/component-helper.service';
 import { HistoryService } from '@app/core/services/history.service';
 import { WithTrigger } from '@app/core/classes/with-trigger';
+import { AlbumFacade } from '@app/database/albums/album.facade';
+import { PictureFacade } from '@app/database/pictures/picture.facade';
 
 export type PageAlbumData = {
   album: Album;
-  songs: Song[];
-  cover: string | undefined;
+  // songs: Song[];
+  // cover: string | undefined;
 };
 
 @Component({
   selector: 'app-page-album',
   template: `
-    <ng-container *ngIf="info$ | async as info">
-      <header>
-        <app-container-page class="header-container">
-          <div class="info">
-            <div class="cover" style="--aspect-ratio:1">
-              <img [src]="info.cover" alt="cover" *ngIf="info.cover" />
-              <app-icon
-                [path]="icons.album"
-                [fullWidth]="true"
-                *ngIf="!info.cover"
-              ></app-icon>
-            </div>
-            <div class="metadata">
-              <app-title>{{ info.album.name }}</app-title>
-              <p>
-                <span>Album</span> •
-                <a
-                  *ngIf="info.album.albumArtist"
-                  [routerLink]="[
-                    '/',
-                    'artist',
-                    getHash(info.album.albumArtist)
-                  ]"
-                  >{{ info.album.albumArtist }}</a
-                >
-                <span
-                  *ngIf="
-                    !info.album.albumArtist && info.album.artists.length > 1
-                  "
-                >
-                  Various artists
-                </span>
-                • <span>{{ info.album.year }}</span>
-              </p>
-              <p class="stats">
-                {{ info.songs.length }} songs •
-                {{ getLength(info.songs) }} minutes
-              </p>
-            </div>
+    <header>
+      <app-container-page class="header-container">
+        <div class="info">
+          <div class="cover" style="--aspect-ratio:1">
+            <img
+              [src]="cover"
+              alt="cover"
+              *ngIf="cover$ | async as cover; else icon"
+            />
+            <ng-template #icon>
+              <app-icon [path]="icons.album" [fullWidth]="true"></app-icon>
+            </ng-template>
           </div>
-          <div class="actions">
-            <button
-              mat-raised-button
-              color="accent"
-              (click)="play(info.album, info.songs)"
-            >
-              <app-icon [path]="icons.play"></app-icon>
-              <span>Play</span>
-            </button>
-            <button mat-stroked-button (click)="toggleLiked(info.album)">
-              <app-icon
-                [path]="!!info.album.likedOn ? icons.heart : icons.heartOutline"
-              ></app-icon>
-              <span *ngIf="!info.album.likedOn">Add to your likes</span>
-              <span *ngIf="!!info.album.likedOn">Remove from your likes</span>
-            </button>
-            <app-menu
-              [disableRipple]="true"
-              [hasBackdrop]="true"
-              [menuItems]="menuItems$ | async"
-            ></app-menu>
+          <div class="metadata">
+            <app-title>{{ album.name }}</app-title>
+            <p>
+              <span>Album</span> •
+              <a
+                *ngIf="album.albumArtist"
+                [routerLink]="['/', 'artist', getHash(album.albumArtist)]"
+                >{{ album.albumArtist }}</a
+              >
+              <span *ngIf="!album.albumArtist && album.artists.length > 1">
+                Various artists
+              </span>
+              • <span>{{ album.year }}</span>
+            </p>
+            <p class="stats" *ngIf="songs$ | async as songs">
+              {{ songs.length }} songs • {{ getLength(songs) }} minutes
+            </p>
           </div>
-        </app-container-page>
-      </header>
-      <app-container-page>
-        <div class="track-list">
-          <app-track-list-item
-            [song]="song"
-            [playlist]="info.songs"
-            *ngFor="let song of info.songs; let i = index; trackBy: trackBy"
-            [trackNumber]="i + 1"
-            [class.selected]="(currentSongPath$ | async) === song.entryPath"
-            (menuOpened)="menuOpened($event)"
-            cdkMonitorSubtreeFocus
-          ></app-track-list-item>
+        </div>
+        <div class="actions">
+          <button mat-raised-button color="accent" (click)="play(album)">
+            <app-icon [path]="icons.play"></app-icon>
+            <span>Play</span>
+          </button>
+          <button mat-stroked-button (click)="toggleLiked(album)">
+            <app-icon
+              [path]="!!album.likedOn ? icons.heart : icons.heartOutline"
+            ></app-icon>
+            <span *ngIf="!album.likedOn">Add to your likes</span>
+            <span *ngIf="!!album.likedOn">Remove from your likes</span>
+          </button>
+          <app-menu
+            [disableRipple]="true"
+            [hasBackdrop]="true"
+            [menuItems]="menuItems$ | async"
+          ></app-menu>
         </div>
       </app-container-page>
-    </ng-container>
+    </header>
+    <app-container-page>
+      <div class="track-list" *ngIf="songs$ | async as songs">
+        <app-track-list-item
+          [song]="song"
+          [playlist]="songs"
+          *ngFor="let song of songs; let i = index; trackBy: trackBy"
+          [trackNumber]="i + 1"
+          [class.selected]="(currentSongPath$ | async) === song.entryPath"
+          (menuOpened)="menuOpened($event)"
+          cdkMonitorSubtreeFocus
+        ></app-track-list-item>
+      </div>
+    </app-container-page>
   `,
   styleUrls: ['../core/styles/page-header.component.scss'],
   styles: [
@@ -128,11 +117,15 @@ export type PageAlbumData = {
 })
 export class PageAlbumComponent extends WithTrigger implements OnInit {
   icons = Icons;
-  info$!: Observable<PageAlbumData>;
+  album!: Album;
+
+  songs$!: Observable<Song[]>;
 
   currentSongPath$ = this.player
     .getCurrentSong$()
     .pipe(map((song) => song?.entryPath));
+
+  cover$!: Observable<string | undefined>;
 
   menuItems$!: Observable<MenuItem[]>;
 
@@ -144,7 +137,9 @@ export class PageAlbumComponent extends WithTrigger implements OnInit {
     private dialog: MatDialog,
     private helper: ComponentHelperService,
     private cdr: ChangeDetectorRef,
-    private history: HistoryService
+    private history: HistoryService,
+    private albums: AlbumFacade,
+    private pictures: PictureFacade
   ) {
     super();
   }
@@ -160,9 +155,17 @@ export class PageAlbumComponent extends WithTrigger implements OnInit {
   }
 
   ngOnInit(): void {
-    this.info$ = this.route.data.pipe(map((data) => data.info));
-    this.menuItems$ = this.info$.pipe(
-      map((info) => this.getMenuItem(info.album, info.songs))
+    this.album = this.route.snapshot.data.info.album; //pipe(map((data) => data.info));
+
+    this.cover$ = this.pictures.getCover(this.album.pictureKey);
+
+    this.songs$ = this.library.getAlbumTracks(this.album).pipe(
+      // tap(() => console.log(1)),
+      shareReplay(1)
+    );
+
+    this.menuItems$ = this.songs$.pipe(
+      map((songs) => this.getMenuItem(this.album, songs))
     );
   }
 
@@ -212,19 +215,26 @@ export class PageAlbumComponent extends WithTrigger implements OnInit {
     return hash(albumArtist);
   }
 
-  play(album: Album, songs: Song[], index = 0): void {
-    this.player.setPlaying();
-    this.player.setPlaylist(songs, index);
-    this.player.show();
-    this.history.albumPlayed(album);
+  play(album: Album, index = 0): void {
+    this.songs$
+      .pipe(
+        first(),
+        tap((songs) => {
+          this.player.setPlaying();
+          this.player.setPlaylist(songs, index);
+          this.player.show();
+          this.history.albumPlayed(album);
+        })
+      )
+      .subscribe();
   }
 
   addAlbumToPlaylist(songs: Song[]): void {
-    this.helper.addSongsToPlaylist(songs).subscribe();
+    this.helper.addSongsToPlaylist(songs);
   }
 
   toggleLiked(album: Album): void {
-    this.helper.toggleLikedAlbum(album);
+    this.albums.toggleLiked(album);
     // .subscribe(() => this.cdr.markForCheck());
   }
 }

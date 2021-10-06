@@ -13,6 +13,7 @@ import { AlbumModule } from '@app/album/album.module';
 import { ArtistModule } from '@app/artist/artist.module';
 import { PlaylistModule } from '@app/playlist/playlist.module';
 import { DatabaseModule } from '@app/database/database.module';
+import { PlaylistNewComponent } from '@app/core/dialogs/playlist-new.component';
 
 /*const routes: Routes = [
   {
@@ -81,6 +82,12 @@ import { DatabaseModule } from '@app/database/database.module';
 ];*/
 
 const routes: Routes = [
+  // TODO
+  {
+    outlet: 'dialog',
+    path: 'new-playlist',
+    component: PlaylistNewComponent,
+  },
   {
     path: '',
     component: MainComponent,

@@ -17,5 +17,6 @@ const routes: Routes = [
 @NgModule({
   declarations: [PagePlaylistComponent, PagePlaylistLikesComponent],
   imports: [CoreModule, RouterModule.forChild(routes)],
+  providers: [PagePlaylistResolver],
 })
 export class PlaylistModule {}

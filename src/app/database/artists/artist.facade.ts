@@ -6,6 +6,7 @@ import { ArtistIndex } from '@app/database/artists/artist.reducer';
 import { Artist } from '@app/database/artists/artist.model';
 import { updateArtist } from '@app/database/artists/artist.actions';
 import {
+  selectArtistByKey,
   selectArtistIndexAll,
   selectArtistTotal,
 } from '@app/database/artists/artist.selectors';
@@ -13,6 +14,10 @@ import {
 @Injectable()
 export class ArtistFacade {
   constructor(private store: Store) {}
+
+  getByKey(key: string): Observable<Artist | undefined> {
+    return this.store.select(selectArtistByKey(key));
+  }
 
   getAll(index: ArtistIndex): Observable<Artist[]> {
     return this.store.select(selectArtistIndexAll(index));
@@ -24,5 +29,10 @@ export class ArtistFacade {
 
   update(update: Update<Artist>): void {
     this.store.dispatch(updateArtist({ update }));
+  }
+
+  toggleLiked(artist: Artist): void {
+    const update = { likedOn: !!artist.likedOn ? undefined : new Date() };
+    this.update({ key: artist.hash, changes: update });
   }
 }
