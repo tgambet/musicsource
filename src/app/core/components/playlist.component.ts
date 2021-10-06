@@ -1,21 +1,19 @@
 import {
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
-  EventEmitter,
   Input,
   OnInit,
-  Optional,
-  Output,
 } from '@angular/core';
 import { Icons } from '@app/core/utils';
 import { Playlist } from '@app/database/playlists/playlist.model';
-import { from, Observable, of, toArray } from 'rxjs';
-import { LibraryFacade } from '@app/library/store/library.facade';
-import { concatMap, map, tap } from 'rxjs/operators';
+import { Observable, of } from 'rxjs';
+import { first, tap } from 'rxjs/operators';
 import { MenuItem } from '@app/core/components/menu.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { PlayerFacade } from '@app/player/store/player.facade';
+import { PictureFacade } from '@app/database/pictures/picture.facade';
+import { PlaylistFacade } from '@app/database/playlists/playlist.facade';
+import { SongFacade } from '@app/database/songs/song.facade';
 
 @Component({
   selector: 'app-playlist',
@@ -79,8 +77,6 @@ import { PlayerFacade } from '@app/player/store/player.facade';
 export class PlaylistComponent implements OnInit {
   @Input() playlist!: Playlist;
 
-  @Output() update = new EventEmitter<Playlist>();
-
   icons = Icons;
 
   menuItems!: MenuItem[];
@@ -90,30 +86,35 @@ export class PlaylistComponent implements OnInit {
   color$!: Observable<any>;
 
   constructor(
-    private library: LibraryFacade,
+    // private library: LibraryFacade,
+    private playlists: PlaylistFacade,
+    private songs: SongFacade,
+    private pictures: PictureFacade,
     private snack: MatSnackBar,
-    private player: PlayerFacade,
-    @Optional() private cdr: ChangeDetectorRef
+    private player: PlayerFacade
   ) {}
 
   ngOnInit(): void {
     this.updateMenu();
 
-    this.cover$ = this.library.getCover(this.playlist.pictureKey);
+    this.cover$ = this.pictures.getCover(this.playlist.pictureKey);
 
-    this.color$ = this.cover$.pipe(
-      concatMap((cover) =>
-        !cover
-          ? of(undefined)
-          : from(import('node-vibrant')).pipe(
-              concatMap((vibrant) => vibrant.default.from(cover).getPalette()),
-              map((palette) => palette.Vibrant?.getRgb()),
-              map((rgb) =>
-                !!rgb ? `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, 0.5)` : undefined
-              )
-            )
-      )
-    );
+    // TODO
+    this.color$ = of('red');
+
+    // this.color$ = this.cover$.pipe(
+    //   concatMap((cover) =>
+    //     !cover
+    //       ? of(undefined)
+    //       : from(import('node-vibrant')).pipe(
+    //           concatMap((vibrant) => vibrant.default.from(cover).getPalette()),
+    //           map((palette) => palette.Vibrant?.getRgb()),
+    //           map((rgb) =>
+    //             !!rgb ? `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, 0.5)` : undefined
+    //           )
+    //         )
+    //   )
+    // );
   }
 
   play(): void {
@@ -122,10 +123,11 @@ export class PlaylistComponent implements OnInit {
     //   this.state = 'playing';
     //   this.cdr.markForCheck();
     // }, 1000);
-    this.library
-      .getPlaylistSongs(this.playlist)
+
+    this.songs
+      .getAllKeys(this.playlist.songs)
       .pipe(
-        toArray(),
+        first(),
         tap((songs) => {
           this.player.setPlaying();
           this.player.setPlaylist(songs, 0);
@@ -135,28 +137,37 @@ export class PlaylistComponent implements OnInit {
       .subscribe();
   }
 
-  toggleLikePlaylist(): void {
-    this.library
-      .togglePlaylistFavorite(this.playlist)
-      .pipe(
-        tap(
-          () =>
-            (this.playlist.likedOn = !!this.playlist.likedOn
-              ? undefined
-              : new Date())
-        ),
-        tap(() => this.updateMenu()),
-        tap(() => this.update.next(this.playlist)),
-        tap(() =>
-          this.snack.open(
-            !!this.playlist.likedOn
-              ? 'Added to your likes'
-              : 'Removed from your likes'
-          )
-        )
-      )
-      // .pipe(tap(() => this.cdr.markForCheck()))
-      .subscribe();
+  toggleLiked(): void {
+    this.playlists.toggleLiked(this.playlist);
+
+    // TODO effect
+    this.snack.open(
+      !!this.playlist.likedOn
+        ? 'Removed from your likes'
+        : 'Added to your likes'
+    );
+
+    // this.library
+    //   .togglePlaylistFavorite(this.playlist)
+    //   .pipe(
+    //     tap(
+    //       () =>
+    //         (this.playlist.likedOn = !!this.playlist.likedOn
+    //           ? undefined
+    //           : new Date())
+    //     ),
+    //     tap(() => this.updateMenu()),
+    //     // tap(() => this.update.next(this.playlist)),
+    //     tap(() =>
+    //       this.snack.open(
+    //         !!this.playlist.likedOn
+    //           ? 'Added to your likes'
+    //           : 'Removed from your likes'
+    //       )
+    //     )
+    //   )
+    //   // .pipe(tap(() => this.cdr.markForCheck()))
+    //   .subscribe();
   }
 
   updateMenu(): void {
@@ -188,7 +199,7 @@ export class PlaylistComponent implements OnInit {
         text: !!this.playlist.likedOn
           ? 'Remove from your likes'
           : 'Add to your likes',
-        click: () => this.toggleLikePlaylist(),
+        click: () => this.toggleLiked(),
       },
       {
         icon: Icons.playlistPlus,

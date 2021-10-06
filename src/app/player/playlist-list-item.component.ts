@@ -13,7 +13,7 @@ import { hash } from '@app/core/utils/hash.util';
 import { MatMenuTrigger } from '@angular/material/menu';
 import { ComponentHelperService } from '@app/core/services/component-helper.service';
 import { Observable } from 'rxjs';
-import { LibraryFacade } from '@app/library/store/library.facade';
+import { PictureFacade } from '@app/database/pictures/picture.facade';
 
 @Component({
   selector: 'app-playlist-list-item',
@@ -180,11 +180,11 @@ export class PlaylistListItemComponent implements OnInit {
   constructor(
     private helper: ComponentHelperService,
     private cdr: ChangeDetectorRef,
-    private library: LibraryFacade
+    private pictures: PictureFacade
   ) {}
 
   ngOnInit(): void {
-    this.cover$ = this.library.getCover(this.song.pictureKey);
+    this.cover$ = this.pictures.getCover(this.song.pictureKey);
   }
 
   getHash(s: string): string {
@@ -204,7 +204,7 @@ export class PlaylistListItemComponent implements OnInit {
   }
 
   addToPlaylist(song: Song): void {
-    this.helper.addSongsToPlaylist([song]).subscribe();
+    this.helper.addSongsToPlaylist([song]);
   }
 
   removeFromQueue(song: Song): void {

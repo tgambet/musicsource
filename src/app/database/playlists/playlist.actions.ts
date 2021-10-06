@@ -18,3 +18,8 @@ export const updatePlaylist = createAction(
   '[Playlist] Update Playlist',
   props<{ update: Update<Playlist> }>()
 );
+
+export const createPlaylist = createAction(
+  '[Playlist] Create Playlist',
+  props<{ playlist: Playlist }>()
+);

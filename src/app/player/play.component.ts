@@ -15,6 +15,7 @@ import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { Song } from '@app/database/songs/song.model';
 import { LibraryFacade } from '@app/library/store/library.facade';
 import { Observable } from 'rxjs';
+import { PictureFacade } from '@app/database/pictures/picture.facade';
 
 @Component({
   selector: 'app-play',
@@ -102,7 +103,8 @@ export class PlayComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private player: PlayerFacade,
-    private library: LibraryFacade
+    private library: LibraryFacade,
+    private pictures: PictureFacade
   ) {}
 
   @HostListener('click')
@@ -123,7 +125,7 @@ export class PlayComponent implements OnInit {
       .subscribe();
 
     this.currentCover$ = this.currentSong$.pipe(
-      concatMap((song) => this.library.getCover(song?.pictureKey))
+      concatMap((song) => this.pictures.getCover(song?.pictureKey))
     );
   }
 

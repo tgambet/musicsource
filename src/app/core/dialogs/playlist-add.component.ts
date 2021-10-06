@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { Icons } from '@app/core/utils/icons.util';
-import { Observable, toArray } from 'rxjs';
+import { Observable } from 'rxjs';
 import { Playlist } from '@app/database/playlists/playlist.model';
-import { LibraryFacade } from '@app/library/store/library.facade';
+import { PlaylistFacade } from '@app/database/playlists/playlist.facade';
 
 @Component({
   selector: 'app-playlist-add',
@@ -10,7 +10,7 @@ import { LibraryFacade } from '@app/library/store/library.facade';
     <app-title mat-dialog-title size="small">My playlists</app-title>
     <mat-dialog-content>
       <ng-container *ngFor="let playlist of playlists$ | async">
-        <button mat-menu-item [mat-dialog-close]="playlist.title">
+        <button mat-menu-item [mat-dialog-close]="playlist">
           <app-icon [path]="icons.playlistEdit"></app-icon>
           {{ playlist.title }}
         </button>
@@ -54,9 +54,7 @@ import { LibraryFacade } from '@app/library/store/library.facade';
 export class PlaylistAddComponent {
   icons = Icons;
 
-  playlists$: Observable<Playlist[]> = this.library
-    .getPlaylists('title')
-    .pipe(toArray());
+  playlists$: Observable<Playlist[]> = this.playlists.getAll('title');
 
-  constructor(private library: LibraryFacade) {}
+  constructor(private playlists: PlaylistFacade) {}
 }

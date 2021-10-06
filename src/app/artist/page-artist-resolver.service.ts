@@ -4,12 +4,18 @@ import { PageArtistData } from '@app/artist/page-artist.component';
 import { EMPTY, Observable, of, throwError } from 'rxjs';
 import { LibraryFacade } from '@app/library/store/library.facade';
 import { catchError, concatMap, first, map, take } from 'rxjs/operators';
-import { getCover } from '@app/database/pictures/picture.model';
 import { scanArray } from '@app/core/utils/scan-array.util';
+import { PictureFacade } from '@app/database/pictures/picture.facade';
+import { ArtistFacade } from '@app/database/artists/artist.facade';
 
 @Injectable()
 export class PageArtistResolverService implements Resolve<PageArtistData> {
-  constructor(private library: LibraryFacade, private router: Router) {}
+  constructor(
+    private library: LibraryFacade,
+    private pictures: PictureFacade,
+    private artists: ArtistFacade,
+    private router: Router
+  ) {}
 
   resolve(
     route: ActivatedRouteSnapshot
@@ -22,7 +28,8 @@ export class PageArtistResolverService implements Resolve<PageArtistData> {
       return EMPTY;
     }
 
-    return this.library.getArtistByHash(id).pipe(
+    return this.artists.getByKey(id).pipe(
+      first(),
       concatMap((artist) =>
         !artist ? throwError(() => 'not found') : of(artist)
       ),
@@ -31,11 +38,9 @@ export class PageArtistResolverService implements Resolve<PageArtistData> {
         return EMPTY;
       }),
       concatMap((artist) => {
-        const cover$ = this.library.getPicture(artist.pictureKey).pipe(
-          first(),
-          map((picture) => (picture ? getCover(picture) : undefined))
-        );
+        const cover$ = this.pictures.getCover(artist.pictureKey);
         return cover$.pipe(
+          first(),
           map((cover) => ({
             artist,
             cover,

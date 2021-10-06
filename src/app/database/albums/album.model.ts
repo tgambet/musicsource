@@ -6,7 +6,7 @@ export type Album = {
   albumArtist?: string;
   artists: string[];
   year?: number;
-  pictureKey?: IDBValidKey;
+  pictureKey?: string;
   lastModified: Date;
   likedOn?: Date;
   listenedOn?: Date;

@@ -9,10 +9,12 @@ import {
   Validators,
 } from '@angular/forms';
 import { RoutedDialogDirective } from '@app/core/directives/routed-dialog.directive';
-import { firstValueFrom, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
-import { LibraryFacade } from '@app/library/store/library.facade';
-import { map } from 'rxjs/operators';
+import { first, map } from 'rxjs/operators';
+import { PlaylistFacade } from '@app/database/playlists/playlist.facade';
+import { Playlist } from '@app/database/playlists/playlist.model';
+import { hash } from '@app/core/utils';
 
 // @Directive({
 //   selector: '[appUniquePlaylistTitleValidator]',
@@ -122,9 +124,10 @@ export class PlaylistNewComponent {
       asyncValidators: (
         control: AbstractControl
       ): Observable<ValidationErrors | null> =>
-        this.library
-          .getPlaylist(control.value)
-          .pipe(map((p) => (p ? { taken: 'title' } : null))),
+        this.playlists.getByIndexKey(control.value, 'title').pipe(
+          first(),
+          map((p) => (p.length > 0 ? { taken: 'title' } : null))
+        ),
       updateOn: 'change',
     }),
     description: new FormControl(''),
@@ -133,15 +136,20 @@ export class PlaylistNewComponent {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private library: LibraryFacade
+    private playlists: PlaylistFacade // private library: LibraryFacade
   ) {}
 
   async createPlaylist(): Promise<void> {
     if (this.form.valid) {
-      await firstValueFrom(
-        this.library.createPlaylist(this.form.getRawValue())
-      );
-      await this.dialog.close();
+      const f = this.form.getRawValue();
+      const playlist: Playlist = {
+        songs: [],
+        createdOn: new Date(),
+        hash: hash(f.title + new Date().getTime()),
+        ...f,
+      };
+      this.playlists.create(playlist);
+      this.dialog.close();
     }
   }
 }

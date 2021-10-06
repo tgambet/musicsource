@@ -18,7 +18,7 @@ import {
   scheduled,
 } from 'rxjs';
 import { Artist } from '@app/database/artists/artist.model';
-import { delay, filter, map, switchMap, tap } from 'rxjs/operators';
+import { delay, map, switchMap, tap } from 'rxjs/operators';
 import { Icons } from '@app/core/utils/icons.util';
 import { ComponentHelperService } from '@app/core/services/component-helper.service';
 import { PlayerFacade } from '@app/player/store/player.facade';
@@ -134,7 +134,7 @@ export class LibraryArtistsComponent extends WithTrigger implements OnInit {
     this.artists$ = sort$.pipe(
       switchMap((sort, i) =>
         this.artists.getAll(sort.index as any).pipe(
-          filter((models) => models.length > 0),
+          // filter((models) => models.length > 0),
           switchMap((models, j) => {
             let mods;
             if (sort.likes) {
@@ -161,7 +161,7 @@ export class LibraryArtistsComponent extends WithTrigger implements OnInit {
   trackBy = (index: number, artist: Artist): string => artist.hash;
 
   toggleLiked(artist: Artist): void {
-    this.helper.toggleLikedArtist(artist);
+    this.artists.toggleLiked(artist);
   }
 
   shufflePlay(artist: Artist): void {

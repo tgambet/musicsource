@@ -18,7 +18,7 @@ import {
   scheduled,
 } from 'rxjs';
 import { Album } from '@app/database/albums/album.model';
-import { delay, filter, map, switchMap, tap } from 'rxjs/operators';
+import { delay, map, switchMap, tap } from 'rxjs/operators';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SelectOption } from '@app/core/components/select.component';
 import { WithTrigger } from '@app/core/classes/with-trigger';
@@ -130,7 +130,7 @@ export class LibraryAlbumsComponent
     this.albums$ = sort$.pipe(
       switchMap((sort, i) =>
         this.albums.getAll(sort.index as any).pipe(
-          filter((albums) => albums.length > 0),
+          // filter((albums) => albums.length > 0),
           switchMap((albums, j) => {
             let albs;
             if (sort.likes) {

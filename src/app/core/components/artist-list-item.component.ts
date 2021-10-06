@@ -9,8 +9,8 @@ import {
 import { Artist } from '@app/database/artists/artist.model';
 import { Icons } from '@app/core/utils';
 import { MatMenuTrigger } from '@angular/material/menu';
-import { LibraryFacade } from '@app/library/store/library.facade';
 import { Observable } from 'rxjs';
+import { PictureFacade } from '@app/database/pictures/picture.facade';
 
 @Component({
   selector: 'app-artist-list-item',
@@ -136,9 +136,9 @@ export class ArtistListItemComponent implements OnInit {
 
   cover$!: Observable<string | undefined>;
 
-  constructor(private library: LibraryFacade) {}
+  constructor(private pictures: PictureFacade) {}
 
   ngOnInit(): void {
-    this.cover$ = this.library.getCover(this.artist.pictureKey);
+    this.cover$ = this.pictures.getCover(this.artist.pictureKey);
   }
 }

@@ -3,7 +3,7 @@ import { hash } from '@app/core/utils';
 export type Artist = {
   hash: string;
   name: string;
-  pictureKey?: IDBValidKey;
+  pictureKey?: string;
   likedOn?: Date;
   listenedOn?: Date;
   lastModified: Date;

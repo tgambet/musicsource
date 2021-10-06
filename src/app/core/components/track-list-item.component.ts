@@ -171,6 +171,6 @@ export class TrackListItemComponent {
   }
 
   addSongToPlaylist(song: Song): void {
-    this.helper.addSongsToPlaylist([song]).subscribe();
+    this.helper.addSongsToPlaylist([song]);
   }
 }
