@@ -2,7 +2,6 @@ import {
   ChangeDetectionStrategy,
   Component,
   HostBinding,
-  HostListener,
   OnInit,
 } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
@@ -159,12 +158,12 @@ export class MainComponent implements OnInit {
     private store: Store
   ) {}
 
-  @HostListener('window:scroll', ['$event'])
+  // @HostListener('window:scroll', ['$event'])
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-  setScrolledTop(event: any): void {
-    this.scroller.scroll$.next(event.target.scrollingElement.scrollTop);
-    this.scrolledTop = event.target.scrollingElement.scrollTop === 0;
-  }
+  // setScrolledTop(event: any): void {
+  //   this.scroller.scroll$.next(event.target.scrollingElement.scrollTop);
+  //   this.scrolledTop = event.target.scrollingElement.scrollTop === 0;
+  // }
 
   ngOnInit(): void {
     this.store.dispatch(loadAlbums());
@@ -173,6 +172,9 @@ export class MainComponent implements OnInit {
     // this.store.dispatch(loadPictures());
     this.store.dispatch(loadPlaylists());
     this.store.dispatch(loadSongs());
+
+    // TODO
+    this.scroller.scroll$.subscribe((top) => (this.scrolledTop = top === 0));
     // this.store.dispatch(loadPictures());
     // this.albums.getByYear(2020).subscribe((years) => console.log(years));
   }

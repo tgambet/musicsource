@@ -9,17 +9,16 @@ import {
   ViewChild,
 } from '@angular/core';
 import { SelectOption } from '@app/core/components/select.component';
-import { LibraryFacade } from '@app/library/store/library.facade';
 import { ActivatedRoute, Router } from '@angular/router';
-import { tap, throttleTime } from 'rxjs/operators';
-import { Subscription } from 'rxjs';
+import { map, tap } from 'rxjs/operators';
+import { Observable, Subscription } from 'rxjs';
 import { ScrollerService } from '@app/main/scroller.service';
 
 @Component({
   selector: 'app-library-content',
   template: `
     <a id="top"></a>
-    <div class="filters" #filters [class.scrolled-top]="scrolledTop">
+    <div class="filters" #filters [class.scrolled-top]="scrolledTop$ | async">
       <app-container>
         <app-select
           [options]="sortOptions"
@@ -50,6 +49,7 @@ import { ScrollerService } from '@app/main/scroller.service';
         display: block;
       }
       .filters {
+        background-color: #000;
         position: sticky;
         top: 112px;
         z-index: 101;
@@ -58,7 +58,6 @@ import { ScrollerService } from '@app/main/scroller.service';
         padding: 16px 0;
       }
       .filters.scrolled-top {
-        background-color: #212121;
         border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         margin-bottom: -1px;
         box-shadow: rgba(0, 0, 0, 0.4) 0 5px 6px -3px;
@@ -84,7 +83,7 @@ export class LibraryContentComponent implements OnInit, OnDestroy {
   @Input()
   selectedSortOption!: SelectOption;
 
-  scrolledTop = false;
+  scrolledTop$!: Observable<boolean>;
 
   subscription = new Subscription();
 
@@ -92,7 +91,6 @@ export class LibraryContentComponent implements OnInit, OnDestroy {
   likes = false;
 
   constructor(
-    private library: LibraryFacade,
     private router: Router,
     private route: ActivatedRoute,
     private cdr: ChangeDetectorRef,
@@ -118,20 +116,7 @@ export class LibraryContentComponent implements OnInit, OnDestroy {
         .subscribe()
     );
 
-    setTimeout(() =>
-      this.subscription.add(
-        this.scroller.scroll$
-          .pipe(
-            throttleTime(100, undefined, { leading: true, trailing: true }),
-            tap(() => {
-              this.scrolledTop =
-                this.filters.nativeElement.getBoundingClientRect().y <= 112;
-              this.cdr.markForCheck();
-            })
-          )
-          .subscribe()
-      )
-    );
+    this.scrolledTop$ = this.scroller.scroll$.pipe(map((top) => top >= 324));
   }
 
   ngOnDestroy(): void {

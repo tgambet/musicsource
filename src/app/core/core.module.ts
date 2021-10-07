@@ -47,7 +47,6 @@ import { PlaylistNewComponent } from '@app/core/dialogs/playlist-new.component';
 import { PlaylistAddComponent } from '@app/core/dialogs/playlist-add.component';
 import { ComponentHelperService } from '@app/core/services/component-helper.service';
 import { HistoryService } from '@app/core/services/history.service';
-import { LibraryFacade } from '@app/library/store/library.facade';
 import { ArtistListItemComponent } from '@app/core/components/artist-list-item.component';
 
 const IMPORTS = [
@@ -110,7 +109,7 @@ const PROVIDERS = [
   // MediaSessionService,
   // ResizerService,
   // StorageService,
-  LibraryFacade,
+  // LibraryFacade,
   // PlayerFacade,
 ];
 

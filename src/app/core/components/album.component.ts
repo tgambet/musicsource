@@ -13,7 +13,6 @@ import { MatMenuTrigger } from '@angular/material/menu';
 import { MenuItem } from '@app/core/components/menu.component';
 import { PlayerFacade } from '@app/player/store/player.facade';
 import { ComponentHelperService } from '@app/core/services/component-helper.service';
-import { LibraryFacade } from '@app/library/store/library.facade';
 import { first, map, tap } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { Song } from '@app/database/songs/song.model';
@@ -93,7 +92,6 @@ export class AlbumComponent implements OnInit {
   cover$!: Observable<string | undefined>;
 
   constructor(
-    private library: LibraryFacade,
     private player: PlayerFacade,
     private helper: ComponentHelperService,
     private history: HistoryService,

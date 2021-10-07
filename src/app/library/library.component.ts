@@ -1,15 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  ElementRef,
-  OnDestroy,
-  OnInit,
-  ViewChild,
-} from '@angular/core';
-import { ScrollerService } from '@app/main/scroller.service';
-import { tap, throttleTime } from 'rxjs/operators';
-import { Subscription } from 'rxjs';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 
 @Component({
   selector: 'app-library',
@@ -17,7 +6,7 @@ import { Subscription } from 'rxjs';
     <app-container class="recent">
       <app-recent-activity></app-recent-activity>
     </app-container>
-    <div class="container" #navContainer [class.scrolled-top]="scrolledTop">
+    <div class="container">
       <app-container>
         <nav mat-tab-nav-bar color="accent">
           <a
@@ -108,9 +97,6 @@ import { Subscription } from 'rxjs';
         z-index: 101;
         background: black;
       }
-      .container.scrolled-top {
-        background-color: #212121;
-      }
       a {
         padding: 0;
         margin: 0 16px;
@@ -135,36 +121,4 @@ import { Subscription } from 'rxjs';
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class LibraryComponent implements OnInit, OnDestroy {
-  @ViewChild('navContainer', { static: true })
-  navContainer!: ElementRef;
-
-  scrolledTop = false;
-
-  subscription = new Subscription();
-
-  constructor(
-    private scroller: ScrollerService,
-    private cdr: ChangeDetectorRef
-  ) {}
-
-  ngOnInit(): void {
-    const scrollSub = this.scroller.scroll$
-      .pipe(
-        throttleTime(100, undefined, { leading: true, trailing: true }),
-        tap(
-          () =>
-            (this.scrolledTop =
-              this.navContainer.nativeElement.getBoundingClientRect().y <= 63)
-        ),
-        tap(() => this.cdr.markForCheck())
-      )
-      .subscribe();
-
-    this.subscription.add(scrollSub);
-  }
-
-  ngOnDestroy(): void {
-    this.subscription.unsubscribe();
-  }
-}
+export class LibraryComponent {}

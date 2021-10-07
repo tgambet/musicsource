@@ -3,18 +3,28 @@ import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import { Song } from '@app/database/songs/song.model';
 import {
+  selectSongAll,
   selectSongByAlbumKey,
+  selectSongByArtistKey,
   selectSongByKey,
   selectSongByKeys,
+  selectSongIndexAll,
   selectSongTotal,
 } from '@app/database/songs/song.selectors';
 import { Update } from '@creasource/ngrx-idb';
 import { updateSong } from '@app/database/songs/song.actions';
 import { map } from 'rxjs/operators';
+import { SongIndex } from '@app/database/songs/song.reducer';
 
 @Injectable()
 export class SongFacade {
   constructor(private store: Store) {}
+
+  getAll(index?: SongIndex): Observable<Song[]> {
+    return index
+      ? this.store.select(selectSongIndexAll(index))
+      : this.store.select(selectSongAll);
+  }
 
   getByKey(key: string): Observable<Song | undefined> {
     return this.store.select(selectSongByKey(key));
@@ -22,6 +32,18 @@ export class SongFacade {
 
   getByKeys(keys: string[]): Observable<Song[]> {
     return this.store.select(selectSongByKeys(keys));
+  }
+
+  getByArtistKey(key: string): Observable<Song[] | undefined> {
+    return this.store
+      .select(selectSongByArtistKey(key))
+      .pipe(
+        map(
+          (songs) =>
+            songs &&
+            songs.sort((s1, s2) => (s1.track.no || 0) - (s2.track.no || 0))
+        )
+      );
   }
 
   getByAlbumKey(key: string): Observable<Song[] | undefined> {

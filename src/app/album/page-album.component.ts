@@ -5,9 +5,9 @@ import {
   OnInit,
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { concatMap, Observable, switchMap } from 'rxjs';
+import { concatMap, Observable, ReplaySubject, share, switchMap } from 'rxjs';
 import { Album } from '@app/database/albums/album.model';
-import { filter, first, map, shareReplay, tap } from 'rxjs/operators';
+import { filter, first, map, tap } from 'rxjs/operators';
 import { Song } from '@app/database/songs/song.model';
 import { Icons } from '@app/core/utils/icons.util';
 import { hash } from '@app/core/utils/hash.util';
@@ -159,7 +159,10 @@ export class PageAlbumComponent extends WithTrigger implements OnInit {
       first(),
       concatMap((album) => this.songs.getByAlbumKey(album.hash)),
       filter((songs): songs is Song[] => !!songs),
-      shareReplay(1)
+      share({
+        connector: () => new ReplaySubject(1),
+        resetOnRefCountZero: true,
+      })
     );
 
     this.menuItems = this.getMenuItem();

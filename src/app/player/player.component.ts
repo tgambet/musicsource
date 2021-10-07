@@ -9,17 +9,16 @@ import {
 } from '@angular/core';
 import { Icons } from '@app/core/utils/icons.util';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
-import {
-  filter,
-  map,
-  mapTo,
-  shareReplay,
-  switchMap,
-  tap,
-} from 'rxjs/operators';
-import { LibraryFacade } from '@app/library/store/library.facade';
+import { filter, map, mapTo, switchMap, tap } from 'rxjs/operators';
 import { MatSlider, MatSliderChange } from '@angular/material/slider';
-import { merge, Observable, of, Subscription } from 'rxjs';
+import {
+  merge,
+  Observable,
+  of,
+  ReplaySubject,
+  share,
+  Subscription,
+} from 'rxjs';
 import { Song } from '@app/database/songs/song.model';
 import { PlayerFacade } from '@app/player/store/player.facade';
 import { hash } from '@app/core/utils/hash.util';
@@ -336,7 +335,6 @@ export class PlayerComponent implements OnInit, OnDestroy {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private library: LibraryFacade,
     private player: PlayerFacade,
     private pictures: PictureFacade,
     private songs: SongFacade,
@@ -376,7 +374,12 @@ export class PlayerComponent implements OnInit, OnDestroy {
     this.isPlayRoute =
       this.route.snapshot.parent?.firstChild?.url[0]?.path === 'play';
 
-    const input$ = this.seeker.input.asObservable().pipe(shareReplay(1));
+    const input$ = this.seeker.input.asObservable().pipe(
+      share({
+        connector: () => new ReplaySubject(1),
+        resetOnRefCountZero: true,
+      })
+    );
     const change$ = this.seeker.change.asObservable();
     this.value$ = merge(
       of(true),
