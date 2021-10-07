@@ -88,8 +88,8 @@ export class AlbumComponent implements OnInit {
   icons = Icons;
   menuItems!: MenuItem[];
 
-  song$!: Observable<Song>;
-  playlist$!: Observable<Song[]>;
+  song$!: Observable<Song | undefined>;
+  playlist$!: Observable<Song[] | undefined>;
   cover$!: Observable<string | undefined>;
 
   constructor(
@@ -107,7 +107,7 @@ export class AlbumComponent implements OnInit {
 
     this.playlist$ = this.songs.getByAlbumKey(this.album.hash);
 
-    this.song$ = this.playlist$.pipe(map((pl) => pl[0]));
+    this.song$ = this.playlist$.pipe(map((pl) => pl && pl[0]));
 
     this.cover$ = this.pictures.getCover(this.album.pictureKey);
   }
@@ -141,7 +141,7 @@ export class AlbumComponent implements OnInit {
               first(),
               tap((tracks) => {
                 this.player.setPlaying();
-                this.player.setPlaylist(tracks);
+                this.player.setPlaylist(tracks || []);
                 this.player.shuffle();
                 this.player.show();
               })
@@ -159,7 +159,7 @@ export class AlbumComponent implements OnInit {
             .pipe(
               first(),
               tap((tracks) => {
-                this.player.addToPlaylist(tracks, true);
+                this.player.addToPlaylist(tracks || [], true);
                 this.player.show();
               })
             )
@@ -175,7 +175,7 @@ export class AlbumComponent implements OnInit {
             .pipe(
               first(),
               tap((tracks) => {
-                this.player.addToPlaylist(tracks);
+                this.player.addToPlaylist(tracks || []);
                 this.player.show();
               })
             )
@@ -200,7 +200,7 @@ export class AlbumComponent implements OnInit {
         click: () => {
           this.songs
             .getByAlbumKey(this.album.hash)
-            .pipe(tap((tracks) => this.helper.addSongsToPlaylist(tracks)))
+            .pipe(tap((tracks) => this.helper.addSongsToPlaylist(tracks || [])))
             .subscribe();
         },
       },

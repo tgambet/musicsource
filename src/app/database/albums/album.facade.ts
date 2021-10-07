@@ -22,7 +22,9 @@ export class AlbumFacade {
   }
 
   getByArtistKey(key: string): Observable<Album[] | undefined> {
-    return this.store.select(selectAlbumByArtistKey(key));
+    return this.store
+      .select(selectAlbumByArtistKey(key))
+      .pipe(map((albums) => albums?.filter((a) => a.albumArtist === key)));
   }
 
   getWithArtist(key: string): Observable<Album[] | undefined> {

@@ -1,21 +1,15 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, Resolve, Router } from '@angular/router';
-import { PagePlaylistData } from '@app/playlist/page-playlist.component';
 import { EMPTY, Observable, of, throwError } from 'rxjs';
-import { catchError, concatMap, first } from 'rxjs/operators';
-import { PlaylistFacade } from '@app/database/playlists/playlist.facade';
+import { catchError, concatMap } from 'rxjs/operators';
 import { DatabaseService } from '@app/database/database.service';
 import { Playlist } from '@app/database/playlists/playlist.model';
 
 @Injectable()
-export class PagePlaylistResolver implements Resolve<PagePlaylistData> {
-  constructor(
-    private router: Router,
-    private storage: DatabaseService,
-    private playlists: PlaylistFacade
-  ) {}
+export class PagePlaylistResolver implements Resolve<string> {
+  constructor(private router: Router, private storage: DatabaseService) {}
 
-  resolve(route: ActivatedRouteSnapshot): Observable<PagePlaylistData> {
+  resolve(route: ActivatedRouteSnapshot): Observable<string> {
     const id = route.paramMap.get('id');
 
     if (!id) {
@@ -23,13 +17,10 @@ export class PagePlaylistResolver implements Resolve<PagePlaylistData> {
       return EMPTY;
     }
 
-    return this.playlists.getByKey(id).pipe(
-      first(),
-      concatMap((playlist) =>
-        playlist ? of(playlist) : this.storage.get$<Playlist>('playlists', id)
-      ),
-      concatMap((p) =>
-        p ? of({ playlist: p }) : throwError(() => 'not found')
+    return this.storage.get$<Playlist>('playlists', id).pipe(
+      concatMap(
+        (model) =>
+          model ? of(model.hash as string) : throwError(() => 'not found') // TODO
       ),
       catchError(() => {
         this.router.navigate(['/library/playlists']);

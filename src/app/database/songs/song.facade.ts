@@ -24,13 +24,16 @@ export class SongFacade {
     return this.store.select(selectSongByKeys(keys));
   }
 
-  getByAlbumKey(key: string): Observable<Song[]> {
-    return this.store.select(selectSongByAlbumKey(key)).pipe(
-      map((songs) => songs || []),
-      map((songs) =>
-        songs.sort((s1, s2) => (s1.track.no || 0) - (s2.track.no || 0))
-      )
-    );
+  getByAlbumKey(key: string): Observable<Song[] | undefined> {
+    return this.store
+      .select(selectSongByAlbumKey(key))
+      .pipe(
+        map(
+          (songs) =>
+            songs &&
+            songs.sort((s1, s2) => (s1.track.no || 0) - (s2.track.no || 0))
+        )
+      );
     // getAlbumTitles = (album: Album): Observable<Song> =>
     //   this.getSongs('albumHash', album.hash).pipe(map(({ value }) => value));
     // this.getAlbumTitles(album).pipe(
