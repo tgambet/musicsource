@@ -133,8 +133,8 @@ import { Song } from '@app/database/songs/song.model';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CoverComponent {
-  @Input() song!: Song | null;
-  @Input() playlist!: Song[] | null;
+  @Input() song!: Song | null | undefined;
+  @Input() playlist!: Song[] | null | undefined;
   @Input() title!: string;
   @Input() coverRouterLink!: any[] | string;
   @Input() menuItems!: MenuItem[];

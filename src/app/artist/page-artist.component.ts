@@ -6,7 +6,7 @@ import {
   OnInit,
 } from '@angular/core';
 import { Icons } from '@app/core/utils/icons.util';
-import { Observable } from 'rxjs';
+import { Observable, switchMap } from 'rxjs';
 import { Artist } from '@app/database/artists/artist.model';
 import { ActivatedRoute } from '@angular/router';
 import { Album } from '@app/database/albums/album.model';
@@ -17,83 +17,79 @@ import { HistoryService } from '@app/core/services/history.service';
 import { WithTrigger } from '@app/core/classes/with-trigger';
 import { ArtistFacade } from '@app/database/artists/artist.facade';
 import { AlbumFacade } from '@app/database/albums/album.facade';
-
-export type PageArtistData = {
-  artist: Artist;
-  cover: string | undefined;
-  // albums$: Observable<Album[]>;
-  foundOn$: Observable<Album[] | undefined>;
-  songs$: Observable<Song[]>;
-};
+import { PictureFacade } from '@app/database/pictures/picture.facade';
+import { SongFacade } from '@app/database/songs/song.facade';
 
 @Component({
   selector: 'app-page-artist',
   template: `
-    <header>
-      <div
-        class="cover"
-        [style.backgroundImage]="'url(' + info.cover + ')'"
-        *ngIf="info.cover"
-      ></div>
-      <div class="shadow"></div>
-      <app-container-page class="header-container">
-        <app-title>{{ info.artist.name }}</app-title>
-        <div class="actions">
-          <button
-            mat-raised-button
-            color="accent"
-            (click)="shufflePlay(info.artist)"
-          >
-            <app-icon [path]="icons.shuffle"></app-icon>
-            <span>Shuffle</span>
-          </button>
-          <!--            <button mat-raised-button color="accent">
+    <ng-container *ngIf="artist$ | async as artist">
+      <header>
+        <div
+          class="cover"
+          [style.backgroundImage]="'url(' + cover + ')'"
+          *ngIf="cover$ | async as cover"
+        ></div>
+        <div class="shadow"></div>
+        <app-container-page class="header-container">
+          <app-title>{{ artist.name }}</app-title>
+          <div class="actions">
+            <button
+              mat-raised-button
+              color="accent"
+              (click)="shufflePlay(artist)"
+            >
+              <app-icon [path]="icons.shuffle"></app-icon>
+              <span>Shuffle</span>
+            </button>
+            <!--            <button mat-raised-button color="accent">
               <app-icon [path]="icons.radio"></app-icon>
               <span>Radio</span>
             </button>-->
-          <button mat-stroked-button (click)="toggleLiked(info.artist)">
-            <app-icon
-              [path]="!!info.artist.likedOn ? icons.heart : icons.heartOutline"
-            ></app-icon>
-            <span *ngIf="!info.artist.likedOn">Add to your likes</span>
-            <span *ngIf="!!info.artist.likedOn">Remove from your likes</span>
-          </button>
-          <!--<app-menu [disableRipple]="true"></app-menu>-->
-        </div>
+            <button mat-stroked-button (click)="toggleLiked(artist)">
+              <app-icon
+                [path]="!!artist.likedOn ? icons.heart : icons.heartOutline"
+              ></app-icon>
+              <span *ngIf="!artist.likedOn">Add to your likes</span>
+              <span *ngIf="!!artist.likedOn">Remove from your likes</span>
+            </button>
+            <!--<app-menu [disableRipple]="true"></app-menu>-->
+          </div>
+        </app-container-page>
+      </header>
+      <app-container-page class="content">
+        <ng-container *ngIf="songs$ | async as songs">
+          <app-title size="small">Songs</app-title>
+          <app-song-list [songs]="songs"></app-song-list>
+        </ng-container>
+        <ng-container *ngIf="albums$ | async as albums">
+          <app-title size="small" *ngIf="albums.length > 0">Albums</app-title>
+          <app-h-list buttonsTopPosition="113px" *ngIf="albums.length > 0">
+            <app-album
+              appHListItem
+              class="album"
+              *ngFor="let album of albums"
+              [album]="album"
+              (menuOpened)="menuOpened($event)"
+            >
+            </app-album>
+          </app-h-list>
+        </ng-container>
+        <ng-container *ngIf="foundOn$ | async as albums">
+          <app-title size="small" *ngIf="albums.length > 0">Found in</app-title>
+          <app-h-list buttonsTopPosition="113px" *ngIf="albums.length > 0">
+            <app-album
+              appHListItem
+              class="album"
+              *ngFor="let album of albums"
+              [album]="album"
+              (menuOpened)="menuOpened($event)"
+            >
+            </app-album>
+          </app-h-list>
+        </ng-container>
       </app-container-page>
-    </header>
-    <app-container-page class="content">
-      <app-title size="small">Songs</app-title>
-      <ng-container *ngIf="info.songs$ | async as songs">
-        <app-song-list [songs]="songs"></app-song-list>
-      </ng-container>
-      <ng-container *ngIf="albums$ | async as albums">
-        <app-title size="small" *ngIf="albums.length > 0">Albums</app-title>
-        <app-h-list buttonsTopPosition="113px" *ngIf="albums.length > 0">
-          <app-album
-            appHListItem
-            class="album"
-            *ngFor="let album of albums"
-            [album]="album"
-            (menuOpened)="menuOpened($event)"
-          >
-          </app-album>
-        </app-h-list>
-      </ng-container>
-      <ng-container *ngIf="info.foundOn$ | async as albums">
-        <app-title size="small" *ngIf="albums.length > 0">Found in</app-title>
-        <app-h-list buttonsTopPosition="113px" *ngIf="albums.length > 0">
-          <app-album
-            appHListItem
-            class="album"
-            *ngFor="let album of albums"
-            [album]="album"
-            (menuOpened)="menuOpened($event)"
-          >
-          </app-album>
-        </app-h-list>
-      </ng-container>
-    </app-container-page>
+    </ng-container>
   `,
   styles: [
     `
@@ -184,9 +180,12 @@ export type PageArtistData = {
 })
 export class PageArtistComponent extends WithTrigger implements OnInit {
   icons = Icons;
-  info!: PageArtistData;
 
+  artist$!: Observable<Artist>;
+  cover$!: Observable<string | undefined>;
   albums$!: Observable<Album[] | undefined>;
+  foundOn$!: Observable<Album[] | undefined>;
+  songs$!: Observable<Song[] | undefined>;
 
   constructor(
     private route: ActivatedRoute,
@@ -194,7 +193,9 @@ export class PageArtistComponent extends WithTrigger implements OnInit {
     private helper: ComponentHelperService,
     private history: HistoryService,
     private artists: ArtistFacade,
-    private albums: AlbumFacade
+    private pictures: PictureFacade,
+    private albums: AlbumFacade,
+    private songs: SongFacade
   ) {
     super();
   }
@@ -206,9 +207,19 @@ export class PageArtistComponent extends WithTrigger implements OnInit {
   }
 
   ngOnInit(): void {
-    this.info = this.route.snapshot.data.info;
+    const artistKey = this.route.snapshot.data.info;
 
-    this.albums$ = this.albums.getByArtistKey(this.info.artist.name);
+    this.artist$ = this.artists.getByKey(artistKey) as Observable<Artist>;
+
+    this.cover$ = this.artist$.pipe(
+      switchMap((artist) => this.pictures.getCover(artist.pictureKey))
+    );
+
+    this.albums$ = this.albums.getByArtistKey(artistKey); // TODO hash vs name
+
+    this.foundOn$ = this.albums.getWithArtist(artistKey); // TODO hash vs name
+
+    this.songs$ = this.songs.getByAlbumKey(''); // TODO
   }
 
   getHash(albumArtist: string): string {

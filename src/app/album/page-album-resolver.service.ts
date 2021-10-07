@@ -30,11 +30,11 @@ export class PageAlbumResolverService implements Resolve<string> {
     }
 
     return this.storage.get$<Album>('albums', id).pipe(
-      concatMap((p) =>
-        p ? of(p.hash as string) : throwError(() => 'not found')
+      concatMap((model) =>
+        model ? of(model.hash as string) : throwError(() => 'not found')
       ),
       catchError(() => {
-        this.router.navigate(['/library/playlists']);
+        this.router.navigate(['/library/albums']);
         return EMPTY;
       })
     );
