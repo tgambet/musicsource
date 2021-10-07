@@ -46,7 +46,7 @@ import { tap } from 'rxjs/operators';
         box-sizing: border-box;
         width: 100vw;
         white-space: nowrap;
-        background: rgb(33, 33, 33);
+        background: #000;
         z-index: 100;
         font-weight: 500;
         font-size: 20px;
@@ -58,11 +58,11 @@ import { tap } from 'rxjs/operators';
         border-bottom: none;
       }
       :host-context(.cdk-global-scrollblock) {
-        background: rgb(33, 33, 33);
+        background: #000;
         border-bottom: 1px solid rgba(255, 255, 255, 0.1);
       }
       :host-context(.with-background) {
-        background: rgb(33, 33, 33);
+        background: #000;
         border-bottom: none;
       }
       h1 {

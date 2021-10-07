@@ -1,12 +1,31 @@
 import { Injectable } from '@angular/core';
-import { ReplaySubject } from 'rxjs';
+import {
+  asapScheduler,
+  distinctUntilChanged,
+  fromEvent,
+  Observable,
+  ReplaySubject,
+  share,
+} from 'rxjs';
+import { map, throttleTime } from 'rxjs/operators';
 
 @Injectable()
 export class ScrollerService {
-  scroll$ = new ReplaySubject<number>(1);
-  // topBarTop$ = new Subject<boolean>();
+  scroll$: Observable<number>;
 
   constructor() {
-    this.scroll$.next(0);
+    this.scroll$ = fromEvent(window, 'scroll').pipe(
+      throttleTime(10, asapScheduler, {
+        leading: true,
+        trailing: true,
+      }),
+      // debounceTime(25, animationFrameScheduler),
+      map((event: any) => event.target.scrollingElement.scrollTop),
+      distinctUntilChanged(),
+      share({
+        connector: () => new ReplaySubject(1),
+        resetOnRefCountZero: true,
+      })
+    );
   }
 }

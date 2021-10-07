@@ -6,19 +6,10 @@ import {
   OnInit,
 } from '@angular/core';
 import { SelectOption } from '@app/core/components/select.component';
-import { LibraryFacade } from '@app/library/store/library.facade';
 import { ActivatedRoute } from '@angular/router';
-import {
-  animationFrameScheduler,
-  bufferWhen,
-  mergeMap,
-  Observable,
-  of,
-  scan,
-  scheduled,
-} from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { Artist } from '@app/database/artists/artist.model';
-import { delay, map, switchMap, tap } from 'rxjs/operators';
+import { map, switchMap, tap } from 'rxjs/operators';
 import { Icons } from '@app/core/utils/icons.util';
 import { ComponentHelperService } from '@app/core/services/component-helper.service';
 import { PlayerFacade } from '@app/player/store/player.facade';
@@ -90,7 +81,6 @@ export class LibraryArtistsComponent extends WithTrigger implements OnInit {
 
   constructor(
     private player: PlayerFacade,
-    private library: LibraryFacade,
     private route: ActivatedRoute,
     private helper: ComponentHelperService,
     private cdr: ChangeDetectorRef,
@@ -132,10 +122,10 @@ export class LibraryArtistsComponent extends WithTrigger implements OnInit {
     // );
 
     this.artists$ = sort$.pipe(
-      switchMap((sort, i) =>
+      switchMap((sort) =>
         this.artists.getAll(sort.index as any).pipe(
           // filter((models) => models.length > 0),
-          switchMap((models, j) => {
+          switchMap((models) => {
             let mods;
             if (sort.likes) {
               mods = models.filter((a) => !!a.likedOn);
@@ -145,13 +135,14 @@ export class LibraryArtistsComponent extends WithTrigger implements OnInit {
             if (sort.direction === 'prev') {
               mods.reverse();
             }
-            return j === 0 && i === 0
-              ? of(...mods).pipe(
-                  mergeMap((model, index) => of(model).pipe(delay(10 * index))),
-                  bufferWhen(() => scheduled(of(1), animationFrameScheduler)),
-                  scan((acc, curr) => [...acc, ...curr])
-                )
-              : of(mods);
+            return of(mods);
+            // return j === 0 && i === 0
+            //   ? of(...mods).pipe(
+            //       mergeMap((model, index) => of(model).pipe(delay(10 * index))),
+            //       bufferWhen(() => scheduled(of(1), animationFrameScheduler)),
+            //       scan((acc, curr) => [...acc, ...curr])
+            //     )
+            //   : of(mods);
           })
         )
       )

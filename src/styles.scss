@@ -169,7 +169,7 @@ html {
 
 html,
 body {
-  height: 100%;
+  min-height: 100%;
 }
 body {
   margin: 0;
@@ -245,6 +245,8 @@ app-player .mat-slider:not(.mat-slider-sliding).cdk-focused .mat-slider-thumb {
   box-sizing: border-box;
 }
 *::-webkit-scrollbar-thumb {
+  min-height: 50px; // TODO
+
   background-color: mat.get-color-from-palette(
     map-get($musicsource-theme, foreground),
     disabled-button

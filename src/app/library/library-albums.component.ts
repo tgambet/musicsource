@@ -1,24 +1,15 @@
 import {
   AfterContentInit,
+  AfterViewInit,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
   HostListener,
   OnInit,
 } from '@angular/core';
-import { LibraryFacade } from '@app/library/store/library.facade';
-import {
-  animationFrameScheduler,
-  bufferWhen,
-  EMPTY,
-  mergeMap,
-  Observable,
-  of,
-  scan,
-  scheduled,
-} from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { Album } from '@app/database/albums/album.model';
-import { delay, map, switchMap, tap } from 'rxjs/operators';
+import { map, switchMap, tap } from 'rxjs/operators';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SelectOption } from '@app/core/components/select.component';
 import { WithTrigger } from '@app/core/classes/with-trigger';
@@ -67,7 +58,7 @@ import { AlbumFacade } from '@app/database/albums/album.facade';
 })
 export class LibraryAlbumsComponent
   extends WithTrigger
-  implements OnInit, AfterContentInit
+  implements OnInit, AfterContentInit, AfterViewInit
 {
   albums$!: Observable<Album[]>;
 
@@ -83,19 +74,23 @@ export class LibraryAlbumsComponent
   likes?: boolean;
 
   constructor(
-    private library: LibraryFacade,
     private router: Router,
     private route: ActivatedRoute,
     private cdr: ChangeDetectorRef,
     private albums: AlbumFacade
   ) {
     super();
+    console.log(new Date().getTime());
   }
 
   @HostListener('window:scroll')
   @HostListener('click')
   closeMenu(): void {
     super.closeMenu();
+  }
+
+  ngAfterViewInit(): void {
+    console.log(new Date().getTime());
   }
 
   ngOnInit(): void {
@@ -110,12 +105,9 @@ export class LibraryAlbumsComponent
     //       .pipe(scanArray());
     //   })
     // );
-    this.albums$ = EMPTY;
-  }
 
-  trackBy = (index: number, album: Album): string => album.hash;
+    console.log(new Date().getTime());
 
-  ngAfterContentInit(): void {
     const sort$ = this.route.queryParamMap.pipe(
       map((params) => ({
         index: params.get('sort') || 'year',
@@ -128,10 +120,10 @@ export class LibraryAlbumsComponent
     );
 
     this.albums$ = sort$.pipe(
-      switchMap((sort, i) =>
+      switchMap((sort) =>
         this.albums.getAll(sort.index as any).pipe(
           // filter((albums) => albums.length > 0),
-          switchMap((albums, j) => {
+          switchMap((albums) => {
             let albs;
             if (sort.likes) {
               albs = albums.filter((a) => !!a.likedOn);
@@ -141,17 +133,24 @@ export class LibraryAlbumsComponent
             if (sort.direction === 'prev') {
               albs.reverse();
             }
-            return i === 0 && j === 0
-              ? of(...albs).pipe(
-                  mergeMap((album, index) => of(album).pipe(delay(10 * index))),
-                  bufferWhen(() => scheduled(of(1), animationFrameScheduler)),
-                  scan((acc, curr) => [...acc, ...curr])
-                )
-              : of(albs);
+            return of(albs);
+            // return i === 0 && j === 0
+            //   ? of(...albs).pipe(
+            //       mergeMap((album, index) => of(album).pipe(delay(10 * index))),
+            //       bufferWhen(() => scheduled(of(1), animationFrameScheduler)),
+            //       scan((acc, curr) => [...acc, ...curr])
+            //     )
+            //   : of(albs);
           })
         )
       )
     );
+  }
+
+  trackBy = (index: number, album: Album): string => album.hash;
+
+  ngAfterContentInit(): void {
+    console.log(new Date().getTime());
   }
 
   // getHash(albumArtist: string): string {

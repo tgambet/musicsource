@@ -1,9 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Artist } from '@app/database/artists/artist.model';
-import { first, map, tap } from 'rxjs/operators';
-import { LibraryFacade } from '@app/library/store/library.facade';
+import { filter, first, map, tap } from 'rxjs/operators';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { combineLatest, Observable, toArray } from 'rxjs';
+import { combineLatest, Observable } from 'rxjs';
 import { Song } from '@app/database/songs/song.model';
 import { PlaylistAddComponent } from '@app/core/dialogs/playlist-add.component';
 import { MatDialog } from '@angular/material/dialog';
@@ -11,16 +10,17 @@ import { Router } from '@angular/router';
 import { shuffleArray } from '@app/core/utils/shuffle-array.util';
 import { PlayerFacade } from '@app/player/store/player.facade';
 import { PlaylistFacade } from '@app/database/playlists/playlist.facade';
+import { SongFacade } from '@app/database/songs/song.facade';
 
 @Injectable()
 export class ComponentHelperService {
   constructor(
     private player: PlayerFacade,
-    private library: LibraryFacade,
     private snack: MatSnackBar,
     private dialog: MatDialog,
     private router: Router,
-    private playlists: PlaylistFacade
+    private playlists: PlaylistFacade,
+    private songs: SongFacade
   ) {}
 
   // toggleLikedSong(song: Song): Observable<Song> {
@@ -133,8 +133,8 @@ export class ComponentHelperService {
   }
 
   shufflePlayArtist(artist: Artist): Observable<Song[]> {
-    return this.library.getArtistTitles(artist).pipe(
-      toArray(),
+    return this.songs.getByArtistKey(artist.name).pipe(
+      filter((songs): songs is Song[] => !!songs),
       map((songs) => shuffleArray(songs)),
       map((songs) => songs.slice(0, 100)),
       tap((songs) => {

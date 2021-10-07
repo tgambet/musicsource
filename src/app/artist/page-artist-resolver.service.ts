@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, Resolve, Router } from '@angular/router';
 import { EMPTY, Observable, of, throwError } from 'rxjs';
-import { LibraryFacade } from '@app/library/store/library.facade';
 import { catchError, concatMap } from 'rxjs/operators';
 import { PictureFacade } from '@app/database/pictures/picture.facade';
 import { ArtistFacade } from '@app/database/artists/artist.facade';
@@ -13,7 +12,6 @@ import { Artist } from '@app/database/artists/artist.model';
 export class PageArtistResolverService implements Resolve<string> {
   constructor(
     private storage: DatabaseService,
-    private library: LibraryFacade,
     private pictures: PictureFacade,
     private artists: ArtistFacade,
     private albums: AlbumFacade,

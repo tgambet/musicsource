@@ -6,7 +6,6 @@ import {
 } from '@angular/core';
 import { Song } from '@app/database/songs/song.model';
 import { EMPTY, Observable } from 'rxjs';
-import { LibraryFacade } from '@app/library/store/library.facade';
 import { first, tap } from 'rxjs/operators';
 import { Icons } from '@app/core/utils/icons.util';
 import { SongListComponent } from '@app/core/components/song-list.component';
@@ -114,10 +113,7 @@ export class PagePlaylistLikesComponent implements OnInit {
     },
   ];
 
-  constructor(
-    private library: LibraryFacade,
-    private helper: ComponentHelperService
-  ) {}
+  constructor(private helper: ComponentHelperService) {}
 
   ngOnInit(): void {
     this.songs$ = EMPTY;
