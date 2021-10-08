@@ -27,7 +27,7 @@ import { SongFacade } from '@app/database/songs/song.facade';
     <app-cover
       [title]="album.name"
       [menuItems]="menuItems"
-      [coverRouterLink]="['/', 'album', album.hash]"
+      [coverRouterLink]="['/', 'album', album.id]"
       (menuOpened)="menuOpened.emit($event)"
       (playlistPlayed)="albumPlayed()"
       tabindex="-1"
@@ -44,7 +44,7 @@ import { SongFacade } from '@app/database/songs/song.facade';
       </ng-template>
     </app-cover>
     <app-label
-      [topLabel]="{ text: album.name, routerLink: ['/', 'album', album.hash] }"
+      [topLabel]="{ text: album.name, routerLink: ['/', 'album', album.id] }"
       [bottomLabel]="[
         'Album',
         album.albumArtist
@@ -103,7 +103,7 @@ export class AlbumComponent implements OnInit {
   ngOnInit(): void {
     this.updateMenu();
 
-    this.playlist$ = this.songs.getByAlbumKey(this.album.hash);
+    this.playlist$ = this.songs.getByAlbumKey(this.album.id);
 
     this.song$ = this.playlist$.pipe(map((pl) => pl && pl[0]));
 
@@ -134,7 +134,7 @@ export class AlbumComponent implements OnInit {
         text: 'Shuffle play',
         click: () => {
           this.songs
-            .getByAlbumKey(this.album.hash)
+            .getByAlbumKey(this.album.id)
             .pipe(
               first(),
               tap((tracks) => {
@@ -153,7 +153,7 @@ export class AlbumComponent implements OnInit {
         text: 'Play next',
         click: () => {
           this.songs
-            .getByAlbumKey(this.album.hash)
+            .getByAlbumKey(this.album.id)
             .pipe(
               first(),
               tap((tracks) => {
@@ -169,7 +169,7 @@ export class AlbumComponent implements OnInit {
         text: 'Add to queue',
         click: () => {
           this.songs
-            .getByAlbumKey(this.album.hash)
+            .getByAlbumKey(this.album.id)
             .pipe(
               first(),
               tap((tracks) => {
@@ -197,7 +197,7 @@ export class AlbumComponent implements OnInit {
         text: 'Add to playlist',
         click: () => {
           this.songs
-            .getByAlbumKey(this.album.hash)
+            .getByAlbumKey(this.album.id)
             .pipe(tap((tracks) => this.helper.addSongsToPlaylist(tracks || [])))
             .subscribe();
         },

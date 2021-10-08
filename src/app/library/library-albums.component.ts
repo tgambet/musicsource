@@ -147,7 +147,7 @@ export class LibraryAlbumsComponent
     );
   }
 
-  trackBy = (index: number, album: Album): string => album.hash;
+  trackBy = (index: number, album: Album): string => album.id;
 
   ngAfterContentInit(): void {
     console.log(new Date().getTime());

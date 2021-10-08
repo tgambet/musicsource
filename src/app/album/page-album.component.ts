@@ -6,7 +6,7 @@ import {
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { concatMap, Observable, ReplaySubject, share, switchMap } from 'rxjs';
-import { Album } from '@app/database/albums/album.model';
+import { Album, AlbumId } from '@app/database/albums/album.model';
 import { filter, first, map, tap } from 'rxjs/operators';
 import { Song } from '@app/database/songs/song.model';
 import { Icons } from '@app/core/utils/icons.util';
@@ -147,7 +147,7 @@ export class PageAlbumComponent extends WithTrigger implements OnInit {
   }
 
   ngOnInit(): void {
-    const albumKey = this.route.snapshot.data.info;
+    const albumKey = this.route.snapshot.data.info as AlbumId;
 
     this.album$ = this.albums.getByKey(albumKey) as Observable<Album>;
 
@@ -157,7 +157,7 @@ export class PageAlbumComponent extends WithTrigger implements OnInit {
 
     this.songs$ = this.album$.pipe(
       first(),
-      concatMap((album) => this.songs.getByAlbumKey(album.hash)),
+      concatMap((album) => this.songs.getByAlbumKey(album.id)),
       filter((songs): songs is Song[] => !!songs),
       share({
         connector: () => new ReplaySubject(1),

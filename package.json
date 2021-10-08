@@ -26,8 +26,8 @@
     "@angular/platform-browser-dynamic": "~12.2.6",
     "@angular/router": "~12.2.6",
     "@angular/service-worker": "^12.2.6",
-    "@creasource/ngx-idb": "^0.0.2",
     "@creasource/ngrx-idb": "*",
+    "@creasource/ngx-idb": "^0.0.2",
     "@creasource/reactive-idb": "^1.2.1",
     "@mdi/js": "^6.1.95",
     "@ngrx/effects": "^12.4.0",
@@ -37,6 +37,7 @@
     "node-vibrant": "^3.1.6",
     "rxjs": "~7.3.0",
     "tslib": "^2.3.1",
+    "type-fest": "^2.3.4",
     "zone.js": "~0.11.4"
   },
   "devDependencies": {
