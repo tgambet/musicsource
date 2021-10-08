@@ -4,11 +4,11 @@ import { EMPTY, Observable, of, throwError } from 'rxjs';
 import { catchError, concatMap } from 'rxjs/operators';
 import { PictureFacade } from '@app/database/pictures/picture.facade';
 import { AlbumFacade } from '@app/database/albums/album.facade';
-import { Album } from '@app/database/albums/album.model';
+import { Album, AlbumId } from '@app/database/albums/album.model';
 import { DatabaseService } from '@app/database/database.service';
 
 @Injectable()
-export class PageAlbumResolverService implements Resolve<string> {
+export class PageAlbumResolverService implements Resolve<AlbumId> {
   constructor(
     private pictures: PictureFacade,
     private storage: DatabaseService,
@@ -19,7 +19,7 @@ export class PageAlbumResolverService implements Resolve<string> {
   resolve(
     route: ActivatedRouteSnapshot
     // state: RouterStateSnapshot
-  ): Observable<string> | Observable<never> {
+  ): Observable<AlbumId> | Observable<never> {
     const id = route.paramMap.get('id');
 
     if (!id) {
@@ -29,7 +29,7 @@ export class PageAlbumResolverService implements Resolve<string> {
 
     return this.storage.get$<Album>('albums', id).pipe(
       concatMap((model) =>
-        model ? of(model.hash as string) : throwError(() => 'not found')
+        model ? of(model.id) : throwError(() => 'not found')
       ),
       catchError(() => {
         this.router.navigate(['/library/albums']);

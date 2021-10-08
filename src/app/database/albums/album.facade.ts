@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
-import { Album } from '@app/database/albums/album.model';
+import { Album, AlbumId } from '@app/database/albums/album.model';
 import {
   selectAlbumByArtistKey,
   selectAlbumByKey,
@@ -17,7 +17,7 @@ import { map } from 'rxjs/operators';
 export class AlbumFacade {
   constructor(private store: Store) {}
 
-  getByKey(key: string): Observable<Album | undefined> {
+  getByKey(key: AlbumId): Observable<Album | undefined> {
     return this.store.select(selectAlbumByKey(key));
   }
 
@@ -57,6 +57,6 @@ export class AlbumFacade {
 
   toggleLiked(album: Album): void {
     const update = { likedOn: !!album.likedOn ? undefined : new Date() };
-    this.update({ key: album.hash, changes: update });
+    this.update({ key: album.id, changes: update });
   }
 }

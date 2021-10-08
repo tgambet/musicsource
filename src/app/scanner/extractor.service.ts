@@ -8,7 +8,7 @@ import { IPicture } from 'music-metadata/lib/type';
 import { hash } from '@app/core/utils/hash.util';
 import { Song } from '@app/database/songs/song.model';
 import { Picture } from '@app/database/pictures/picture.model';
-import { Album } from '@app/database/albums/album.model';
+import { getAlbumId } from '@app/database/albums/album.model';
 
 @Injectable()
 export class ExtractorService {
@@ -45,7 +45,7 @@ export class ExtractorService {
             return right({
               song: {
                 ...common,
-                albumHash: Album.getHash(common.albumartist, common.album),
+                albumHash: getAlbumId(common.albumartist, common.album),
                 lastModified: new Date(file.lastModified),
                 entryPath: entry.path,
                 duration: format.duration,

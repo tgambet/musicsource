@@ -59,7 +59,7 @@ import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ScannerFacade } from '@app/scanner/store/scanner.facade';
 import { collectLeft, collectRight } from '@app/core/utils/either.util';
-import { Album } from '@app/database/albums/album.model';
+import { Album, getAlbumId } from '@app/database/albums/album.model';
 import { SetRequired } from '@app/core/utils/types.util';
 import { Song } from '@app/database/songs/song.model';
 import { hash } from '@app/core/utils/hash.util';
@@ -300,13 +300,13 @@ export class ScannerEffects implements OnRunEffects {
               modifiedDate.setMinutes(0, 0, 0);
 
               return {
+                id: getAlbumId(albumArtist, album),
                 name: album,
                 albumArtist,
                 artists,
                 year: songs[0].year,
                 pictureKey: songs.find((song) => song.pictureKey)?.pictureKey,
                 lastModified: modifiedDate,
-                hash: Album.getHash(albumArtist, album),
               };
             }),
             concatMap((album) =>
