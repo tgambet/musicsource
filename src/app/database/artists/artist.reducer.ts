@@ -22,7 +22,7 @@ const indexNames = artistIndexes.map((i) => i.name);
 export type ArtistIndex = typeof indexNames[number];
 
 export const artistAdapter = createIDBEntityAdapter({
-  keySelector: (artist: Artist) => artist.hash,
+  keySelector: (artist: Artist) => artist.id,
   indexes: artistIndexes,
 });
 
@@ -37,7 +37,7 @@ export const artistReducer = createReducer(
   on(loadArtistsSuccess, (state, action) =>
     artistAdapter.addMany(action.data, state)
   ),
-  on(loadArtistsFailure, (state, action) => state),
+  on(loadArtistsFailure, (state) => state),
   on(updateArtist, (state, action) =>
     artistAdapter.updateOne(action.update, state)
   )

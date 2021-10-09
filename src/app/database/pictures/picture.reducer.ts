@@ -8,7 +8,7 @@ export const pictureFeatureKey = 'pictures';
 export type PictureState = IDBEntityState<Picture, never>;
 
 export const pictureAdapter = createIDBEntityAdapter<Picture, never>({
-  keySelector: (model) => model.hash,
+  keySelector: (model) => model.id,
   indexes: [],
 });
 
@@ -21,5 +21,5 @@ export const pictureReducer = createReducer(
   on(PictureActions.loadPicturesSuccess, (state, { data }) =>
     pictureAdapter.addMany(data, state)
   ),
-  on(PictureActions.loadPicturesFailure, (state, action) => state)
+  on(PictureActions.loadPicturesFailure, (state) => state)
 );

@@ -4,6 +4,7 @@ import {
   pictureFeatureKey,
   PictureState,
 } from './picture.reducer';
+import { PictureId } from '@app/database/pictures/picture.model';
 
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 
@@ -20,5 +21,5 @@ export const {
   selectTotal: selectPictureTotal,
 } = pictureAdapter.getSelectors(selectPictureState);
 
-export const selectPictureByKey = (key: string) =>
+export const selectPictureByKey = (key: PictureId) =>
   createSelector(selectPictureEntities, (entities) => entities[key]);

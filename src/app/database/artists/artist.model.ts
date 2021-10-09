@@ -1,15 +1,16 @@
 import { hash } from '@app/core/utils';
+import { Opaque } from 'type-fest';
+import { PictureId } from '@app/database/pictures/picture.model';
+
+export type ArtistId = Opaque<string, Artist>;
+
+export const getArtistId = (name: string): ArtistId => hash(name) as ArtistId;
 
 export type Artist = {
-  hash: string;
+  id: ArtistId;
   name: string;
-  pictureKey?: string;
+  pictureKey?: PictureId;
   likedOn?: Date;
   listenedOn?: Date;
   lastModified: Date;
-};
-
-// eslint-disable-next-line @typescript-eslint/naming-convention
-export const Artist = {
-  getHash: (name: string): string => hash(name),
 };

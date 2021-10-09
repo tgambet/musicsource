@@ -30,9 +30,8 @@ export class PageArtistResolverService implements Resolve<string> {
     }
 
     return this.storage.get$<Artist>('artists', id).pipe(
-      concatMap(
-        (model) =>
-          model ? of(model.hash as string) : throwError(() => 'not found') // TODO
+      concatMap((model) =>
+        model ? of(model.id) : throwError(() => 'not found')
       ),
       catchError(() => {
         this.router.navigate(['/library/artists']);

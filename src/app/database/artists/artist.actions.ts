@@ -1,6 +1,6 @@
 import { createAction, props } from '@ngrx/store';
 import { Artist } from '@app/database/artists/artist.model';
-import { Update } from '@creasource/ngrx-idb';
+import { IdUpdate } from '@app/core/utils';
 
 export const loadArtists = createAction('[Artist] Load Artists');
 
@@ -16,5 +16,5 @@ export const loadArtistsFailure = createAction(
 
 export const updateArtist = createAction(
   '[Artist] Update Artist',
-  props<{ update: Update<Artist> }>()
+  props<{ update: IdUpdate<Artist> }>()
 );

@@ -6,22 +6,26 @@ import {
   selectPictureByKey,
   selectPictureTotal,
 } from '@app/database/pictures/picture.selectors';
-import { getCover, Picture } from '@app/database/pictures/picture.model';
+import {
+  getCover,
+  Picture,
+  PictureId,
+} from '@app/database/pictures/picture.model';
 import { map } from 'rxjs/operators';
 
 @Injectable()
 export class PictureFacade {
   constructor(private store: Store) {}
 
-  getByKey(key: string): Observable<Picture | undefined> {
+  getByKey(key: PictureId): Observable<Picture | undefined> {
     return this.store.select(selectPictureByKey(key));
   }
 
-  getCover(hash?: string): Observable<string | undefined> {
-    return !hash
+  getCover(key?: PictureId): Observable<string | undefined> {
+    return !key
       ? of(undefined)
       : this.store
-          .select(selectPictureByKey(hash))
+          .select(selectPictureByKey(key))
           .pipe(map((picture) => picture && getCover(picture)));
   }
 
@@ -31,9 +35,5 @@ export class PictureFacade {
 
   getTotal(): Observable<number> {
     return this.store.select(selectPictureTotal);
-  }
-
-  getByHash(hash: string): Observable<Picture | undefined> {
-    return this.store.select(selectPictureByKey(hash));
   }
 }

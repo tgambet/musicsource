@@ -7,7 +7,7 @@ import {
 } from '@angular/core';
 import { Icons } from '@app/core/utils/icons.util';
 import { Observable, switchMap } from 'rxjs';
-import { Artist } from '@app/database/artists/artist.model';
+import { Artist, ArtistId } from '@app/database/artists/artist.model';
 import { ActivatedRoute } from '@angular/router';
 import { Album } from '@app/database/albums/album.model';
 import { Song } from '@app/database/songs/song.model';
@@ -207,7 +207,7 @@ export class PageArtistComponent extends WithTrigger implements OnInit {
   }
 
   ngOnInit(): void {
-    const artistKey = this.route.snapshot.data.info;
+    const artistKey = this.route.snapshot.data.info as ArtistId;
 
     this.artist$ = this.artists.getByKey(artistKey) as Observable<Artist>;
 

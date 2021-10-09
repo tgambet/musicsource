@@ -3,13 +3,13 @@ import { ActivatedRouteSnapshot, Resolve, Router } from '@angular/router';
 import { EMPTY, Observable, of, throwError } from 'rxjs';
 import { catchError, concatMap } from 'rxjs/operators';
 import { DatabaseService } from '@app/database/database.service';
-import { Playlist } from '@app/database/playlists/playlist.model';
+import { Playlist, PlaylistId } from '@app/database/playlists/playlist.model';
 
 @Injectable()
-export class PagePlaylistResolver implements Resolve<string> {
+export class PagePlaylistResolver implements Resolve<PlaylistId> {
   constructor(private router: Router, private storage: DatabaseService) {}
 
-  resolve(route: ActivatedRouteSnapshot): Observable<string> {
+  resolve(route: ActivatedRouteSnapshot): Observable<PlaylistId> {
     const id = route.paramMap.get('id');
 
     if (!id) {
@@ -18,9 +18,8 @@ export class PagePlaylistResolver implements Resolve<string> {
     }
 
     return this.storage.get$<Playlist>('playlists', id).pipe(
-      concatMap(
-        (model) =>
-          model ? of(model.hash as string) : throwError(() => 'not found') // TODO
+      concatMap((model) =>
+        model ? of(model.id) : throwError(() => 'not found')
       ),
       catchError(() => {
         this.router.navigate(['/library/playlists']);

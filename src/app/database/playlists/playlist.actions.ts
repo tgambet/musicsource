@@ -1,6 +1,6 @@
 import { createAction, props } from '@ngrx/store';
 import { Playlist } from '@app/database/playlists/playlist.model';
-import { Update } from '@creasource/ngrx-idb';
+import { IdUpdate } from '@app/core/utils';
 
 export const loadPlaylists = createAction('[Playlist] Load Playlists');
 
@@ -16,7 +16,7 @@ export const loadPlaylistsFailure = createAction(
 
 export const updatePlaylist = createAction(
   '[Playlist] Update Playlist',
-  props<{ update: Update<Playlist> }>()
+  props<{ update: IdUpdate<Playlist> }>()
 );
 
 export const createPlaylist = createAction(

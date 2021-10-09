@@ -1,9 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
-import { Update } from '@creasource/ngrx-idb';
 import { PlaylistIndex } from '@app/database/playlists/playlist.reducer';
-import { Playlist } from '@app/database/playlists/playlist.model';
+import { Playlist, PlaylistId } from '@app/database/playlists/playlist.model';
 import {
   selectPlaylistAll,
   selectPlaylistsByIndexKey,
@@ -16,16 +15,17 @@ import {
   updatePlaylist,
 } from '@app/database/playlists/playlist.actions';
 import { Song } from '@app/database/songs/song.model';
+import { IdUpdate } from '@app/core/utils';
 
 @Injectable()
 export class PlaylistFacade {
   constructor(private store: Store) {}
 
-  getByKey(key: string): Observable<Playlist | undefined> {
+  getByKey(key: PlaylistId): Observable<Playlist | undefined> {
     return this.store.select(selectPlaylistByKey(key));
   }
 
-  getByIndexKey(key: string, index: PlaylistIndex): Observable<Playlist[]> {
+  getByIndexKey(key: PlaylistId, index: PlaylistIndex): Observable<Playlist[]> {
     return this.store.select(selectPlaylistsByIndexKey(key, index));
   }
 
@@ -39,7 +39,7 @@ export class PlaylistFacade {
     return this.store.select(selectPlaylistTotal);
   }
 
-  update(update: Update<Playlist>): void {
+  update(update: IdUpdate<Playlist>): void {
     this.store.dispatch(updatePlaylist({ update }));
   }
 
@@ -51,13 +51,13 @@ export class PlaylistFacade {
     const changes = {
       songs: [...songs.map((s) => s.entryPath), ...playlist.songs],
     };
-    this.update({ key: playlist.hash, changes });
+    this.update({ key: playlist.id, changes });
   }
 
   toggleLiked(playlist: Playlist): void {
     const changes = {
       likedOn: !!playlist.likedOn ? undefined : new Date(),
     };
-    this.update({ key: playlist.hash, changes });
+    this.update({ key: playlist.id, changes });
   }
 }

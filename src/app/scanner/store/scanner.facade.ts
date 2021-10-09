@@ -14,9 +14,12 @@ import { concatMap, filter, map, mapTo } from 'rxjs/operators';
 import { DatabaseService } from '@app/database/database.service';
 import { from, Observable, of } from 'rxjs';
 import { Song } from '@app/database/songs/song.model';
-import { Picture } from '@app/database/pictures/picture.model';
+import {
+  getPictureId,
+  Picture,
+  PictureId,
+} from '@app/database/pictures/picture.model';
 import { Entry, FileEntry } from '@app/database/entries/entry.model';
-import { hash } from '@app/core/utils/hash.util';
 
 @Injectable()
 export class ScannerFacade {
@@ -41,12 +44,12 @@ export class ScannerFacade {
   saveSong(song: Song, pictures?: Picture[]): Observable<Song> {
     return this.storage.open$(['pictures', 'songs'], 'readwrite').pipe(
       concatMap((transaction) => {
-        const makeSong = (key?: string): Song => ({
+        const makeSong = (key?: PictureId): Song => ({
           ...song,
           pictureKey: key,
         });
 
-        const saveSong = (pictureKey?: string) => {
+        const saveSong = (pictureKey?: PictureId) => {
           const song1 = makeSong(pictureKey);
           return (
             this.storage
@@ -64,22 +67,24 @@ export class ScannerFacade {
 
         return transaction
           .objectStore('pictures')
-          .getKey$(pictures[0].hash)
+          .getKey$(pictures[0].id)
           .pipe(
             concatMap((key) =>
               key
-                ? saveSong(key as string)
+                ? saveSong(key as PictureId)
                 : transaction
                     .objectStore('pictures')
                     .add$(pictures[0])
-                    .pipe(concatMap((pictKey) => saveSong(pictKey as string)))
+                    .pipe(
+                      concatMap((pictKey) => saveSong(pictKey as PictureId))
+                    )
             )
           );
       })
     );
   }
 
-  searchForCover(song: Song): Observable<string | undefined> {
+  searchForCover(song: Song): Observable<PictureId | undefined> {
     if (!song.album) {
       return of(undefined);
     }
@@ -114,11 +119,11 @@ export class ScannerFacade {
                 map((buffer: ArrayBuffer) => this.arrayBufferToBase64(buffer)),
                 concatMap(
                   (base64) =>
-                    this.storage.put$('pictures', {
+                    this.storage.put$<Picture>('pictures', {
                       data: base64,
-                      hash: hash(base64),
+                      id: getPictureId(base64),
                       format: this.getFormat(bestFit as FileEntry),
-                    }) as Observable<string>
+                    }) as Observable<PictureId>
                 )
               );
             })

@@ -8,10 +8,11 @@ import {
   selectAlbumIndexAll,
   selectAlbumTotal,
 } from '@app/database/albums/album.selectors';
-import { Update } from '@creasource/ngrx-idb';
 import { updateAlbum } from '@app/database/albums/album.actions';
 import { AlbumIndex } from '@app/database/albums/album.reducer';
 import { map } from 'rxjs/operators';
+import { IdUpdate } from '@app/core/utils';
+import { ArtistId } from '@app/database/artists/artist.model';
 
 @Injectable()
 export class AlbumFacade {
@@ -21,13 +22,13 @@ export class AlbumFacade {
     return this.store.select(selectAlbumByKey(key));
   }
 
-  getByArtistKey(key: string): Observable<Album[] | undefined> {
+  getByArtistKey(key: ArtistId): Observable<Album[] | undefined> {
     return this.store
       .select(selectAlbumByArtistKey(key))
       .pipe(map((albums) => albums?.filter((a) => a.albumArtist === key)));
   }
 
-  getWithArtist(key: string): Observable<Album[] | undefined> {
+  getWithArtist(key: ArtistId): Observable<Album[] | undefined> {
     return this.store
       .select(selectAlbumByArtistKey(key))
       .pipe(map((albums) => albums?.filter((a) => a.albumArtist !== key)));
@@ -51,7 +52,7 @@ export class AlbumFacade {
     return this.store.select(selectAlbumTotal);
   }
 
-  update(update: Update<Album>): void {
+  update(update: IdUpdate<Album>): void {
     this.store.dispatch(updateAlbum({ update }));
   }
 

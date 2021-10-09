@@ -1,10 +1,12 @@
 import { ICommonTagsResult } from 'music-metadata/lib/type';
+import { AlbumId } from '@app/database/albums/album.model';
+import { PictureId } from '@app/database/pictures/picture.model';
 
 export type Song = Omit<ICommonTagsResult, 'picture'> & {
-  albumHash: string;
+  albumId: AlbumId;
   entryPath: string;
   lastModified: Date;
-  pictureKey?: string;
+  pictureKey?: PictureId;
   duration?: number;
   likedOn?: Date;
 };

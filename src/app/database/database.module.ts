@@ -56,7 +56,7 @@ const musicSourceDatabase: ReactiveIDBDatabaseOptions = {
             { name: 'artists', options: { multiEntry: true } },
             { name: 'genre', options: { multiEntry: true } },
             'album',
-            'albumHash',
+            'albumId',
             'title',
             'likedOn',
             'lastModified',
@@ -64,7 +64,7 @@ const musicSourceDatabase: ReactiveIDBDatabaseOptions = {
         },
         {
           name: 'pictures',
-          options: { keyPath: 'hash' },
+          options: { keyPath: 'id' },
         },
         {
           name: 'albums',
@@ -81,12 +81,12 @@ const musicSourceDatabase: ReactiveIDBDatabaseOptions = {
         },
         {
           name: 'artists',
-          options: { keyPath: 'hash' },
+          options: { keyPath: 'id' },
           indexes: ['name', 'likedOn', 'listenedOn', 'lastModified'],
         },
         {
           name: 'playlists',
-          options: { keyPath: 'hash' },
+          options: { keyPath: 'id' },
           indexes: ['title', 'createdOn', 'listenedOn'],
         },
       ],

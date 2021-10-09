@@ -17,8 +17,8 @@ export type PlaylistIndex = typeof indexes[number];
 
 export type PlaylistState = IDBEntityState<Playlist, PlaylistIndex>;
 
-export const playlistAdapter = createIDBEntityAdapter<Playlist, PlaylistIndex>({
-  keySelector: (model) => model.hash,
+export const playlistAdapter = createIDBEntityAdapter({
+  keySelector: (model: Playlist) => model.id,
   indexes,
 });
 

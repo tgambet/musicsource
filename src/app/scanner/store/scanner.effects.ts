@@ -60,12 +60,12 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { ScannerFacade } from '@app/scanner/store/scanner.facade';
 import { collectLeft, collectRight } from '@app/core/utils/either.util';
 import { Album, getAlbumId } from '@app/database/albums/album.model';
-import { SetRequired } from '@app/core/utils/types.util';
 import { Song } from '@app/database/songs/song.model';
-import { hash } from '@app/core/utils/hash.util';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { ScanComponent } from '@app/scanner/scan.component';
 import { NoopScrollStrategy } from '@angular/cdk/overlay';
+import { getArtistId } from '@app/database/artists/artist.model';
+import { SetRequired } from 'type-fest';
 
 // noinspection JSUnusedGlobalSymbols
 @Injectable()
@@ -353,7 +353,7 @@ export class ScannerEffects implements OnRunEffects {
               )[0].lastModified;
 
               return {
-                hash: hash(artist.toString()),
+                id: getArtistId(artist.toString()),
                 name: artist.toString(),
                 pictureKey: latestAlbum?.pictureKey,
                 lastModified: new Date(lastModified),
