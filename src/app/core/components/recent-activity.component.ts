@@ -10,8 +10,8 @@ import { map, take } from 'rxjs/operators';
 import { Album } from '@app/database/albums/album.model';
 import { Artist } from '@app/database/artists/artist.model';
 import { scanArray } from '@app/core/utils/scan-array.util';
-import { SetRequired } from '@app/core/utils/types.util';
 import { WithTrigger } from '@app/core/classes/with-trigger';
+import { SetRequired } from 'type-fest';
 
 export type HistoryItem =
   | (SetRequired<Artist, 'listenedOn'> & { t: 'artist' })
@@ -66,7 +66,6 @@ export type HistoryItem =
 })
 export class RecentActivityComponent extends WithTrigger implements OnInit {
   a$!: Observable<HistoryItem[]>;
-  cover$!: Observable<string | undefined>;
 
   constructor(private history: HistoryService) {
     super();

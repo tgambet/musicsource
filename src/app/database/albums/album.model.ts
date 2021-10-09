@@ -1,5 +1,6 @@
 import { hash } from '@app/core/utils';
 import { Opaque } from 'type-fest';
+import { PictureId } from '@app/database/pictures/picture.model';
 
 export type AlbumId = Opaque<string, Album>;
 
@@ -12,7 +13,7 @@ export type Album = {
   albumArtist?: string;
   artists: string[];
   year?: number;
-  pictureKey?: string;
+  pictureKey?: PictureId;
   lastModified: Date;
   likedOn?: Date;
   listenedOn?: Date;

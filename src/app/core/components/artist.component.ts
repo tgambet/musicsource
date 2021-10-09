@@ -9,7 +9,7 @@ import { PictureFacade } from '@app/database/pictures/picture.facade';
   template: `
     <div class="image">
       <a
-        [routerLink]="['/', 'artist', artist.hash]"
+        [routerLink]="['/', 'artist', artist.id]"
         matRipple
         [title]="artist.name"
         style="--aspect-ratio:1"
@@ -20,15 +20,15 @@ import { PictureFacade } from '@app/database/pictures/picture.facade';
           [alt]="artist.name"
         />
         <ng-template #icon>
-          <app-icon [path]="icons.account" [size]="200"></app-icon
-        ></ng-template>
+          <app-icon [path]="icons.account" [size]="200"></app-icon>
+        </ng-template>
       </a>
     </div>
     <app-label
       align="center"
       [topLabel]="{
         text: artist.name,
-        routerLink: ['/', 'artist', artist.hash]
+        routerLink: ['/', 'artist', artist.id]
       }"
       [bottomLabel]=""
     ></app-label>

@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { Playlist } from '@app/database/playlists/playlist.model';
+import { Playlist, PlaylistId } from '@app/database/playlists/playlist.model';
 import { Observable, of, switchMap } from 'rxjs';
 import { Song } from '@app/database/songs/song.model';
 import { ActivatedRoute } from '@angular/router';
@@ -130,7 +130,7 @@ export class PagePlaylistComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    const playlistKey = this.route.snapshot.data.info;
+    const playlistKey = this.route.snapshot.data.info as PlaylistId;
 
     this.playlist$ = this.playlists.getByKey(
       playlistKey

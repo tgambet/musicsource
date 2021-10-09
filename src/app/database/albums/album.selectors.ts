@@ -4,7 +4,8 @@ import {
   albumFeatureKey,
   AlbumState,
 } from '@app/database/albums/album.reducer';
-import { Album } from '@app/database/albums/album.model';
+import { Album, AlbumId } from '@app/database/albums/album.model';
+import { ArtistId } from '@app/database/artists/artist.model';
 
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 
@@ -21,10 +22,10 @@ export const {
   selectTotal: selectAlbumTotal,
 } = albumAdapter.getSelectors(selectAlbumState);
 
-export const selectAlbumByKey = (key: string) =>
+export const selectAlbumByKey = (key: AlbumId) =>
   createSelector(selectAlbumEntities, (entities) => entities[key]);
 
-export const selectAlbumByArtistKey = (key: string) =>
+export const selectAlbumByArtistKey = (key: ArtistId) =>
   createSelector(
     selectAlbumEntities,
     selectAlbumIndexEntities('artists'),

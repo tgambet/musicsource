@@ -24,7 +24,7 @@ const indexNames = indexes.map((i) => i.name);
 
 export type AlbumIndex = typeof indexNames[number];
 
-export const albumAdapter = createIDBEntityAdapter<Album, AlbumIndex>({
+export const albumAdapter = createIDBEntityAdapter({
   keySelector: (album: Album) => album.id,
   indexes,
 });

@@ -5,7 +5,7 @@ import {
   PlaylistIndex,
   PlaylistState,
 } from './playlist.reducer';
-import { Playlist } from '@app/database/playlists/playlist.model';
+import { Playlist, PlaylistId } from '@app/database/playlists/playlist.model';
 
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 
@@ -22,10 +22,13 @@ export const {
   selectTotal: selectPlaylistTotal,
 } = playlistAdapter.getSelectors(selectPlaylistState);
 
-export const selectPlaylistByKey = (key: string) =>
+export const selectPlaylistByKey = (key: PlaylistId) =>
   createSelector(selectPlaylistEntities, (entities) => entities[key]);
 
-export const selectPlaylistsByIndexKey = (key: string, index: PlaylistIndex) =>
+export const selectPlaylistsByIndexKey = (
+  key: PlaylistId,
+  index: PlaylistIndex
+) =>
   createSelector(
     selectPlaylistEntities,
     selectPlaylistIndexEntities(index),

@@ -149,7 +149,7 @@ export class LibraryArtistsComponent extends WithTrigger implements OnInit {
     );
   }
 
-  trackBy = (index: number, artist: Artist): string => artist.hash;
+  trackBy = (index: number, artist: Artist): string => artist.id;
 
   toggleLiked(artist: Artist): void {
     this.artists.toggleLiked(artist);

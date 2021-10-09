@@ -27,7 +27,7 @@ export const selectSongByKeys = (keys: string[]) =>
 export const selectSongByAlbumKey = (key: string) =>
   createSelector(
     selectSongEntities,
-    selectSongIndexEntities('albumHash'),
+    selectSongIndexEntities('albumId'),
     (entities, index) => index[key]?.map((k) => entities[k as any] as Song)
   );
 

@@ -15,7 +15,7 @@ import { PictureFacade } from '@app/database/pictures/picture.facade';
 @Component({
   selector: 'app-artist-list-item',
   template: `
-    <a [routerLink]="['/', 'artist', artist.hash]" matRipple>
+    <a [routerLink]="['/', 'artist', artist.id]" matRipple>
       <div class="cover" style="--aspect-ratio:1">
         <img
           *ngIf="cover$ | async as cover; else icon"

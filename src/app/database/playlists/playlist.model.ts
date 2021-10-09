@@ -1,9 +1,18 @@
+import { Opaque } from 'type-fest';
+import { hash } from '@app/core/utils';
+import { PictureId } from '@app/database/pictures/picture.model';
+
+export type PlaylistId = Opaque<string, Playlist>;
+
+export const getPlaylistId = (data: string): PlaylistId =>
+  hash(data) as PlaylistId;
+
 export interface Playlist {
+  id: PlaylistId;
   title: string;
-  hash: string;
   description?: string;
   songs: string[];
-  pictureKey?: string;
+  pictureKey?: PictureId;
   createdOn: Date;
   likedOn?: Date;
 }

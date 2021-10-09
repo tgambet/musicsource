@@ -14,7 +14,7 @@ const indexes = [
   { name: 'artists', options: { multiEntry: true } },
   { name: 'genre', options: { multiEntry: true } },
   { name: 'album' },
-  { name: 'albumHash' },
+  { name: 'albumId' },
   { name: 'title' },
   { name: 'likedOn' },
   { name: 'lastModified' },

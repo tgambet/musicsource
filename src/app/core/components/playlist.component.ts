@@ -21,7 +21,7 @@ import { SongFacade } from '@app/database/songs/song.facade';
     <app-cover
       [title]="playlist.title"
       [menuItems]="menuItems"
-      [coverRouterLink]="['/', 'playlist', playlist.hash]"
+      [coverRouterLink]="['/', 'playlist', playlist.id]"
     >
       <ng-container *ngIf="cover$ | async as cover; else icon">
         <ng-container *ngIf="color$ | async as color">
@@ -38,7 +38,7 @@ import { SongFacade } from '@app/database/songs/song.facade';
     <app-label
       [topLabel]="{
         text: playlist.title,
-        routerLink: ['/', 'playlist', playlist.hash]
+        routerLink: ['/', 'playlist', playlist.id]
       }"
       [bottomLabel]="playlist.songs.length + ' songs'"
       size="small"

@@ -13,8 +13,10 @@ import { Observable } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { first, map } from 'rxjs/operators';
 import { PlaylistFacade } from '@app/database/playlists/playlist.facade';
-import { Playlist } from '@app/database/playlists/playlist.model';
-import { hash } from '@app/core/utils';
+import {
+  getPlaylistId,
+  Playlist,
+} from '@app/database/playlists/playlist.model';
 
 // @Directive({
 //   selector: '[appUniquePlaylistTitleValidator]',
@@ -136,16 +138,16 @@ export class PlaylistNewComponent {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private playlists: PlaylistFacade // private library: LibraryFacade
+    private playlists: PlaylistFacade
   ) {}
 
-  async createPlaylist(): Promise<void> {
+  createPlaylist(): void {
     if (this.form.valid) {
       const f = this.form.getRawValue();
       const playlist: Playlist = {
         songs: [],
         createdOn: new Date(),
-        hash: hash(f.title + new Date().getTime()),
+        id: getPlaylistId(f.title),
         ...f,
       };
       this.playlists.create(playlist);
