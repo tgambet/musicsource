@@ -201,9 +201,10 @@ export class LibrarySongsComponent extends WithTrigger implements OnInit {
     ]).pipe(
       map(([scrollTop, total, all]) => {
         scrollTop = Math.max(scrollTop - 387, 0);
+        total = Math.max(0, total - 25);
 
-        const topCount = Math.min(Math.floor(scrollTop / 49), total - 25);
-        const bottomCount = Math.max(total - (topCount + 25), 0);
+        const topCount = Math.min(Math.floor(scrollTop / 49), total);
+        const bottomCount = Math.max(total - topCount, 0);
         const songs = all.slice(topCount, topCount + 25);
 
         return {
