@@ -1,22 +1,25 @@
 import { hash } from '@app/core/utils';
 import { Opaque } from 'type-fest';
 import { PictureId } from '@app/database/pictures/picture.model';
+import { ArtistId } from '@app/database/artists/artist.model';
 
 export type AlbumId = Opaque<string, Album>;
 
-export const getAlbumId = (albumArtist?: string, albumName?: string): AlbumId =>
-  hash(`${albumArtist}|${albumName}}`) as AlbumId;
+export const getAlbumId = (artist?: string, title?: string): AlbumId =>
+  hash(`${artist}|${title}}`) as AlbumId;
 
 export type Album = {
   id: AlbumId;
-  name: string;
-  albumArtist?: string;
-  artists: string[];
+  artist: string;
+  artistId: ArtistId;
+  // artists: string[];
+  // artistsIds: ArtistId[];
+  likedOn?: number;
+  listenedOn?: number;
+  pictureId?: PictureId;
+  title: string;
+  updatedOn: number;
   year?: number;
-  pictureKey?: PictureId;
-  lastModified: Date;
-  likedOn?: Date;
-  listenedOn?: Date;
 };
 
 // eslint-disable-next-line @typescript-eslint/naming-convention

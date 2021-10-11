@@ -10,7 +10,6 @@ import { Album, AlbumId } from '@app/database/albums/album.model';
 import { filter, first, map, tap } from 'rxjs/operators';
 import { Song } from '@app/database/songs/song.model';
 import { Icons } from '@app/core/utils/icons.util';
-import { hash } from '@app/core/utils/hash.util';
 import { PlayerFacade } from '@app/player/store/player.facade';
 import { MenuItem } from '@app/core/components/menu.component';
 import { ComponentHelperService } from '@app/core/services/component-helper.service';
@@ -37,17 +36,17 @@ import { SongFacade } from '@app/database/songs/song.facade';
               </ng-template>
             </div>
             <div class="metadata">
-              <app-title>{{ album.name }}</app-title>
+              <app-title>{{ album.title }}</app-title>
               <p>
                 <span>Album</span> •
                 <a
-                  *ngIf="album.albumArtist"
-                  [routerLink]="['/', 'artist', getHash(album.albumArtist)]"
-                  >{{ album.albumArtist }}</a
+                  *ngIf="album.artistId"
+                  [routerLink]="['/', 'artist', album.artistId]"
+                  >{{ album.artist }}</a
                 >
-                <span *ngIf="!album.albumArtist && album.artists.length > 1">
-                  Various artists
-                </span>
+                <!--                <span *ngIf="!album.albumArtist && album.artists.length > 1">-->
+                <!--                  Various artists-->
+                <!--                </span>-->
                 • <span>{{ album.year }}</span>
               </p>
               <p class="stats" *ngIf="songs$ | async as songs">
@@ -81,7 +80,7 @@ import { SongFacade } from '@app/database/songs/song.facade';
             [song]="song"
             [playlist]="songs"
             *ngFor="let song of songs; trackBy: trackBy"
-            [trackNumber]="song.track.no"
+            [trackNumber]="song.tags.track.no"
             [class.selected]="(currentSongPath$ | async) === song.entryPath"
             (menuOpened)="menuOpened($event)"
             cdkMonitorSubtreeFocus
@@ -152,7 +151,7 @@ export class PageAlbumComponent extends WithTrigger implements OnInit {
     this.album$ = this.albums.getByKey(albumKey) as Observable<Album>;
 
     this.cover$ = this.album$.pipe(
-      switchMap((album) => this.pictures.getCover(album.pictureKey))
+      switchMap((album) => this.pictures.getCover(album.pictureId))
     );
 
     this.songs$ = this.album$.pipe(
@@ -246,10 +245,6 @@ export class PageAlbumComponent extends WithTrigger implements OnInit {
   getLength(songs: Song[]): number {
     const sec = songs.reduce((acc, song) => acc + (song.duration || 0), 0);
     return Math.floor(sec / 60);
-  }
-
-  getHash(albumArtist: string): string {
-    return hash(albumArtist);
   }
 
   toggleLiked(album: Album): void {

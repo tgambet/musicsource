@@ -95,7 +95,7 @@ import { PlaylistFacade } from '@app/database/playlists/playlist.facade';
 })
 export class LibraryPlaylistsComponent implements OnInit {
   sortOptions: SelectOption[] = [
-    { name: 'Recently added', value: 'createdOn_desc' },
+    { name: 'Latest update', value: 'createdOn_desc' }, // TODO
     { name: 'A to Z', value: 'title_asc' },
     { name: 'Z to A', value: 'title_desc' },
   ];

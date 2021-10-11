@@ -8,7 +8,6 @@ import {
 } from '@angular/core';
 import { Icons } from '@app/core/utils';
 import { Album } from '@app/database/albums/album.model';
-import { hash } from '@app/core/utils/hash.util';
 import { MatMenuTrigger } from '@angular/material/menu';
 import { MenuItem } from '@app/core/components/menu.component';
 import { PlayerFacade } from '@app/player/store/player.facade';
@@ -25,7 +24,7 @@ import { SongFacade } from '@app/database/songs/song.facade';
   selector: 'app-album',
   template: `
     <app-cover
-      [title]="album.name"
+      [title]="album.title"
       [menuItems]="menuItems"
       [coverRouterLink]="['/', 'album', album.id]"
       (menuOpened)="menuOpened.emit($event)"
@@ -37,23 +36,21 @@ import { SongFacade } from '@app/database/songs/song.facade';
       <img
         *ngIf="cover$ | async as cover; else icon"
         [src]="cover"
-        [alt]="album.name"
+        [alt]="album.title"
       />
       <ng-template #icon>
         <app-icon [path]="icons.album" [fullWidth]="true"></app-icon>
       </ng-template>
     </app-cover>
     <app-label
-      [topLabel]="{ text: album.name, routerLink: ['/', 'album', album.id] }"
+      [topLabel]="{ text: album.title, routerLink: ['/', 'album', album.id] }"
       [bottomLabel]="[
         'Album',
-        album.albumArtist
+        album.artist
           ? {
-              text: album.albumArtist,
-              routerLink: ['/', 'artist', getHash(album.albumArtist)]
+              text: album.artist,
+              routerLink: ['/', 'artist', album.artistId]
             }
-          : album.artists.length > 1
-          ? 'Various artists'
           : undefined,
         album.year ? album.year.toString(10) : ''
       ]"
@@ -107,7 +104,7 @@ export class AlbumComponent implements OnInit {
 
     this.song$ = this.playlist$.pipe(map((pl) => pl && pl[0]));
 
-    this.cover$ = this.pictures.getCover(this.album.pictureKey);
+    this.cover$ = this.pictures.getCover(this.album.pictureId);
   }
 
   /*play() {
@@ -122,10 +119,6 @@ export class AlbumComponent implements OnInit {
       )
       .subscribe();
   }*/
-
-  getHash(s: string): string {
-    return hash(s);
-  }
 
   updateMenu(): void {
     this.menuItems = [
@@ -205,10 +198,10 @@ export class AlbumComponent implements OnInit {
       {
         icon: Icons.accountMusic,
         text: 'Go to artist',
-        routerLink: this.album.albumArtist
-          ? ['/', 'artist', this.getHash(this.album.albumArtist)]
+        routerLink: this.album.artist
+          ? ['/', 'artist', this.album.artistId]
           : undefined,
-        disabled: !this.album.albumArtist,
+        disabled: !this.album.artist,
       },
     ];
   }

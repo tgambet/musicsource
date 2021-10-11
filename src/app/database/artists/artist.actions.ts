@@ -18,3 +18,8 @@ export const updateArtist = createAction(
   '[Artist] Update Artist',
   props<{ update: IdUpdate<Artist> }>()
 );
+
+export const upsertArtist = createAction(
+  '[Artist] Upsert Artist',
+  props<{ artist: Artist }>()
+);

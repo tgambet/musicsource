@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Song } from '@app/database/songs/song.model';
 import { PlayerFacade } from '@app/player/store/player.facade';
-import { tap } from 'rxjs/operators';
+import { first, tap } from 'rxjs/operators';
 import { PictureFacade } from '@app/database/pictures/picture.facade';
 
 @Injectable()
@@ -40,11 +40,13 @@ export class MediaSessionService {
     }
   }
 
+  // TODO Effect, remove subscribe
   setMetadata(song: Song): void {
     if ('mediaSession' in navigator) {
       this.pictures
-        .getCover(song.pictureKey)
+        .getCover(song.pictureId)
         .pipe(
+          first(),
           tap(
             (cover) =>
               ((navigator.mediaSession as MediaSession).metadata =

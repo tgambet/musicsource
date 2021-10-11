@@ -7,7 +7,6 @@ import {
 } from '@angular/core';
 import { Song } from '@app/database/songs/song.model';
 import { Icons } from '@app/core/utils/icons.util';
-import { hash } from '@app/core/utils/hash.util';
 import { MatMenuTrigger } from '@angular/material/menu';
 import { PlayerFacade } from '@app/player/store/player.facade';
 import { ComponentHelperService } from '@app/core/services/component-helper.service';
@@ -153,10 +152,6 @@ export class TrackListItemComponent {
     private helper: ComponentHelperService,
     private songs: SongFacade
   ) {}
-
-  getHash(s: string): string {
-    return hash(s);
-  }
 
   toggleLiked(song: Song): void {
     this.songs.toggleLiked(song);

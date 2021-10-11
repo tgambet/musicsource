@@ -4,10 +4,7 @@ import { catchError, concatMap, map } from 'rxjs/operators';
 import { Either, left, right } from '@app/core/utils/either.util';
 import { DOCUMENT } from '@angular/common';
 import { FileEntry } from '@app/database/entries/entry.model';
-import { IPicture } from 'music-metadata/lib/type';
-import { Song } from '@app/database/songs/song.model';
-import { getPictureId, Picture } from '@app/database/pictures/picture.model';
-import { getAlbumId } from '@app/database/albums/album.model';
+import { ICommonTagsResult, IFormat } from 'music-metadata/lib/type';
 
 @Injectable()
 export class ExtractorService {
@@ -27,9 +24,13 @@ export class ExtractorService {
       });
   }
 
-  extract(
-    entry: FileEntry
-  ): Observable<Either<{ song: Song; pictures?: Picture[] }>> {
+  extract(entry: FileEntry): Observable<
+    Either<{
+      common: ICommonTagsResult;
+      format: IFormat;
+      lastModified: number;
+    }>
+  > {
     return defer(() => from(entry.handle.getFile())).pipe(
       // filter(file => this.supportedTypes.includes(file.type)),
       concatMap((file) =>
@@ -38,34 +39,12 @@ export class ExtractorService {
             musicMetadata.parseBlob(file /*{duration: true}*/)
           )
         ).pipe(
-          map(({ common, format }) => {
-            const pictures = this.toPicture(common.picture);
-            delete common.picture;
-            return right({
-              song: {
-                ...common,
-                albumId: getAlbumId(common.albumartist, common.album),
-                lastModified: new Date(file.lastModified),
-                entryPath: entry.path,
-                duration: format.duration,
-              },
-              pictures,
-            });
-          })
+          map(({ common, format }) =>
+            right({ common, format, lastModified: file.lastModified })
+          )
         )
       ),
       catchError((error) => of(left(error)))
     );
-  }
-
-  toPicture(pictures?: IPicture[]): Picture[] | undefined {
-    return pictures?.map((pict) => {
-      const data = pict.data.toString('base64');
-      return {
-        ...pict,
-        data,
-        id: getPictureId(data),
-      };
-    });
   }
 }

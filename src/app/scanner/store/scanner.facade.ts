@@ -9,7 +9,11 @@ import {
   selectStep,
   selectStepSub,
 } from '@app/scanner/store/scanner.selectors';
-import { abortScan, openDirectory } from '@app/scanner/store/scanner.actions';
+import {
+  abortScan,
+  openDirectory,
+  scanStart,
+} from '@app/scanner/store/scanner.actions';
 import { concatMap, filter, map, mapTo } from 'rxjs/operators';
 import { DatabaseService } from '@app/database/database.service';
 import { from, Observable, of } from 'rxjs';
@@ -38,6 +42,7 @@ export class ScannerFacade {
   }
 
   openDirectory(): void {
+    this.store.dispatch(scanStart());
     this.store.dispatch(openDirectory());
   }
 
@@ -46,7 +51,7 @@ export class ScannerFacade {
       concatMap((transaction) => {
         const makeSong = (key?: PictureId): Song => ({
           ...song,
-          pictureKey: key,
+          pictureId: key,
         });
 
         const saveSong = (pictureKey?: PictureId) => {

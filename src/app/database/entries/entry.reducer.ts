@@ -2,6 +2,7 @@ import { createReducer, on } from '@ngrx/store';
 import { Entry } from '@app/database/entries/entry.model';
 import { createIDBEntityAdapter, IDBEntityState } from '@creasource/ngrx-idb';
 import {
+  addEntry,
   loadEntries,
   loadEntriesFailure,
   loadEntriesSuccess,
@@ -29,5 +30,6 @@ export const entryReducer = createReducer(
   on(loadEntriesSuccess, (state, action) =>
     entryAdapter.addMany(action.data, state)
   ),
-  on(loadEntriesFailure, (state, action) => state)
+  on(loadEntriesFailure, (state) => state),
+  on(addEntry, (state, { entry }) => entryAdapter.addOne(entry, state))
 );

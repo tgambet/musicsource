@@ -21,7 +21,6 @@ import {
 } from 'rxjs';
 import { Song } from '@app/database/songs/song.model';
 import { PlayerFacade } from '@app/player/store/player.facade';
-import { hash } from '@app/core/utils/hash.util';
 import { ComponentHelperService } from '@app/core/services/component-helper.service';
 import { MenuItem } from '@app/core/components/menu.component';
 import { PictureFacade } from '@app/database/pictures/picture.facade';
@@ -98,18 +97,14 @@ import { SongFacade } from '@app/database/songs/song.facade';
       <div class="meta">
         <span class="top">{{ song.title }}</span>
         <span class="sub">
-          <a
-            *ngIf="song.artist"
-            [routerLink]="['/artist', getHash(song.artist)]"
-            >{{ song.artist }}</a
-          >
+          <a *ngIf="song.artist" [routerLink]="['/artist', song.artistId]">{{
+            song.artist
+          }}</a>
           •
-          <a
-            *ngIf="song.album"
-            [routerLink]="['/album', getHash(song.album)]"
-            >{{ song.album }}</a
-          >
-          • {{ song.year }}
+          <a *ngIf="song.album" [routerLink]="['/album', song.albumId]">{{
+            song.album
+          }}</a>
+          • {{ song.tags.year }}
         </span>
       </div>
       <div class="controls">
@@ -411,7 +406,7 @@ export class PlayerComponent implements OnInit, OnDestroy {
     this.currentSong$.pipe(tap((song) => this.updateMenu(song))).subscribe();
 
     this.currentSongCover$ = this.currentSong$.pipe(
-      switchMap((song) => this.pictures.getCover(song.pictureKey))
+      switchMap((song) => this.pictures.getCover(song.pictureId))
     );
   }
 
@@ -456,10 +451,6 @@ export class PlayerComponent implements OnInit, OnDestroy {
     return await this.router.navigate(['/', 'play']);
   }
 
-  getHash(s: string): string {
-    return hash(s);
-  }
-
   toggleLiked(song: Song): void {
     this.songs.toggleLiked(song);
 
@@ -499,16 +490,12 @@ export class PlayerComponent implements OnInit, OnDestroy {
       {
         text: 'Go to album',
         icon: this.icons.album,
-        routerLink: song.album
-          ? ['/album', this.getHash(song.album)]
-          : undefined,
+        routerLink: song.album ? ['/album', song.albumId] : undefined,
       },
       {
         text: 'Go to artist',
         icon: this.icons.accountMusic,
-        routerLink: song.artist
-          ? ['/artist', this.getHash(song.artist)]
-          : undefined,
+        routerLink: song.artist ? ['/artist', song.artistId] : undefined,
       },
     ];
   }

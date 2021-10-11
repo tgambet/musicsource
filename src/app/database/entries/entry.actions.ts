@@ -12,3 +12,8 @@ export const loadEntriesFailure = createAction(
   '[Entry] Load Entries Failure',
   props<{ error: any }>()
 );
+
+export const addEntry = createAction(
+  '[Entry] Add Entry',
+  props<{ entry: Entry }>()
+);

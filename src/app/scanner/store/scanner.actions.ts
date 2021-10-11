@@ -4,6 +4,7 @@ import { Album } from '@app/database/albums/album.model';
 import { Artist } from '@app/database/artists/artist.model';
 import { Song } from '@app/database/songs/song.model';
 
+export const scanStart = createAction('scanner/start');
 export const abortScan = createAction('scanner/abort');
 export const scanAborted = createAction('scanner/aborted');
 
@@ -99,3 +100,7 @@ export const buildArtistsFailure = createAction(
 
 // Final
 export const scanSuccess = createAction('scanner/success');
+export const scanFailure = createAction(
+  'scanner/failure',
+  props<{ error: any }>()
+);

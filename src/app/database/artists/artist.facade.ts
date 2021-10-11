@@ -32,7 +32,9 @@ export class ArtistFacade {
   }
 
   toggleLiked(artist: Artist): void {
-    const update = { likedOn: !!artist.likedOn ? undefined : new Date() };
+    const update = {
+      likedOn: !!artist.likedOn ? undefined : new Date().getTime(),
+    };
     this.update({ key: artist.id, changes: update });
   }
 }

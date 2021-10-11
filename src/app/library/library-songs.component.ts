@@ -107,7 +107,7 @@ export class LibrarySongsComponent extends WithTrigger implements OnInit {
   addToPlaylist!: TemplateRef<any>;
 
   sortOptions: SelectOption[] = [
-    { name: 'Recently added', value: 'lastModified_desc' },
+    { name: 'Latest update', value: 'updatedOn_desc' },
     { name: 'A to Z', value: 'title_asc' },
     { name: 'Z to A', value: 'title_desc' },
   ];
@@ -176,36 +176,41 @@ export class LibrarySongsComponent extends WithTrigger implements OnInit {
 
     const sort$ = this.route.queryParamMap.pipe(
       map((params) => ({
-        index: params.get('sort') || 'lastModified',
+        index: params.get('sort') || 'updatedOn',
         direction: ((params.get('dir') || 'desc') === 'asc'
           ? 'next'
           : 'prev') as IDBCursorDirection,
         likes: params.get('likes') === '1',
       }))
     );
+    const songs$ = sort$.pipe(
+      switchMap((sort) =>
+        this.songs
+          .getAll(sort.index as SongIndex)
+          .pipe(
+            map((songs) =>
+              sort.direction === 'next' ? songs : [...songs].reverse()
+            )
+          )
+      )
+    );
 
     const a$ = combineLatest([
       this.scroller.scroll$,
       this.songs.getTotal(),
-      sort$.pipe(
-        switchMap((sort) =>
-          this.songs
-            .getAll(sort.index as SongIndex)
-            .pipe(
-              map((songs) =>
-                sort.direction === 'next' ? songs : [...songs].reverse()
-              )
-            )
-        )
-      ),
+      songs$,
     ]).pipe(
+      // TODO compute available size
       map(([scrollTop, total, all]) => {
         scrollTop = Math.max(scrollTop - 387, 0);
-        total = Math.max(0, total - 25);
 
-        const topCount = Math.min(Math.floor(scrollTop / 49), total);
-        const bottomCount = Math.max(total - topCount, 0);
-        const songs = all.slice(topCount, topCount + 25);
+        const topCount = Math.max(
+          0,
+          Math.min(Math.floor(scrollTop / 49), total - 35)
+        );
+        const bottomCount = Math.max(0, total - 35 - topCount);
+
+        const songs = all.slice(topCount, total - bottomCount);
 
         return {
           top: topCount * 49,

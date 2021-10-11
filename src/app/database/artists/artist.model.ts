@@ -8,9 +8,9 @@ export const getArtistId = (name: string): ArtistId => hash(name) as ArtistId;
 
 export type Artist = {
   id: ArtistId;
+  likedOn?: number;
+  listenedOn?: number;
   name: string;
   pictureKey?: PictureId;
-  likedOn?: Date;
-  listenedOn?: Date;
-  lastModified: Date;
+  updatedOn: number;
 };

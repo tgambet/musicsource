@@ -6,7 +6,6 @@ import {
   ViewChild,
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { hash } from '@app/core/utils/hash.util';
 import { Icons } from '@app/core/utils/icons.util';
 import { PlaylistListComponent } from '@app/player/playlist-list.component';
 import { PlayerFacade } from '@app/player/store/player.facade';
@@ -123,12 +122,8 @@ export class PlayComponent implements OnInit {
       .subscribe();
 
     this.currentCover$ = this.currentSong$.pipe(
-      concatMap((song) => this.pictures.getCover(song?.pictureKey))
+      concatMap((song) => this.pictures.getCover(song?.pictureId))
     );
-  }
-
-  getHash(artist: string): string {
-    return hash(artist);
   }
 
   drop(playlist: Song[], currentSong: Song, event: CdkDragDrop<Song[]>): void {

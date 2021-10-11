@@ -6,19 +6,17 @@ import {
   OnInit,
 } from '@angular/core';
 import { Icons } from '@app/core/utils/icons.util';
-import { Observable, switchMap } from 'rxjs';
+import { EMPTY, Observable, switchMap } from 'rxjs';
 import { Artist, ArtistId } from '@app/database/artists/artist.model';
 import { ActivatedRoute } from '@angular/router';
 import { Album } from '@app/database/albums/album.model';
 import { Song } from '@app/database/songs/song.model';
-import { hash } from '@app/core/utils/hash.util';
 import { ComponentHelperService } from '@app/core/services/component-helper.service';
 import { HistoryService } from '@app/core/services/history.service';
 import { WithTrigger } from '@app/core/classes/with-trigger';
 import { ArtistFacade } from '@app/database/artists/artist.facade';
 import { AlbumFacade } from '@app/database/albums/album.facade';
 import { PictureFacade } from '@app/database/pictures/picture.facade';
-import { SongFacade } from '@app/database/songs/song.facade';
 
 @Component({
   selector: 'app-page-artist',
@@ -194,8 +192,7 @@ export class PageArtistComponent extends WithTrigger implements OnInit {
     private history: HistoryService,
     private artists: ArtistFacade,
     private pictures: PictureFacade,
-    private albums: AlbumFacade,
-    private songs: SongFacade
+    private albums: AlbumFacade
   ) {
     super();
   }
@@ -219,11 +216,7 @@ export class PageArtistComponent extends WithTrigger implements OnInit {
 
     this.foundOn$ = this.albums.getWithArtist(artistKey); // TODO hash vs name
 
-    this.songs$ = this.songs.getByAlbumKey(''); // TODO
-  }
-
-  getHash(albumArtist: string): string {
-    return hash(albumArtist);
+    this.songs$ = EMPTY; // this.songs.getByAlbumKey(''); // TODO
   }
 
   shufflePlay(artist: Artist): void {

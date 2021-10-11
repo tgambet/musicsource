@@ -146,7 +146,7 @@ export class PlaylistNewComponent {
       const f = this.form.getRawValue();
       const playlist: Playlist = {
         songs: [],
-        createdOn: new Date(),
+        createdOn: new Date().getTime(),
         id: getPlaylistId(f.title),
         ...f,
       };

@@ -25,13 +25,13 @@ export class AlbumFacade {
   getByArtistKey(key: ArtistId): Observable<Album[] | undefined> {
     return this.store
       .select(selectAlbumByArtistKey(key))
-      .pipe(map((albums) => albums?.filter((a) => a.albumArtist === key)));
+      .pipe(map((albums) => albums?.filter((a) => a.artistId === key)));
   }
 
   getWithArtist(key: ArtistId): Observable<Album[] | undefined> {
     return this.store
       .select(selectAlbumByArtistKey(key))
-      .pipe(map((albums) => albums?.filter((a) => a.albumArtist !== key)));
+      .pipe(map((albums) => albums?.filter((a) => a.artistId !== key)));
 
     // return this.storage
     //   .walk$<Album>(
@@ -57,7 +57,9 @@ export class AlbumFacade {
   }
 
   toggleLiked(album: Album): void {
-    const update = { likedOn: !!album.likedOn ? undefined : new Date() };
+    const update = {
+      likedOn: !!album.likedOn ? undefined : new Date().getTime(),
+    };
     this.update({ key: album.id, changes: update });
   }
 }

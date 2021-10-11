@@ -1,6 +1,8 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
 import { songAdapter, songFeatureKey, SongState } from './song.reducer';
 import { Song } from '@app/database/songs/song.model';
+import { AlbumId } from '@app/database/albums/album.model';
+import { ArtistId } from '@app/database/artists/artist.model';
 
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 
@@ -24,16 +26,16 @@ export const selectSongByKeys = (keys: string[]) =>
     keys.map((k) => entities[k]).filter((s): s is Song => !!s)
   );
 
-export const selectSongByAlbumKey = (key: string) =>
+export const selectSongByAlbumKey = (key: AlbumId) =>
   createSelector(
     selectSongEntities,
     selectSongIndexEntities('albumId'),
     (entities, index) => index[key]?.map((k) => entities[k as any] as Song)
   );
 
-export const selectSongByArtistKey = (key: string) =>
+export const selectSongByArtistKey = (key: ArtistId) =>
   createSelector(
     selectSongEntities,
-    selectSongIndexEntities('artists'),
+    selectSongIndexEntities('artistId'),
     (entities, index) => index[key]?.map((k) => entities[k as any] as Song)
   );
