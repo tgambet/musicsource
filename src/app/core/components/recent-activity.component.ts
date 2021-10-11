@@ -89,9 +89,7 @@ export class RecentActivityComponent extends WithTrigger implements OnInit {
       )
     ).pipe(
       scanArray(),
-      map((r) =>
-        r.sort((i1, i2) => i2.listenedOn.getTime() - i1.listenedOn.getTime())
-      ),
+      map((r) => r.sort((i1, i2) => i2.listenedOn - i1.listenedOn)),
       map((r) => r.slice(0, 20))
     );
   }

@@ -71,7 +71,7 @@ export class LibraryArtistsComponent extends WithTrigger implements OnInit {
   artists$!: Observable<Artist[]>;
 
   sortOptions: SelectOption[] = [
-    { name: 'Recently added', value: 'lastModified_desc' },
+    { name: 'Latest update', value: 'updatedOn_desc' },
     { name: 'A to Z', value: 'name_asc' },
     { name: 'Z to A', value: 'name_desc' },
   ];
@@ -99,7 +99,7 @@ export class LibraryArtistsComponent extends WithTrigger implements OnInit {
   ngOnInit(): void {
     const sort$ = this.route.queryParamMap.pipe(
       map((params) => ({
-        index: params.get('sort') || 'lastModified',
+        index: params.get('sort') || 'updatedOn',
         direction: ((params.get('dir') || 'desc') === 'asc'
           ? 'next'
           : 'prev') as IDBCursorDirection,

@@ -28,6 +28,6 @@ export const selectAlbumByKey = (key: AlbumId) =>
 export const selectAlbumByArtistKey = (key: ArtistId) =>
   createSelector(
     selectAlbumEntities,
-    selectAlbumIndexEntities('artists'),
+    selectAlbumIndexEntities('artistId'),
     (entities, index) => index[key]?.map((k) => entities[k as any] as Album)
   );

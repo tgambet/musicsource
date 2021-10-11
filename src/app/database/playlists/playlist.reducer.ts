@@ -1,6 +1,6 @@
 import { createReducer, on } from '@ngrx/store';
 import {
-  createPlaylist,
+  addPlaylist,
   loadPlaylists,
   loadPlaylistsFailure,
   loadPlaylistsSuccess,
@@ -35,7 +35,7 @@ export const playlistReducer = createReducer(
   on(updatePlaylist, (state, action) =>
     playlistAdapter.updateOne(action.update, state)
   ),
-  on(createPlaylist, (state, action) =>
+  on(addPlaylist, (state, action) =>
     playlistAdapter.addOne(action.playlist, state)
   )
 );

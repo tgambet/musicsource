@@ -6,6 +6,7 @@ import {
   loadArtistsFailure,
   loadArtistsSuccess,
   updateArtist,
+  upsertArtist,
 } from './artist.actions';
 
 export const artistFeatureKey = 'artists';
@@ -14,7 +15,7 @@ export const artistIndexes = [
   { name: 'name' },
   { name: 'likedOn' },
   { name: 'listenedOn' },
-  { name: 'lastModified' },
+  { name: 'updatedOn' },
 ] as const;
 
 const indexNames = artistIndexes.map((i) => i.name);
@@ -40,5 +41,8 @@ export const artistReducer = createReducer(
   on(loadArtistsFailure, (state) => state),
   on(updateArtist, (state, action) =>
     artistAdapter.updateOne(action.update, state)
+  ),
+  on(upsertArtist, (state, action) =>
+    artistAdapter.upsertOne(action.artist, state)
   )
 );

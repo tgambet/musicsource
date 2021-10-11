@@ -7,13 +7,13 @@ import {
   Output,
 } from '@angular/core';
 import { Song } from '@app/database/songs/song.model';
-import { hash } from '@app/core/utils/hash.util';
 import { Icons } from '@app/core/utils/icons.util';
 import { MatMenuTrigger } from '@angular/material/menu';
 import { ComponentHelperService } from '@app/core/services/component-helper.service';
 import { Observable } from 'rxjs';
 import { PictureFacade } from '@app/database/pictures/picture.facade';
 import { SongFacade } from '@app/database/songs/song.facade';
+import { getArtistId } from '@app/database/artists/artist.model';
 
 @Component({
   selector: 'app-song-list-item',
@@ -36,13 +36,13 @@ import { SongFacade } from '@app/database/songs/song.facade';
     </div>
     <span class="title">{{ song.title }}</span>
     <span class="artists">
-      <ng-container *ngFor="let artist of song.artists; let last = last">
-        <a [routerLink]="['/', 'artist', getHash(artist)]">{{ artist }}</a>
+      <ng-container *ngFor="let artist of song.tags.artists; let last = last">
+        <a [routerLink]="['/', 'artist', getArtistId(artist)]">{{ artist }}</a>
         <span>{{ !last ? ', ' : '' }}</span>
       </ng-container>
     </span>
     <span class="album">
-      <a [routerLink]="['/', 'album', getHash(song.album)]" *ngIf="song.album">
+      <a [routerLink]="['/', 'album', song.albumId]" *ngIf="song.album">
         {{ song.album }}
       </a>
     </span>
@@ -88,7 +88,7 @@ import { SongFacade } from '@app/database/songs/song.facade';
         </button>
         <button
           mat-menu-item
-          [routerLink]="['/', 'album', getHash(song.album)]"
+          [routerLink]="['/', 'album', song.albumId]"
           *ngIf="song.album"
         >
           <app-icon [path]="icons.album"></app-icon>
@@ -96,7 +96,7 @@ import { SongFacade } from '@app/database/songs/song.facade';
         </button>
         <button
           mat-menu-item
-          [routerLink]="['/', 'artist', getHash(song.artist)]"
+          [routerLink]="['/', 'artist', song.artistId]"
           *ngIf="song.artist"
         >
           <app-icon [path]="icons.accountMusic"></app-icon>
@@ -199,11 +199,11 @@ export class SongListItemComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.cover$ = this.pictures.getCover(this.song.pictureKey);
+    this.cover$ = this.pictures.getCover(this.song.pictureId);
   }
 
-  getHash(s: string): string {
-    return hash(s);
+  getArtistId(name: string): string {
+    return getArtistId(name);
   }
 
   toggleLiked(song: Song): void {

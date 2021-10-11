@@ -13,6 +13,6 @@ export interface Playlist {
   description?: string;
   songs: string[];
   pictureKey?: PictureId;
-  createdOn: Date;
-  likedOn?: Date;
+  createdOn: number; // TODO updatedOn
+  likedOn?: number;
 }

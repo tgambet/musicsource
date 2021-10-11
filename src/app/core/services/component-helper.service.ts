@@ -133,7 +133,7 @@ export class ComponentHelperService {
   }
 
   shufflePlayArtist(artist: Artist): Observable<Song[]> {
-    return this.songs.getByArtistKey(artist.name).pipe(
+    return this.songs.getByArtistKey(artist.id).pipe(
       filter((songs): songs is Song[] => !!songs),
       map((songs) => shuffleArray(songs)),
       map((songs) => songs.slice(0, 100)),

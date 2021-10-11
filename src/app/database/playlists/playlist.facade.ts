@@ -11,7 +11,7 @@ import {
   selectPlaylistTotal,
 } from '@app/database/playlists/playlist.selectors';
 import {
-  createPlaylist,
+  addPlaylist,
   updatePlaylist,
 } from '@app/database/playlists/playlist.actions';
 import { Song } from '@app/database/songs/song.model';
@@ -44,7 +44,7 @@ export class PlaylistFacade {
   }
 
   create(playlist: Playlist): void {
-    this.store.dispatch(createPlaylist({ playlist }));
+    this.store.dispatch(addPlaylist({ playlist }));
   }
 
   addSongsTo(playlist: Playlist, songs: Song[]): void {
@@ -56,7 +56,7 @@ export class PlaylistFacade {
 
   toggleLiked(playlist: Playlist): void {
     const changes = {
-      likedOn: !!playlist.likedOn ? undefined : new Date(),
+      likedOn: !!playlist.likedOn ? undefined : new Date().getTime(),
     };
     this.update({ key: playlist.id, changes });
   }

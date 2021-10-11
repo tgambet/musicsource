@@ -18,3 +18,5 @@ export const updateSong = createAction(
   '[Song] Update Song',
   props<{ update: Update<Song> }>()
 );
+
+export const addSong = createAction('[Song] Add Song', props<{ song: Song }>());

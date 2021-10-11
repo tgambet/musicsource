@@ -63,11 +63,11 @@ export class LibraryAlbumsComponent
   albums$!: Observable<Album[]>;
 
   sortOptions: SelectOption[] = [
-    { name: 'Recently added', value: 'lastModified_desc' },
+    { name: 'Latest update', value: 'updatedOn_desc' },
     { name: 'Latest releases', value: 'year_desc' },
     { name: 'Oldest releases', value: 'year_asc' },
-    { name: 'A to Z', value: 'name_asc' },
-    { name: 'Z to A', value: 'name_desc' },
+    { name: 'A to Z', value: 'title_asc' },
+    { name: 'Z to A', value: 'title_desc' },
   ];
   selectedSortOption: SelectOption = this.sortOptions[0];
 
@@ -110,7 +110,7 @@ export class LibraryAlbumsComponent
 
     const sort$ = this.route.queryParamMap.pipe(
       map((params) => ({
-        index: params.get('sort') || 'year',
+        index: params.get('sort') || 'updatedOn',
         direction: ((params.get('dir') || 'desc') === 'asc'
           ? 'next'
           : 'prev') as IDBCursorDirection,

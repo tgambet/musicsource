@@ -6,18 +6,19 @@ import {
   loadAlbumsFailure,
   loadAlbumsSuccess,
   updateAlbum,
+  upsertAlbum,
 } from '@app/database/albums/album.actions';
 
 export const albumFeatureKey = 'albums';
 
 const indexes = [
-  { name: 'name' },
+  { name: 'title' },
   { name: 'year' },
-  { name: 'albumArtist' },
-  { name: 'artists', multiEntry: true },
+  { name: 'artistId' },
+  // { name: 'artists', multiEntry: true },
   { name: 'likedOn' },
   { name: 'listenedOn' },
-  { name: 'lastModified' },
+  { name: 'updatedOn' },
 ] as const;
 
 const indexNames = indexes.map((i) => i.name);
@@ -43,5 +44,8 @@ export const albumReducer = createReducer(
   on(loadAlbumsFailure, (state) => state),
   on(updateAlbum, (state, action) =>
     albumAdapter.updateOne(action.update, state)
+  ),
+  on(upsertAlbum, (state, action) =>
+    albumAdapter.upsertOne(action.album, state)
   )
 );

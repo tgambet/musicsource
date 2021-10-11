@@ -6,6 +6,7 @@ import {
   Observable,
   ReplaySubject,
   share,
+  startWith,
 } from 'rxjs';
 import { map, throttleTime } from 'rxjs/operators';
 
@@ -22,6 +23,7 @@ export class ScrollerService {
       // debounceTime(25, animationFrameScheduler),
       map((event: any) => event.target.scrollingElement.scrollTop),
       distinctUntilChanged(),
+      startWith(0),
       share({
         connector: () => new ReplaySubject(1),
         resetOnRefCountZero: true,

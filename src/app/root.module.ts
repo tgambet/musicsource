@@ -52,7 +52,7 @@ const routes: Routes = [
       }
     ),
     EffectsModule.forRoot([]),
-    StoreDevtoolsModule.instrument({ maxAge: 150, logOnly: true }),
+    StoreDevtoolsModule.instrument({ maxAge: 25, logOnly: true }),
     MatSnackBarModule,
   ],
   providers: [UpdateService],
