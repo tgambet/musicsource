@@ -2,6 +2,8 @@ import { createAction, props } from '@ngrx/store';
 import { Artist } from '@app/database/artists/artist.model';
 import { IdUpdate } from '@app/core/utils';
 
+export const removeAllArtists = createAction('artists/remove-all');
+
 export const loadArtists = createAction('[Artist] Load Artists');
 
 export const loadArtistsSuccess = createAction(

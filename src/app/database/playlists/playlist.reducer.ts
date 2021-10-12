@@ -4,6 +4,7 @@ import {
   loadPlaylists,
   loadPlaylistsFailure,
   loadPlaylistsSuccess,
+  removeAllPlaylists,
   updatePlaylist,
 } from './playlist.actions';
 import { Playlist } from '@app/database/playlists/playlist.model';
@@ -27,6 +28,7 @@ export const initialState: PlaylistState = playlistAdapter.getInitialState();
 export const playlistReducer = createReducer(
   initialState,
 
+  on(removeAllPlaylists, (state) => playlistAdapter.removeAll(state)),
   on(loadPlaylists, (state) => state),
   on(loadPlaylistsSuccess, (state, action) =>
     playlistAdapter.addMany(action.data, state)

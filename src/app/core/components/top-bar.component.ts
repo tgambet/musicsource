@@ -4,6 +4,13 @@ import { MenuItem } from './menu.component';
 import { Router } from '@angular/router';
 import { DatabaseService } from '@app/database/database.service';
 import { tap } from 'rxjs/operators';
+import { Store } from '@ngrx/store';
+import { removeAllAlbums } from '@app/database/albums/album.actions';
+import { removeAllArtists } from '@app/database/artists/artist.actions';
+import { removeAllEntries } from '@app/database/entries/entry.actions';
+import { removeAllPictures } from '@app/database/pictures/picture.actions';
+import { removeAllPlaylists } from '@app/database/playlists/playlist.actions';
+import { removeAllSongs } from '@app/database/songs/song.actions';
 
 @Component({
   selector: 'app-top-bar',
@@ -150,7 +157,7 @@ export class TopBarComponent {
 
   constructor(
     private router: Router,
-    // private scanner: ScannerFacade,
+    private store: Store,
     private storage: DatabaseService
   ) {}
 
@@ -164,6 +171,12 @@ export class TopBarComponent {
   // }
 
   clear(): void {
+    this.store.dispatch(removeAllAlbums());
+    this.store.dispatch(removeAllArtists());
+    this.store.dispatch(removeAllEntries());
+    this.store.dispatch(removeAllPictures());
+    this.store.dispatch(removeAllPlaylists());
+    this.store.dispatch(removeAllSongs());
     this.storage
       .clear$()
       .pipe(

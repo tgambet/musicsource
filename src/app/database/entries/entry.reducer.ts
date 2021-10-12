@@ -6,6 +6,7 @@ import {
   loadEntries,
   loadEntriesFailure,
   loadEntriesSuccess,
+  removeAllEntries,
 } from '@app/database/entries/entry.actions';
 
 export const entryFeatureKey = 'entries';
@@ -26,6 +27,7 @@ export const initialState: EntryState = entryAdapter.getInitialState();
 export const entryReducer = createReducer(
   initialState,
 
+  on(removeAllEntries, (state) => entryAdapter.removeAll(state)),
   on(loadEntries, (state) => state),
   on(loadEntriesSuccess, (state, action) =>
     entryAdapter.addMany(action.data, state)

@@ -5,6 +5,7 @@ import {
   loadArtists,
   loadArtistsFailure,
   loadArtistsSuccess,
+  removeAllArtists,
   updateArtist,
   upsertArtist,
 } from './artist.actions';
@@ -34,6 +35,7 @@ export const initialState = artistAdapter.getInitialState();
 export const artistReducer = createReducer(
   initialState,
 
+  on(removeAllArtists, (state) => artistAdapter.removeAll(state)),
   on(loadArtists, (state) => state),
   on(loadArtistsSuccess, (state, action) =>
     artistAdapter.addMany(action.data, state)

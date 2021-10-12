@@ -5,6 +5,7 @@ import {
   loadAlbums,
   loadAlbumsFailure,
   loadAlbumsSuccess,
+  removeAllAlbums,
   updateAlbum,
   upsertAlbum,
 } from '@app/database/albums/album.actions';
@@ -37,6 +38,7 @@ export const initialState = albumAdapter.getInitialState();
 export const albumReducer = createReducer(
   initialState,
 
+  on(removeAllAlbums, (state) => albumAdapter.removeAll(state)),
   on(loadAlbums, (state) => state),
   on(loadAlbumsSuccess, (state, action) =>
     albumAdapter.addMany(action.data, state)
