@@ -6,6 +6,7 @@ import {
   loadSongs,
   loadSongsFailure,
   loadSongsSuccess,
+  removeAllSongs,
   updateSong,
 } from './song.actions';
 
@@ -38,6 +39,7 @@ export const initialState: SongState = songAdapter.getInitialState();
 export const songReducer = createReducer(
   initialState,
 
+  on(removeAllSongs, (state) => songAdapter.removeAll(state)),
   on(loadSongs, (state) => state),
   on(loadSongsSuccess, (state, action) =>
     songAdapter.addMany(action.data, state)

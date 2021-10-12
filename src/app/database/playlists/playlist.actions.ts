@@ -2,6 +2,8 @@ import { createAction, props } from '@ngrx/store';
 import { Playlist } from '@app/database/playlists/playlist.model';
 import { IdUpdate } from '@app/core/utils';
 
+export const removeAllPlaylists = createAction('playlists/remove-all');
+
 export const loadPlaylists = createAction('[Playlist] Load Playlists');
 
 export const loadPlaylistsSuccess = createAction(

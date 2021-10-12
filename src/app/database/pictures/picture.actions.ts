@@ -1,6 +1,8 @@
 import { createAction, props } from '@ngrx/store';
 import { Picture } from '@app/database/pictures/picture.model';
 
+export const removeAllPictures = createAction('pictures/remove-all');
+
 export const loadPictures = createAction('[Picture] Load Pictures');
 
 export const loadPicturesSuccess = createAction(
