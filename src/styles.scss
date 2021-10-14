@@ -295,3 +295,7 @@ app-player .mat-slider:not(.mat-slider-sliding).cdk-focused .mat-slider-thumb {
   margin-bottom: 88px !important;
   margin-left: 16px !important;
 }
+
+.scan-overlay {
+  transition: margin-bottom ease 300ms;
+}

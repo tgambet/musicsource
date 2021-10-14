@@ -5,10 +5,12 @@ import {
   TemplateRef,
   OnInit,
 } from '@angular/core';
-import { ScannerFacade } from '@app/scanner/store/scanner.facade';
 import { MatDialog } from '@angular/material/dialog';
 import { tap } from 'rxjs/operators';
 import { NoopScrollStrategy } from '@angular/cdk/overlay';
+import { Router } from '@angular/router';
+import { Store } from '@ngrx/store';
+import { openDirectory, scanStart } from '@app/scanner/store/scanner.actions';
 
 @Component({
   selector: 'app-welcome',
@@ -71,7 +73,11 @@ export class WelcomeComponent implements OnInit {
   @ViewChild('welcomeDialog', { static: true })
   welcomeDialog!: TemplateRef<any>;
 
-  constructor(private scanner: ScannerFacade, private dialog: MatDialog) {}
+  constructor(
+    private dialog: MatDialog,
+    private router: Router,
+    private store: Store
+  ) {}
 
   ngOnInit(): void {
     this.dialog
@@ -82,11 +88,20 @@ export class WelcomeComponent implements OnInit {
         disableClose: true,
       })
       .afterClosed()
-      .pipe(tap((res) => (res === true ? this.scan() : {})))
+      .pipe(
+        tap(
+          (res) =>
+            res &&
+            this.router.navigate(['/library']).then(() => {
+              this.store.dispatch(scanStart());
+              this.store.dispatch(openDirectory());
+            })
+        )
+      )
       .subscribe();
   }
 
   scan(): void {
-    this.scanner.openDirectory();
+    // this.scanner.openDirectory();
   }
 }

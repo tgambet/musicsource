@@ -8,8 +8,10 @@ import {
 } from '@angular/core';
 import { SelectOption } from '@app/core/components/select.component';
 import {
+  animationFrameScheduler,
   combineLatest,
   Observable,
+  observeOn,
   ReplaySubject,
   share,
   switchMap,
@@ -224,9 +226,18 @@ export class LibrarySongsComponent extends WithTrigger implements OnInit {
       })
     );
 
-    this.top$ = a$.pipe(map(({ top }) => top));
-    this.bottom$ = a$.pipe(map(({ bottom }) => bottom));
-    this.songs$ = a$.pipe(map(({ songs }) => songs));
+    this.top$ = a$.pipe(
+      map(({ top }) => top),
+      observeOn(animationFrameScheduler)
+    );
+    this.bottom$ = a$.pipe(
+      map(({ bottom }) => bottom),
+      observeOn(animationFrameScheduler)
+    );
+    this.songs$ = a$.pipe(
+      map(({ songs }) => songs),
+      observeOn(animationFrameScheduler)
+    );
   }
 
   // pushSongs(
