@@ -14,6 +14,7 @@ import { ArtistModule } from '@app/artist/artist.module';
 import { PlaylistModule } from '@app/playlist/playlist.module';
 import { DatabaseModule } from '@app/database/database.module';
 import { PlaylistNewComponent } from '@app/core/dialogs/playlist-new.component';
+import { ScannerModule } from '@app/scanner/scanner.module';
 
 /*const routes: Routes = [
   {
@@ -136,6 +137,7 @@ const routes: Routes = [
     CoreModule,
     PlayerModule,
     DatabaseModule,
+    ScannerModule,
   ],
   providers: [
     MainGuard,

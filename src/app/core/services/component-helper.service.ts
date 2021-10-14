@@ -134,6 +134,7 @@ export class ComponentHelperService {
 
   shufflePlayArtist(artist: Artist): Observable<Song[]> {
     return this.songs.getByArtistKey(artist.id).pipe(
+      first(),
       filter((songs): songs is Song[] => !!songs),
       map((songs) => shuffleArray(songs)),
       map((songs) => songs.slice(0, 100)),

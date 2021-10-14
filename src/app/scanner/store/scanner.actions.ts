@@ -1,12 +1,12 @@
 import { createAction, props } from '@ngrx/store';
-import { DirectoryEntry, Entry } from '@app/database/entries/entry.model';
+import { DirectoryEntry, FileEntry } from '@app/database/entries/entry.model';
 import { Album } from '@app/database/albums/album.model';
 import { Artist } from '@app/database/artists/artist.model';
 import { Song } from '@app/database/songs/song.model';
 
 export const scanStart = createAction('scanner/start');
-export const abortScan = createAction('scanner/abort');
-export const scanAborted = createAction('scanner/aborted');
+export const scanEnd = createAction('scanner/end');
+export const scanEnded = createAction('scanner/ended');
 
 // Step 1
 export const openDirectory = createAction('scanner/open');
@@ -26,7 +26,7 @@ export const scanEntries = createAction(
 );
 export const scanEntrySuccess = createAction(
   'scanner/scan/entry/success',
-  props<{ entry: Entry }>()
+  props<{ entry: FileEntry }>()
 );
 export const scanEntryFailure = createAction(
   'scanner/scan/entry/failure',

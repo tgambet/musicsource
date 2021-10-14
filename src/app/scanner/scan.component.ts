@@ -1,7 +1,10 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { MatDialogRef } from '@angular/material/dialog';
-import { asapScheduler, combineLatest, Observable } from 'rxjs';
-import { map, throttleTime } from 'rxjs/operators';
+import {
+  animationFrameScheduler,
+  auditTime,
+  combineLatest,
+  Observable,
+} from 'rxjs';
 import { Icons } from '@app/core/utils/icons.util';
 import { ScannerFacade } from '@app/scanner/store/scanner.facade';
 
@@ -17,39 +20,57 @@ import { ScannerFacade } from '@app/scanner/store/scanner.facade';
     <div class="container" *ngIf="scanner$ | async as scanner">
       <div class="progress">
         <mat-spinner
-          [diameter]="100"
-          [strokeWidth]="8"
+          [diameter]="50"
+          [strokeWidth]="4"
           [value]="scanner.progress"
-          [mode]="scanner.progress === 0 ? 'indeterminate' : 'determinate'"
+          [mode]="
+            scanner.state === 'extracting' ? 'determinate' : 'indeterminate'
+          "
           color="accent"
         ></mat-spinner>
-        <div class="label" *ngIf="scanner.progressDisplay; else temp">
-          <span class="progress-display">
-            {{ scanner.progressDisplay }}
+        <div class="label">
+          <span class="progress-display" *ngIf="scanner.state === 'extracting'">
+            {{ scanner.progress | number: '1.0-0' }}%
           </span>
-          <span class="progress-display-sub">
-            {{ scanner.progressDisplaySub }}
-          </span>
+          <!--          <span class="progress-display-sub">-->
+          <!--            {{ scanner.progressDisplaySub }}-->
+          <!--          </span>-->
         </div>
-        <ng-template #temp>
-          <div class="label" *ngIf="scanner.state === 'success'">
-            <app-icon [path]="icons.check" [size]="40"></app-icon>
-          </div>
-          <div class="label" *ngIf="scanner.state === 'error'">
-            <app-icon [path]="icons.close" [size]="40"></app-icon>
-          </div>
-        </ng-template>
+        <!--        <ng-template #temp>-->
+        <!--          <div class="label" *ngIf="scanner.state === 'success'">-->
+        <!--            <app-icon [path]="icons.check" [size]="40"></app-icon>-->
+        <!--          </div>-->
+        <!--          <div class="label" *ngIf="scanner.state === 'error'">-->
+        <!--            <app-icon [path]="icons.close" [size]="40"></app-icon>-->
+        <!--          </div>-->
+        <!--        </ng-template>-->
       </div>
-      <p class="step">{{ scanner.step }}</p>
-      <p class="step-sub">{{ scanner.stepSub }}</p>
+      <div class="labels">
+        <p class="step">
+          Scanning...
+          <em>{{ scanner.extractedCount }}/{{ scanner.scannedCount }}</em>
+        </p>
+        <p class="step-sub">
+          {{ scanner.label }}
+        </p>
+      </div>
 
       <div class="actions">
         <button
           mat-raised-button
-          [color]="scanner.state === 'success' ? 'accent' : 'warn'"
-          (click)="scanner.state === 'scanning' ? abort() : close()"
+          color="warn"
+          *ngIf="scanner.state === 'scanning' || scanner.state === 'extracting'"
+          (click)="abort()"
         >
-          {{ scanner.state === 'scanning' ? 'Abort' : 'Close' }}
+          ABORT
+        </button>
+        <button
+          mat-raised-button
+          [color]="scanner.state === 'success' ? 'accent' : 'warn'"
+          *ngIf="scanner.state !== 'scanning' && scanner.state !== 'extracting'"
+          (click)="close()"
+        >
+          CLOSE
         </button>
       </div>
     </div>
@@ -57,18 +78,41 @@ import { ScannerFacade } from '@app/scanner/store/scanner.facade';
   `,
   styles: [
     `
+      :host {
+        width: 100%;
+        background-color: #212121;
+        border-radius: 4px;
+      }
       .container {
         display: flex;
-        flex-direction: column;
+        flex-direction: row;
         align-items: center;
-        padding: 32px 24px 24px;
+        padding: 16px;
       }
       .actions {
-        align-self: flex-end;
-        margin-top: 24px;
+        /*align-self: flex-end;
+        margin-left: auto;*/
+      }
+      .progress-display {
+        font-size: 12px;
+        opacity: 0.5;
+      }
+      .labels {
+        flex: 1 1 auto;
+        overflow: hidden;
+        margin: 0 16px;
       }
       .step {
-        margin: 24px 0 0 0;
+        margin: 0;
+        display: flex;
+        align-items: baseline;
+      }
+      .step em {
+        font-style: normal;
+        font-size: 14px;
+        font-weight: 300;
+        opacity: 0.5;
+        margin-left: auto;
       }
       .step-sub,
       .progress-display-sub {
@@ -120,59 +164,37 @@ export class ScanComponent {
   // };
 
   scanner$: Observable<{
-    state?: 'scanning' | 'success' | 'error';
+    state?: 'scanning' | 'extracting' | 'success' | 'error';
     error?: any;
-    step?: string;
-    stepSub?: string;
+    label?: string;
     progress?: number;
-    progressDisplay?: string;
-    progressDisplaySub?: string;
+    scannedCount: number;
+    extractedCount: number;
   }>;
 
-  constructor(
-    private scanner: ScannerFacade,
-    public dialogRef: MatDialogRef<ScanComponent>
-  ) {
-    const throttle = <T>() =>
-      throttleTime<T>(25, asapScheduler, {
-        leading: true,
-        trailing: true,
-      });
+  constructor(private scanner: ScannerFacade) {
+    // const throttle = <T>() =>
+    //   throttleTime<T>(25, animationFrameScheduler, {
+    //     leading: true,
+    //     trailing: true,
+    //   });
 
-    this.scanner$ = combineLatest([
-      scanner.state$,
-      scanner.error$,
-      scanner.step$,
-      scanner.stepSub$,
-      scanner.progress$,
-      scanner.progressDisplay$,
-      scanner.progressDisplaySub$,
-    ]).pipe(
-      throttle(),
-      map(
-        ([
-          state,
-          error,
-          step,
-          stepSub,
-          progress,
-          progressDisplay,
-          progressDisplaySub,
-        ]) => ({
-          state,
-          error,
-          step,
-          stepSub,
-          progress,
-          progressDisplay,
-          progressDisplaySub,
-        })
-      )
+    const obs = {
+      state: scanner.state$,
+      error: scanner.error$,
+      label: scanner.label$,
+      progress: scanner.progress$,
+      scannedCount: scanner.scannedCount$,
+      extractedCount: scanner.extractedCount$,
+    };
+
+    this.scanner$ = combineLatest(obs).pipe(
+      auditTime(15, animationFrameScheduler)
     );
   }
 
   close(): void {
-    this.dialogRef.close();
+    // this.dialogRef.close();
   }
 
   abort(): void {

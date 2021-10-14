@@ -2,8 +2,6 @@ import { NgModule } from '@angular/core';
 import { CoreModule } from '@app/core/core.module';
 import { WelcomeComponent } from '@app/welcome/welcome.component';
 import { RouterModule, Routes } from '@angular/router';
-import { ScannerModule } from '@app/scanner/scanner.module';
-import { DatabaseModule } from '@app/database/database.module';
 
 const routes: Routes = [
   {
@@ -18,8 +16,8 @@ const routes: Routes = [
   imports: [
     CoreModule,
     RouterModule.forChild(routes),
-    DatabaseModule,
-    ScannerModule,
+    // DatabaseModule,
+    // ScannerModule,
   ],
   providers: [],
 })
