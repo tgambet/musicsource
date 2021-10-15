@@ -7,7 +7,7 @@ import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '@env/environment';
 import { RouterModule, Routes } from '@angular/router';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
-import { StoreModule } from '@ngrx/store';
+import { ActionReducer, MetaReducer, StoreModule } from '@ngrx/store';
 import { EffectsModule } from '@ngrx/effects';
 
 const routes: Routes = [
@@ -22,6 +22,15 @@ const routes: Routes = [
   },
   // { path: '**', component: WelcomeComponent }, // TODO Not found component
 ];
+
+export const debug =
+  (reducer: ActionReducer<any>): ActionReducer<any> =>
+  (state, action) => {
+    console.log('action', action);
+    return reducer(state, action);
+  };
+
+export const metaReducers: MetaReducer<any>[] = [];
 
 @NgModule({
   declarations: [RootComponent],
@@ -40,6 +49,7 @@ const routes: Routes = [
     StoreModule.forRoot(
       {},
       {
+        metaReducers,
         runtimeChecks: {
           strictStateSerializability: false,
           strictActionSerializability: false,
@@ -51,7 +61,7 @@ const routes: Routes = [
       }
     ),
     EffectsModule.forRoot([]),
-    // StoreDevtoolsModule.instrument({ maxAge: 25, logOnly: true }),
+    // StoreDevtoolsModule.instrument({ maxAge: 10, logOnly: true }),
     MatSnackBarModule,
   ],
   providers: [UpdateService],

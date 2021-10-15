@@ -15,7 +15,6 @@ export type Album = {
   // artists: string[];
   // artistsIds: ArtistId[];
   likedOn?: number;
-  listenedOn?: number;
   pictureId?: PictureId;
   title: string;
   updatedOn: number;

@@ -8,6 +8,7 @@ import { StoreModule } from '@ngrx/store';
 import { ExtractorService } from '@app/scanner/extractor.service';
 import { FileService } from '@app/scanner/file.service';
 import { ScannerEffects2 } from '@app/scanner/store/scanner2.effects';
+import { ResizerService } from '@app/scanner/resizer.service';
 
 @NgModule({
   declarations: [ScanComponent],
@@ -16,6 +17,6 @@ import { ScannerEffects2 } from '@app/scanner/store/scanner2.effects';
     StoreModule.forFeature('scanner', scannerReducer),
     EffectsModule.forFeature([ScannerEffects2]),
   ],
-  providers: [ScannerFacade, ExtractorService, FileService],
+  providers: [ScannerFacade, ExtractorService, FileService, ResizerService],
 })
 export class ScannerModule {}

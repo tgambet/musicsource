@@ -32,6 +32,7 @@ export class RootComponent {
           // backward navigation
           const p = e.position;
           setTimeout(() => viewportScroller.scrollToPosition(p), 0);
+          // setTimeout(() => viewportScroller.scrollToPosition(p), 150);
           //
           // const getPos$ = defer(() => of(viewportScroller.getScrollPosition()));
           // const scroll$ = defer(() => of(viewportScroller.scrollToPosition(p)));

@@ -23,9 +23,8 @@ export const selectLabel = createSelector(
   (state) => state.label
 );
 
-export const selectProgress = createSelector(
-  selectCoreState,
-  (state) => state.progress
+export const selectProgress = createSelector(selectCoreState, (state) =>
+  Math.floor((state.extractedCount / state.scannedCount) * 100)
 );
 
 export const selectScannedCount = createSelector(

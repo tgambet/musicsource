@@ -15,7 +15,6 @@ export const artistFeatureKey = 'artists';
 export const artistIndexes = [
   { name: 'name' },
   { name: 'likedOn' },
-  { name: 'listenedOn' },
   { name: 'updatedOn' },
 ] as const;
 

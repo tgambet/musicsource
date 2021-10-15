@@ -20,24 +20,18 @@ export const scannerReducer: ActionReducer<ScannerState> = createReducer(
     ...state,
     state: 'scanning',
   })),
-  on(Actions.scanEntrySuccess, (state) => ({
-    ...state,
-    scannedCount: state.scannedCount + 1,
-  })),
-  on(Actions.scanEntryFailure, (state) => ({
+  on(Actions.scanEntry, (state) => ({
     ...state,
     scannedCount: state.scannedCount + 1,
   })),
   on(Actions.scanEntriesSuccess, (state) => ({
     ...state,
     state: 'extracting',
-    progress: 0,
   })),
   on(Actions.scanEntriesFailure, (state, { error }) => ({
     ...state,
     state: 'error',
     label: error?.message || error,
-    progress: 100,
   })),
 
   // Step 3
@@ -48,15 +42,13 @@ export const scannerReducer: ActionReducer<ScannerState> = createReducer(
   //   progressDisplay: '-',
   //   progressDisplaySub: `0/${format(state.scannedCount)}`,
   // })),
-  on(Actions.extractEntrySuccess, (state, { song }) => ({
+  on(Actions.extractEntrySuccess, (state, { label }) => ({
     ...state,
-    label: `${song.tags.albumartist || song.tags.artist} - ${song.title}`,
-    progress: ((state.extractedCount + 1) / state.scannedCount) * 100,
+    label,
     extractedCount: state.extractedCount + 1,
   })),
   on(Actions.extractEntryFailure, (state) => ({
     ...state,
-    progress: ((state.extractedCount + 1) / state.scannedCount) * 100,
     extractedCount: state.extractedCount + 1,
   }))
   // on(Actions.extractEntriesSuccess, (state, { count }) => ({

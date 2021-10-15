@@ -36,7 +36,6 @@ import { SongListItemComponent } from '@app/core/components/song-list-item.compo
 import { RouterModule } from '@angular/router';
 import { ContainerHomeComponent } from '@app/core/components/container-home.component';
 import { GenreComponent } from '@app/core/components/genre.component';
-import { RecentActivityComponent } from '@app/core/components/recent-activity.component';
 import { SelectComponent } from '@app/core/components/select.component';
 import { TrackListItemComponent } from '@app/core/components/track-list-item.component';
 import { AlbumComponent } from '@app/core/components/album.component';
@@ -90,7 +89,7 @@ const DECLARATIONS = [
   PlaylistAddComponent,
   PlaylistLikesComponent,
   PlayerButtonComponent,
-  RecentActivityComponent,
+  // RecentActivityComponent,
   SelectComponent,
   RoutedDialogDirective,
   SongListComponent,

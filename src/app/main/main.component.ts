@@ -23,6 +23,7 @@ import { loadArtists } from '@app/database/artists/artist.actions';
 import { loadSongs } from '@app/database/songs/song.actions';
 import { loadPlaylists } from '@app/database/playlists/playlist.actions';
 import { loadEntries } from '@app/database/entries/entry.actions';
+import { loadPictures } from '@app/database/pictures/picture.actions';
 
 // export const debugAnimation = (name: string) => (
 //   from: any,
@@ -169,9 +170,9 @@ export class MainComponent implements OnInit {
     this.store.dispatch(loadAlbums());
     this.store.dispatch(loadArtists());
     this.store.dispatch(loadEntries());
-    // this.store.dispatch(loadPictures());
     this.store.dispatch(loadPlaylists());
     this.store.dispatch(loadSongs());
+    this.store.dispatch(loadPictures());
 
     // TODO
     this.scroller.scroll$.subscribe((top) => (this.scrolledTop = top === 0));

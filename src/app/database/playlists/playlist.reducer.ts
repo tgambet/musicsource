@@ -12,7 +12,7 @@ import { createIDBEntityAdapter, IDBEntityState } from '@creasource/ngrx-idb';
 
 export const playlistFeatureKey = 'playlists';
 
-const indexes = ['title', 'createdOn', 'listenedOn'] as const;
+const indexes = ['title', 'createdOn'] as const;
 
 export type PlaylistIndex = typeof indexes[number];
 

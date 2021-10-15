@@ -6,11 +6,7 @@ import {
   selectPictureByKey,
   selectPictureTotal,
 } from '@app/database/pictures/picture.selectors';
-import {
-  getCover,
-  Picture,
-  PictureId,
-} from '@app/database/pictures/picture.model';
+import { Picture, PictureId } from '@app/database/pictures/picture.model';
 import { map } from 'rxjs/operators';
 
 @Injectable()
@@ -26,7 +22,7 @@ export class PictureFacade {
       ? of(undefined)
       : this.store
           .select(selectPictureByKey(key))
-          .pipe(map((picture) => picture && getCover(picture)));
+          .pipe(map((picture) => picture && picture.src));
   }
 
   getAll(): Observable<Picture[]> {
