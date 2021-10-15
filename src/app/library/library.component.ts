@@ -4,7 +4,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
   selector: 'app-library',
   template: `
     <app-container class="recent">
-      <app-recent-activity></app-recent-activity>
+      <!-- <app-recent-activity></app-recent-activity>-->
     </app-container>
     <div class="container">
       <app-container>

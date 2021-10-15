@@ -19,7 +19,7 @@ const indexes = [
   { name: 'albumId' },
   { name: 'artistId' },
   { name: 'likedOn' },
-  { name: 'lastModified' },
+  // { name: 'lastModified' },
   { name: 'updatedOn' },
 ] as const;
 

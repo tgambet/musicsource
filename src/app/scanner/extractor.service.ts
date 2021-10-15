@@ -1,7 +1,6 @@
 import { Inject, Injectable } from '@angular/core';
-import { defer, from, Observable, of } from 'rxjs';
-import { catchError, concatMap, map } from 'rxjs/operators';
-import { Either, left, right } from '@app/core/utils/either.util';
+import { defer, from, Observable } from 'rxjs';
+import { concatMap, map } from 'rxjs/operators';
 import { DOCUMENT } from '@angular/common';
 import { FileEntry } from '@app/database/entries/entry.model';
 import { ICommonTagsResult, IFormat } from 'music-metadata/lib/type';
@@ -24,13 +23,11 @@ export class ExtractorService {
       });
   }
 
-  extract(entry: FileEntry): Observable<
-    Either<{
-      common: ICommonTagsResult;
-      format: IFormat;
-      lastModified: number;
-    }>
-  > {
+  extract(entry: FileEntry): Observable<{
+    common: ICommonTagsResult;
+    format: IFormat;
+    lastModified: number;
+  }> {
     return defer(() => from(entry.handle.getFile())).pipe(
       // filter(file => this.supportedTypes.includes(file.type)),
       concatMap((file) =>
@@ -39,12 +36,13 @@ export class ExtractorService {
             musicMetadata.parseBlob(file /*{duration: true}*/)
           )
         ).pipe(
-          map(({ common, format }) =>
-            right({ common, format, lastModified: file.lastModified })
-          )
+          map(({ common, format }) => ({
+            common,
+            format,
+            lastModified: file.lastModified,
+          }))
         )
-      ),
-      catchError((error) => of(left(error)))
+      )
     );
   }
 }

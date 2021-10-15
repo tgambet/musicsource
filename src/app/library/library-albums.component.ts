@@ -80,7 +80,7 @@ export class LibraryAlbumsComponent
     private albums: AlbumFacade
   ) {
     super();
-    console.log(new Date().getTime());
+    // console.log(new Date().getTime());
   }
 
   @HostListener('window:scroll')
@@ -90,7 +90,7 @@ export class LibraryAlbumsComponent
   }
 
   ngAfterViewInit(): void {
-    console.log(new Date().getTime());
+    // console.log(new Date().getTime());
   }
 
   ngOnInit(): void {
@@ -106,7 +106,7 @@ export class LibraryAlbumsComponent
     //   })
     // );
 
-    console.log(new Date().getTime());
+    // console.log(new Date().getTime());
 
     const sort$ = this.route.queryParamMap.pipe(
       map((params) => ({
@@ -150,7 +150,7 @@ export class LibraryAlbumsComponent
   trackBy = (index: number, album: Album): string => album.id;
 
   ngAfterContentInit(): void {
-    console.log(new Date().getTime());
+    // console.log(new Date().getTime());
   }
 
   // getHash(albumArtist: string): string {
