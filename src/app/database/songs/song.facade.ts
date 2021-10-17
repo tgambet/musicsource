@@ -5,7 +5,6 @@ import { Song } from '@app/database/songs/song.model';
 import {
   selectSongAll,
   selectSongByAlbumKey,
-  selectSongByArtistKey,
   selectSongByKey,
   selectSongByKeys,
   selectSongIndexAll,
@@ -16,7 +15,6 @@ import { updateSong } from '@app/database/songs/song.actions';
 import { map } from 'rxjs/operators';
 import { SongIndex } from '@app/database/songs/song.reducer';
 import { AlbumId } from '@app/database/albums/album.model';
-import { ArtistId } from '@app/database/artists/artist.model';
 
 @Injectable()
 export class SongFacade {
@@ -36,19 +34,19 @@ export class SongFacade {
     return this.store.select(selectSongByKeys(keys));
   }
 
-  getByArtistKey(key: ArtistId): Observable<Song[] | undefined> {
-    return this.store
-      .select(selectSongByArtistKey(key))
-      .pipe(
-        map(
-          (songs) =>
-            songs &&
-            songs.sort(
-              (s1, s2) => (s1.tags.track.no || 0) - (s2.tags.track.no || 0)
-            )
-        )
-      );
-  }
+  // getByArtistKey(key: ArtistId): Observable<Song[] | undefined> {
+  //   return this.store
+  //     .select(selectSongByArtistKey(key))
+  //     .pipe(
+  //       map(
+  //         (songs) =>
+  //           songs &&
+  //           songs.sort(
+  //             (s1, s2) => (s1.tags.track.no || 0) - (s2.tags.track.no || 0)
+  //           )
+  //       )
+  //     );
+  // }
 
   getByAlbumKey(key: AlbumId): Observable<Song[] | undefined> {
     return this.store

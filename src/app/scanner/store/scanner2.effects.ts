@@ -7,7 +7,15 @@ import {
   ofType,
   OnRunEffects,
 } from '@ngrx/effects';
-import { endWith, exhaustMap, from, mergeMap, Observable, of } from 'rxjs';
+import {
+  concat,
+  endWith,
+  exhaustMap,
+  from,
+  mergeMap,
+  Observable,
+  of,
+} from 'rxjs';
 import {
   catchError,
   concatMap,
@@ -22,7 +30,6 @@ import { FileService } from '@app/scanner/file.service';
 import { ExtractorService } from '@app/scanner/extractor.service';
 import { Entry, isFile } from '@app/database/entries/entry.model';
 import {
-  addOrUpdatePicture,
   extractEntryFailure,
   extractEntrySuccess,
   extractImageEntry,
@@ -41,7 +48,7 @@ import {
   scanSuccess,
 } from '@app/scanner/store/scanner.actions';
 import { Router } from '@angular/router';
-import { Album, getAlbumId } from '@app/database/albums/album.model';
+import { Album, AlbumId, getAlbumId } from '@app/database/albums/album.model';
 import { Song } from '@app/database/songs/song.model';
 import { MatDialog } from '@angular/material/dialog';
 import { ScanComponent } from '@app/scanner/scan.component';
@@ -51,16 +58,24 @@ import {
   Overlay,
   OverlayRef,
 } from '@angular/cdk/overlay';
-import { Artist, getArtistId } from '@app/database/artists/artist.model';
+import {
+  Artist,
+  ArtistId,
+  getArtistId,
+} from '@app/database/artists/artist.model';
 import { addEntry } from '@app/database/entries/entry.actions';
 import { addSong } from '@app/database/songs/song.actions';
-import { upsertAlbum } from '@app/database/albums/album.actions';
+import { updateAlbum, upsertAlbum } from '@app/database/albums/album.actions';
 import { upsertArtist } from '@app/database/artists/artist.actions';
 import { ComponentPortal } from '@angular/cdk/portal';
 import { PlayerFacade } from '@app/player/store/player.facade';
 import { Action, Store } from '@ngrx/store';
 import { selectCoreState } from '@app/scanner/store/scanner.selectors';
-import { getPictureId, Picture } from '@app/database/pictures/picture.model';
+import {
+  getPictureId,
+  Picture,
+  PictureId,
+} from '@app/database/pictures/picture.model';
 import { arrayBufferToBase64 } from '@app/core/utils/array-buffer-to-base64.util';
 import {
   addPicture,
@@ -69,6 +84,7 @@ import {
 import { ResizerService } from '@app/scanner/resizer.service';
 import { PictureFacade } from '@app/database/pictures/picture.facade';
 import { IdUpdate } from '@app/core/utils';
+import { selectAlbumByKey } from '@app/database/albums/album.selectors';
 
 // noinspection JSUnusedGlobalSymbols
 @Injectable()
@@ -193,53 +209,22 @@ export class ScannerEffects2 implements OnRunEffects {
           from(entry.handle.getFile()).pipe(
             concatMap((file) =>
               from(file.arrayBuffer()).pipe(
-                map((buffer) => {
+                concatMap((buffer) => {
                   const base64 = arrayBufferToBase64(buffer);
                   const src = `data:${file.type};base64,${base64}`;
                   const id = getPictureId(src);
-                  return addOrUpdatePicture({
+                  return this.addOrUpdatePicture(
                     id,
                     src,
-                    name: file.name,
-                    entry,
-                  });
-                }),
-                endWith(extractEntrySuccess({ label: file.name }))
+                    file.name,
+                    entry.parent
+                  ).pipe(endWith(extractEntrySuccess({ label: file.name })));
+                })
               )
             ),
             catchError((error) => of(extractEntryFailure({ error })))
           ),
         1 // TODO
-      )
-    )
-  );
-
-  addOrUpdatePicture$ = createEffect(() =>
-    this.actions$.pipe(
-      ofType(addOrUpdatePicture),
-      concatMap(({ id, src, name, entry }) =>
-        this.pictures.getByKey(id).pipe(
-          first(),
-          map((stored) => {
-            if (!stored) {
-              const picture: Picture = {
-                id,
-                name,
-                src,
-                entries: [entry.path],
-              };
-              return addPicture({ picture });
-            } else {
-              const update: IdUpdate<Picture> = {
-                key: id,
-                changes: {
-                  entries: [...stored.entries, entry.path],
-                },
-              };
-              return updatePicture({ update });
-            }
-          })
-        )
       )
     )
   );
@@ -260,78 +245,91 @@ export class ScannerEffects2 implements OnRunEffects {
         (fileEntry) =>
           this.extractor.extract(fileEntry).pipe(
             concatMap(({ common: tags, format, lastModified }) => {
+              if (
+                tags.albumartist === undefined ||
+                tags.album === undefined ||
+                tags.artists === undefined ||
+                tags.title === undefined
+              ) {
+                return of(extractEntryFailure({ error: 'missing tags' })).pipe(
+                  tap(() => console.log(fileEntry.path, tags))
+                ); // TODO
+              }
+
               const date = new Date();
-              date.setSeconds(0, 0);
+              date.setMilliseconds(0);
               const updatedOn = date.getTime();
 
-              let artistsNames = [];
-              if (tags.albumartist) {
-                artistsNames.push(tags.albumartist);
-              }
-              if (tags.artist) {
-                artistsNames.push(tags.artist);
-              }
-              if (tags.artists) {
-                artistsNames.push(...tags.artists);
-              }
-              artistsNames = artistsNames.filter(
-                (value, index, arr) => arr.indexOf(value) === index
-              );
-              const artists: Artist[] = artistsNames.map((name) => ({
+              const artists: Artist[] = tags.artists.map((name) => ({
                 id: getArtistId(name),
                 name,
                 updatedOn,
               }));
 
-              if (artists.length === 0 || tags.album === undefined) {
-                return of(extractEntryFailure({ error: 'missing tags' })).pipe(
-                  tap(() => console.log(format))
-                ); // TODO
-              }
+              const albumArtist: Artist = {
+                id: getArtistId(tags.albumartist),
+                name: tags.albumartist,
+                updatedOn,
+              };
 
-              const picturesActions: Action[] = (tags.picture || []).map(
-                (picture) => {
-                  const base64 = picture.data.toString('base64');
-                  return addOrUpdatePicture({
-                    id: getPictureId(base64),
-                    src: `data:${picture.format};base64,${base64}`,
-                    name: picture.name || picture.description || fileEntry.name,
-                    entry: fileEntry,
-                  });
-                }
-              );
+              const pictures = (tags.picture || []).map((picture) => {
+                const base64 = picture.data.toString('base64');
+                return {
+                  id: getPictureId(base64),
+                  src: `data:${picture.format};base64,${base64}`,
+                  name: picture.name || picture.description || fileEntry.name,
+                  entry: fileEntry,
+                };
+              });
 
               const album: Album = {
-                id: getAlbumId(artists[0].name, tags.album),
+                id: getAlbumId(albumArtist.name, tags.album),
                 title: tags.album,
-                artist: artists[0].name,
-                artistId: artists[0].id,
+                albumArtist: {
+                  name: albumArtist.name,
+                  id: albumArtist.id,
+                },
+                artists: artists.map((a) => a.id),
                 updatedOn,
                 year: tags.year,
+                folder: fileEntry.parent,
               };
 
               const song: Song = {
                 entryPath: fileEntry.path,
+                folder: fileEntry.parent,
                 title: tags.title,
-                artist: artists[0].name,
-                album: album.title,
-                artistId: artists[0].id,
-                albumId: album.id,
+                artists: artists.map((a) => ({ name: a.name, id: a.id })),
+                album: { title: album.title, id: album.id },
                 lastModified,
                 format,
                 updatedOn,
                 duration: format.duration,
                 tags,
+                pictureId: pictures[0]?.id,
               };
 
-              return of(
-                ...picturesActions,
-                ...artists.map((artist) => upsertArtist({ artist })),
-                upsertAlbum({ album }),
-                addSong({ song }),
-                extractEntrySuccess({
-                  label: `${song.artist} - ${song.title}`,
-                })
+              return concat(
+                ...pictures.map(({ id, src, name, entry }) =>
+                  this.addOrUpdatePicture(id, src, name, entry.path)
+                ),
+                this.addOrUpdateAlbum(
+                  album.id,
+                  album.title,
+                  album.albumArtist,
+                  album.artists,
+                  album.updatedOn,
+                  album.folder,
+                  album.year
+                ),
+                of(
+                  ...artists.map((artist) => upsertArtist({ artist })),
+                  // upsertAlbum({ album }),
+                  addSong({ song }),
+                  extractEntrySuccess({
+                    label: `${song.artists[0].name} - ${song.title}`,
+                  })
+                )
               );
             }),
             catchError((error) => of(extractEntryFailure({ error })))
@@ -375,4 +373,92 @@ export class ScannerEffects2 implements OnRunEffects {
       )
     );
   }
+
+  addOrUpdatePicture = (
+    id: PictureId,
+    src: string,
+    name: string,
+    path: string
+  ): Observable<Action> =>
+    this.pictures.getByKey(id).pipe(
+      first(),
+      concatMap((stored) => {
+        if (!stored) {
+          return this.resizer
+            .resize(src, [
+              { height: 32 },
+              { height: 56 },
+              { height: 160 },
+              { height: 226 },
+              { height: 264 },
+            ])
+            .pipe(
+              map(([h32, h56, h160, h226, h264]) => {
+                const picture: Picture = {
+                  id,
+                  original: src,
+                  sources: [
+                    { src: h32, height: 32 },
+                    { src: h56, height: 56 },
+                    { src: h160, height: 160 },
+                    { src: h226, height: 226 },
+                    { src: h264, height: 264 },
+                  ],
+                  name,
+                  entries: [path],
+                };
+                return addPicture({ picture });
+              })
+            );
+        } else {
+          const update: IdUpdate<Picture> = {
+            key: id,
+            changes: {
+              entries: [...stored.entries, path],
+            },
+          };
+          return of(updatePicture({ update }));
+        }
+      })
+    );
+
+  addOrUpdateAlbum = (
+    id: AlbumId,
+    title: string,
+    albumArtist: {
+      name: string;
+      id: ArtistId;
+    },
+    artists: ArtistId[],
+    updatedOn: number,
+    folder: string,
+    year?: number
+  ): Observable<Action> =>
+    this.store.select(selectAlbumByKey(id)).pipe(
+      first(),
+      map((stored) => {
+        if (!stored) {
+          const album: Album = {
+            id,
+            title,
+            albumArtist,
+            artists,
+            updatedOn,
+            year,
+            folder,
+          };
+          return upsertAlbum({ album });
+        } else {
+          const update: IdUpdate<Album> = {
+            key: id,
+            changes: {
+              artists: [...stored.artists, ...artists].filter(
+                (value, i, arr) => arr.indexOf(value) === i
+              ),
+            },
+          };
+          return updateAlbum({ update });
+        }
+      })
+    );
 }

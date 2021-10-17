@@ -42,8 +42,8 @@ import { getArtistId } from '@app/database/artists/artist.model';
       </ng-container>
     </span>
     <span class="album">
-      <a [routerLink]="['/', 'album', song.albumId]" *ngIf="song.album">
-        {{ song.album }}
+      <a [routerLink]="['/', 'album', song.album.id]">
+        {{ song.album.title }}
       </a>
     </span>
     <span class="controls">
@@ -86,18 +86,13 @@ import { getArtistId } from '@app/database/artists/artist.model';
           <app-icon [path]="icons.playlistPlus"></app-icon>
           <span>Add to playlist</span>
         </button>
-        <button
-          mat-menu-item
-          [routerLink]="['/', 'album', song.albumId]"
-          *ngIf="song.album"
-        >
+        <button mat-menu-item [routerLink]="['/', 'album', song.album.id]">
           <app-icon [path]="icons.album"></app-icon>
           <span>Go to album</span>
         </button>
         <button
           mat-menu-item
-          [routerLink]="['/', 'artist', song.artistId]"
-          *ngIf="song.artist"
+          [routerLink]="['/', 'artist', song.artists[0].id]"
         >
           <app-icon [path]="icons.accountMusic"></app-icon>
           <span>Go to artist</span>
@@ -199,7 +194,7 @@ export class SongListItemComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.cover$ = this.pictures.getCover(this.song.pictureId);
+    this.cover$ = this.pictures.getSongCover(this.song, 32);
   }
 
   getArtistId(name: string): string {

@@ -1,13 +1,12 @@
 import { Injectable } from '@angular/core';
 import { Artist } from '@app/database/artists/artist.model';
-import { filter, first, map, tap } from 'rxjs/operators';
+import { first, tap } from 'rxjs/operators';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { combineLatest, Observable } from 'rxjs';
+import { combineLatest, EMPTY, Observable } from 'rxjs';
 import { Song } from '@app/database/songs/song.model';
 import { PlaylistAddComponent } from '@app/core/dialogs/playlist-add.component';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
-import { shuffleArray } from '@app/core/utils/shuffle-array.util';
 import { PlayerFacade } from '@app/player/store/player.facade';
 import { PlaylistFacade } from '@app/database/playlists/playlist.facade';
 import { SongFacade } from '@app/database/songs/song.facade';
@@ -133,17 +132,18 @@ export class ComponentHelperService {
   }
 
   shufflePlayArtist(artist: Artist): Observable<Song[]> {
-    return this.songs.getByArtistKey(artist.id).pipe(
-      first(),
-      filter((songs): songs is Song[] => !!songs),
-      map((songs) => shuffleArray(songs)),
-      map((songs) => songs.slice(0, 100)),
-      tap((songs) => {
-        this.player.setPlaying();
-        this.player.setPlaylist(songs);
-        this.player.show();
-      })
-    );
+    return EMPTY;
+    // return this.songs.getByArtistKey(artist.id).pipe(
+    //   first(),
+    //   filter((songs): songs is Song[] => !!songs),
+    //   map((songs) => shuffleArray(songs)),
+    //   map((songs) => songs.slice(0, 100)),
+    //   tap((songs) => {
+    //     this.player.setPlaying();
+    //     this.player.setPlaylist(songs);
+    //     this.player.show();
+    //   })
+    // );
   }
 
   playNext(song: Song): void {

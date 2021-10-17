@@ -5,7 +5,7 @@ import { Observable } from 'rxjs';
 export class ResizerService {
   resize(
     imageUrl: string,
-    sizes: { height: number; width: number }[]
+    sizes: { height: number; width?: number }[]
   ): Observable<string[]> {
     return new Observable((observer) => {
       const canvas = document.createElement('canvas');
@@ -23,18 +23,18 @@ export class ResizerService {
 
       img.onload = () => {
         const resized = sizes.map((size) => {
-          canvas.width = size.width;
+          canvas.width = size.width ?? (img.width / img.height) * size.height;
           canvas.height = size.height;
           let width;
           let height;
           let dx = 0;
           if (img.width > img.height) {
-            width = (size.width * img.width) / img.height;
-            height = size.height;
-            dx = -(width - size.width) / 2;
+            width = (canvas.width * img.width) / img.height;
+            height = canvas.height;
+            dx = -(width - canvas.width) / 2;
           } else {
-            width = size.width;
-            height = (size.height * img.height) / img.width;
+            width = canvas.width;
+            height = (canvas.height * img.height) / img.width;
           }
           ctx.drawImage(img, dx - 1, -1, width + 2, height + 2);
           return canvas.toDataURL('image/webp');

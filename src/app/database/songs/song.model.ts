@@ -5,11 +5,10 @@ import { ArtistId } from '@app/database/artists/artist.model';
 
 export type Song = {
   entryPath: string;
+  folder: string;
   title?: string;
-  album: string;
-  artist: string;
-  albumId: AlbumId;
-  artistId: ArtistId;
+  album: { title: string; id: AlbumId };
+  artists: { name: string; id: ArtistId }[];
   duration?: number;
   lastModified?: number;
   likedOn?: number;

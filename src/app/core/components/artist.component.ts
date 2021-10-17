@@ -69,6 +69,6 @@ export class ArtistComponent {
   icons = Icons;
 
   constructor(private pictures: PictureFacade) {
-    this.cover$ = this.pictures.getCover(this.artist.pictureKey);
+    this.cover$ = this.pictures.getArtistCover(this.artist);
   }
 }

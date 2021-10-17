@@ -4,7 +4,7 @@ import {
   pictureFeatureKey,
   PictureState,
 } from './picture.reducer';
-import { PictureId } from '@app/database/pictures/picture.model';
+import { Picture, PictureId } from '@app/database/pictures/picture.model';
 
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 
@@ -23,3 +23,18 @@ export const {
 
 export const selectPictureByKey = (key: PictureId) =>
   createSelector(selectPictureEntities, (entities) => entities[key]);
+
+export const selectPictureByFolder = (
+  folder: string,
+  fileNames = ['folder', 'cover']
+) =>
+  createSelector(
+    selectPictureEntities,
+    selectPictureIndexEntities('entries'),
+    (entities, index) =>
+      index[folder]
+        ?.map((key) => entities[key as any] as Picture)
+        .find((picture) =>
+          fileNames.find((name) => picture.name?.startsWith(name))
+        )
+  );

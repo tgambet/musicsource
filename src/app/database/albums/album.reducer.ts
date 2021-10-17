@@ -15,8 +15,8 @@ export const albumFeatureKey = 'albums';
 const indexes = [
   { name: 'title' },
   { name: 'year' },
-  { name: 'artistId' },
-  // { name: 'artists', multiEntry: true },
+  { name: 'albumArtist', keySelector: (album: Album) => album.albumArtist.id },
+  { name: 'artists', multiEntry: true },
   { name: 'likedOn' },
   { name: 'updatedOn' },
 ] as const;

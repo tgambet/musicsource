@@ -80,7 +80,7 @@ import { getArtistId } from '@app/database/artists/artist.model';
         </button>
         <button
           mat-menu-item
-          [routerLink]="['/', 'album', song.albumId]"
+          [routerLink]="['/', 'album', song.album.id]"
           *ngIf="song.album"
         >
           <app-icon [path]="icons.album"></app-icon>
@@ -88,8 +88,7 @@ import { getArtistId } from '@app/database/artists/artist.model';
         </button>
         <button
           mat-menu-item
-          [routerLink]="['/', 'artist', song.artistId]"
-          *ngIf="song.artist"
+          [routerLink]="['/', 'artist', song.artists[0].id]"
         >
           <app-icon [path]="icons.accountMusic"></app-icon>
           <span>Go to artist</span>
