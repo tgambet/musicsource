@@ -52,8 +52,8 @@ export class MediaSessionService {
               ((navigator.mediaSession as MediaSession).metadata =
                 new MediaMetadata({
                   title: song.title,
-                  artist: song.artist,
-                  album: song.album,
+                  artist: song.artists.map((a) => a.name).join(', '),
+                  album: song.album.title,
                   artwork: cover ? [{ src: cover }] : [],
                 }))
           )

@@ -3,6 +3,7 @@ import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import { Album, AlbumId } from '@app/database/albums/album.model';
 import {
+  selectAlbumByAlbumArtistKey,
   selectAlbumByArtistKey,
   selectAlbumByKey,
   selectAlbumIndexAll,
@@ -24,14 +25,14 @@ export class AlbumFacade {
 
   getByArtistKey(key: ArtistId): Observable<Album[] | undefined> {
     return this.store
-      .select(selectAlbumByArtistKey(key))
-      .pipe(map((albums) => albums?.filter((a) => a.artistId === key)));
+      .select(selectAlbumByAlbumArtistKey(key))
+      .pipe(/*map((albums) => albums?.filter((a) => a.albumArtist.id === key))*/);
   }
 
   getWithArtist(key: ArtistId): Observable<Album[] | undefined> {
     return this.store
       .select(selectAlbumByArtistKey(key))
-      .pipe(map((albums) => albums?.filter((a) => a.artistId !== key)));
+      .pipe(map((albums) => albums?.filter((a) => a.albumArtist.id !== key)));
 
     // return this.storage
     //   .walk$<Album>(

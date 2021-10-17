@@ -57,8 +57,6 @@ const musicSourceDatabase: ReactiveIDBDatabaseOptions = {
             // { name: 'genre', options: { multiEntry: true } },
             // 'album',
             'title',
-            'albumId',
-            'artistId',
             'likedOn',
             'updatedOn',
           ],

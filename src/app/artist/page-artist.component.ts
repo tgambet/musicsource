@@ -135,7 +135,7 @@ import { PictureFacade } from '@app/database/pictures/picture.facade';
         left: 0;
         bottom: 0;
         right: 0;
-        filter: blur(2px);
+        /* filter: blur(2px);*/
         background-size: cover;
         background-position: center center;
       }
@@ -209,7 +209,7 @@ export class PageArtistComponent extends WithTrigger implements OnInit {
     this.artist$ = this.artists.getByKey(artistKey) as Observable<Artist>;
 
     this.cover$ = this.artist$.pipe(
-      switchMap((artist) => this.pictures.getCover(artist.pictureKey))
+      switchMap((artist) => this.pictures.getArtistBanner(artist))
     );
 
     this.albums$ = this.albums.getByArtistKey(artistKey); // TODO hash vs name

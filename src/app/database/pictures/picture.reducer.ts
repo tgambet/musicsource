@@ -13,11 +13,11 @@ import { createIDBEntityAdapter, IDBEntityState } from '@creasource/ngrx-idb';
 
 export const pictureFeatureKey = 'pictures';
 
-export type PictureState = IDBEntityState<Picture, never>;
+export type PictureState = IDBEntityState<Picture, 'entries'>;
 
-export const pictureAdapter = createIDBEntityAdapter<Picture, never>({
+export const pictureAdapter = createIDBEntityAdapter<Picture, 'entries'>({
   keySelector: (model) => model.id,
-  indexes: [],
+  indexes: [{ name: 'entries', multiEntry: true }],
 });
 
 export const initialState = pictureAdapter.getInitialState();

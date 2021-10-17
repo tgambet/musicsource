@@ -25,9 +25,16 @@ export const {
 export const selectAlbumByKey = (key: AlbumId) =>
   createSelector(selectAlbumEntities, (entities) => entities[key]);
 
+export const selectAlbumByAlbumArtistKey = (key: ArtistId) =>
+  createSelector(
+    selectAlbumEntities,
+    selectAlbumIndexEntities('albumArtist'),
+    (entities, index) => index[key]?.map((k) => entities[k as any] as Album)
+  );
+
 export const selectAlbumByArtistKey = (key: ArtistId) =>
   createSelector(
     selectAlbumEntities,
-    selectAlbumIndexEntities('artistId'),
+    selectAlbumIndexEntities('artists'),
     (entities, index) => index[key]?.map((k) => entities[k as any] as Album)
   );

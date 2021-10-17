@@ -139,6 +139,6 @@ export class ArtistListItemComponent implements OnInit {
   constructor(private pictures: PictureFacade) {}
 
   ngOnInit(): void {
-    this.cover$ = this.pictures.getCover(this.artist.pictureKey);
+    this.cover$ = this.pictures.getArtistCover(this.artist, 56);
   }
 }

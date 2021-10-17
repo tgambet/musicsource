@@ -97,13 +97,13 @@ import { SongFacade } from '@app/database/songs/song.facade';
       <div class="meta">
         <span class="top">{{ song.title }}</span>
         <span class="sub">
-          <a *ngIf="song.artist" [routerLink]="['/artist', song.artistId]">{{
-            song.artist
-          }}</a>
+          <a
+            *ngFor="let artist of song.artists"
+            [routerLink]="['/artist', artist.id]"
+            >{{ artist.name }}</a
+          >
           •
-          <a *ngIf="song.album" [routerLink]="['/album', song.albumId]">{{
-            song.album
-          }}</a>
+          <a [routerLink]="['/album', song.album.id]">{{ song.album.title }}</a>
           • {{ song.tags.year }}
         </span>
       </div>
@@ -490,12 +490,12 @@ export class PlayerComponent implements OnInit, OnDestroy {
       {
         text: 'Go to album',
         icon: this.icons.album,
-        routerLink: song.album ? ['/album', song.albumId] : undefined,
+        routerLink: ['/album', song.album.id],
       },
       {
         text: 'Go to artist',
         icon: this.icons.accountMusic,
-        routerLink: song.artist ? ['/artist', song.artistId] : undefined,
+        routerLink: ['/artist', song.artists[0].id],
       },
     ];
   }

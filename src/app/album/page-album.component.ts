@@ -5,7 +5,7 @@ import {
   OnInit,
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { concatMap, Observable, ReplaySubject, share, switchMap } from 'rxjs';
+import { Observable, ReplaySubject, share, switchMap } from 'rxjs';
 import { Album, AlbumId } from '@app/database/albums/album.model';
 import { filter, first, map, tap } from 'rxjs/operators';
 import { Song } from '@app/database/songs/song.model';
@@ -39,11 +39,9 @@ import { SongFacade } from '@app/database/songs/song.facade';
               <app-title>{{ album.title }}</app-title>
               <p>
                 <span>Album</span> •
-                <a
-                  *ngIf="album.artistId"
-                  [routerLink]="['/', 'artist', album.artistId]"
-                  >{{ album.artist }}</a
-                >
+                <a [routerLink]="['/', 'artist', album.albumArtist.id]">{{
+                  album.albumArtist.name
+                }}</a>
                 <!--                <span *ngIf="!album.albumArtist && album.artists.length > 1">-->
                 <!--                  Various artists-->
                 <!--                </span>-->
@@ -151,12 +149,11 @@ export class PageAlbumComponent extends WithTrigger implements OnInit {
     this.album$ = this.albums.getByKey(albumKey) as Observable<Album>;
 
     this.cover$ = this.album$.pipe(
-      switchMap((album) => this.pictures.getCover(album.pictureId))
+      switchMap((album) => this.pictures.getAlbumCover(album, 264))
     );
 
     this.songs$ = this.album$.pipe(
-      first(),
-      concatMap((album) => this.songs.getByAlbumKey(album.id)),
+      switchMap((album) => this.songs.getByAlbumKey(album.id)),
       filter((songs): songs is Song[] => !!songs),
       share({
         connector: () => new ReplaySubject(1),

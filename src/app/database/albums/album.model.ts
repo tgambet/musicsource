@@ -10,15 +10,14 @@ export const getAlbumId = (artist?: string, title?: string): AlbumId =>
 
 export type Album = {
   id: AlbumId;
-  artist: string;
-  artistId: ArtistId;
-  // artists: string[];
-  // artistsIds: ArtistId[];
+  albumArtist: { name: string; id: ArtistId };
+  artists: ArtistId[];
   likedOn?: number;
   pictureId?: PictureId;
   title: string;
   updatedOn: number;
   year?: number;
+  folder: string;
 };
 
 // eslint-disable-next-line @typescript-eslint/naming-convention

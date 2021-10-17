@@ -16,9 +16,9 @@ import { first, map, tap } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { Song } from '@app/database/songs/song.model';
 import { HistoryService } from '@app/core/services/history.service';
-import { PictureFacade } from '@app/database/pictures/picture.facade';
 import { AlbumFacade } from '@app/database/albums/album.facade';
 import { SongFacade } from '@app/database/songs/song.facade';
+import { PictureFacade } from '@app/database/pictures/picture.facade';
 
 @Component({
   selector: 'app-album',
@@ -46,12 +46,10 @@ import { SongFacade } from '@app/database/songs/song.facade';
       [topLabel]="{ text: album.title, routerLink: ['/', 'album', album.id] }"
       [bottomLabel]="[
         'Album',
-        album.artist
-          ? {
-              text: album.artist,
-              routerLink: ['/', 'artist', album.artistId]
-            }
-          : undefined,
+        {
+          text: album.albumArtist.name,
+          routerLink: ['/', 'artist', album.albumArtist.id]
+        },
         album.year ? album.year.toString(10) : ''
       ]"
       [size]="size"
@@ -92,9 +90,9 @@ export class AlbumComponent implements OnInit {
     private player: PlayerFacade,
     private helper: ComponentHelperService,
     private history: HistoryService,
-    private pictures: PictureFacade,
     private albums: AlbumFacade,
-    private songs: SongFacade
+    private songs: SongFacade,
+    private pictures: PictureFacade
   ) {}
 
   ngOnInit(): void {
@@ -104,7 +102,10 @@ export class AlbumComponent implements OnInit {
 
     this.song$ = this.playlist$.pipe(map((pl) => pl && pl[0]));
 
-    this.cover$ = this.pictures.getCover(this.album.pictureId);
+    this.cover$ = this.pictures.getAlbumCover(
+      this.album,
+      this.size === 'small' ? 160 : 226
+    );
   }
 
   /*play() {
@@ -198,10 +199,8 @@ export class AlbumComponent implements OnInit {
       {
         icon: Icons.accountMusic,
         text: 'Go to artist',
-        routerLink: this.album.artist
-          ? ['/', 'artist', this.album.artistId]
-          : undefined,
-        disabled: !this.album.artist,
+        routerLink: ['/', 'artist', this.album.albumArtist.id],
+        disabled: !this.album.albumArtist,
       },
     ];
   }

@@ -4,8 +4,6 @@ import {
   Entry,
   FileEntry,
 } from '@app/database/entries/entry.model';
-import { PictureId } from '@app/database/pictures/picture.model';
-import { ArtistId } from '@app/database/artists/artist.model';
 
 export const scanStart = createAction('scanner/start');
 export const scanEnd = createAction('scanner/end');
@@ -56,11 +54,6 @@ export const extractEntrySuccess = createAction(
 export const extractEntryFailure = createAction(
   'scanner/extract/entry/failure',
   props<{ error: any }>()
-);
-
-export const addOrUpdatePicture = createAction(
-  'scanner/picture/add-or-update',
-  props<{ id: PictureId; src: string; name: string; entry: FileEntry }>()
 );
 
 // export const extractEntriesSuccess = createAction(

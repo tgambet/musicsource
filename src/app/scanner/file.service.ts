@@ -68,7 +68,7 @@ export class FileService {
   ): Entry => ({
     kind: handle.kind,
     name: handle.name,
-    parent,
+    parent: parent as any,
     path: parent ? `${parent}/${handle.name}` : handle.name,
     handle: handle as any,
   });
