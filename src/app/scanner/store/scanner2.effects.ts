@@ -132,6 +132,7 @@ export class ScannerEffects2 implements OnRunEffects {
 
         return of(scanEntries(dir));
       }),
+      tap(() => window.addEventListener('beforeunload', this.unloadListener)),
       tap(() => this.router.navigate(['/library/songs']))
     )
   );
@@ -153,6 +154,9 @@ export class ScannerEffects2 implements OnRunEffects {
     this.actions$.pipe(
       ofType(scanEnd, scanSuccess, scanFailure), // TODO don't close on failure
       tap(() => this.overlayRef?.dispose()),
+      tap(() =>
+        window.removeEventListener('beforeunload', this.unloadListener)
+      ),
       mapTo(scanEnded())
     )
   );
@@ -218,7 +222,7 @@ export class ScannerEffects2 implements OnRunEffects {
                     src,
                     file.name,
                     entry.parent
-                  ).pipe(endWith(extractEntrySuccess({ label: file.name })));
+                  ).pipe(endWith(extractEntrySuccess({})));
                 })
               )
             ),
@@ -461,4 +465,9 @@ export class ScannerEffects2 implements OnRunEffects {
         }
       })
     );
+
+  unloadListener(e: BeforeUnloadEvent): void {
+    e.preventDefault();
+    e.returnValue = '';
+  }
 }
