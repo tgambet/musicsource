@@ -49,7 +49,7 @@ export const extractSongEntry = createAction(
 );
 export const extractEntrySuccess = createAction(
   'scanner/extract/entry/success',
-  props<{ label: string }>()
+  props<{ label?: string }>()
 );
 export const extractEntryFailure = createAction(
   'scanner/extract/entry/failure',
