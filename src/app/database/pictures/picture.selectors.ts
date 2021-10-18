@@ -24,17 +24,18 @@ export const {
 export const selectPictureByKey = (key: PictureId) =>
   createSelector(selectPictureEntities, (entities) => entities[key]);
 
-export const selectPictureByFolder = (
-  folder: string,
-  fileNames = ['folder', 'cover']
-) =>
+export const selectPictureByFolder = (folder: string, fileNames: string[]) =>
   createSelector(
     selectPictureEntities,
     selectPictureIndexEntities('entries'),
-    (entities, index) =>
-      index[folder]
-        ?.map((key) => entities[key as any] as Picture)
-        .find((picture) =>
-          fileNames.find((name) => picture.name?.startsWith(name))
+    (entities, index) => {
+      const pictures = index[folder]?.map(
+        (key) => entities[key as any] as Picture
+      );
+      return fileNames
+        .map((name) =>
+          pictures?.find((picture) => picture.name?.startsWith(name))
         )
+        .filter((p) => !!p)[0];
+    }
   );

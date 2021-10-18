@@ -16,7 +16,7 @@ import { PictureFacade } from '@app/database/pictures/picture.facade';
   selector: 'app-artist-list-item',
   template: `
     <a [routerLink]="['/', 'artist', artist.id]" matRipple>
-      <div class="cover" style="--aspect-ratio:1">
+      <div class="cover">
         <img
           *ngIf="cover$ | async as cover; else icon"
           [src]="cover"
@@ -84,11 +84,18 @@ import { PictureFacade } from '@app/database/pictures/picture.facade';
       }
       .cover {
         width: 56px;
+        height: 56px;
         border-radius: 50%;
         overflow: hidden;
         margin-right: 16px;
         position: relative;
         z-index: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      app-icon {
+        color: grey;
       }
       .meta {
         display: flex;
