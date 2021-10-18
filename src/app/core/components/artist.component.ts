@@ -12,7 +12,6 @@ import { PictureFacade } from '@app/database/pictures/picture.facade';
         [routerLink]="['/', 'artist', artist.id]"
         matRipple
         [title]="artist.name"
-        style="--aspect-ratio:1"
       >
         <img
           *ngIf="cover$ | async as cover; else icon"

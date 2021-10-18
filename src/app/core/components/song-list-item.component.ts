@@ -18,7 +18,7 @@ import { getArtistId } from '@app/database/artists/artist.model';
 @Component({
   selector: 'app-song-list-item',
   template: `
-    <div class="cover" style="--aspect-ratio:1">
+    <div class="cover">
       <img
         *ngIf="cover$ | async as cover; else icon"
         [src]="cover"
@@ -114,6 +114,9 @@ import { getArtistId } from '@app/database/artists/artist.model';
         border-radius: 2px;
         overflow: hidden;
         position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
       }
       .cover app-player-button {
         position: absolute;
@@ -121,6 +124,9 @@ import { getArtistId } from '@app/database/artists/artist.model';
         left: -4px;
         opacity: 0;
         background-color: rgba(0, 0, 0, 0.75);
+      }
+      app-icon {
+        color: grey;
       }
       .title {
         flex: 12 1 0;

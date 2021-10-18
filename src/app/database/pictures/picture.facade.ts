@@ -50,7 +50,7 @@ export class PictureFacade {
   getFolderPicture(
     folder: string,
     size = 0,
-    names?: string[]
+    names: string[]
   ): Observable<string | undefined> {
     return this.store
       .select(selectPictureByFolder(folder, names))
@@ -71,7 +71,11 @@ export class PictureFacade {
    * Get cover from folder or first song that has a picture
    */
   getAlbumCover(album: Album, size = 0): Observable<string | undefined> {
-    return this.getFolderPicture(album.folder, size).pipe(
+    return this.getFolderPicture(album.folder, size, [
+      'folder',
+      'cover',
+      'discart',
+    ]).pipe(
       switchMap((folderPict) =>
         folderPict
           ? of(folderPict)
@@ -91,7 +95,9 @@ export class PictureFacade {
   getSongCover(song: Song, size = 0): Observable<string | undefined> {
     return this.getCover(song.pictureId, size).pipe(
       switchMap((picture) =>
-        picture ? of(picture) : this.getFolderPicture(song.folder, size)
+        picture
+          ? of(picture)
+          : this.getFolderPicture(song.folder, size, ['folder', 'cover'])
       )
     );
   }
@@ -99,7 +105,7 @@ export class PictureFacade {
   getArtistCover(
     artist: Artist,
     size = 0,
-    names?: string[]
+    names = ['folder', 'cover', 'fanart']
   ): Observable<string | undefined> {
     return this.albums.getByArtistKey(artist.id).pipe(
       map((albums) => albums && albums.map((a) => a.folder)),
@@ -111,6 +117,6 @@ export class PictureFacade {
   }
 
   getArtistBanner(artist: Artist, size = 0): Observable<string | undefined> {
-    return this.getArtistCover(artist, size, ['fanart']);
+    return this.getArtistCover(artist, size, ['fanart', 'folder']);
   }
 }

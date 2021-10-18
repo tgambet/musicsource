@@ -23,20 +23,9 @@ export class ResizerService {
 
       img.onload = () => {
         const resized = sizes.map((size) => {
-          canvas.width = size.width ?? (img.width / img.height) * size.height;
+          canvas.width = size.width ?? (size.height * img.width) / img.height;
           canvas.height = size.height;
-          let width;
-          let height;
-          let dx = 0;
-          if (img.width > img.height) {
-            width = (canvas.width * img.width) / img.height;
-            height = canvas.height;
-            dx = -(width - canvas.width) / 2;
-          } else {
-            width = canvas.width;
-            height = (canvas.height * img.height) / img.width;
-          }
-          ctx.drawImage(img, dx - 1, -1, width + 2, height + 2);
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
           return canvas.toDataURL('image/webp');
         });
         observer.next(resized);

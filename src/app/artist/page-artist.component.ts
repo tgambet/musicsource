@@ -137,7 +137,7 @@ import { PictureFacade } from '@app/database/pictures/picture.facade';
         right: 0;
         /* filter: blur(2px);*/
         background-size: cover;
-        background-position: center center;
+        background-position: top center;
       }
       .cover img {
         width: 100%;

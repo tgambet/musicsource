@@ -60,7 +60,7 @@ import { PictureFacade } from '@app/database/pictures/picture.facade';
       :host,
       img {
         display: block;
-        width: 100%;
+        max-height: 100%;
       }
       app-cover {
         margin-bottom: 16px;
