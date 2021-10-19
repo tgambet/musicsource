@@ -4,10 +4,15 @@ import { EMPTY, Observable, of, throwError } from 'rxjs';
 import { catchError, concatMap } from 'rxjs/operators';
 import { DatabaseService } from '@app/database/database.service';
 import { Playlist, PlaylistId } from '@app/database/playlists/playlist.model';
+import { PlaylistFacade } from '@app/database/playlists/playlist.facade';
 
 @Injectable()
 export class PagePlaylistResolver implements Resolve<PlaylistId> {
-  constructor(private router: Router, private storage: DatabaseService) {}
+  constructor(
+    private router: Router,
+    private storage: DatabaseService,
+    private playlists: PlaylistFacade
+  ) {}
 
   resolve(route: ActivatedRouteSnapshot): Observable<PlaylistId> {
     const id = route.paramMap.get('id');
@@ -17,7 +22,10 @@ export class PagePlaylistResolver implements Resolve<PlaylistId> {
       return EMPTY;
     }
 
-    return this.storage.get$<Playlist>('playlists', id).pipe(
+    return this.playlists.getByKey(id as PlaylistId).pipe(
+      concatMap((stored) =>
+        stored ? of(stored) : this.storage.get$<Playlist>('playlists', id)
+      ),
       concatMap((model) =>
         model ? of(model.id) : throwError(() => 'not found')
       ),
