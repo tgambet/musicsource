@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, Resolve, Router } from '@angular/router';
 import { EMPTY, Observable, of, throwError } from 'rxjs';
-import { catchError, concatMap } from 'rxjs/operators';
+import { catchError, concatMap, first } from 'rxjs/operators';
 import { PictureFacade } from '@app/database/pictures/picture.facade';
 import { AlbumFacade } from '@app/database/albums/album.facade';
 import { Album, AlbumId } from '@app/database/albums/album.model';
@@ -28,6 +28,7 @@ export class PageAlbumResolverService implements Resolve<AlbumId> {
     }
 
     return this.albums.getByKey(id as AlbumId).pipe(
+      first(),
       concatMap((stored) =>
         stored ? of(stored) : this.storage.get$<Album>('albums', id)
       ),
