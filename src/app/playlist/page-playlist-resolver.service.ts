@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, Resolve, Router } from '@angular/router';
 import { EMPTY, Observable, of, throwError } from 'rxjs';
-import { catchError, concatMap } from 'rxjs/operators';
+import { catchError, concatMap, first } from 'rxjs/operators';
 import { DatabaseService } from '@app/database/database.service';
 import { Playlist, PlaylistId } from '@app/database/playlists/playlist.model';
 import { PlaylistFacade } from '@app/database/playlists/playlist.facade';
@@ -23,6 +23,7 @@ export class PagePlaylistResolver implements Resolve<PlaylistId> {
     }
 
     return this.playlists.getByKey(id as PlaylistId).pipe(
+      first(),
       concatMap((stored) =>
         stored ? of(stored) : this.storage.get$<Playlist>('playlists', id)
       ),

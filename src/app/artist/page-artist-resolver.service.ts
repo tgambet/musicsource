@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, Resolve, Router } from '@angular/router';
 import { EMPTY, Observable, of, throwError } from 'rxjs';
-import { catchError, concatMap } from 'rxjs/operators';
+import { catchError, concatMap, first } from 'rxjs/operators';
 import { PictureFacade } from '@app/database/pictures/picture.facade';
 import { ArtistFacade } from '@app/database/artists/artist.facade';
 import { AlbumFacade } from '@app/database/albums/album.facade';
@@ -9,7 +9,7 @@ import { DatabaseService } from '@app/database/database.service';
 import { Artist, ArtistId } from '@app/database/artists/artist.model';
 
 @Injectable()
-export class PageArtistResolverService implements Resolve<string> {
+export class PageArtistResolverService implements Resolve<ArtistId> {
   constructor(
     private storage: DatabaseService,
     private pictures: PictureFacade,
@@ -21,7 +21,7 @@ export class PageArtistResolverService implements Resolve<string> {
   resolve(
     route: ActivatedRouteSnapshot
     // state: RouterStateSnapshot
-  ): Observable<string> | Observable<never> {
+  ): Observable<ArtistId> | Observable<never> {
     const id = route.paramMap.get('id');
 
     if (!id) {
@@ -30,6 +30,7 @@ export class PageArtistResolverService implements Resolve<string> {
     }
 
     return this.artists.getByKey(id as ArtistId).pipe(
+      first(),
       concatMap((stored) =>
         stored ? of(stored) : this.storage.get$<Artist>('artists', id)
       ),

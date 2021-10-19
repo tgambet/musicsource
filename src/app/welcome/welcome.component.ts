@@ -24,18 +24,13 @@ import { openDirectory, scanStart } from '@app/scanner/store/scanner.actions';
             A modern player for your personal music library, without leaving
             your browser.
           </p>
-          <button
-            [mat-dialog-close]="true"
-            mat-raised-button
-            color="accent"
-            (click)="scan()"
-          >
+          <button mat-raised-button color="accent" (click)="scan()">
             <span class="button">
               <app-icon [path]="icons.folderMusic" [size]="24"></app-icon>
               Scan My Library Now
             </span>
           </button>
-          <button [mat-dialog-close]="true" mat-raised-button>
+          <button mat-raised-button>
             <span class="button">
               <app-icon [path]="icons.code" [size]="24"></app-icon>
               View Source Code
