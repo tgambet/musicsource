@@ -35,7 +35,8 @@
               "src/apple-touch-icon.png",
               "src/browserconfig.xml",
               "src/assets",
-              "src/manifest.webmanifest"
+              "src/manifest.webmanifest",
+              "src/robots.txt"
             ],
             "styles": [
               "src/styles.scss"
@@ -120,7 +121,8 @@
               "src/apple-touch-icon.png",
               "src/browserconfig.xml",
               "src/assets",
-              "src/manifest.webmanifest"
+              "src/manifest.webmanifest",
+              "src/robots.txt"
             ],
             "styles": [
               "src/styles.scss"
