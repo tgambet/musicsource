@@ -13,10 +13,11 @@ import {
   mdiDelete,
   mdiDotsVertical,
   mdiFolderAlertOutline,
-  mdiFolderMusicOutline,
+  mdiFolderMusic,
   mdiFolderOutline,
   mdiFolderPlusOutline,
   mdiFolderSearchOutline,
+  mdiGithub,
   mdiHeart,
   mdiHeartOutline,
   mdiHelpCircle,
@@ -63,12 +64,13 @@ export class Icons {
   static chevronRight = mdiChevronRight;
   static close = mdiClose;
   static cog = mdiCog;
+  static code = mdiGithub;
   static currencyUsd = mdiCurrencyUsd;
   static delete = mdiDelete;
   static dotsVertical = mdiDotsVertical;
   static folder = mdiFolderOutline;
   static folderAlert = mdiFolderAlertOutline;
-  static folderMusic = mdiFolderMusicOutline;
+  static folderMusic = mdiFolderMusic;
   static folderPlus = mdiFolderPlusOutline;
   static folderSearch = mdiFolderSearchOutline;
   static heart = mdiHeart;

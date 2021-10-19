@@ -64,14 +64,14 @@ import { removeAllSongs } from '@app/database/songs/song.actions';
         background: transparent;
         border-bottom: none;
       }
-      :host-context(.cdk-global-scrollblock) {
-        background: #000;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-      }
-      :host-context(.with-background) {
-        background: #000;
-        border-bottom: none;
-      }
+      /*:host-context(.cdk-global-scrollblock) {*/
+      /*  background: #000;*/
+      /*  border-bottom: 1px solid rgba(255, 255, 255, 0.1);*/
+      /*}*/
+      /*:host-context(.with-background) {*/
+      /*  background: #000;*/
+      /*  border-bottom: none;*/
+      /*}*/
       h1 {
         font-family: 'YT Sans', sans-serif;
         letter-spacing: -1px;
