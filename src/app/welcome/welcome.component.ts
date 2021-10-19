@@ -27,7 +27,7 @@ import { openDirectory, scanStart } from '@app/scanner/store/scanner.actions';
           <button mat-raised-button color="accent" (click)="scan()">
             <span class="button">
               <app-icon [path]="icons.folderMusic" [size]="24"></app-icon>
-              Scan My Library Now
+              Scan My Library
             </span>
           </button>
           <a mat-raised-button href="https://github.com">
@@ -38,7 +38,32 @@ import { openDirectory, scanStart } from '@app/scanner/store/scanner.actions';
           </a>
         </div>
         <div class="right picture">
-          <img src="assets/home.webp" alt="musicsource" />
+          <app-h-list class="carousel" [borderRadius]="4">
+            <img
+              src="assets/home.webp"
+              alt="musicsource"
+              appHListItem
+              width="683"
+            />
+            <div
+              style="width:683px; background-color: #101010"
+              appHListItem
+            ></div>
+            <div
+              style="width:683px; background-color: #151515"
+              appHListItem
+            ></div>
+            <div
+              style="width:683px; background-color: #202020"
+              appHListItem
+            ></div>
+            <img
+              src="assets/home.webp"
+              alt="musicsource"
+              appHListItem
+              width="683"
+            />
+          </app-h-list>
         </div>
       </div>
     </div>
@@ -110,8 +135,12 @@ import { openDirectory, scanStart } from '@app/scanner/store/scanner.actions';
         display: flex;
         align-items: center;
         width: 100%;
-        max-width: 1300px;
+        max-width: 1380px;
         margin: 64px;
+      }
+      .home {
+        background: repeating-linear-gradient(-45deg, #00000000, #161616 8px),
+          linear-gradient(-45deg, #363636, #161616 60%, #161616 100%);
       }
       .left {
         flex: 0 0 50%;
@@ -125,13 +154,14 @@ import { openDirectory, scanStart } from '@app/scanner/store/scanner.actions';
         line-height: 1.5;
         color: rgba(255, 255, 255, 0.5);
       }
-      button {
+      [mat-raised-button] {
         padding-left: 12px;
         margin: 0 12px 0 0;
       }
       .button {
         display: flex;
         align-items: center;
+        text-transform: uppercase;
       }
       .button app-icon {
         margin-right: 8px;
@@ -144,15 +174,11 @@ import { openDirectory, scanStart } from '@app/scanner/store/scanner.actions';
         height: 100%;
         position: relative;
       }
-      .picture img {
-        position: absolute;
-        right: 0;
-        top: 50%;
-        transform: translateY(-50%);
-        height: auto;
-        width: auto;
-        max-height: 100%;
-        max-width: 100%;
+      .carousel {
+        width: 683px;
+        box-shadow: -5px -5px 20px rgba(0, 0, 0, 0.75);
+        outline: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 4px;
       }
       .features {
         background-color: #161616;
