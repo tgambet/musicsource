@@ -27,7 +27,10 @@ export class PageAlbumResolverService implements Resolve<AlbumId> {
       return EMPTY;
     }
 
-    return this.storage.get$<Album>('albums', id).pipe(
+    return this.albums.getByKey(id as AlbumId).pipe(
+      concatMap((stored) =>
+        stored ? of(stored) : this.storage.get$<Album>('albums', id)
+      ),
       concatMap((model) =>
         model ? of(model.id) : throwError(() => 'not found')
       ),

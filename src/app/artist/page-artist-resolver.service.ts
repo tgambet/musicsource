@@ -6,7 +6,7 @@ import { PictureFacade } from '@app/database/pictures/picture.facade';
 import { ArtistFacade } from '@app/database/artists/artist.facade';
 import { AlbumFacade } from '@app/database/albums/album.facade';
 import { DatabaseService } from '@app/database/database.service';
-import { Artist } from '@app/database/artists/artist.model';
+import { Artist, ArtistId } from '@app/database/artists/artist.model';
 
 @Injectable()
 export class PageArtistResolverService implements Resolve<string> {
@@ -29,7 +29,10 @@ export class PageArtistResolverService implements Resolve<string> {
       return EMPTY;
     }
 
-    return this.storage.get$<Artist>('artists', id).pipe(
+    return this.artists.getByKey(id as ArtistId).pipe(
+      concatMap((stored) =>
+        stored ? of(stored) : this.storage.get$<Artist>('artists', id)
+      ),
       concatMap((model) =>
         model ? of(model.id) : throwError(() => 'not found')
       ),
