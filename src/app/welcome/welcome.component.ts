@@ -12,7 +12,7 @@ import { openDirectory, scanStart } from '@app/scanner/store/scanner.actions';
         <app-icon [path]="icons.album" [size]="40"></app-icon>
         <span>MusicSource</span>
       </h1>
-      <a href="https://github.com">
+      <a href="https://github.com" aria-label="Github">
         <app-icon [path]="icons.code" [size]="36"></app-icon>
       </a>
     </div>
@@ -30,15 +30,15 @@ import { openDirectory, scanStart } from '@app/scanner/store/scanner.actions';
               Scan My Library Now
             </span>
           </button>
-          <button mat-raised-button>
+          <a mat-raised-button href="https://github.com">
             <span class="button">
               <app-icon [path]="icons.code" [size]="24"></app-icon>
               View Source Code
             </span>
-          </button>
+          </a>
         </div>
         <div class="right picture">
-          <img src="assets/home.png" alt="musicsource" />
+          <img src="assets/home.webp" alt="musicsource" />
         </div>
       </div>
     </div>
