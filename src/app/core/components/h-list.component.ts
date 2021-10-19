@@ -36,7 +36,7 @@ import { DOCUMENT } from '@angular/common';
     >
       <app-icon [path]="icons.chevronLeft"></app-icon>
     </button>
-    <div class="container">
+    <div class="container" [style.borderRadius.px]="borderRadius">
       <div
         #content
         [style.transform]="'translate(' + this.translation + 'px)'"
@@ -105,6 +105,8 @@ import { DOCUMENT } from '@angular/common';
 export class HListComponent implements OnInit, OnDestroy, AfterContentInit {
   @Input()
   buttonsTopPosition?: string;
+  @Input()
+  borderRadius = 0;
 
   @ViewChild('prevButton', { static: true })
   prevButton!: MatButton;
