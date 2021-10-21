@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { catchError, concatMap, map } from 'rxjs/operators';
-import { EMPTY, of, toArray } from 'rxjs';
+import { EMPTY, of } from 'rxjs';
 import {
   addSong,
   loadSongs,
@@ -19,11 +19,7 @@ export class SongEffects {
     this.actions$.pipe(
       ofType(loadSongs),
       concatMap(() =>
-        this.database.walk$<Song>('songs').pipe(
-          map(({ value }) => value),
-          // bufferTime(100),
-          // filter((arr) => arr.length > 0),
-          toArray(),
+        this.database.getAll$<Song>('songs').pipe(
           map((data) => loadSongsSuccess({ data })),
           catchError((error) => of(loadSongsFailure({ error })))
         )
@@ -35,8 +31,11 @@ export class SongEffects {
     () =>
       this.actions$.pipe(
         ofType(addSong),
-        concatMap(({ song }) => this.database.add$<Song>('songs', song)),
-        catchError(() => EMPTY) // TODO
+        concatMap(({ song }) =>
+          this.database.add$<Song>('songs', song).pipe(
+            catchError(() => EMPTY) // TODO
+          )
+        )
       ),
     { dispatch: false }
   );
@@ -46,9 +45,10 @@ export class SongEffects {
       this.actions$.pipe(
         ofType(updateSong),
         concatMap(({ update: { changes, key } }) =>
-          this.database.update$<Song>('songs', changes, key)
-        ),
-        catchError(() => EMPTY) // TODO
+          this.database.update$<Song>('songs', changes, key).pipe(
+            catchError(() => EMPTY) // TODO
+          )
+        )
       ),
     { dispatch: false }
   );

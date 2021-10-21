@@ -31,8 +31,11 @@ export class AlbumEffects {
     () =>
       this.actions$.pipe(
         ofType(upsertAlbum),
-        concatMap(({ album }) => this.database.put$<Album>('albums', album)),
-        catchError(() => EMPTY) // TODO
+        concatMap(({ album }) =>
+          this.database.put$<Album>('albums', album).pipe(
+            catchError(() => EMPTY) // TODO
+          )
+        )
       ),
     { dispatch: false }
   );
@@ -42,9 +45,10 @@ export class AlbumEffects {
       this.actions$.pipe(
         ofType(updateAlbum),
         concatMap(({ update: { changes, key } }) =>
-          this.database.update$<Album>('albums', changes, key)
-        ),
-        catchError(() => EMPTY) // TODO
+          this.database.update$<Album>('albums', changes, key).pipe(
+            catchError(() => EMPTY) // TODO
+          )
+        )
       ),
     { dispatch: false }
   );

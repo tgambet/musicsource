@@ -122,11 +122,29 @@ export class DatabaseService {
     );
   }
 
+  addMany$<T>(store: string, values: T[]): Observable<IDBValidKey> {
+    return this.db$.pipe(
+      concatMap((db) => db.transaction$(store, 'readwrite')),
+      map((transaction) => transaction.objectStore<T>(store)),
+      concatMap((s) => values.map((value) => s.add$(value))),
+      mergeAll()
+    );
+  }
+
   put$<T>(store: string, value: T, key?: IDBValidKey): Observable<IDBValidKey> {
     return this.db$.pipe(
       concatMap((db) => db.transaction$(store, 'readwrite')),
       map((transaction) => transaction.objectStore<T>(store)),
       concatMap((s) => s.put$(value, key))
+    );
+  }
+
+  putMany$<T>(store: string, values: T[]): Observable<IDBValidKey> {
+    return this.db$.pipe(
+      concatMap((db) => db.transaction$(store, 'readwrite')),
+      map((transaction) => transaction.objectStore<T>(store)),
+      concatMap((s) => values.map((value) => s.put$(value))),
+      mergeAll()
     );
   }
 
