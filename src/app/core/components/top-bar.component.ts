@@ -11,6 +11,7 @@ import { removeAllEntries } from '@app/database/entries/entry.actions';
 import { removeAllPictures } from '@app/database/pictures/picture.actions';
 import { removeAllPlaylists } from '@app/database/playlists/playlist.actions';
 import { removeAllSongs } from '@app/database/songs/song.actions';
+import { openDirectory, scanStart } from '@app/scanner/store/scanner.actions';
 
 @Component({
   selector: 'app-top-bar',
@@ -137,11 +138,14 @@ export class TopBarComponent {
       icon: Icons.delete,
       click: (): void => this.clear(),
     },
-    // {
-    //   text: 'Quick scan a folder',
-    //   icon: Icons.folderSearch,
-    //   click: () => this.scan(),
-    // },
+    {
+      text: 'Quick scan a folder',
+      icon: Icons.folderSearch,
+      click: (): void => {
+        this.store.dispatch(scanStart());
+        this.store.dispatch(openDirectory());
+      },
+    },
     // {
     //   text: 'Library settings',
     //   icon: Icons.folderCog,

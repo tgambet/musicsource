@@ -32,9 +32,10 @@ export class PlaylistEffects {
       this.actions$.pipe(
         ofType(addPlaylist),
         concatMap(({ playlist }) =>
-          this.database.add$<Playlist>('playlists', playlist)
-        ),
-        catchError(() => EMPTY)
+          this.database
+            .add$<Playlist>('playlists', playlist)
+            .pipe(catchError(() => EMPTY))
+        )
       ),
     { dispatch: false }
   );
@@ -44,13 +45,10 @@ export class PlaylistEffects {
       this.actions$.pipe(
         ofType(updatePlaylist),
         concatMap(({ update }) =>
-          this.database.update$<Playlist>(
-            'playlists',
-            update.changes,
-            update.key
-          )
-        ),
-        catchError(() => EMPTY)
+          this.database
+            .update$<Playlist>('playlists', update.changes, update.key)
+            .pipe(catchError(() => EMPTY))
+        )
       ),
     { dispatch: false }
   );
