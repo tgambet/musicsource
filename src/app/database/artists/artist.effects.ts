@@ -1,13 +1,11 @@
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { catchError, concatMap, map } from 'rxjs/operators';
-import { EMPTY, of } from 'rxjs';
+import { of } from 'rxjs';
 import {
   loadArtists,
   loadArtistsFailure,
   loadArtistsSuccess,
-  updateArtist,
-  upsertArtist,
 } from './artist.actions';
 import { DatabaseService } from '@app/database/database.service';
 import { Artist } from '@app/database/artists/artist.model';
@@ -32,29 +30,29 @@ export class ArtistEffects {
     )
   );
 
-  upsertArtist$ = createEffect(
-    () =>
-      this.actions$.pipe(
-        ofType(upsertArtist),
-        concatMap(({ artist }) =>
-          this.database.put$<Artist>('artists', artist)
-        ),
-        catchError(() => EMPTY) // TODO
-      ),
-    { dispatch: false }
-  );
-
-  updateArtist$ = createEffect(
-    () =>
-      this.actions$.pipe(
-        ofType(updateArtist),
-        concatMap(({ update: { changes, key } }) =>
-          this.database.update$<Artist>('artists', changes, key)
-        ),
-        catchError(() => EMPTY) // TODO
-      ),
-    { dispatch: false }
-  );
+  // upsertArtist$ = createEffect(
+  //   () =>
+  //     this.actions$.pipe(
+  //       ofType(upsertArtist),
+  //       concatMap(({ artist }) =>
+  //         this.database.put$<Artist>('artists', artist)
+  //       ),
+  //       catchError(() => EMPTY) // TODO
+  //     ),
+  //   { dispatch: false }
+  // );
+  //
+  // updateArtist$ = createEffect(
+  //   () =>
+  //     this.actions$.pipe(
+  //       ofType(updateArtist),
+  //       concatMap(({ update: { changes, key } }) =>
+  //         this.database.update$<Artist>('artists', changes, key)
+  //       ),
+  //       catchError(() => EMPTY) // TODO
+  //     ),
+  //   { dispatch: false }
+  // );
 
   constructor(private actions$: Actions, private database: DatabaseService) {}
 }

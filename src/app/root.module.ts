@@ -61,7 +61,11 @@ export const metaReducers: MetaReducer<any>[] = [];
       }
     ),
     EffectsModule.forRoot([]),
-    // StoreDevtoolsModule.instrument({ maxAge: 10, logOnly: true }),
+    // StoreDevtoolsModule.instrument({
+    //   maxAge: 25,
+    //   logOnly: true,
+    //   actionsSafelist: ['scanner/save/failure'],
+    // }),
     MatSnackBarModule,
   ],
   providers: [UpdateService],

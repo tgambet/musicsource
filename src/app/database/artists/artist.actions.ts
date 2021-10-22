@@ -16,6 +16,11 @@ export const loadArtistsFailure = createAction(
   props<{ error: any }>()
 );
 
+export const addArtist = createAction(
+  '[Artist] Add Artist',
+  props<{ artist: Artist }>()
+);
+
 export const updateArtist = createAction(
   '[Artist] Update Artist',
   props<{ update: IdUpdate<Artist> }>()

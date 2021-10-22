@@ -1,7 +1,9 @@
 import {
+  ApplicationRef,
   ChangeDetectionStrategy,
   Component,
   HostBinding,
+  NgZone,
   OnInit,
 } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
@@ -24,6 +26,7 @@ import { loadSongs } from '@app/database/songs/song.actions';
 import { loadPlaylists } from '@app/database/playlists/playlist.actions';
 import { loadEntries } from '@app/database/entries/entry.actions';
 import { loadPictures } from '@app/database/pictures/picture.actions';
+import { first, tap } from 'rxjs/operators';
 
 // export const debugAnimation = (name: string) => (
 //   from: any,
@@ -156,7 +159,9 @@ export class MainComponent implements OnInit {
     private scroller: ScrollerService,
     private player: PlayerFacade,
     private albums: AlbumFacade,
-    private store: Store
+    private store: Store,
+    private appRef: ApplicationRef,
+    private zone: NgZone
   ) {}
 
   // @HostListener('window:scroll', ['$event'])
@@ -167,12 +172,21 @@ export class MainComponent implements OnInit {
   // }
 
   ngOnInit(): void {
-    this.store.dispatch(loadAlbums());
-    this.store.dispatch(loadArtists());
-    this.store.dispatch(loadEntries());
-    this.store.dispatch(loadPlaylists());
-    this.store.dispatch(loadSongs());
-    this.store.dispatch(loadPictures());
+    this.appRef.isStable
+      .pipe(
+        first((isStable) => isStable),
+        tap(() => {
+          this.zone.run(() => {
+            this.store.dispatch(loadAlbums());
+            this.store.dispatch(loadArtists());
+            this.store.dispatch(loadEntries());
+            this.store.dispatch(loadPlaylists());
+            this.store.dispatch(loadSongs());
+            this.store.dispatch(loadPictures());
+          });
+        })
+      )
+      .subscribe();
 
     // TODO
     this.scroller.scroll$.subscribe((top) => (this.scrolledTop = top === 0));

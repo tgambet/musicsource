@@ -2,6 +2,7 @@ import { createReducer, on } from '@ngrx/store';
 import { Artist } from '@app/database/artists/artist.model';
 import { createIDBEntityAdapter, IDBEntityState } from '@creasource/ngrx-idb';
 import {
+  addArtist,
   loadArtists,
   loadArtistsFailure,
   loadArtistsSuccess,
@@ -40,6 +41,7 @@ export const artistReducer = createReducer(
     artistAdapter.addMany(action.data, state)
   ),
   on(loadArtistsFailure, (state) => state),
+  on(addArtist, (state, action) => artistAdapter.addOne(action.artist, state)),
   on(updateArtist, (state, action) =>
     artistAdapter.updateOne(action.update, state)
   ),

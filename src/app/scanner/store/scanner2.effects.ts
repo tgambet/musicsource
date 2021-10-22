@@ -9,14 +9,17 @@ import {
 } from '@ngrx/effects';
 import {
   concat,
+  EMPTY,
   endWith,
   exhaustMap,
   from,
   mergeMap,
   Observable,
   of,
+  toArray,
 } from 'rxjs';
 import {
+  bufferTime,
   catchError,
   concatMap,
   filter,
@@ -30,19 +33,25 @@ import { FileService } from '@app/scanner/file.service';
 import { ExtractorService } from '@app/scanner/extractor.service';
 import { Entry, isFile } from '@app/database/entries/entry.model';
 import {
-  extractEntryFailure,
-  extractEntrySuccess,
+  extractFailure,
   extractImageEntry,
   extractMetaEntry,
   extractSongEntry,
+  extractSuccess,
   openDirectory,
   openDirectorySuccess,
+  saveAlbum,
+  saveArtist,
+  saveEntry,
+  saveFailure,
+  saveImage,
+  saveSong,
+  saveSuccess,
   scanEnd,
   scanEnded,
   scanEntries,
   scanEntriesFailure,
   scanEntriesSuccess,
-  scanEntry,
   scanFailure,
   scanStart,
   scanSuccess,
@@ -63,28 +72,25 @@ import {
   ArtistId,
   getArtistId,
 } from '@app/database/artists/artist.model';
-import { addEntry } from '@app/database/entries/entry.actions';
-import { addSong } from '@app/database/songs/song.actions';
-import { updateAlbum, upsertAlbum } from '@app/database/albums/album.actions';
-import { upsertArtist } from '@app/database/artists/artist.actions';
 import { ComponentPortal } from '@angular/cdk/portal';
 import { PlayerFacade } from '@app/player/store/player.facade';
 import { Action, Store } from '@ngrx/store';
-import { selectCoreState } from '@app/scanner/store/scanner.selectors';
 import {
   getPictureId,
   Picture,
   PictureId,
 } from '@app/database/pictures/picture.model';
 import { arrayBufferToBase64 } from '@app/core/utils/array-buffer-to-base64.util';
-import {
-  addPicture,
-  updatePicture,
-} from '@app/database/pictures/picture.actions';
 import { ResizerService } from '@app/scanner/resizer.service';
 import { PictureFacade } from '@app/database/pictures/picture.facade';
-import { IdUpdate } from '@app/core/utils';
 import { selectAlbumByKey } from '@app/database/albums/album.selectors';
+import { DatabaseService } from '@app/database/database.service';
+import { addEntry } from '@app/database/entries/entry.actions';
+import { upsertPicture } from '@app/database/pictures/picture.actions';
+import { addArtist } from '@app/database/artists/artist.actions';
+import { upsertAlbum } from '@app/database/albums/album.actions';
+import { addSong } from '@app/database/songs/song.actions';
+import { selectState } from '@app/scanner/store/scanner.selectors';
 
 // noinspection JSUnusedGlobalSymbols
 @Injectable()
@@ -98,6 +104,7 @@ export class ScannerEffects2 implements OnRunEffects {
     this.actions$.pipe(
       ofType(openDirectory),
       act({
+        operator: exhaustMap,
         project: () =>
           this.files
             .open()
@@ -150,7 +157,7 @@ export class ScannerEffects2 implements OnRunEffects {
     { dispatch: false }
   );
 
-  abort$ = createEffect(() =>
+  closeDialog$ = createEffect(() =>
     this.actions$.pipe(
       ofType(scanEnd, scanSuccess, scanFailure), // TODO don't close on failure
       tap(() => this.overlayRef?.dispose()),
@@ -168,38 +175,31 @@ export class ScannerEffects2 implements OnRunEffects {
         project: ({ directory }) =>
           this.files
             .walk(directory)
-            .pipe(map((entry: Entry) => scanEntry({ entry }))),
+            .pipe(map((entry: Entry) => saveEntry({ entry }))),
         error: (error) => scanEntriesFailure({ error }),
         complete: (count) => scanEntriesSuccess({ count }),
       })
     )
   );
 
-  addEntries$ = createEffect(() =>
-    this.actions$.pipe(
-      ofType(scanEntry),
-      map(({ entry }) => addEntry({ entry }))
-    )
-  );
-
   extractEntries$ = createEffect(() =>
     this.actions$.pipe(
-      ofType(scanEntry),
-      map(({ entry }) => {
+      ofType(saveEntry),
+      concatMap(({ entry }) => {
         if (!isFile(entry)) {
-          return extractEntryFailure({ error: 'directory' });
+          return EMPTY;
         }
         if (
           ['.jpeg', '.jpg', '.png', '.webp'].some((ext) =>
             entry.name.endsWith(ext)
           )
         ) {
-          return extractImageEntry({ entry });
+          return of(extractImageEntry({ entry }));
         }
         if (entry.name.endsWith('.nfo')) {
-          return extractMetaEntry({ entry });
+          return of(extractMetaEntry({ entry }));
         }
-        return extractSongEntry({ entry });
+        return of(extractSongEntry({ entry }));
       })
     )
   );
@@ -222,11 +222,12 @@ export class ScannerEffects2 implements OnRunEffects {
                     src,
                     file.name,
                     entry.parent
-                  ).pipe(endWith(extractEntrySuccess({})));
-                })
+                  );
+                }),
+                endWith(extractSuccess({}))
               )
             ),
-            catchError((error) => of(extractEntryFailure({ error })))
+            catchError((error) => of(extractFailure({ error })))
           ),
         1 // TODO
       )
@@ -237,7 +238,7 @@ export class ScannerEffects2 implements OnRunEffects {
     this.actions$.pipe(
       ofType(extractMetaEntry),
       map(({ entry }) => entry),
-      mapTo(extractEntryFailure({ error: 'NOT IMPLEMENTED' }))
+      mapTo(extractFailure({ error: 'NOT IMPLEMENTED' }))
     )
   );
 
@@ -255,7 +256,7 @@ export class ScannerEffects2 implements OnRunEffects {
                 tags.artists === undefined ||
                 tags.title === undefined
               ) {
-                return of(extractEntryFailure({ error: 'missing tags' })).pipe(
+                return of(extractFailure({ error: 'missing tags' })).pipe(
                   tap(() => console.log(fileEntry.path, tags))
                 ); // TODO
               }
@@ -327,30 +328,153 @@ export class ScannerEffects2 implements OnRunEffects {
                   album.year
                 ),
                 of(
-                  ...artists.map((artist) => upsertArtist({ artist })),
-                  // upsertAlbum({ album }),
-                  addSong({ song }),
-                  extractEntrySuccess({
+                  ...artists.map((artist) => saveArtist({ artist })),
+                  saveSong({ song }),
+                  extractSuccess({
                     label: `${song.artists[0].name} - ${song.title}`,
                   })
                 )
               );
             }),
-            catchError((error) => of(extractEntryFailure({ error })))
+            catchError((error) => of(extractFailure({ error })))
           ),
-        5
+        10
       )
     )
   );
 
   end$ = createEffect(() =>
-    this.store.select(selectCoreState).pipe(
-      filter(
-        (state) =>
-          state.state === 'extracting' &&
-          state.extractedCount === state.scannedCount
-      ),
+    this.store.select(selectState).pipe(
+      first((state) => state === 'success' || state === 'error'),
       mapTo(scanEnd())
+    )
+  );
+
+  addEntry$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(saveEntry),
+      map(({ entry }) => addEntry({ entry }))
+    )
+  );
+
+  saveEntries$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(saveEntry),
+      map(({ entry }) => entry),
+      bufferTime(500),
+      filter((entries) => entries.length > 0),
+      tap((entries) => console.log('entries', entries.length)),
+      concatMap((entries) =>
+        this.database.addMany$<Entry>('entries', entries).pipe(
+          toArray(),
+          map(() => saveSuccess({ count: entries.length })),
+          catchError((error) =>
+            of(saveFailure({ count: entries.length, error }))
+          )
+        )
+      )
+    )
+  );
+
+  addImage$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(saveImage),
+      map(({ picture }) => upsertPicture({ picture }))
+    )
+  );
+
+  saveImages$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(saveImage),
+      map(({ picture }) => picture),
+      bufferTime(500),
+      filter((pictures) => pictures.length > 0),
+      tap((pictures) => console.log('pictures', pictures.length)),
+      concatMap((pictures) =>
+        this.database.putMany$<Picture>('pictures', pictures).pipe(
+          toArray(),
+          map((keys) => saveSuccess({ count: keys.length })),
+          catchError((error) =>
+            of(saveFailure({ error, count: pictures.length }))
+          )
+        )
+      )
+    )
+  );
+
+  addArtist$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(saveArtist),
+      map(({ artist }) => addArtist({ artist }))
+    )
+  );
+
+  saveArtists$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(saveArtist),
+      map(({ artist }) => artist),
+      bufferTime(500),
+      filter((artists) => artists.length > 0),
+      tap((artists) => console.log('artists', artists.length)),
+      concatMap((artists) =>
+        this.database.putMany$<Artist>('artists', artists).pipe(
+          toArray(),
+          map((keys) => saveSuccess({ count: keys.length })),
+          catchError((error) =>
+            of(saveFailure({ error, count: artists.length }))
+          )
+        )
+      )
+    )
+  );
+
+  addAlbum$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(saveAlbum),
+      map(({ album }) => upsertAlbum({ album }))
+    )
+  );
+
+  saveAlbums$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(saveAlbum),
+      map(({ album }) => album),
+      bufferTime(500),
+      filter((albums) => albums.length > 0),
+      tap((albums) => console.log('albums', albums.length)),
+      concatMap((albums) =>
+        this.database.putMany$<Album>('albums', albums).pipe(
+          toArray(),
+          map((keys) => saveSuccess({ count: keys.length })),
+          catchError((error) =>
+            of(saveFailure({ error, count: albums.length }))
+          )
+        )
+      )
+    )
+  );
+
+  addSong$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(saveSong),
+      map(({ song }) => addSong({ song }))
+    )
+  );
+
+  saveSongs$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(saveSong),
+      map(({ song }) => song),
+      bufferTime(500),
+      filter((songs) => songs.length > 0),
+      tap((songs) => console.log('songs', songs.length)),
+      concatMap((songs) =>
+        this.database.addMany$<Song>('songs', songs).pipe(
+          toArray(),
+          map((keys) => saveSuccess({ count: keys.length })),
+          catchError((error) => of(saveFailure({ error, count: songs.length })))
+        )
+      )
     )
   );
 
@@ -364,7 +488,8 @@ export class ScannerEffects2 implements OnRunEffects {
     private overlay: Overlay,
     private player: PlayerFacade,
     private resizer: ResizerService,
-    private pictures: PictureFacade
+    private pictures: PictureFacade,
+    private database: DatabaseService
   ) {}
 
   ngrxOnRunEffects(
@@ -411,17 +536,15 @@ export class ScannerEffects2 implements OnRunEffects {
                   name,
                   entries: [path],
                 };
-                return addPicture({ picture });
+                return saveImage({ picture });
               })
             );
         } else {
-          const update: IdUpdate<Picture> = {
-            key: id,
-            changes: {
-              entries: [...stored.entries, path],
-            },
+          const picture = {
+            ...stored,
+            entries: [...stored.entries, path],
           };
-          return of(updatePicture({ update }));
+          return of(saveImage({ picture }));
         }
       })
     );
@@ -451,17 +574,15 @@ export class ScannerEffects2 implements OnRunEffects {
             year,
             folder,
           };
-          return upsertAlbum({ album });
+          return saveAlbum({ album });
         } else {
-          const update: IdUpdate<Album> = {
-            key: id,
-            changes: {
-              artists: [...stored.artists, ...artists].filter(
-                (value, i, arr) => arr.indexOf(value) === i
-              ),
-            },
+          const album = {
+            ...stored,
+            artists: [...stored.artists, ...artists].filter(
+              (value, i, arr) => arr.indexOf(value) === i
+            ),
           };
-          return updateAlbum({ update });
+          return saveAlbum({ album });
         }
       })
     );

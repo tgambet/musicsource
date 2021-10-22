@@ -4,12 +4,20 @@ import {
   Entry,
   FileEntry,
 } from '@app/database/entries/entry.model';
+import { Picture } from '@app/database/pictures/picture.model';
+import { Artist } from '@app/database/artists/artist.model';
+import { Song } from '@app/database/songs/song.model';
+import { Album } from '@app/database/albums/album.model';
 
 export const scanStart = createAction('scanner/start');
 export const scanEnd = createAction('scanner/end');
 export const scanEnded = createAction('scanner/ended');
+export const scanSuccess = createAction('scanner/success');
+export const scanFailure = createAction(
+  'scanner/failure',
+  props<{ error: any }>()
+);
 
-// Step 1
 export const openDirectory = createAction('scanner/open');
 export const openDirectorySuccess = createAction(
   'scanner/open/success',
@@ -19,43 +27,70 @@ export const openDirectoryFailure = createAction(
   'scanner/open/failure',
   props<{ error: any }>()
 );
+
 export const scanEntries = createAction(
-  'scanner/scan/entries',
+  'scanner/scan-entries',
   props<{ directory: DirectoryEntry }>()
 );
 export const scanEntriesSuccess = createAction(
-  'scanner/scan/entries/success',
+  'scanner/scan-entries/success',
   props<{ count: number }>()
 );
 export const scanEntriesFailure = createAction(
-  'scanner/scan/entries/failure',
-  props<{ error: any }>()
-);
-export const scanEntry = createAction(
-  'scanner/scan/entry',
-  props<{ entry: Entry }>()
-);
-export const extractImageEntry = createAction(
-  'scanner/extract/entry/image',
-  props<{ entry: FileEntry }>()
-);
-export const extractMetaEntry = createAction(
-  'scanner/extract/entry/meta',
-  props<{ entry: FileEntry }>()
-);
-export const extractSongEntry = createAction(
-  'scanner/extract/entry/song',
-  props<{ entry: FileEntry }>()
-);
-export const extractEntrySuccess = createAction(
-  'scanner/extract/entry/success',
-  props<{ label?: string }>()
-);
-export const extractEntryFailure = createAction(
-  'scanner/extract/entry/failure',
+  'scanner/scan-entries/failure',
   props<{ error: any }>()
 );
 
+export const extractImageEntry = createAction(
+  'scanner/extract/image',
+  props<{ entry: FileEntry }>()
+);
+export const extractMetaEntry = createAction(
+  'scanner/extract/meta',
+  props<{ entry: FileEntry }>()
+);
+export const extractSongEntry = createAction(
+  'scanner/extract/song',
+  props<{ entry: FileEntry }>()
+);
+export const extractSuccess = createAction(
+  'scanner/extract/success',
+  props<{ label?: string }>()
+);
+export const extractFailure = createAction(
+  'scanner/extract/failure',
+  props<{ error: any }>()
+);
+
+export const saveEntry = createAction(
+  'scanner/save/entry',
+  props<{ entry: Entry }>()
+);
+export const saveImage = createAction(
+  'scanner/save/image',
+  props<{ picture: Picture }>()
+);
+export const saveMeta = createAction('scanner/save/meta');
+export const saveArtist = createAction(
+  'scanner/save/artist',
+  props<{ artist: Artist }>()
+);
+export const saveAlbum = createAction(
+  'scanner/save/album',
+  props<{ album: Album }>()
+);
+export const saveSong = createAction(
+  'scanner/save/song',
+  props<{ song: Song }>()
+);
+export const saveSuccess = createAction(
+  'scanner/save/success',
+  props<{ count: number }>()
+);
+export const saveFailure = createAction(
+  'scanner/save/failure',
+  props<{ error: any; count: number }>()
+);
 // export const extractEntriesSuccess = createAction(
 //   'scanner/extract/entries/success',
 //   props<{ count: number }>()
@@ -104,8 +139,3 @@ export const extractEntryFailure = createAction(
 // );
 
 // Final
-export const scanSuccess = createAction('scanner/success');
-export const scanFailure = createAction(
-  'scanner/failure',
-  props<{ error: any }>()
-);

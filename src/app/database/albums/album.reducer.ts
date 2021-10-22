@@ -2,6 +2,7 @@ import { createReducer, on } from '@ngrx/store';
 import { Album } from '@app/database/albums/album.model';
 import { createIDBEntityAdapter, IDBEntityState } from '@creasource/ngrx-idb';
 import {
+  addAlbum,
   loadAlbums,
   loadAlbumsFailure,
   loadAlbumsSuccess,
@@ -43,6 +44,7 @@ export const albumReducer = createReducer(
     albumAdapter.addMany(action.data, state)
   ),
   on(loadAlbumsFailure, (state) => state),
+  on(addAlbum, (state, action) => albumAdapter.addOne(action.album, state)),
   on(updateAlbum, (state, action) =>
     albumAdapter.updateOne(action.update, state)
   ),
