@@ -8,7 +8,7 @@ export const getPictureId = (data: string): PictureId =>
 
 export type Picture = {
   id: PictureId;
-  original: string;
+  original?: string;
   sources: { src: string; height: number; width?: number }[];
   entries: string[];
   name?: string;

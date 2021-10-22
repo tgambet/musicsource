@@ -24,9 +24,7 @@ import { map } from 'rxjs/operators';
         <mat-spinner
           [diameter]="50"
           [strokeWidth]="4"
-          [value]="
-            scanner.state === 'saving' ? scanner.saveProgress : scanner.progress
-          "
+          [value]="scanner.progress"
           mode="determinate"
           color="accent"
         ></mat-spinner>
@@ -55,7 +53,7 @@ import { map } from 'rxjs/operators';
       </div>
       <div class="labels">
         <p class="step">
-          {{ scanner.state }}...
+          {{ scanner.state | titlecase }}...
           <em>{{ scanner.extractedCount }}/{{ scanner.extractingCount }}</em>
           <em>{{ scanner.savedCount }}/{{ scanner.savingCount }}</em>
         </p>
@@ -177,7 +175,6 @@ export class ScanComponent {
     error?: any;
     label?: string;
     progress?: number;
-    saveProgress?: number;
     scannedCount: number;
     extractedCount: number;
     extractingCount: number;
@@ -200,12 +197,9 @@ export class ScanComponent {
         scanner.extractProgress$,
         scanner.saveProgress$,
       ]).pipe(
-        map(([extract, save]) =>
-          save > 0 ? Math.min(extract, save) : extract
-        ),
+        map(([extract, save]) => (extract * 3 + save) / 4),
         scan((acc, value) => (value > acc ? value : acc), 0)
       ),
-      saveProgress: scanner.saveProgress$,
       scannedCount: scanner.scannedCount$,
       extractedCount: scanner.extractedCount$,
       extractingCount: scanner.extractingCount$,

@@ -287,6 +287,8 @@ export class ScannerEffects2 implements OnRunEffects {
                 };
               });
 
+              delete tags.picture;
+
               const album: Album = {
                 id: getAlbumId(albumArtist.name, tags.album),
                 title: tags.album,
