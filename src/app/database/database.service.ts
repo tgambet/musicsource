@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@angular/core';
-import { Observable, throwError } from 'rxjs';
+import { EMPTY, Observable, throwError } from 'rxjs';
 import {
   concatMap,
   filter,
@@ -13,6 +13,8 @@ import {
   ReactiveIDBTransaction,
 } from '@creasource/reactive-idb';
 import { Database, IndexedDBService } from '@creasource/ngx-idb';
+import { IdUpdate } from '@app/core/utils';
+import { merge } from 'rxjs';
 
 @Injectable()
 export class DatabaseService {
@@ -47,6 +49,32 @@ export class DatabaseService {
               obj
                 ? objStore.put$({ ...obj, ...value })
                 : throwError(() => 'Could not find key: ' + key)
+            )
+          )
+      )
+    );
+  }
+
+  updateMany$<T extends { id: T['id'] }>(
+    store: string,
+    updates: IdUpdate<T>[]
+  ): Observable<IDBValidKey> {
+    return this.db$.pipe(
+      concatMap((db) => db.transaction$(store, 'readwrite')),
+      map((transaction) => transaction.objectStore<T>(store)),
+      concatMap((objStore) =>
+        objStore
+          .getAll$(updates.map((update) => update.key) as Array<IDBValidKey>)
+          .pipe(
+            concatMap((objs) =>
+              merge(
+                ...objs.map((obj) => {
+                  const update = updates.find((u) => u.key === obj.id);
+                  return update
+                    ? objStore.put$({ ...obj, ...update.changes })
+                    : EMPTY;
+                })
+              )
             )
           )
       )

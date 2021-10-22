@@ -4,9 +4,11 @@ import {
   auditTime,
   combineLatest,
   Observable,
+  scan,
 } from 'rxjs';
 import { Icons } from '@app/core/utils/icons.util';
 import { ScannerFacade } from '@app/scanner/store/scanner.facade';
+import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-scan',
@@ -22,16 +24,22 @@ import { ScannerFacade } from '@app/scanner/store/scanner.facade';
         <mat-spinner
           [diameter]="50"
           [strokeWidth]="4"
-          [value]="scanner.progress"
-          [mode]="
-            scanner.state === 'extracting' ? 'determinate' : 'indeterminate'
+          [value]="
+            scanner.state === 'saving' ? scanner.saveProgress : scanner.progress
           "
+          mode="determinate"
           color="accent"
         ></mat-spinner>
         <div class="label">
-          <span class="progress-display" *ngIf="scanner.state === 'extracting'">
+          <span class="progress-display">
             {{ scanner.progress | number: '1.0-0' }}%
           </span>
+          <!--          <span class="progress-display" *ngIf="scanner.state === 'extracting'">-->
+          <!--            {{ scanner.progress | number: '1.0-0' }}%-->
+          <!--          </span>-->
+          <!--          <span class="progress-display" *ngIf="scanner.state === 'scanning'">-->
+          <!--            - -->
+          <!--          </span>-->
           <!--          <span class="progress-display-sub">-->
           <!--            {{ scanner.progressDisplaySub }}-->
           <!--          </span>-->
@@ -47,8 +55,9 @@ import { ScannerFacade } from '@app/scanner/store/scanner.facade';
       </div>
       <div class="labels">
         <p class="step">
-          Scanning...
-          <em>{{ scanner.extractedCount }}/{{ scanner.scannedCount }}</em>
+          {{ scanner.state }}...
+          <em>{{ scanner.extractedCount }}/{{ scanner.extractingCount }}</em>
+          <em>{{ scanner.savedCount }}/{{ scanner.savingCount }}</em>
         </p>
         <p class="step-sub">
           {{ scanner.label }}
@@ -164,12 +173,16 @@ export class ScanComponent {
   // };
 
   scanner$: Observable<{
-    state?: 'scanning' | 'extracting' | 'success' | 'error';
+    state?: 'idle' | 'scanning' | 'extracting' | 'saving' | 'success' | 'error';
     error?: any;
     label?: string;
     progress?: number;
+    saveProgress?: number;
     scannedCount: number;
     extractedCount: number;
+    extractingCount: number;
+    savedCount: number;
+    savingCount: number;
   }>;
 
   constructor(private scanner: ScannerFacade) {
@@ -183,13 +196,25 @@ export class ScanComponent {
       state: scanner.state$,
       error: scanner.error$,
       label: scanner.label$,
-      progress: scanner.progress$,
+      progress: combineLatest([
+        scanner.extractProgress$,
+        scanner.saveProgress$,
+      ]).pipe(
+        map(([extract, save]) =>
+          save > 0 ? Math.min(extract, save) : extract
+        ),
+        scan((acc, value) => (value > acc ? value : acc), 0)
+      ),
+      saveProgress: scanner.saveProgress$,
       scannedCount: scanner.scannedCount$,
       extractedCount: scanner.extractedCount$,
+      extractingCount: scanner.extractingCount$,
+      savedCount: scanner.savedCount$,
+      savingCount: scanner.savingCount$,
     };
 
     this.scanner$ = combineLatest(obs).pipe(
-      auditTime(15, animationFrameScheduler)
+      auditTime(1, animationFrameScheduler)
     );
   }
 

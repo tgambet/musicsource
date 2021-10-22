@@ -1,14 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { catchError, concatMap, map } from 'rxjs/operators';
-import { EMPTY, of } from 'rxjs';
-import {
-  addSong,
-  loadSongs,
-  loadSongsFailure,
-  loadSongsSuccess,
-  updateSong,
-} from './song.actions';
+import { of } from 'rxjs';
+import { loadSongs, loadSongsFailure, loadSongsSuccess } from './song.actions';
 import { DatabaseService } from '@app/database/database.service';
 import { Song } from '@app/database/songs/song.model';
 
@@ -27,31 +21,31 @@ export class SongEffects {
     )
   );
 
-  addSong$ = createEffect(
-    () =>
-      this.actions$.pipe(
-        ofType(addSong),
-        concatMap(({ song }) =>
-          this.database.add$<Song>('songs', song).pipe(
-            catchError(() => EMPTY) // TODO
-          )
-        )
-      ),
-    { dispatch: false }
-  );
+  // addSong$ = createEffect(
+  //   () =>
+  //     this.actions$.pipe(
+  //       ofType(addSong),
+  //       concatMap(({ song }) =>
+  //         this.database.add$<Song>('songs', song).pipe(
+  //           catchError(() => EMPTY) // TODO
+  //         )
+  //       )
+  //     ),
+  //   { dispatch: false }
+  // );
 
-  updateSong$ = createEffect(
-    () =>
-      this.actions$.pipe(
-        ofType(updateSong),
-        concatMap(({ update: { changes, key } }) =>
-          this.database.update$<Song>('songs', changes, key).pipe(
-            catchError(() => EMPTY) // TODO
-          )
-        )
-      ),
-    { dispatch: false }
-  );
+  // updateSong$ = createEffect(
+  //   () =>
+  //     this.actions$.pipe(
+  //       ofType(updateSong),
+  //       concatMap(({ update: { changes, key } }) =>
+  //         this.database.update$<Song>('songs', changes, key).pipe(
+  //           catchError(() => EMPTY) // TODO
+  //         )
+  //       )
+  //     ),
+  //   { dispatch: false }
+  // );
 
   constructor(private actions$: Actions, private database: DatabaseService) {}
 }

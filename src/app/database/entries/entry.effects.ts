@@ -1,9 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { catchError, concatMap, map } from 'rxjs/operators';
-import { EMPTY, of } from 'rxjs';
+import { of } from 'rxjs';
 import {
-  addEntry,
   loadEntries,
   loadEntriesFailure,
   loadEntriesSuccess,
@@ -24,16 +23,6 @@ export class EntryEffects {
         )
       )
     )
-  );
-
-  addEntry$ = createEffect(
-    () =>
-      this.actions$.pipe(
-        ofType(addEntry),
-        concatMap(({ entry }) => this.database.add$<Entry>('entries', entry)),
-        catchError(() => EMPTY) // TODO
-      ),
-    { dispatch: false }
   );
 
   constructor(private actions$: Actions, private database: DatabaseService) {}

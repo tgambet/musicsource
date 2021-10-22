@@ -69,7 +69,7 @@ export class PlayerEffects implements OnRunEffects {
                     tap(() => this.media.setMetadata(song)),
                     tap(() =>
                       this.title.setTitle(
-                        `${song.title} • ${song.artists[0]} - MusicSource`
+                        `${song.title} • ${song.artists[0].name} - MusicSource`
                       )
                     ),
                     concatMap(() => (playing ? this.audio.resume() : EMPTY))

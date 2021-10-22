@@ -16,6 +16,11 @@ export const loadAlbumsFailure = createAction(
   props<{ error: any }>()
 );
 
+export const addAlbum = createAction(
+  '[Album] Add Album',
+  props<{ album: Album }>()
+);
+
 export const updateAlbum = createAction(
   '[Album] Update Album',
   props<{ update: IdUpdate<Album> }>()

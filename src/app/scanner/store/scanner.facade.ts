@@ -3,10 +3,14 @@ import { Store } from '@ngrx/store';
 import {
   selectError,
   selectExtractedCount,
+  selectExtractingCount,
   selectLabel,
-  selectProgress,
+  selectExtractedProgress,
+  selectSavedCount,
+  selectSavingCount,
   selectScannedCount,
   selectState,
+  selectSavedProgress,
 } from '@app/scanner/store/scanner.selectors';
 import {
   scanEnd,
@@ -19,9 +23,13 @@ export class ScannerFacade {
   error$ = this.store.select(selectError);
   state$ = this.store.select(selectState);
   label$ = this.store.select(selectLabel);
-  progress$ = this.store.select(selectProgress);
+  extractProgress$ = this.store.select(selectExtractedProgress);
+  saveProgress$ = this.store.select(selectSavedProgress);
   scannedCount$ = this.store.select(selectScannedCount);
   extractedCount$ = this.store.select(selectExtractedCount);
+  extractingCount$ = this.store.select(selectExtractingCount);
+  savedCount$ = this.store.select(selectSavedCount);
+  savingCount$ = this.store.select(selectSavingCount);
 
   constructor(private store: Store) {}
 
