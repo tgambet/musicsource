@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { catchError, concatMap, map } from 'rxjs/operators';
+import { catchError, concatMap, map, tap } from 'rxjs/operators';
 import { of } from 'rxjs';
 import {
   loadPictures,
@@ -18,6 +18,7 @@ export class PictureEffects {
       ofType(loadPictures),
       concatMap(() =>
         this.database.getAll$<Picture>('pictures').pipe(
+          tap((data) => data.forEach((d) => delete d.original)),
           map((data) => loadPicturesSuccess({ data })),
           catchError((error) => of(loadPicturesFailure({ error })))
         )

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { Observable, of, switchMap } from 'rxjs';
+import { concatMap, Observable, of, switchMap } from 'rxjs';
 import {
   selectPictureAll,
   selectPictureByFolder,
@@ -16,6 +16,7 @@ import { Artist } from '@app/database/artists/artist.model';
 import { ArtistFacade } from '@app/database/artists/artist.facade';
 import { AlbumFacade } from '@app/database/albums/album.facade';
 import { longestCommonPath } from '@app/core/utils/longest-common-prefix.util';
+import { DatabaseService } from '@app/database/database.service';
 
 @Injectable()
 export class PictureFacade {
@@ -23,20 +24,30 @@ export class PictureFacade {
     private store: Store,
     private songs: SongFacade,
     private artists: ArtistFacade,
-    private albums: AlbumFacade
+    private albums: AlbumFacade,
+    private database: DatabaseService
   ) {}
 
   getByKey(key: PictureId): Observable<Picture | undefined> {
     return this.store.select(selectPictureByKey(key));
   }
 
-  getPictureBySize(picture?: Picture, size = 0): string | undefined {
-    return (
-      picture &&
-      (size === 0
-        ? picture.original
-        : picture.sources.find((p) => p.height === size)?.src)
-    );
+  getPictureBySize(
+    picture?: Picture,
+    size = 0
+  ): Observable<string | undefined> {
+    return size === 0
+      ? this.getOriginalPicture(picture)
+      : of(picture && picture.sources.find((p) => p.height === size)?.src);
+  }
+
+  getOriginalPicture(picture?: Picture): Observable<string | undefined> {
+    if (!picture) {
+      return of(undefined);
+    }
+    return this.database
+      .get$<Picture>('pictures', picture.id)
+      .pipe(map((pict) => pict && pict.original));
   }
 
   getCover(key?: PictureId, size = 0): Observable<string | undefined> {
@@ -44,7 +55,7 @@ export class PictureFacade {
       ? of(undefined)
       : this.store
           .select(selectPictureByKey(key))
-          .pipe(map((picture) => this.getPictureBySize(picture, size)));
+          .pipe(concatMap((picture) => this.getPictureBySize(picture, size)));
   }
 
   getFolderPicture(
@@ -54,7 +65,7 @@ export class PictureFacade {
   ): Observable<string | undefined> {
     return this.store
       .select(selectPictureByFolder(folder, names))
-      .pipe(map((picture) => this.getPictureBySize(picture, size)));
+      .pipe(concatMap((picture) => this.getPictureBySize(picture, size)));
   }
 
   getAll(): Observable<Picture[]> {
