@@ -1,11 +1,5 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import {
-  animationFrameScheduler,
-  auditTime,
-  combineLatest,
-  Observable,
-  scan,
-} from 'rxjs';
+import { combineLatest, Observable, scan } from 'rxjs';
 import { Icons } from '@app/core/utils/icons.util';
 import { ScannerFacade } from '@app/scanner/store/scanner.facade';
 import { map } from 'rxjs/operators';
@@ -207,9 +201,7 @@ export class ScanComponent {
       savingCount: scanner.savingCount$,
     };
 
-    this.scanner$ = combineLatest(obs).pipe(
-      auditTime(1, animationFrameScheduler)
-    );
+    this.scanner$ = combineLatest(obs);
   }
 
   close(): void {

@@ -189,14 +189,13 @@ export class ScannerEffects2 implements OnRunEffects {
         if (!isFile(entry)) {
           return EMPTY;
         }
+        const name = entry.name.toLowerCase();
         if (
-          ['.jpeg', '.jpg', '.png', '.webp'].some((ext) =>
-            entry.name.endsWith(ext)
-          )
+          ['.jpeg', '.jpg', '.png', '.webp'].some((ext) => name.endsWith(ext))
         ) {
           return of(extractImageEntry({ entry }));
         }
-        if (entry.name.endsWith('.nfo')) {
+        if (name.endsWith('.nfo')) {
           return of(extractMetaEntry({ entry }));
         }
         return of(extractSongEntry({ entry }));
@@ -224,12 +223,12 @@ export class ScannerEffects2 implements OnRunEffects {
                     entry.parent
                   );
                 }),
-                endWith(extractSuccess({}))
+                endWith(extractSuccess({ label: entry.path }))
               )
             ),
             catchError((error) => of(extractFailure({ error })))
           ),
-        1 // TODO
+        8
       )
     )
   );
@@ -249,7 +248,7 @@ export class ScannerEffects2 implements OnRunEffects {
       mergeMap(
         (fileEntry) =>
           this.extractor.extract(fileEntry).pipe(
-            concatMap(({ common: tags, format, lastModified }) => {
+            concatMap(({ pictures, common: tags, format, lastModified }) => {
               if (
                 tags.albumartist === undefined ||
                 tags.album === undefined ||
@@ -276,18 +275,6 @@ export class ScannerEffects2 implements OnRunEffects {
                 name: tags.albumartist,
                 updatedOn,
               };
-
-              const pictures = (tags.picture || []).map((picture) => {
-                const base64 = picture.data.toString('base64');
-                return {
-                  id: getPictureId(base64),
-                  src: `data:${picture.format};base64,${base64}`,
-                  name: picture.name || picture.description || fileEntry.name,
-                  entry: fileEntry,
-                };
-              });
-
-              delete tags.picture;
 
               const album: Album = {
                 id: getAlbumId(albumArtist.name, tags.album),
@@ -317,8 +304,13 @@ export class ScannerEffects2 implements OnRunEffects {
               };
 
               return concat(
-                ...pictures.map(({ id, src, name, entry }) =>
-                  this.addOrUpdatePicture(id, src, name, entry.path)
+                ...pictures.map(({ id, src, name }) =>
+                  this.addOrUpdatePicture(
+                    id,
+                    src,
+                    name || fileEntry.name,
+                    fileEntry.path
+                  )
                 ),
                 this.addOrUpdateAlbum(
                   album.id,
@@ -338,9 +330,10 @@ export class ScannerEffects2 implements OnRunEffects {
                 )
               );
             }),
+            tap({ error: (err) => console.error(fileEntry.name, err) }),
             catchError((error) => of(extractFailure({ error })))
           ),
-        10
+        16
       )
     )
   );
