@@ -18,12 +18,14 @@ type Result = {
 
 @Injectable()
 export class ExtractorService {
-  private readonly workers: Worker[] = new Array(8).fill(0).map(
-    () =>
-      new Worker(new URL('./extractor.worker', import.meta.url), {
-        name: 'extractor',
-      })
-  );
+  private readonly workers: Worker[] = new Array(navigator.hardwareConcurrency)
+    .fill(0)
+    .map(
+      () =>
+        new Worker(new URL('./extractor.worker', import.meta.url), {
+          name: 'extractor',
+        })
+    );
   private responses = new Subject<
     { id: number; result: Result } | { id: number; error: any }
   >();

@@ -24,7 +24,9 @@ export class DatabaseService {
 
   constructor(
     @Inject(Database('musicsource')) private databaseService: IndexedDBService
-  ) {}
+  ) {
+    databaseService.database.subscribe();
+  }
 
   open$(
     stores: string[],
