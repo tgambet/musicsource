@@ -1,17 +1,19 @@
 import { Injectable } from '@angular/core';
-import { defer, merge, Observable, of } from 'rxjs';
-import { concatMap, map } from 'rxjs/operators';
+import { defer, Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { tapError } from '@app/core/utils/tap-error.util';
-import { DirectoryEntry, Entry } from '@app/database/entries/entry.model';
+import {
+  DirectoryEntry,
+  Entry,
+  entryFromHandle,
+} from '@app/database/entries/entry.model';
 
 @Injectable()
 export class FileService {
-  /**
-   * Opens and walks a user-selected directory
-   */
-  scan(): Observable<Entry> {
-    return this.open().pipe(concatMap((directory) => this.walk(directory)));
-  }
+  private readonly worker: Worker = new Worker(
+    new URL('./file.worker', import.meta.url),
+    { name: 'scanner' }
+  );
 
   /**
    * Opens a directory
@@ -19,7 +21,7 @@ export class FileService {
   open(): Observable<DirectoryEntry> {
     return defer(() => showDirectoryPicker()).pipe(
       tapError((err) => console.log(err)),
-      map((handle) => this.entryFromHandle(handle) as DirectoryEntry)
+      map((handle) => entryFromHandle(handle) as DirectoryEntry)
       // If user has aborted then complete
       // catchError(e => e.code === 20 ? EMPTY : throwError(e))
     );
@@ -31,45 +33,17 @@ export class FileService {
    * @param directory The directory to walk
    */
   walk(directory: DirectoryEntry): Observable<Entry> {
-    return merge(
-      of(directory),
-      this.getHandles(directory).pipe(
-        map((handle) => this.entryFromHandle(handle, directory.path)),
-        concatMap((entry: Entry) =>
-          entry.kind === 'directory' ? this.walk(entry) : of(entry)
-        )
-      )
-    );
+    return new Observable((observer) => {
+      this.worker.onmessage = ({ data }) => {
+        if (data === 'complete') {
+          observer.complete();
+        }
+        observer.next(data);
+      };
+      this.worker.postMessage(directory);
+      return () => {
+        this.worker.postMessage('cancel');
+      };
+    });
   }
-
-  private getHandles = (
-    directory: DirectoryEntry
-  ): Observable<FileSystemHandle> =>
-    new Observable(
-      (observer) =>
-        void (async () => {
-          try {
-            for await (const entry of directory.handle.values()) {
-              if (observer.closed) {
-                return;
-              }
-              observer.next(entry);
-            }
-            observer.complete();
-          } catch (e) {
-            observer.error(e);
-          }
-        })()
-    );
-
-  private entryFromHandle = (
-    handle: FileSystemHandle,
-    parent?: string
-  ): Entry => ({
-    kind: handle.kind,
-    name: handle.name,
-    parent: parent as any,
-    path: parent ? `${parent}/${handle.name}` : handle.name,
-    handle: handle as any,
-  });
 }

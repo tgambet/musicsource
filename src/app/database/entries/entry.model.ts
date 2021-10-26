@@ -57,3 +57,14 @@ export const requestPermission = (handle: FileSystemHandle): Observable<void> =>
       perm ? of(void 0) : throwError(() => 'Permission denied')
     )
   );
+
+export const entryFromHandle = (
+  handle: FileSystemHandle,
+  parent?: string
+): Entry => ({
+  kind: handle.kind,
+  name: handle.name,
+  parent: parent as any,
+  path: parent ? `${parent}/${handle.name}` : handle.name,
+  handle: handle as any,
+});

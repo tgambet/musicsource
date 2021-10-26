@@ -7,12 +7,13 @@
       "es2018",
       "webworker"
     ],
-    "types": []
+    "types": ["wicg-file-system-access"]
   },
   "include": [
     "src/**/*.worker.ts",
   ],
   "files": [
     "src/app/scanner/extractor.worker.ts",
+    "src/app/scanner/file.worker.ts",
   ]
 }

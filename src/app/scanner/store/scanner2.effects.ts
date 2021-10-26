@@ -186,10 +186,13 @@ export class ScannerEffects2 implements OnRunEffects {
     this.actions$.pipe(
       ofType(saveEntry),
       concatMap(({ entry }) => {
-        if (!isFile(entry)) {
+        const name = entry.name.toLowerCase();
+        if (
+          !isFile(entry) ||
+          ['.txt', '.m3u', '.log', '.cue'].some((ext) => name.endsWith(ext))
+        ) {
           return EMPTY;
         }
-        const name = entry.name.toLowerCase();
         if (
           ['.jpeg', '.jpg', '.png', '.webp'].some((ext) => name.endsWith(ext))
         ) {
@@ -330,7 +333,7 @@ export class ScannerEffects2 implements OnRunEffects {
                 )
               );
             }),
-            tap({ error: (err) => console.error(fileEntry.name, err) }),
+            tap({ error: (err) => console.error(fileEntry.path, err) }),
             catchError((error) => of(extractFailure({ error })))
           ),
         16
