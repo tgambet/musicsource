@@ -187,21 +187,29 @@ export class ScannerEffects2 implements OnRunEffects {
       ofType(saveEntry),
       concatMap(({ entry }) => {
         const name = entry.name.toLowerCase();
-        if (
-          !isFile(entry) ||
-          ['.txt', '.m3u', '.log', '.cue'].some((ext) => name.endsWith(ext))
-        ) {
+        if (!isFile(entry)) {
           return EMPTY;
         }
         if (
-          ['.jpeg', '.jpg', '.png', '.webp'].some((ext) => name.endsWith(ext))
+          ['.jpeg', '.jpg', '.png', '.webp', '.bmp'].some((ext) =>
+            name.endsWith(ext)
+          )
         ) {
-          return of(extractImageEntry({ entry }));
+          return EMPTY; // of(extractImageEntry({ entry }));
         }
         if (name.endsWith('.nfo')) {
           return of(extractMetaEntry({ entry }));
         }
-        return of(extractSongEntry({ entry }));
+        if (
+          // TODO
+          ['.mp3', '.flac', '.ogg', '.m4a', '.wav', '.wma'].some((ext) =>
+            name.endsWith(ext)
+          )
+        ) {
+          return of(extractSongEntry({ entry }));
+        }
+        console.warn('ignored', entry.path);
+        return EMPTY;
       })
     )
   );
@@ -307,14 +315,14 @@ export class ScannerEffects2 implements OnRunEffects {
               };
 
               return concat(
-                ...pictures.map(({ id, src, name }) =>
-                  this.addOrUpdatePicture(
-                    id,
-                    src,
-                    name || fileEntry.name,
-                    fileEntry.path
-                  )
-                ),
+                // ...pictures.map(({ id, src, name }) =>
+                //   this.addOrUpdatePicture(
+                //     id,
+                //     src,
+                //     name || fileEntry.name,
+                //     fileEntry.path
+                //   )
+                // ),
                 this.addOrUpdateAlbum(
                   album.id,
                   album.title,
@@ -336,7 +344,7 @@ export class ScannerEffects2 implements OnRunEffects {
             tap({ error: (err) => console.error(fileEntry.path, err) }),
             catchError((error) => of(extractFailure({ error })))
           ),
-        16
+        navigator.hardwareConcurrency
       )
     )
   );
@@ -361,7 +369,6 @@ export class ScannerEffects2 implements OnRunEffects {
       map(({ entry }) => entry),
       bufferTime(500),
       filter((entries) => entries.length > 0),
-      tap((entries) => console.log('entries', entries.length)),
       concatMap((entries) =>
         this.database.addMany$<Entry>('entries', entries).pipe(
           toArray(),
@@ -387,7 +394,6 @@ export class ScannerEffects2 implements OnRunEffects {
       map(({ picture }) => picture),
       bufferTime(500),
       filter((pictures) => pictures.length > 0),
-      tap((pictures) => console.log('pictures', pictures.length)),
       concatMap((pictures) =>
         this.database.putMany$<Picture>('pictures', pictures).pipe(
           toArray(),
@@ -413,7 +419,6 @@ export class ScannerEffects2 implements OnRunEffects {
       map(({ artist }) => artist),
       bufferTime(500),
       filter((artists) => artists.length > 0),
-      tap((artists) => console.log('artists', artists.length)),
       concatMap((artists) =>
         this.database.putMany$<Artist>('artists', artists).pipe(
           toArray(),
@@ -439,7 +444,6 @@ export class ScannerEffects2 implements OnRunEffects {
       map(({ album }) => album),
       bufferTime(500),
       filter((albums) => albums.length > 0),
-      tap((albums) => console.log('albums', albums.length)),
       concatMap((albums) =>
         this.database.putMany$<Album>('albums', albums).pipe(
           toArray(),
@@ -465,7 +469,6 @@ export class ScannerEffects2 implements OnRunEffects {
       map(({ song }) => song),
       bufferTime(500),
       filter((songs) => songs.length > 0),
-      tap((songs) => console.log('songs', songs.length)),
       concatMap((songs) =>
         this.database.addMany$<Song>('songs', songs).pipe(
           toArray(),
