@@ -11,8 +11,8 @@ type Result = {
   lastModified: number;
   pictures: {
     id: PictureId;
-    src: string;
     name: string;
+    blob: Blob;
   }[];
 };
 

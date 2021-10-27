@@ -10,11 +10,6 @@ import {
 
 @Injectable()
 export class FileService {
-  private readonly worker: Worker = new Worker(
-    new URL('./file.worker', import.meta.url),
-    { name: 'scanner' }
-  );
-
   /**
    * Opens a directory
    */
@@ -34,15 +29,20 @@ export class FileService {
    */
   walk(directory: DirectoryEntry): Observable<Entry> {
     return new Observable((observer) => {
-      this.worker.onmessage = ({ data }) => {
+      const worker: Worker = new Worker(
+        new URL('./file.worker', import.meta.url),
+        { name: 'scanner' }
+      );
+      worker.onmessage = ({ data }) => {
         if (data === 'complete') {
           observer.complete();
         }
         observer.next(data);
       };
-      this.worker.postMessage(directory);
+      worker.postMessage(directory);
       return () => {
-        this.worker.postMessage('cancel');
+        worker.postMessage('cancel');
+        worker.terminate();
       };
     });
   }

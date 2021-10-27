@@ -8,11 +8,11 @@ import {
   OnRunEffects,
 } from '@ngrx/effects';
 import {
-  concat,
   EMPTY,
   endWith,
   exhaustMap,
   from,
+  merge,
   mergeMap,
   Observable,
   of,
@@ -80,7 +80,6 @@ import {
   Picture,
   PictureId,
 } from '@app/database/pictures/picture.model';
-import { arrayBufferToBase64 } from '@app/core/utils/array-buffer-to-base64.util';
 import { ResizerService } from '@app/scanner/resizer.service';
 import { PictureFacade } from '@app/database/pictures/picture.facade';
 import { selectAlbumByKey } from '@app/database/albums/album.selectors';
@@ -221,25 +220,24 @@ export class ScannerEffects2 implements OnRunEffects {
       mergeMap(
         (entry) =>
           from(entry.handle.getFile()).pipe(
-            concatMap((file) =>
-              from(file.arrayBuffer()).pipe(
-                concatMap((buffer) => {
-                  const base64 = arrayBufferToBase64(buffer);
-                  const src = `data:${file.type};base64,${base64}`;
-                  const id = getPictureId(src);
-                  return this.addOrUpdatePicture(
-                    id,
-                    src,
-                    file.name,
-                    entry.parent
-                  );
-                }),
-                endWith(extractSuccess({ label: entry.path }))
-              )
-            ),
+            concatMap((file) => {
+              // from(file.arrayBuffer()).pipe(
+              //   concatMap((buffer) => {
+              // const base64 = arrayBufferToBase64(buffer);
+              // const src = `data:${file.type};base64,${base64}`;
+              const id = getPictureId(entry.path);
+              return this.addOrUpdatePicture(
+                id,
+                file.name,
+                entry.parent,
+                file.slice()
+              ).pipe(endWith(extractSuccess({ label: entry.path })));
+              // }),
+              // )
+            }),
             catchError((error) => of(extractFailure({ error })))
           ),
-        8
+        navigator.hardwareConcurrency
       )
     )
   );
@@ -314,15 +312,15 @@ export class ScannerEffects2 implements OnRunEffects {
                 pictureId: pictures[0]?.id,
               };
 
-              return concat(
-                // ...pictures.map(({ id, src, name }) =>
-                //   this.addOrUpdatePicture(
-                //     id,
-                //     src,
-                //     name || fileEntry.name,
-                //     fileEntry.path
-                //   )
-                // ),
+              return merge(
+                ...pictures.map(({ id, name, blob }) =>
+                  this.addOrUpdatePicture(
+                    id,
+                    name || fileEntry.name,
+                    fileEntry.path,
+                    blob
+                  )
+                ),
                 this.addOrUpdateAlbum(
                   album.id,
                   album.title,
@@ -506,16 +504,16 @@ export class ScannerEffects2 implements OnRunEffects {
 
   addOrUpdatePicture = (
     id: PictureId,
-    src: string,
     name: string,
-    path: string
+    path: string,
+    blob: Blob
   ): Observable<Action> =>
     this.pictures.getByKey(id).pipe(
       first(),
       concatMap((stored) => {
         if (!stored) {
           return this.resizer
-            .resize(src, [
+            .resize(blob, [
               { height: 32 },
               { height: 56 },
               { height: 160 },
@@ -523,17 +521,11 @@ export class ScannerEffects2 implements OnRunEffects {
               { height: 264 },
             ])
             .pipe(
-              map(([h32, h56, h160, h226, h264]) => {
+              map((sources) => {
                 const picture: Picture = {
                   id,
-                  original: src,
-                  sources: [
-                    { src: h32, height: 32 },
-                    { src: h56, height: 56 },
-                    { src: h160, height: 160 },
-                    { src: h226, height: 226 },
-                    { src: h264, height: 264 },
-                  ],
+                  // original: src,
+                  sources,
                   name,
                   entries: [path],
                 };
