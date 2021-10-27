@@ -90,6 +90,8 @@ import { addArtist } from '@app/database/artists/artist.actions';
 import { upsertAlbum } from '@app/database/albums/album.actions';
 import { addSong } from '@app/database/songs/song.actions';
 import { selectState } from '@app/scanner/store/scanner.selectors';
+import { readAsDataURL } from '@app/core/utils/read-as-data-url.util';
+import { tapError } from '@app/core/utils';
 
 // noinspection JSUnusedGlobalSymbols
 @Injectable()
@@ -194,7 +196,7 @@ export class ScannerEffects2 implements OnRunEffects {
             name.endsWith(ext)
           )
         ) {
-          return EMPTY; // of(extractImageEntry({ entry }));
+          return of(extractImageEntry({ entry }));
         }
         if (name.endsWith('.nfo')) {
           return of(extractMetaEntry({ entry }));
@@ -221,20 +223,10 @@ export class ScannerEffects2 implements OnRunEffects {
         (entry) =>
           from(entry.handle.getFile()).pipe(
             concatMap((file) => {
-              // from(file.arrayBuffer()).pipe(
-              //   concatMap((buffer) => {
-              // const base64 = arrayBufferToBase64(buffer);
-              // const src = `data:${file.type};base64,${base64}`;
               const id = getPictureId(entry.path);
-              return this.addOrUpdatePicture(
-                id,
-                file.name,
-                entry.parent,
-                file.slice()
-              ).pipe(endWith(extractSuccess({ label: entry.path })));
-              // }),
-              // )
+              return this.addOrUpdatePicture(id, file.name, entry.parent, file);
             }),
+            endWith(extractSuccess({ label: entry.path })),
             catchError((error) => of(extractFailure({ error })))
           ),
         navigator.hardwareConcurrency
@@ -512,6 +504,19 @@ export class ScannerEffects2 implements OnRunEffects {
       first(),
       concatMap((stored) => {
         if (!stored) {
+          if (name.toLowerCase().includes('fanart')) {
+            return readAsDataURL(blob).pipe(
+              map((src) => ({
+                id,
+                original: src,
+                sources: [],
+                name,
+                entries: [path],
+              })),
+              map((picture) => saveImage({ picture }))
+            );
+          }
+
           return this.resizer
             .resize(blob, [
               { height: 32 },
@@ -539,7 +544,8 @@ export class ScannerEffects2 implements OnRunEffects {
           };
           return of(saveImage({ picture }));
         }
-      })
+      }),
+      tapError((err) => console.error(err, path, name))
     );
 
   addOrUpdateAlbum = (

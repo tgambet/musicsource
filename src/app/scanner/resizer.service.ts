@@ -28,7 +28,7 @@ export class ResizerService {
         })
     );
     this.workers.forEach((worker) => {
-      worker.onerror = ({ error }) => console.error(error);
+      worker.onerror = ({ error }) => console.error(3, error);
     });
   }
 
@@ -73,11 +73,4 @@ export class ResizerService {
       };
     });
   }
-
-  // resizeSquare(imageUrl: string, sizes: number[]): Observable<string[]> {
-  //   return this.resize(
-  //     imageUrl,
-  //     sizes.map((size) => ({ width: size, height: size }))
-  //   );
-  // }
 }

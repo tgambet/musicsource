@@ -15,19 +15,19 @@ addEventListener('message', async ({ data }) => {
   ctx.imageSmoothingQuality = 'high';
 
   const b: Blob = imageData;
-  const bitmap = await createImageBitmap(b);
-  /*, {
-    resizeHeight: height * 2,
-    resizeWidth: width * 2,
-    resizeQuality: 'high',
-  }*/
+  let bitmap;
 
-  ctx.drawImage(bitmap, 0, 0, width, height);
-
-  const blob = await canvas.convertToBlob({
-    type: 'image/webp',
-    quality: 80,
-  });
+  try {
+    bitmap = await createImageBitmap(b);
+    /*, {
+      resizeHeight: height * 2,
+      resizeWidth: width * 2,
+      resizeQuality: 'high',
+    }*/
+    ctx.drawImage(bitmap, 0, 0, width, height);
+  } catch (e) {
+    postMessage({ id, error: e });
+  }
 
   const reader = new FileReader();
   reader.onload = (e) => {
@@ -42,5 +42,13 @@ addEventListener('message', async ({ data }) => {
   };
   reader.onerror = (e) => postMessage({ id, error: e.target?.error });
 
-  reader.readAsDataURL(blob);
+  await canvas
+    .convertToBlob({
+      type: 'image/webp',
+      quality: 80,
+    })
+    .then((blob) => {
+      reader.readAsDataURL(blob);
+    })
+    .catch((error) => postMessage({ id, error }));
 });
