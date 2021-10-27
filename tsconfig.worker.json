@@ -15,5 +15,6 @@
   "files": [
     "src/app/scanner/extractor.worker.ts",
     "src/app/scanner/file.worker.ts",
+    "src/app/scanner/resizer.worker.ts",
   ]
 }

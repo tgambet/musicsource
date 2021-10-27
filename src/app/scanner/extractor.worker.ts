@@ -10,7 +10,6 @@ Object.assign(self, {
 });
 
 import * as mm from 'music-metadata-browser';
-import { bytesToBase64 } from 'byte-base64';
 import { getPictureId } from '@app/database/pictures/picture.model';
 
 addEventListener('message', async ({ data }) => {
@@ -20,11 +19,11 @@ addEventListener('message', async ({ data }) => {
     .parseBlob(file /*{duration: true}*/)
     .then(({ common, format }) => {
       const pictures = (common.picture || []).map((picture) => {
-        const src = bytesToBase64(picture.data);
+        const blob = new Blob([picture.data], { type: picture.format });
         return {
-          id: getPictureId(src),
-          src: `data:${picture.format};base64,${src}`,
+          id: getPictureId(picture.data.toString()),
           name: picture.name || picture.description,
+          blob,
         };
       });
       delete common.picture;
