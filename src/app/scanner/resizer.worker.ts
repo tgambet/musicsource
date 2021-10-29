@@ -14,19 +14,17 @@ addEventListener('message', async ({ data }) => {
   ctx.imageSmoothingEnabled = true;
   ctx.imageSmoothingQuality = 'high';
 
-  const b: Blob = imageData;
   let bitmap;
-
   try {
-    bitmap = await createImageBitmap(b);
-    /*, {
+    bitmap = await createImageBitmap(imageData as Blob, {
       resizeHeight: height * 2,
       resizeWidth: width * 2,
       resizeQuality: 'high',
-    }*/
+    });
     ctx.drawImage(bitmap, 0, 0, width, height);
   } catch (e) {
     postMessage({ id, error: e });
+    return;
   }
 
   const reader = new FileReader();
