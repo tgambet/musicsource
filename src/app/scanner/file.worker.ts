@@ -1,5 +1,3 @@
-/// <reference lib="webworker" />
-
 import { merge, Observable, of, Subscription } from 'rxjs';
 import {
   DirectoryEntry,
@@ -13,6 +11,8 @@ const getHandles = (directory: DirectoryEntry): Observable<FileSystemHandle> =>
     (observer) =>
       void (async () => {
         try {
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           for await (const entry of directory.handle.values()) {
             if (observer.closed) {
               return;
