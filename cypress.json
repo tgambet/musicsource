@@ -2,5 +2,5 @@
   "$schema": "https://on.cypress.io/cypress.schema.json",
   "baseUrl": "http://localhost:4200",
   "video": false,
-  "testFiles": "cypress/integration/**/*.ts"
+  "integrationFolder": "cypress/integration"
 }
