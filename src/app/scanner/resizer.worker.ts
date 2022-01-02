@@ -1,5 +1,3 @@
-/// <reference lib="webworker" />
-
 addEventListener('message', async ({ data }) => {
   const { id, imageData, width, height } = data;
 

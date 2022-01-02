@@ -5,9 +5,8 @@
     "outDir": "./out-tsc/worker",
     "lib": [
       "es2018",
-      "webworker"
     ],
-    "types": ["wicg-file-system-access"]
+    "types": ["web", "offscreencanvas"]
   },
   "include": [
     "src/**/*.worker.ts",

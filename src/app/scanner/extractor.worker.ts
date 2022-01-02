@@ -1,5 +1,3 @@
-/// <reference lib="webworker" />
-
 import * as _buffer from 'buffer';
 import * as process from 'process';
 

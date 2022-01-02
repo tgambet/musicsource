@@ -8,10 +8,6 @@ import { RouterModule, Routes } from '@angular/router';
 import { MainGuard } from '@app/main/main.guard';
 import { PagePlaylistLikesComponent } from '@app/playlist/page-playlist-likes.component';
 import { ScrollerService } from '@app/main/scroller.service';
-import { LibraryModule } from '@app/library/library.module';
-import { AlbumModule } from '@app/album/album.module';
-import { ArtistModule } from '@app/artist/artist.module';
-import { PlaylistModule } from '@app/playlist/playlist.module';
 import { DatabaseModule } from '@app/database/database.module';
 import { PlaylistNewComponent } from '@app/core/dialogs/playlist-new.component';
 import { ScannerModule } from '@app/scanner/scanner.module';
@@ -103,19 +99,23 @@ const routes: Routes = [
       },
       {
         path: 'library',
-        loadChildren: () => LibraryModule,
+        loadChildren: () =>
+          import('../library/library.module').then((m) => m.LibraryModule),
       },
       {
         path: 'album',
-        loadChildren: () => AlbumModule,
+        loadChildren: () =>
+          import('../album/album.module').then((m) => m.AlbumModule),
       },
       {
         path: 'artist',
-        loadChildren: () => ArtistModule,
+        loadChildren: () =>
+          import('../artist/artist.module').then((m) => m.ArtistModule),
       },
       {
         path: 'playlist',
-        loadChildren: () => PlaylistModule,
+        loadChildren: () =>
+          import('../playlist/playlist.module').then((m) => m.PlaylistModule),
       },
       {
         path: 'likes',
@@ -124,7 +124,8 @@ const routes: Routes = [
       },
       {
         path: 'play',
-        loadChildren: () => PlayerModule,
+        loadChildren: () =>
+          import('../player/player.module').then((m) => m.PlayerModule),
       },
     ],
   },

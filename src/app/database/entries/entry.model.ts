@@ -40,10 +40,14 @@ export const requestPermissionPromise = async (
     options = { mode: 'readwrite' };
   }
   // Check if permission was already granted. If so, return true.
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   if ((await fileHandle.queryPermission(options)) === 'granted') {
     return true;
   }
   // Request permission. If the user grants permission, return true.
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
   if ((await fileHandle.requestPermission(options)) === 'granted') {
     return true;
   }
