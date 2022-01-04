@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { Artist } from '@app/database/artists/artist.model';
 import { first, tap } from 'rxjs/operators';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { combineLatest, EMPTY, Observable } from 'rxjs';
@@ -9,7 +8,6 @@ import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { PlayerFacade } from '@app/player/store/player.facade';
 import { PlaylistFacade } from '@app/database/playlists/playlist.facade';
-import { SongFacade } from '@app/database/songs/song.facade';
 
 @Injectable()
 export class ComponentHelperService {
@@ -18,8 +16,7 @@ export class ComponentHelperService {
     private snack: MatSnackBar,
     private dialog: MatDialog,
     private router: Router,
-    private playlists: PlaylistFacade,
-    private songs: SongFacade
+    private playlists: PlaylistFacade //private songs: SongFacade
   ) {}
 
   // toggleLikedSong(song: Song): Observable<Song> {
@@ -131,7 +128,7 @@ export class ComponentHelperService {
       .subscribe();
   }
 
-  shufflePlayArtist(artist: Artist): Observable<Song[]> {
+  shufflePlayArtist(/*artist: Artist*/): Observable<Song[]> {
     return EMPTY;
     // return this.songs.getByArtistKey(artist.id).pipe(
     //   first(),
