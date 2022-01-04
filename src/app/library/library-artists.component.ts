@@ -34,7 +34,7 @@ import { ArtistFacade } from '@app/database/artists/artist.facade';
           <app-artist-list-item
             [artist]="artist"
             (menuOpened)="menuOpened($event)"
-            (shufflePlay)="shufflePlay(artist)"
+            (shufflePlay)="shufflePlay()"
             (toggleLiked)="toggleLiked(artist)"
             cdkMonitorSubtreeFocus
           ></app-artist-list-item>
@@ -155,8 +155,8 @@ export class LibraryArtistsComponent extends WithTrigger implements OnInit {
     this.artists.toggleLiked(artist);
   }
 
-  shufflePlay(artist: Artist): void {
-    this.helper.shufflePlayArtist(artist).subscribe();
+  shufflePlay(/*artist: Artist*/): void {
+    // this.helper.shufflePlayArtist(artist).subscribe();
     // this.history.artistPlayed(artist);
   }
 }

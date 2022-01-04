@@ -32,11 +32,7 @@ import { PictureFacade } from '@app/database/pictures/picture.facade';
         <app-container-page class="header-container">
           <app-title>{{ artist.name }}</app-title>
           <div class="actions">
-            <button
-              mat-raised-button
-              color="accent"
-              (click)="shufflePlay(artist)"
-            >
+            <button mat-raised-button color="accent" (click)="shufflePlay()">
               <app-icon [path]="icons.shuffle"></app-icon>
               <span>Shuffle</span>
             </button>
@@ -219,8 +215,8 @@ export class PageArtistComponent extends WithTrigger implements OnInit {
     this.songs$ = EMPTY; // this.songs.getByAlbumKey(''); // TODO
   }
 
-  shufflePlay(artist: Artist): void {
-    this.helper.shufflePlayArtist(artist).subscribe();
+  shufflePlay(/*artist: Artist*/): void {
+    // this.helper.shufflePlayArtist(artist).subscribe();
     // this.history.artistPlayed(artist);
   }
 

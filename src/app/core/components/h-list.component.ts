@@ -140,16 +140,16 @@ export class HListComponent implements OnInit, OnDestroy, AfterContentInit {
     private zone: NgZone
   ) {}
 
+  get translation(): number {
+    return this.translationP;
+  }
+
   set translation(value: number) {
     this.translationP = value;
     this.isNextDisabled =
       -this.translationP + this.root.clientWidth >= this.content.clientWidth;
     this.isPrevDisabled = this.translationP === 0;
     this.cdr.markForCheck();
-  }
-
-  get translation(): number {
-    return this.translationP;
   }
 
   @HostListener('window:resize', ['$event'])
