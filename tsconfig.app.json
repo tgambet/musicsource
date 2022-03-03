@@ -2,7 +2,8 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "./out-tsc/app",
-    "types": ["wicg-file-system-access", "wicg-mediasession"]
+    "types": ["wicg-file-system-access", "wicg-mediasession"],
+    "lib": ["es2018", "dom"]
   },
   "files": [
     "src/main.ts",
