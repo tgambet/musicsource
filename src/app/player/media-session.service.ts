@@ -44,7 +44,7 @@ export class MediaSessionService {
   setMetadata(song: Song): void {
     if ('mediaSession' in navigator) {
       this.pictures
-        .getCover(song.pictureId)
+        .getSongCover(song)
         .pipe(
           first(),
           tap(

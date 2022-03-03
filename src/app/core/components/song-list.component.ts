@@ -48,7 +48,7 @@ export class SongListComponent extends WithTrigger {
 
   currentSongPath$ = this.player
     .getCurrentSong$()
-    .pipe(map((song) => song?.entryPath));
+    .pipe(map((entryPath) => entryPath));
 
   constructor(private player: PlayerFacade) {
     super();

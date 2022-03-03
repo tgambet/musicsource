@@ -19,7 +19,7 @@ import {
   share,
   Subscription,
 } from 'rxjs';
-import { Song } from '@app/database/songs/song.model';
+import { Song, SongId } from '@app/database/songs/song.model';
 import { PlayerFacade } from '@app/player/store/player.facade';
 import { ComponentHelperService } from '@app/core/services/component-helper.service';
 import { MenuItem } from '@app/core/components/menu.component';
@@ -399,14 +399,19 @@ export class PlayerComponent implements OnInit, OnDestroy {
       .getDuration$()
       .pipe(map((duration) => duration === 0));
 
-    this.currentSong$ = this.player
-      .getCurrentSong$()
-      .pipe(filter((song): song is Song => !!song));
+    this.currentSong$ = this.player.getCurrentSong$().pipe(
+      filter((song): song is SongId => !!song),
+      switchMap((id) => this.songs.getByKey(id)),
+      filter((song): song is Song => !!song)
+    );
 
-    this.currentSong$.pipe(tap((song) => this.updateMenu(song))).subscribe();
+    const r2$ = this.currentSong$
+      .pipe(tap((song) => this.updateMenu(song)))
+      .subscribe();
+    this.subscription.add(r2$);
 
     this.currentSongCover$ = this.currentSong$.pipe(
-      switchMap((song) => this.pictures.getCover(song.pictureId))
+      switchMap((song) => this.pictures.getSongCover(song, 40))
     );
   }
 

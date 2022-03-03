@@ -16,8 +16,8 @@ import {
   share,
   switchMap,
 } from 'rxjs';
-import { Song } from '@app/database/songs/song.model';
-import { map } from 'rxjs/operators';
+import { Song, SongId } from '@app/database/songs/song.model';
+import { filter, map } from 'rxjs/operators';
 import { Icons } from '@app/core/utils/icons.util';
 import { ActivatedRoute } from '@angular/router';
 import { PlayerFacade } from '@app/player/store/player.facade';
@@ -130,9 +130,11 @@ export class LibrarySongsComponent extends WithTrigger implements OnInit {
   // };
   // loadMore = false;
 
-  currentSongPath$ = this.player
-    .getCurrentSong$()
-    .pipe(map((song) => song?.entryPath));
+  currentSongPath$ = this.player.getCurrentSong$().pipe(
+    filter((id): id is SongId => !!id),
+    switchMap((path) => this.songs.getByKey(path)),
+    map((song) => song?.entryPath)
+  );
 
   constructor(
     private route: ActivatedRoute,

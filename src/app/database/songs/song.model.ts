@@ -2,9 +2,14 @@ import { ICommonTagsResult, IFormat } from 'music-metadata/lib/type';
 import { AlbumId } from '@app/database/albums/album.model';
 import { PictureId } from '@app/database/pictures/picture.model';
 import { ArtistId } from '@app/database/artists/artist.model';
+import { Opaque } from 'type-fest';
+
+export type SongId = Opaque<string, Song>;
+
+export const getSongId = (path: string): SongId => path as SongId;
 
 export type Song = {
-  entryPath: string;
+  entryPath: SongId;
   folder: string;
   title?: string;
   album: { title: string; id: AlbumId };

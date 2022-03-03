@@ -16,7 +16,7 @@ import {
 } from 'rxjs';
 import { Album, AlbumId } from '@app/database/albums/album.model';
 import { filter, first, map, mergeMap, tap } from 'rxjs/operators';
-import { Song } from '@app/database/songs/song.model';
+import { Song, SongId } from '@app/database/songs/song.model';
 import { Icons } from '@app/core/utils/icons.util';
 import { PlayerFacade } from '@app/player/store/player.facade';
 import { MenuItem } from '@app/core/components/menu.component';
@@ -139,9 +139,11 @@ export class PageAlbumComponent extends WithTrigger implements OnInit {
     }[]
   >;
 
-  currentSongPath$ = this.player
-    .getCurrentSong$()
-    .pipe(map((song) => song?.entryPath));
+  currentSongPath$ = this.player.getCurrentSong$().pipe(
+    filter((id): id is SongId => !!id),
+    switchMap((path) => this.songs.getByKey(path)),
+    map((song) => song?.entryPath)
+  );
 
   cover$!: Observable<string | undefined>;
 
@@ -230,7 +232,10 @@ export class PageAlbumComponent extends WithTrigger implements OnInit {
         first(),
         tap((songs) => {
           this.player.setPlaying();
-          this.player.setPlaylist(songs, index);
+          this.player.setPlaylist(
+            songs.map((s) => s.entryPath),
+            index
+          );
           this.player.show();
           // this.history.albumPlayed(album);
         })
@@ -244,7 +249,7 @@ export class PageAlbumComponent extends WithTrigger implements OnInit {
         first(),
         tap((songs) => {
           this.player.setPlaying();
-          this.player.setPlaylist(songs);
+          this.player.setPlaylist(songs.map((s) => s.entryPath));
           this.player.shuffle();
           this.player.show();
           // this.history.albumPlayed(album);
@@ -258,7 +263,10 @@ export class PageAlbumComponent extends WithTrigger implements OnInit {
       .pipe(
         first(),
         tap((songs) => {
-          this.player.addToPlaylist(songs, next);
+          this.player.addToPlaylist(
+            songs.map((s) => s.entryPath),
+            next
+          );
           this.player.show();
         })
       )

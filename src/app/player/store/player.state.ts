@@ -1,8 +1,8 @@
-import { Song } from '@app/database/songs/song.model';
+import { SongId } from '@app/database/songs/song.model';
 
 export interface PlayerState {
   show: boolean;
-  playlist: Song[];
+  playlist: SongId[];
   currentIndex: number;
   playing: boolean;
   loading: boolean;

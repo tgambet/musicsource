@@ -12,6 +12,7 @@ import { Song } from '@app/database/songs/song.model';
 import { PlayerFacade } from '@app/player/store/player.facade';
 import { first, map, switchMap, tap, throttleTime } from 'rxjs/operators';
 import { combineLatest, Observable, of } from 'rxjs';
+import { arrayEquals } from '@app/core/utils/array-equals.util';
 
 // https://github.com/angular/angular/issues/8785
 @Component({
@@ -134,12 +135,17 @@ export class PlayerButtonComponent implements OnInit {
 
   ngOnInit(): void {
     this.isCurrent$ = this.playlistMode
-      ? this.player
-          .getPlaylist$()
-          .pipe(map((playlist) => playlist === this.playlist))
+      ? this.player.getPlaylist$().pipe(
+          map((playlist) =>
+            arrayEquals(
+              playlist,
+              this.playlist.map((s) => s.entryPath)
+            )
+          )
+        )
       : this.player
           .getCurrentSong$()
-          .pipe(map((current) => current?.entryPath === this.song.entryPath));
+          .pipe(map((current) => current === this.song.entryPath));
 
     this.isPlaying$ = this.isCurrent$.pipe(
       switchMap((current) => (current ? this.player.getPlaying$() : of(false))),
@@ -171,7 +177,7 @@ export class PlayerButtonComponent implements OnInit {
           } else {
             this.player.setPlaying();
             this.player.setPlaylist(
-              this.playlist,
+              this.playlist.map((s) => s.entryPath),
               this.playlist.indexOf(this.song)
             );
             this.player.show();
