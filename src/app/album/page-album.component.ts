@@ -5,9 +5,17 @@ import {
   OnInit,
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Observable, ReplaySubject, share, switchMap } from 'rxjs';
+import {
+  groupBy,
+  Observable,
+  of,
+  reduce,
+  ReplaySubject,
+  share,
+  switchMap,
+} from 'rxjs';
 import { Album, AlbumId } from '@app/database/albums/album.model';
-import { filter, first, map, tap } from 'rxjs/operators';
+import { filter, first, map, mergeMap, tap } from 'rxjs/operators';
 import { Song } from '@app/database/songs/song.model';
 import { Icons } from '@app/core/utils/icons.util';
 import { PlayerFacade } from '@app/player/store/player.facade';
@@ -47,8 +55,10 @@ import { SongFacade } from '@app/database/songs/song.facade';
                 <!--                </span>-->
                 • <span>{{ album.year }}</span>
               </p>
-              <p class="stats" *ngIf="songs$ | async as songs">
-                {{ songs.length }} songs • {{ getLength(songs) }} minutes
+              <p class="stats">
+                <ng-container *ngIf="stats$ | async as stats">
+                  {{ stats.n }} songs • {{ stats.length }} minutes
+                </ng-container>
               </p>
             </div>
           </div>
@@ -73,16 +83,23 @@ import { SongFacade } from '@app/database/songs/song.facade';
         </app-container-page>
       </header>
       <app-container-page>
-        <div class="track-list" *ngIf="songs$ | async as songs">
-          <app-track-list-item
-            [song]="song"
-            [playlist]="songs"
-            *ngFor="let song of songs; trackBy: trackBy"
-            [trackNumber]="song.tags.track.no"
-            [class.selected]="(currentSongPath$ | async) === song.entryPath"
-            (menuOpened)="menuOpened($event)"
-            cdkMonitorSubtreeFocus
-          ></app-track-list-item>
+        <div class="track-list" *ngIf="disks$ | async as disks">
+          <ng-container *ngFor="let disk of disks">
+            <app-title size="small" *ngIf="disks.length > 1">
+              CD{{ disk.key }}
+            </app-title>
+            <div class="track-list-container">
+              <app-track-list-item
+                [song]="song"
+                [playlist]="disk.songs"
+                *ngFor="let song of disk.songs; trackBy: trackBy"
+                [trackNumber]="song.tags.track.no"
+                [class.selected]="(currentSongPath$ | async) === song.entryPath"
+                (menuOpened)="menuOpened($event)"
+                cdkMonitorSubtreeFocus
+              ></app-track-list-item>
+            </div>
+          </ng-container>
         </div>
       </app-container-page>
     </ng-container>
@@ -93,9 +110,13 @@ import { SongFacade } from '@app/database/songs/song.facade';
       .cover app-icon {
         color: rgba(255, 255, 255, 0.4);
       }
-      .track-list {
+      .stats {
+        height: 19px;
+      }
+      .track-list-container {
         display: flex;
         flex-direction: column;
+        margin-bottom: 1em;
       }
       app-track-list-item.selected {
         background-color: rgba(255, 255, 255, 0.1);
@@ -108,6 +129,15 @@ export class PageAlbumComponent extends WithTrigger implements OnInit {
   album$!: Observable<Album>;
 
   songs$!: Observable<Song[]>;
+
+  stats$!: Observable<{ n: number; length: number }>;
+
+  disks$!: Observable<
+    {
+      key: number | null;
+      songs: Song[];
+    }[]
+  >;
 
   currentSongPath$ = this.player
     .getCurrentSong$()
@@ -146,7 +176,9 @@ export class PageAlbumComponent extends WithTrigger implements OnInit {
   ngOnInit(): void {
     const albumKey = this.route.snapshot.data.info as AlbumId;
 
-    this.album$ = this.albums.getByKey(albumKey) as Observable<Album>;
+    this.album$ = this.albums
+      .getByKey(albumKey)
+      .pipe(filter((a): a is Album => !!a));
 
     this.cover$ = this.album$.pipe(
       switchMap((album) => this.pictures.getAlbumCover(album, 264))
@@ -155,10 +187,38 @@ export class PageAlbumComponent extends WithTrigger implements OnInit {
     this.songs$ = this.album$.pipe(
       switchMap((album) => this.songs.getByAlbumKey(album.id)),
       filter((songs): songs is Song[] => !!songs),
+      map((songs) =>
+        songs.sort((s1, s2) => (s1.tags.disk.no || 0) - (s2.tags.disk.no || 0))
+      ),
       share({
         connector: () => new ReplaySubject(1),
         resetOnRefCountZero: true,
       })
+    );
+
+    this.stats$ = this.songs$.pipe(
+      map((songs) => ({
+        length: this.getLength(songs),
+        n: songs.length,
+      }))
+    );
+
+    this.disks$ = this.songs$.pipe(
+      switchMap((s) =>
+        of(...s).pipe(
+          groupBy((song) => song.tags.disk.no),
+          mergeMap((group$) =>
+            group$.pipe(
+              reduce((acc, cur) => [...acc, cur], [] as Song[]),
+              map((songs) => ({ key: group$.key, songs }))
+            )
+          ),
+          reduce(
+            (acc, cur) => [...acc, cur],
+            [] as { key: number | null; songs: Song[] }[]
+          )
+        )
+      )
     );
 
     this.menuItems = this.getMenuItem();
