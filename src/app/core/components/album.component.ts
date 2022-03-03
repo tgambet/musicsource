@@ -133,7 +133,7 @@ export class AlbumComponent implements OnInit {
               first(),
               tap((tracks) => {
                 this.player.setPlaying();
-                this.player.setPlaylist(tracks || []);
+                this.player.setPlaylist(tracks?.map((s) => s.entryPath) || []);
                 this.player.shuffle();
                 this.player.show();
               })
@@ -151,7 +151,10 @@ export class AlbumComponent implements OnInit {
             .pipe(
               first(),
               tap((tracks) => {
-                this.player.addToPlaylist(tracks || [], true);
+                this.player.addToPlaylist(
+                  tracks?.map((s) => s.entryPath) || [],
+                  true
+                );
                 this.player.show();
               })
             )
@@ -167,7 +170,9 @@ export class AlbumComponent implements OnInit {
             .pipe(
               first(),
               tap((tracks) => {
-                this.player.addToPlaylist(tracks || []);
+                this.player.addToPlaylist(
+                  tracks?.map((s) => s.entryPath) || []
+                );
                 this.player.show();
               })
             )

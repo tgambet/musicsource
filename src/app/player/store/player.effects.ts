@@ -30,7 +30,7 @@ import {
 import { Router } from '@angular/router';
 import { AudioService } from '@app/player/audio.service';
 import { PlayerFacade } from '@app/player/store/player.facade';
-import { Song } from '@app/database/songs/song.model';
+import { Song, SongId } from '@app/database/songs/song.model';
 import {
   FileEntry,
   requestPermission,
@@ -39,6 +39,7 @@ import { tapError } from '@app/core/utils/tap-error.util';
 import { MediaSessionService } from '@app/player/media-session.service';
 import { Title } from '@angular/platform-browser';
 import { EntryFacade } from '@app/database/entries/entry.facade';
+import { SongFacade } from '@app/database/songs/song.facade';
 
 // noinspection JSUnusedGlobalSymbols
 @Injectable()
@@ -50,14 +51,14 @@ export class PlayerEffects implements OnRunEffects {
     () =>
       this.player.getCurrentSong$().pipe(
         // distinctUntilChanged((s1, s2) => s1?.entryPath === s2?.entryPath),
-        filter((song): song is Song => !!song),
+        filter((song): song is SongId => !!song),
         tap(() => this.player.setLoading()),
-        switchMap((song) =>
+        switchMap((entryPath) =>
           this.player.getPlaying$().pipe(
             first(),
             tap(() => this.player.pause()),
             concatMap((playing) =>
-              this.entries.getByKey(song.entryPath).pipe(
+              this.entries.getByKey(entryPath).pipe(
                 filter((entry): entry is FileEntry => !!entry),
                 tap((entry) => (this.handle = entry.handle)),
                 concatMap((entry) =>
@@ -66,10 +67,15 @@ export class PlayerEffects implements OnRunEffects {
                     catchError(() => EMPTY),
                     concatMap(() => entry.handle.getFile()),
                     concatMap((file) => this.audio.setSrc(file)),
-                    tap(() => this.media.setMetadata(song)),
-                    tap(() =>
-                      this.title.setTitle(
-                        `${song.title} • ${song.artists[0].name} - MusicSource`
+                    concatMap(() =>
+                      this.songs.getByKey(entryPath).pipe(
+                        filter((s): s is Song => !!s),
+                        tap((song) => this.media.setMetadata(song)),
+                        tap((song) =>
+                          this.title.setTitle(
+                            `${song.title} • ${song.artists[0].name} - MusicSource`
+                          )
+                        )
                       )
                     ),
                     concatMap(() => (playing ? this.audio.resume() : EMPTY))
@@ -164,6 +170,7 @@ export class PlayerEffects implements OnRunEffects {
     private audio: AudioService,
     private player: PlayerFacade,
     private entries: EntryFacade,
+    private songs: SongFacade,
     private media: MediaSessionService,
     private title: Title
   ) {

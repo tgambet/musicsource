@@ -58,7 +58,7 @@ import {
 } from '@app/scanner/store/scanner.actions';
 import { Router } from '@angular/router';
 import { Album, AlbumId, getAlbumId } from '@app/database/albums/album.model';
-import { Song } from '@app/database/songs/song.model';
+import { getSongId, Song } from '@app/database/songs/song.model';
 import { MatDialog } from '@angular/material/dialog';
 import { ScanComponent } from '@app/scanner/scan.component';
 import {
@@ -291,7 +291,7 @@ export class ScannerEffects2 implements OnRunEffects {
               };
 
               const song: Song = {
-                entryPath: fileEntry.path,
+                entryPath: getSongId(fileEntry.path),
                 folder: fileEntry.parent,
                 title: tags.title,
                 artists: artists.map((a) => ({ name: a.name, id: a.id })),
@@ -520,6 +520,7 @@ export class ScannerEffects2 implements OnRunEffects {
           return this.resizer
             .resize(blob, [
               { height: 32 },
+              { height: 40 },
               { height: 56 },
               { height: 160 },
               { height: 226 },

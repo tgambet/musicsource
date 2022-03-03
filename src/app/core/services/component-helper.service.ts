@@ -144,13 +144,13 @@ export class ComponentHelperService {
   }
 
   playNext(song: Song): void {
-    this.player.addToPlaylist([song], true);
+    this.player.addToPlaylist([song.entryPath], true);
     this.player.show();
     this.openSnack('Song will play next');
   }
 
   addToQueue(song: Song): void {
-    this.player.addToPlaylist([song]);
+    this.player.addToPlaylist([song.entryPath]);
     this.player.show();
     this.openSnack('Song added to queue');
   }
@@ -161,7 +161,7 @@ export class ComponentHelperService {
         first(),
         tap(([playlist, index]) => {
           const newPlaylist = [...playlist];
-          newPlaylist.splice(playlist.indexOf(song), 1);
+          newPlaylist.splice(playlist.indexOf(song.entryPath), 1);
           this.player.setPlaylist(
             newPlaylist,
             Math.min(index, newPlaylist.length - 1)
@@ -187,13 +187,16 @@ export class ComponentHelperService {
 
   shufflePlaySongs(songs: Song[]): void {
     this.player.setPlaying();
-    this.player.setPlaylist(songs);
+    this.player.setPlaylist(songs.map((s) => s.entryPath));
     this.player.shuffle();
     this.player.show();
   }
 
   addSongsToQueue(songs: Song[], next = false): void {
-    this.player.addToPlaylist(songs, next);
+    this.player.addToPlaylist(
+      songs.map((s) => s.entryPath),
+      next
+    );
     this.player.show();
     if (next) {
       this.openSnack('Songs will play next');

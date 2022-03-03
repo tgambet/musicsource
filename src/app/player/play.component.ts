@@ -9,11 +9,12 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Icons } from '@app/core/utils/icons.util';
 import { PlaylistListComponent } from '@app/player/playlist-list.component';
 import { PlayerFacade } from '@app/player/store/player.facade';
-import { concatMap, take, tap } from 'rxjs/operators';
+import { concatMap, filter, switchMap, take, tap } from 'rxjs/operators';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
-import { Song } from '@app/database/songs/song.model';
+import { Song, SongId } from '@app/database/songs/song.model';
 import { Observable } from 'rxjs';
 import { PictureFacade } from '@app/database/pictures/picture.facade';
+import { SongFacade } from '@app/database/songs/song.facade';
 
 @Component({
   selector: 'app-play',
@@ -89,11 +90,16 @@ export class PlayComponent implements OnInit {
   @ViewChild('playlistList')
   playlistList!: PlaylistListComponent;
 
-  currentSong$ = this.player.getCurrentSong$();
+  currentSong$ = this.player.getCurrentSong$().pipe(
+    filter((id): id is SongId => !!id),
+    switchMap((id) => this.songs.getByKey(id))
+  );
   currentIndex$ = this.player.getCurrentIndex$();
   currentCover$!: Observable<string | undefined>;
 
-  playlist$ = this.player.getPlaylist$();
+  playlist$ = this.player
+    .getPlaylist$()
+    .pipe(switchMap((ids) => this.songs.getByKeys(ids)));
 
   icons = Icons;
 
@@ -101,7 +107,8 @@ export class PlayComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private player: PlayerFacade,
-    private pictures: PictureFacade
+    private pictures: PictureFacade,
+    private songs: SongFacade
   ) {}
 
   @HostListener('click')
@@ -122,13 +129,17 @@ export class PlayComponent implements OnInit {
       .subscribe();
 
     this.currentCover$ = this.currentSong$.pipe(
-      concatMap((song) => this.pictures.getCover(song?.pictureId))
+      filter((s): s is Song => !!s),
+      concatMap((song) => this.pictures.getSongCover(song))
     );
   }
 
   drop(playlist: Song[], currentSong: Song, event: CdkDragDrop<Song[]>): void {
-    const newPlaylist = [...playlist];
+    const newPlaylist = [...playlist.map((s) => s.entryPath)];
     moveItemInArray(newPlaylist, event.previousIndex, event.currentIndex);
-    this.player.setPlaylist(newPlaylist, newPlaylist.indexOf(currentSong));
+    this.player.setPlaylist(
+      newPlaylist,
+      newPlaylist.indexOf(currentSong.entryPath)
+    );
   }
 }

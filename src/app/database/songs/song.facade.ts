@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
-import { Song } from '@app/database/songs/song.model';
+import { Song, SongId } from '@app/database/songs/song.model';
 import {
   selectSongAll,
   selectSongByAlbumKey,
@@ -30,7 +30,7 @@ export class SongFacade {
     return this.store.select(selectSongByKey(key));
   }
 
-  getByKeys(keys: string[]): Observable<Song[]> {
+  getByKeys(keys: SongId[]): Observable<Song[]> {
     return this.store.select(selectSongByKeys(keys));
   }
 
