@@ -1,14 +1,11 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  EventEmitter,
   Input,
   OnInit,
-  Output,
 } from '@angular/core';
 import { Icons } from '@app/core/utils';
 import { Album } from '@app/database/albums/album.model';
-import { MatMenuTrigger } from '@angular/material/menu';
 import { MenuItem } from '@app/core/components/menu.component';
 import { PlayerFacade } from '@app/player/store/player.facade';
 import { ComponentHelperService } from '@app/core/services/component-helper.service';
@@ -27,7 +24,6 @@ import { PictureFacade } from '@app/database/pictures/picture.facade';
       [title]="album.title"
       [menuItems]="menuItems"
       [coverRouterLink]="['/', 'album', album.id]"
-      (menuOpened)="menuOpened.emit($event)"
       (playlistPlayed)="albumPlayed()"
       tabindex="-1"
       [song]="song$ | async"
@@ -76,7 +72,6 @@ import { PictureFacade } from '@app/database/pictures/picture.facade';
 export class AlbumComponent implements OnInit {
   @Input() album!: Album;
   @Input() size: 'small' | 'large' = 'large';
-  @Output() menuOpened = new EventEmitter<MatMenuTrigger>();
   // @Output() update = new EventEmitter<Album>();
 
   icons = Icons;

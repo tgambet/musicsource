@@ -1,14 +1,12 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  Input,
-  Output,
-  EventEmitter,
   HostListener,
+  Input,
   ViewChild,
 } from '@angular/core';
 import { Icons } from '@app/core/utils';
-import { MatMenu, MatMenuTrigger } from '@angular/material/menu';
+import { MatMenu } from '@angular/material/menu';
 
 @Component({
   selector: 'app-menu',
@@ -17,7 +15,6 @@ import { MatMenu, MatMenuTrigger } from '@angular/material/menu';
       class="trigger"
       [matMenuTriggerFor]="menu"
       #trigger="matMenuTrigger"
-      (menuOpened)="menuOpened.emit(trigger)"
       (click)="$event.stopPropagation()"
       aria-label="menu"
       title="Other actions"
@@ -104,7 +101,6 @@ export class MenuComponent {
   @Input() menuItems!: MenuItem[] | null;
   @Input() disableRipple = false;
   @Input() rippleColor = 'rgba(255, 255, 255, 0.1)';
-  @Output() menuOpened = new EventEmitter<MatMenuTrigger>();
   icons = Icons;
 
   @HostListener('window:scroll')

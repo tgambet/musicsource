@@ -29,7 +29,6 @@
 //               *ngIf="item.t === 'album'"
 //               [album]="item"
 //               size="small"
-//               (menuOpened)="menuOpened($event)"
 //             ></app-album>
 //             <app-artist
 //               *ngIf="item.t === 'artist'"

@@ -8,7 +8,6 @@ import {
 } from '@angular/core';
 import { Artist } from '@app/database/artists/artist.model';
 import { Icons } from '@app/core/utils';
-import { MatMenuTrigger } from '@angular/material/menu';
 import { Observable } from 'rxjs';
 import { PictureFacade } from '@app/database/pictures/picture.facade';
 
@@ -49,7 +48,6 @@ import { PictureFacade } from '@app/database/pictures/picture.facade';
         [disableRipple]="true"
         [matMenuTriggerFor]="menu"
         #trigger="matMenuTrigger"
-        (menuOpened)="menuOpened.emit(trigger)"
         (click)="$event.stopPropagation()"
       >
         <app-icon [path]="icons.dotsVertical" [size]="24"></app-icon>
@@ -135,7 +133,6 @@ import { PictureFacade } from '@app/database/pictures/picture.facade';
 })
 export class ArtistListItemComponent implements OnInit {
   @Input() artist!: Artist;
-  @Output() menuOpened = new EventEmitter<MatMenuTrigger>();
   @Output() toggleLiked = new EventEmitter<void>();
   @Output() shufflePlay = new EventEmitter<void>();
 

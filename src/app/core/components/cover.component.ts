@@ -7,7 +7,6 @@ import {
 } from '@angular/core';
 import { Icons } from '@app/core/utils';
 import { MenuItem } from './menu.component';
-import { MatMenuTrigger } from '@angular/material/menu';
 import { Song } from '@app/database/songs/song.model';
 
 @Component({
@@ -28,7 +27,6 @@ import { Song } from '@app/database/songs/song.model';
       [triggerIcon]="menuTriggerIcon"
       [menuItems]="menuItems"
       rippleColor="rgba(0,0,0,0.2)"
-      (menuOpened)="menuOpened.emit($event)"
     >
     </app-menu>
     <a
@@ -139,6 +137,5 @@ export class CoverComponent {
   @Input() coverRouterLink!: any[] | string;
   @Input() menuItems!: MenuItem[];
   @Input() menuTriggerIcon = Icons.dotsVertical;
-  @Output() menuOpened = new EventEmitter<MatMenuTrigger>();
   @Output() playlistPlayed = new EventEmitter<void>();
 }
