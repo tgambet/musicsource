@@ -4,9 +4,11 @@ import {
   Input,
   Output,
   EventEmitter,
+  HostListener,
+  ViewChild,
 } from '@angular/core';
 import { Icons } from '@app/core/utils';
-import { MatMenuTrigger } from '@angular/material/menu';
+import { MatMenu, MatMenuTrigger } from '@angular/material/menu';
 
 @Component({
   selector: 'app-menu',
@@ -27,7 +29,7 @@ import { MatMenuTrigger } from '@angular/material/menu';
     >
       <app-icon [path]="triggerIcon" [size]="24"></app-icon>
     </button>
-    <mat-menu #menu="matMenu" [hasBackdrop]="hasBackdrop">
+    <mat-menu #menu="matMenu" [overlapTrigger]="true">
       <ng-template matMenuContent>
         <ng-container *ngFor="let item of menuItems">
           <button
@@ -93,14 +95,22 @@ import { MatMenuTrigger } from '@angular/material/menu';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MenuComponent {
+  @ViewChild(MatMenu)
+  matMenu!: MatMenu;
+
   @Input() disabled = false;
-  @Input() hasBackdrop = false;
+  @Input() hasBackdrop = true;
   @Input() triggerIcon = Icons.dotsVertical;
   @Input() menuItems!: MenuItem[] | null;
   @Input() disableRipple = false;
   @Input() rippleColor = 'rgba(255, 255, 255, 0.1)';
   @Output() menuOpened = new EventEmitter<MatMenuTrigger>();
   icons = Icons;
+
+  @HostListener('window:scroll')
+  closeMenu(): void {
+    this.matMenu.closed.emit();
+  }
 }
 
 export interface MenuItem {

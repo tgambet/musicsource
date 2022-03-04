@@ -1,14 +1,8 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  HostListener,
-  Input,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { Song } from '@app/database/songs/song.model';
 import { Icons } from '@app/core/utils/icons.util';
 import { PlayerFacade } from '@app/player/store/player.facade';
 import { map } from 'rxjs/operators';
-import { WithTrigger } from '@app/core/classes/with-trigger';
 
 @Component({
   selector: 'app-song-list',
@@ -18,7 +12,6 @@ import { WithTrigger } from '@app/core/classes/with-trigger';
       [song]="song"
       [playlist]="songs"
       cdkMonitorSubtreeFocus
-      (menuOpened)="menuOpened($event)"
       [class.selected]="(currentSongPath$ | async) === song.entryPath"
     ></app-song-list-item>
   `,
@@ -41,7 +34,7 @@ import { WithTrigger } from '@app/core/classes/with-trigger';
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SongListComponent extends WithTrigger {
+export class SongListComponent {
   @Input() songs!: Song[];
 
   icons = Icons;
@@ -50,15 +43,7 @@ export class SongListComponent extends WithTrigger {
     .getCurrentSong$()
     .pipe(map((entryPath) => entryPath));
 
-  constructor(private player: PlayerFacade) {
-    super();
-  }
-
-  @HostListener('window:scroll')
-  @HostListener('click')
-  closeMenu(): void {
-    super.closeMenu();
-  }
+  constructor(private player: PlayerFacade) {}
 
   trackBy(index: number, song: Song): string {
     return song.entryPath;

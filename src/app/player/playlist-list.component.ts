@@ -1,11 +1,5 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  HostListener,
-  Input,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { Song } from '@app/database/songs/song.model';
-import { WithTrigger } from '@app/core/classes/with-trigger';
 
 @Component({
   selector: 'app-playlist-list',
@@ -17,7 +11,6 @@ import { WithTrigger } from '@app/core/classes/with-trigger';
       *ngFor="let song of playlist; trackBy: trackBy; let i = index"
       [song]="song"
       [playlist]="playlist"
-      (menuOpened)="menuOpened($event)"
       [class.selected]="
         song.entryPath === currentSong?.entryPath && currentIndex === i
       "
@@ -67,16 +60,10 @@ import { WithTrigger } from '@app/core/classes/with-trigger';
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class PlaylistListComponent extends WithTrigger {
+export class PlaylistListComponent {
   @Input() playlist!: Song[];
   @Input() currentSong!: Song | null;
   @Input() currentIndex!: number | null;
-
-  @HostListener('scroll')
-  @HostListener('click')
-  closeMenu(): void {
-    super.closeMenu();
-  }
 
   trackBy(index: number, song: Song): string {
     return song.entryPath;

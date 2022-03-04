@@ -1,7 +1,6 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  HostListener,
   OnInit,
   TemplateRef,
   ViewChild,
@@ -21,7 +20,6 @@ import { filter, map } from 'rxjs/operators';
 import { Icons } from '@app/core/utils/icons.util';
 import { ActivatedRoute } from '@angular/router';
 import { PlayerFacade } from '@app/player/store/player.facade';
-import { WithTrigger } from '@app/core/classes/with-trigger';
 import { SongFacade } from '@app/database/songs/song.facade';
 import { ScrollerService } from '@app/main/scroller.service';
 import { SongIndex } from '@app/database/songs/song.reducer';
@@ -32,7 +30,6 @@ import { SongIndex } from '@app/database/songs/song.reducer';
     <app-library-content
       [sortOptions]="sortOptions"
       [selectedSortOption]="selectedSortOption"
-      (click)="closeMenu()"
     >
       <div class="songs">
         <div [style.height.px]="top$ | async" class="filler"></div>
@@ -41,7 +38,6 @@ import { SongIndex } from '@app/database/songs/song.reducer';
             [song]="song"
             [playlist]="[song]"
             cdkMonitorSubtreeFocus
-            (menuOpened)="menuOpened($event)"
             [class.selected]="(currentSongPath$ | async) === song.entryPath"
           ></app-song-list-item>
         </ng-container>
@@ -104,7 +100,7 @@ import { SongIndex } from '@app/database/songs/song.reducer';
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class LibrarySongsComponent extends WithTrigger implements OnInit {
+export class LibrarySongsComponent implements OnInit {
   @ViewChild('addToPlaylist', { static: true })
   addToPlaylist!: TemplateRef<any>;
 
@@ -141,21 +137,7 @@ export class LibrarySongsComponent extends WithTrigger implements OnInit {
     private player: PlayerFacade,
     private songs: SongFacade,
     private scroller: ScrollerService
-  ) {
-    super();
-  }
-
-  @HostListener('window:scroll')
-  update(): void {
-    // if (
-    //   window.innerHeight + window.scrollY >= document.body.scrollHeight - 64 &&
-    //   this.loadMore &&
-    //   this.sort
-    // ) {
-    //   this.pushSongs(this.sort.index, this.sort.direction, this.sort.likes);
-    // }
-    super.closeMenu();
-  }
+  ) {}
 
   ngOnInit(): void {
     // this.subscription.add(
