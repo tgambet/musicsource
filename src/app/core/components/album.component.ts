@@ -197,7 +197,10 @@ export class AlbumComponent implements OnInit {
         click: () => {
           this.songs
             .getByAlbumKey(this.album.id)
-            .pipe(tap((tracks) => this.helper.addSongsToPlaylist(tracks || [])))
+            .pipe(
+              first(),
+              tap((tracks) => this.helper.addSongsToPlaylist(tracks || []))
+            )
             .subscribe();
         },
       },
