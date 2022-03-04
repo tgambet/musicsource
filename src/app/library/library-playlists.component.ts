@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { SelectOption } from '@app/core/components/select.component';
 import { Icons } from '@app/core/utils/icons.util';
-import { delay, map, switchMap, tap } from 'rxjs/operators';
+import { delay, map, switchMap } from 'rxjs/operators';
 import { Playlist } from '@app/database/playlists/playlist.model';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
@@ -57,7 +57,7 @@ import { PlaylistFacade } from '@app/database/playlists/playlist.facade';
         <ng-container
           *ngFor="let playlist of playlists$ | async; trackBy: trackBy"
         >
-          <div class="playlist" *ngIf="!likes || !!playlist.likedOn">
+          <div class="playlist">
             <app-playlist [playlist]="playlist"></app-playlist>
           </div>
         </ng-container>
@@ -107,8 +107,6 @@ export class LibraryPlaylistsComponent implements OnInit {
 
   sort!: any;
 
-  likes?: boolean;
-
   constructor(
     // private library: LibraryFacade,
     private playlists: PlaylistFacade,
@@ -124,8 +122,7 @@ export class LibraryPlaylistsComponent implements OnInit {
           ? 'next'
           : 'prev') as IDBCursorDirection,
         likes: params.get('likes') === '1',
-      })),
-      tap((sort) => (this.likes = sort.likes))
+      }))
     );
 
     this.playlists$ = sort$.pipe(

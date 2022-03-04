@@ -25,12 +25,12 @@ import { ScrollerService } from '@app/main/scroller.service';
           [selected]="selectedSortOption"
           (selectionChange)="this.sortValue = $event; sort()"
         ></app-select>
-        <mat-slide-toggle
-          [checked]="likes"
-          (change)="this.likes = $event.checked; sort()"
-        >
-          Liked only
-        </mat-slide-toggle>
+        <!--        <mat-slide-toggle-->
+        <!--          [checked]="likes"-->
+        <!--          (change)="this.likes = $event.checked; sort()"-->
+        <!--        >-->
+        <!--          Liked only-->
+        <!--        </mat-slide-toggle>-->
       </app-container>
     </div>
     <app-container>
@@ -88,7 +88,6 @@ export class LibraryContentComponent implements OnInit, OnDestroy {
   subscription = new Subscription();
 
   sortValue!: string;
-  likes = false;
 
   constructor(
     private router: Router,
@@ -110,7 +109,6 @@ export class LibraryContentComponent implements OnInit, OnDestroy {
                 ) || this.sortOptions[0])
           ),
           tap(() => (this.sortValue = this.selectedSortOption.value)),
-          tap((params) => (this.likes = params.get('likes') === '1')),
           tap(() => this.cdr.markForCheck())
         )
         .subscribe()
@@ -126,7 +124,7 @@ export class LibraryContentComponent implements OnInit, OnDestroy {
   async sort(): Promise<void> {
     const [sort, dir] = this.sortValue.split('_');
     await this.router.navigate([], {
-      queryParams: { sort, dir, likes: this.likes ? '1' : '0' },
+      queryParams: { sort, dir },
       preserveFragment: true,
     });
   }

@@ -1,4 +1,10 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
+import { MatTabNav } from '@angular/material/tabs';
 
 @Component({
   selector: 'app-library',
@@ -8,7 +14,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
     </app-container>
     <div class="container">
       <app-container>
-        <nav mat-tab-nav-bar color="accent">
+        <nav mat-tab-nav-bar #navBar="matTabNavBar" color="accent">
           <a
             mat-tab-link
             disableRipple
@@ -18,8 +24,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
             queryParamsHandling="merge"
             [queryParams]="{
               sort: null,
-              dir: null,
-              likes: null
+              dir: null
             }"
             #rla1="routerLinkActive"
             [active]="rla1.isActive"
@@ -35,8 +40,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
             queryParamsHandling="merge"
             [queryParams]="{
               sort: null,
-              dir: null,
-              likes: null
+              dir: null
             }"
             #rla2="routerLinkActive"
             [active]="rla2.isActive"
@@ -52,8 +56,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
             queryParamsHandling="merge"
             [queryParams]="{
               sort: null,
-              dir: null,
-              likes: null
+              dir: null
             }"
             #rla3="routerLinkActive"
             [active]="rla3.isActive"
@@ -69,13 +72,28 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
             queryParamsHandling="merge"
             [queryParams]="{
               sort: null,
-              dir: null,
-              likes: null
+              dir: null
             }"
             #rla4="routerLinkActive"
             [active]="rla4.isActive"
           >
             Artists
+          </a>
+          <a
+            mat-tab-link
+            disableRipple
+            routerLink="likes"
+            fragment="top"
+            routerLinkActive="active"
+            queryParamsHandling="merge"
+            [queryParams]="{
+              sort: null,
+              dir: null
+            }"
+            #rla5="routerLinkActive"
+            [active]="rla5.isActive"
+          >
+            Likes
           </a>
         </nav>
       </app-container>
@@ -121,4 +139,12 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class LibraryComponent {}
+export class LibraryComponent implements OnInit {
+  @ViewChild(MatTabNav)
+  navBar!: MatTabNav;
+
+  ngOnInit() {
+    // eslint-disable-next-line no-underscore-dangle
+    setTimeout(() => this.navBar._alignInkBarToSelectedTab(), 0);
+  }
+}

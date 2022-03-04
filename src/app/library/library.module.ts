@@ -7,6 +7,7 @@ import { LibraryPlaylistsComponent } from '@app/library/library-playlists.compon
 import { LibrarySongsComponent } from '@app/library/library-songs.component';
 import { CoreModule } from '@app/core/core.module';
 import { RouterModule, Routes } from '@angular/router';
+import { LibraryLikesComponent } from '@app/library/library-likes.component';
 
 const routes: Routes = [
   {
@@ -19,6 +20,7 @@ const routes: Routes = [
       { path: 'albums', component: LibraryAlbumsComponent },
       { path: 'artists', component: LibraryArtistsComponent },
       { path: 'songs', component: LibrarySongsComponent },
+      { path: 'likes', component: LibraryLikesComponent },
     ],
   },
 ];
@@ -31,6 +33,7 @@ const routes: Routes = [
     LibraryContentComponent,
     LibraryPlaylistsComponent,
     LibrarySongsComponent,
+    LibraryLikesComponent,
   ],
   imports: [CoreModule, RouterModule.forChild(routes)],
 })

@@ -8,7 +8,7 @@ import { SelectOption } from '@app/core/components/select.component';
 import { ActivatedRoute } from '@angular/router';
 import { Observable, of } from 'rxjs';
 import { Artist } from '@app/database/artists/artist.model';
-import { map, switchMap, tap } from 'rxjs/operators';
+import { map, switchMap } from 'rxjs/operators';
 import { Icons } from '@app/core/utils/icons.util';
 import { ComponentHelperService } from '@app/core/services/component-helper.service';
 import { PlayerFacade } from '@app/player/store/player.facade';
@@ -74,8 +74,6 @@ export class LibraryArtistsComponent implements OnInit {
   ];
   selectedSortOption: SelectOption = this.sortOptions[0];
 
-  likes = false;
-
   constructor(
     private player: PlayerFacade,
     private route: ActivatedRoute,
@@ -93,8 +91,7 @@ export class LibraryArtistsComponent implements OnInit {
           ? 'next'
           : 'prev') as IDBCursorDirection,
         likes: params.get('likes') === '1',
-      })),
-      tap((sort) => (this.likes = sort.likes))
+      }))
     );
 
     // this.artists$ = sort$.pipe(
