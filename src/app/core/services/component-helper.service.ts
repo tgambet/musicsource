@@ -8,6 +8,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { PlayerFacade } from '@app/player/store/player.facade';
 import { PlaylistFacade } from '@app/database/playlists/playlist.facade';
+import { NoopScrollStrategy } from '@angular/cdk/overlay';
 
 @Injectable()
 export class ComponentHelperService {
@@ -72,6 +73,7 @@ export class ComponentHelperService {
       maxHeight: '80%',
       height: 'auto',
       panelClass: 'playlists-dialog',
+      scrollStrategy: new NoopScrollStrategy(),
     });
 
     dialog
@@ -83,6 +85,7 @@ export class ComponentHelperService {
           }
           if (result === true) {
             // TODO Redirect to new playlist and add song
+            return;
           } else {
             const snack = this.snack.open(`Added to ${result.title}`, 'VIEW', {
               panelClass: 'snack-top', // TODO
