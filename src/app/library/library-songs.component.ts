@@ -166,7 +166,6 @@ export class LibrarySongsComponent implements OnInit {
         direction: ((params.get('dir') || 'desc') === 'asc'
           ? 'next'
           : 'prev') as IDBCursorDirection,
-        likes: params.get('likes') === '1',
       }))
     );
     const songs$ = sort$.pipe(

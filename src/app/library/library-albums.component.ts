@@ -8,7 +8,7 @@ import {
 } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { Album } from '@app/database/albums/album.model';
-import { map, switchMap, tap } from 'rxjs/operators';
+import { map, switchMap } from 'rxjs/operators';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SelectOption } from '@app/core/components/select.component';
 import { AlbumFacade } from '@app/database/albums/album.facade';
@@ -22,7 +22,7 @@ import { AlbumFacade } from '@app/database/albums/album.facade';
     >
       <div class="albums">
         <ng-container *ngFor="let album of albums$ | async; trackBy: trackBy">
-          <div class="album" *ngIf="!likes || !!album.likedOn">
+          <div class="album">
             <app-album [album]="album" size="small"></app-album>
           </div>
         </ng-container>
@@ -64,8 +64,6 @@ export class LibraryAlbumsComponent
   ];
   selectedSortOption: SelectOption = this.sortOptions[0];
 
-  likes?: boolean;
-
   constructor(
     private router: Router,
     private route: ActivatedRoute,
@@ -99,8 +97,7 @@ export class LibraryAlbumsComponent
           ? 'next'
           : 'prev') as IDBCursorDirection,
         likes: params.get('likes') === '1',
-      })),
-      tap((sort) => (this.likes = sort.likes))
+      }))
     );
 
     this.albums$ = sort$.pipe(
