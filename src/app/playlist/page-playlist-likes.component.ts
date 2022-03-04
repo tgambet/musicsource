@@ -15,7 +15,7 @@ import { MenuItem } from '@app/core/components/menu.component';
 @Component({
   selector: 'app-page-playlist-likes',
   template: `
-    <header (click)="songList?.closeMenu()">
+    <header>
       <app-container-page class="header-container">
         <div class="info">
           <div class="cover" style="--aspect-ratio:1">

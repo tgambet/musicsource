@@ -4,7 +4,6 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
-  HostListener,
   OnInit,
 } from '@angular/core';
 import { Observable, of } from 'rxjs';
@@ -12,7 +11,6 @@ import { Album } from '@app/database/albums/album.model';
 import { map, switchMap, tap } from 'rxjs/operators';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SelectOption } from '@app/core/components/select.component';
-import { WithTrigger } from '@app/core/classes/with-trigger';
 import { AlbumFacade } from '@app/database/albums/album.facade';
 
 @Component({
@@ -25,11 +23,7 @@ import { AlbumFacade } from '@app/database/albums/album.facade';
       <div class="albums">
         <ng-container *ngFor="let album of albums$ | async; trackBy: trackBy">
           <div class="album" *ngIf="!likes || !!album.likedOn">
-            <app-album
-              [album]="album"
-              size="small"
-              (menuOpened)="menuOpened($event)"
-            ></app-album>
+            <app-album [album]="album" size="small"></app-album>
           </div>
         </ng-container>
       </div>
@@ -57,7 +51,6 @@ import { AlbumFacade } from '@app/database/albums/album.facade';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LibraryAlbumsComponent
-  extends WithTrigger
   implements OnInit, AfterContentInit, AfterViewInit
 {
   albums$!: Observable<Album[]>;
@@ -78,16 +71,7 @@ export class LibraryAlbumsComponent
     private route: ActivatedRoute,
     private cdr: ChangeDetectorRef,
     private albums: AlbumFacade
-  ) {
-    super();
-    // console.log(new Date().getTime());
-  }
-
-  @HostListener('window:scroll')
-  @HostListener('click')
-  closeMenu(): void {
-    super.closeMenu();
-  }
+  ) {}
 
   ngAfterViewInit(): void {
     // console.log(new Date().getTime());

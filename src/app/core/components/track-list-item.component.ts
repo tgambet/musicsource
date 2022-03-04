@@ -51,7 +51,7 @@ import { SongFacade } from '@app/database/songs/song.facade';
       </button>
     </span>
     <span class="duration">{{ song.duration | duration }}</span>
-    <mat-menu #menu="matMenu" [hasBackdrop]="false" [overlapTrigger]="false">
+    <mat-menu #menu="matMenu" [overlapTrigger]="true">
       <ng-template matMenuContent>
         <button mat-menu-item (click)="playNext(song)">
           <app-icon [path]="icons.playlistPlay"></app-icon>

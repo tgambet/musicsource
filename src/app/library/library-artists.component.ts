@@ -2,7 +2,6 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
-  HostListener,
   OnInit,
 } from '@angular/core';
 import { SelectOption } from '@app/core/components/select.component';
@@ -14,7 +13,6 @@ import { Icons } from '@app/core/utils/icons.util';
 import { ComponentHelperService } from '@app/core/services/component-helper.service';
 import { PlayerFacade } from '@app/player/store/player.facade';
 import { HistoryService } from '@app/core/services/history.service';
-import { WithTrigger } from '@app/core/classes/with-trigger';
 import { ArtistFacade } from '@app/database/artists/artist.facade';
 
 @Component({
@@ -33,7 +31,6 @@ import { ArtistFacade } from '@app/database/artists/artist.facade';
           >-->
           <app-artist-list-item
             [artist]="artist"
-            (menuOpened)="menuOpened($event)"
             (shufflePlay)="shufflePlay()"
             (toggleLiked)="toggleLiked(artist)"
             cdkMonitorSubtreeFocus
@@ -65,7 +62,7 @@ import { ArtistFacade } from '@app/database/artists/artist.facade';
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class LibraryArtistsComponent extends WithTrigger implements OnInit {
+export class LibraryArtistsComponent implements OnInit {
   icons = Icons;
 
   artists$!: Observable<Artist[]>;
@@ -86,15 +83,7 @@ export class LibraryArtistsComponent extends WithTrigger implements OnInit {
     private cdr: ChangeDetectorRef,
     private history: HistoryService,
     private artists: ArtistFacade
-  ) {
-    super();
-  }
-
-  @HostListener('window:scroll')
-  @HostListener('click')
-  closeMenu(): void {
-    super.closeMenu();
-  }
+  ) {}
 
   ngOnInit(): void {
     const sort$ = this.route.queryParamMap.pipe(

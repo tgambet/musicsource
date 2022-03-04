@@ -1,9 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  HostListener,
-  OnInit,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import {
   groupBy,
@@ -21,7 +16,6 @@ import { Icons } from '@app/core/utils/icons.util';
 import { PlayerFacade } from '@app/player/store/player.facade';
 import { MenuItem } from '@app/core/components/menu.component';
 import { ComponentHelperService } from '@app/core/services/component-helper.service';
-import { WithTrigger } from '@app/core/classes/with-trigger';
 import { AlbumFacade } from '@app/database/albums/album.facade';
 import { PictureFacade } from '@app/database/pictures/picture.facade';
 import { SongFacade } from '@app/database/songs/song.facade';
@@ -95,7 +89,6 @@ import { SongFacade } from '@app/database/songs/song.facade';
                 *ngFor="let song of disk.songs; trackBy: trackBy"
                 [trackNumber]="song.tags.track.no"
                 [class.selected]="(currentSongPath$ | async) === song.entryPath"
-                (menuOpened)="menuOpened($event)"
                 cdkMonitorSubtreeFocus
               ></app-track-list-item>
             </div>
@@ -125,7 +118,7 @@ import { SongFacade } from '@app/database/songs/song.facade';
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class PageAlbumComponent extends WithTrigger implements OnInit {
+export class PageAlbumComponent implements OnInit {
   album$!: Observable<Album>;
 
   songs$!: Observable<Song[]>;
@@ -161,15 +154,7 @@ export class PageAlbumComponent extends WithTrigger implements OnInit {
     private albums: AlbumFacade,
     private pictures: PictureFacade,
     private songs: SongFacade
-  ) {
-    super();
-  }
-
-  @HostListener('window:scroll')
-  @HostListener('click')
-  closeMenu(): void {
-    super.closeMenu();
-  }
+  ) {}
 
   trackBy(index: number, song: Song): string {
     return song.entryPath;

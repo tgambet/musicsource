@@ -1,7 +1,6 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  HostListener,
   OnInit,
   ViewChild,
 } from '@angular/core';
@@ -110,11 +109,6 @@ export class PlayComponent implements OnInit {
     private pictures: PictureFacade,
     private songs: SongFacade
   ) {}
-
-  @HostListener('click')
-  closeMenu(): void {
-    this.playlistList.closeMenu();
-  }
 
   ngOnInit(): void {
     this.playlist$

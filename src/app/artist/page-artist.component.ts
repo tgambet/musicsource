@@ -2,7 +2,6 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
-  HostListener,
   OnInit,
 } from '@angular/core';
 import { Icons } from '@app/core/utils/icons.util';
@@ -13,7 +12,6 @@ import { Album } from '@app/database/albums/album.model';
 import { Song } from '@app/database/songs/song.model';
 import { ComponentHelperService } from '@app/core/services/component-helper.service';
 import { HistoryService } from '@app/core/services/history.service';
-import { WithTrigger } from '@app/core/classes/with-trigger';
 import { ArtistFacade } from '@app/database/artists/artist.facade';
 import { AlbumFacade } from '@app/database/albums/album.facade';
 import { PictureFacade } from '@app/database/pictures/picture.facade';
@@ -64,7 +62,6 @@ import { PictureFacade } from '@app/database/pictures/picture.facade';
               class="album"
               *ngFor="let album of albums"
               [album]="album"
-              (menuOpened)="menuOpened($event)"
             >
             </app-album>
           </app-h-list>
@@ -77,7 +74,6 @@ import { PictureFacade } from '@app/database/pictures/picture.facade';
               class="album"
               *ngFor="let album of albums"
               [album]="album"
-              (menuOpened)="menuOpened($event)"
             >
             </app-album>
           </app-h-list>
@@ -172,7 +168,7 @@ import { PictureFacade } from '@app/database/pictures/picture.facade';
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class PageArtistComponent extends WithTrigger implements OnInit {
+export class PageArtistComponent implements OnInit {
   icons = Icons;
 
   artist$!: Observable<Artist>;
@@ -189,15 +185,7 @@ export class PageArtistComponent extends WithTrigger implements OnInit {
     private artists: ArtistFacade,
     private pictures: PictureFacade,
     private albums: AlbumFacade
-  ) {
-    super();
-  }
-
-  @HostListener('click')
-  @HostListener('window:scroll')
-  closeMenu(): void {
-    super.closeMenu();
-  }
+  ) {}
 
   ngOnInit(): void {
     const artistKey = this.route.snapshot.data.info as ArtistId;
