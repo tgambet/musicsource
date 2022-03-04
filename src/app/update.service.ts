@@ -1,7 +1,7 @@
 import { ApplicationRef, Inject, Injectable } from '@angular/core';
-import { SwUpdate } from '@angular/service-worker';
+import { SwUpdate, VersionReadyEvent } from '@angular/service-worker';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { concatMap, first, tap } from 'rxjs/operators';
+import { concatMap, filter, first, tap } from 'rxjs/operators';
 import { interval } from 'rxjs';
 import { DOCUMENT } from '@angular/common';
 
@@ -15,8 +15,9 @@ export class UpdateService {
   ) {}
 
   register(): void {
-    this.updates.available
+    this.updates.versionUpdates
       .pipe(
+        filter((evt): evt is VersionReadyEvent => evt.type === 'VERSION_READY'),
         concatMap(() =>
           this.snackBar
             .open('A new version is available.', 'Reload', {
