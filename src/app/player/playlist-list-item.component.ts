@@ -1,14 +1,11 @@
 import {
-  Component,
   ChangeDetectionStrategy,
+  Component,
   Input,
-  Output,
-  EventEmitter,
   OnInit,
 } from '@angular/core';
 import { Icons } from '@app/core/utils/icons.util';
 import { Song } from '@app/database/songs/song.model';
-import { MatMenuTrigger } from '@angular/material/menu';
 import { ComponentHelperService } from '@app/core/services/component-helper.service';
 import { Observable } from 'rxjs';
 import { PictureFacade } from '@app/database/pictures/picture.facade';
@@ -48,7 +45,7 @@ import { getArtistId } from '@app/database/artists/artist.model';
         #trigger="matMenuTrigger"
         [matMenuTriggerFor]="menu"
         [matMenuTriggerData]="{ song: song }"
-        (click)="menuOpened.emit(trigger); $event.stopPropagation()"
+        (click)="$event.stopPropagation()"
       >
         <app-icon [path]="icons.dotsVertical" [size]="24"></app-icon>
       </button>
@@ -171,8 +168,6 @@ import { getArtistId } from '@app/database/artists/artist.model';
 export class PlaylistListItemComponent implements OnInit {
   @Input() song!: Song;
   @Input() playlist!: Song[];
-
-  @Output() menuOpened = new EventEmitter<MatMenuTrigger>();
 
   cover$!: Observable<string | undefined>;
 

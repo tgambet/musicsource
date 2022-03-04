@@ -56,7 +56,6 @@ import { SongIndex } from '@app/database/songs/song.reducer';
         <!--              [playlist]="[song]"-->
         <!--              *ngIf="!sort.likes || !!song.likedOn"-->
         <!--              cdkMonitorSubtreeFocus-->
-        <!--              (menuOpened)="menuOpened($event)"-->
         <!--              [class.selected]="(currentSongPath$ | async) === song.entryPath"-->
         <!--            ></app-song-list-item>-->
         <!--          </ng-container>-->
