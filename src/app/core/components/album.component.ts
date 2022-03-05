@@ -46,7 +46,7 @@ import { HelperFacade } from '@app/helper/helper.facade';
           text: album.albumArtist.name,
           routerLink: ['/', 'artist', album.albumArtist.id]
         },
-        album.year ? album.year.toString(10) : ''
+        album.year?.toString(10) ?? ''
       ]"
       [size]="size"
     ></app-label>
