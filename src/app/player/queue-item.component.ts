@@ -5,7 +5,7 @@ import {
   OnInit,
 } from '@angular/core';
 import { Icons } from '@app/core/utils/icons.util';
-import { Song } from '@app/database/songs/song.model';
+import { Song, SongId } from '@app/database/songs/song.model';
 import { Observable } from 'rxjs';
 import { PictureFacade } from '@app/database/pictures/picture.facade';
 import { SongFacade } from '@app/database/songs/song.facade';
@@ -13,14 +13,14 @@ import { getArtistId } from '@app/database/artists/artist.model';
 import { HelperFacade } from '@app/helper/helper.facade';
 
 @Component({
-  selector: 'app-playlist-list-item',
+  selector: 'app-queue-item',
   template: `
     <div class="cover" style="--aspect-ratio:1">
       <img *ngIf="cover$ | async as cover" [src]="cover" alt="cover" />
       <app-player-button
         size="small"
-        [song]="song"
-        [playlist]="playlist"
+        [index]="queue.indexOf(song.entryPath)"
+        [queue]="queue"
       ></app-player-button>
     </div>
     <div class="meta">
@@ -165,9 +165,9 @@ import { HelperFacade } from '@app/helper/helper.facade';
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class PlaylistListItemComponent implements OnInit {
+export class QueueItemComponent implements OnInit {
   @Input() song!: Song;
-  @Input() playlist!: Song[];
+  @Input() queue!: SongId[];
 
   cover$!: Observable<string | undefined>;
 
@@ -188,19 +188,19 @@ export class PlaylistListItemComponent implements OnInit {
   }
 
   playNext(song: Song): void {
-    this.helper.addSongToQueue(song, true);
+    this.helper.addSongToQueue(song.entryPath, true);
   }
 
   addToQueue(song: Song): void {
-    this.helper.addSongToQueue(song, false);
+    this.helper.addSongToQueue(song.entryPath, false);
   }
 
   toggleLiked(song: Song): void {
-    this.songs.toggleLiked(song); // .subscribe(() => this.cdr.markForCheck());
+    this.songs.toggleLiked(song);
   }
 
   addToPlaylist(song: Song): void {
-    this.helper.addSongsToPlaylist([song]);
+    this.helper.addSongsToPlaylist([song.entryPath]);
   }
 
   removeFromQueue(song: Song): void {

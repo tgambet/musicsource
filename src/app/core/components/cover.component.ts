@@ -7,7 +7,7 @@ import {
 } from '@angular/core';
 import { Icons } from '@app/core/utils';
 import { MenuItem } from './menu.component';
-import { Song } from '@app/database/songs/song.model';
+import { SongId } from '@app/database/songs/song.model';
 
 @Component({
   selector: 'app-cover',
@@ -15,12 +15,12 @@ import { Song } from '@app/database/songs/song.model';
     <app-player-button
       cdkMonitorSubtreeFocus
       size="small"
-      [song]="song"
-      [playlist]="playlist"
-      [playlistMode]="true"
+      [index]="startIndex"
+      [queue]="queue"
+      [currentIfMatchAllQueue]="true"
       (playlistPlayed)="playlistPlayed.emit()"
       spinnerPosition="outside"
-      *ngIf="song && playlist"
+      *ngIf="queue && queue.length > 0"
     ></app-player-button>
     <app-menu
       cdkMonitorSubtreeFocus
@@ -131,8 +131,8 @@ import { Song } from '@app/database/songs/song.model';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CoverComponent {
-  @Input() song!: Song | null | undefined;
-  @Input() playlist!: Song[] | null | undefined;
+  @Input() startIndex = 0;
+  @Input() queue!: SongId[] | null;
   @Input() title!: string;
   @Input() coverRouterLink!: any[] | string;
   @Input() menuItems!: MenuItem[] | null;

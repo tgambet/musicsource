@@ -29,29 +29,29 @@ export const playerReducer: ActionReducer<PlayerState> = createReducer(
   })),
   on(setQueue, (state, { queue, currentIndex }) => ({
     ...state,
-    playlist: queue,
+    queue,
     currentIndex,
   })),
   on(addToQueue, (state, { queue, next }) => {
     const index = state.currentIndex;
-    const newPlaylist = [...state.playlist];
+    const newQueue = [...state.queue];
     if (next) {
-      newPlaylist.splice(index + 1, 0, ...queue); // Mutation
+      newQueue.splice(index + 1, 0, ...queue); // Mutation
     } else {
-      newPlaylist.push(...queue);
+      newQueue.push(...queue);
     }
     return {
       ...state,
-      playlist: newPlaylist,
+      queue: newQueue,
     };
   }),
   on(setCurrentIndex, (state, { index }) => ({
     ...state,
-    currentIndex: Math.min(state.playlist.length - 1, index),
+    currentIndex: Math.min(state.queue.length - 1, index),
   })),
   on(setNextIndex, (state) => ({
     ...state,
-    currentIndex: Math.min(state.playlist.length - 1, state.currentIndex + 1),
+    currentIndex: Math.min(state.queue.length - 1, state.currentIndex + 1),
   })),
   on(setPrevIndex, (state) => ({
     ...state,
@@ -71,7 +71,7 @@ export const playerReducer: ActionReducer<PlayerState> = createReducer(
   })),
   on(shuffle, (state) => ({
     ...state,
-    playlist: shuffleArray(state.playlist),
+    queue: shuffleArray(state.queue),
   })),
   on(toggleMute, (state) => ({
     ...state,

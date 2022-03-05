@@ -12,9 +12,10 @@ import {
 } from '@app/database/playlists/playlist.selectors';
 import {
   addPlaylist,
+  deletePlaylist,
   updatePlaylist,
 } from '@app/database/playlists/playlist.actions';
-import { Song } from '@app/database/songs/song.model';
+import { SongId } from '@app/database/songs/song.model';
 import { IdUpdate } from '@app/core/utils';
 
 @Injectable()
@@ -47,9 +48,9 @@ export class PlaylistFacade {
     this.store.dispatch(addPlaylist({ playlist }));
   }
 
-  addSongsTo(playlist: Playlist, songs: Song[]): void {
+  addSongsTo(playlist: Playlist, songs: SongId[]): void {
     const changes = {
-      songs: [...songs.map((s) => s.entryPath), ...playlist.songs],
+      songs: [...songs, ...playlist.songs],
     };
     this.update({ key: playlist.id, changes });
   }
@@ -59,5 +60,9 @@ export class PlaylistFacade {
       likedOn: !!playlist.likedOn ? undefined : new Date().getTime(),
     };
     this.update({ key: playlist.id, changes });
+  }
+
+  delete(id: PlaylistId): void {
+    this.store.dispatch(deletePlaylist({ id }));
   }
 }

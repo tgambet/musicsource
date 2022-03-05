@@ -8,9 +8,9 @@ export const selectShow = createSelector(
   (state) => state.show
 );
 
-export const selectPlaylist = createSelector(
+export const selectQueue = createSelector(
   selectPlayerState,
-  (state) => state.playlist
+  (state) => state.queue
 );
 
 export const selectCurrentIndex = createSelector(
@@ -19,19 +19,19 @@ export const selectCurrentIndex = createSelector(
 );
 
 export const selectCurrentSong = createSelector(
-  selectPlaylist,
+  selectQueue,
   selectCurrentIndex,
   (playlist, index) => playlist[index]
 );
 
 export const selectHasNextSong = createSelector(
-  selectPlaylist,
+  selectQueue,
   selectCurrentIndex,
   (playlist, index) => playlist[index + 1] !== undefined
 );
 
 export const selectHasPrevSong = createSelector(
-  selectPlaylist,
+  selectQueue,
   selectCurrentIndex,
   (playlist, index) => playlist[index - 1] !== undefined
 );

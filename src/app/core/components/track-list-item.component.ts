@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { Song } from '@app/database/songs/song.model';
+import { Song, SongId } from '@app/database/songs/song.model';
 import { Icons } from '@app/core/utils/icons.util';
 import { PlayerFacade } from '@app/player/store/player.facade';
 import { SongFacade } from '@app/database/songs/song.facade';
@@ -13,8 +13,8 @@ import { HelperFacade } from '@app/helper/helper.facade';
       <app-player-button
         class="player-button"
         size="small"
-        [song]="song"
-        [playlist]="playlist"
+        [index]="queue.indexOf(song.entryPath)"
+        [queue]="queue"
       ></app-player-button>
     </span>
     <span class="title">{{ song.title }}</span>
@@ -132,7 +132,7 @@ import { HelperFacade } from '@app/helper/helper.facade';
 })
 export class TrackListItemComponent {
   @Input() song!: Song;
-  @Input() playlist!: Song[];
+  @Input() queue!: SongId[];
 
   @Input() trackNumber!: number | null;
 
@@ -149,14 +149,14 @@ export class TrackListItemComponent {
   }
 
   playNext(song: Song): void {
-    this.helper.addSongToQueue(song, true);
+    this.helper.addSongToQueue(song.entryPath, true);
   }
 
   addToQueue(song: Song): void {
-    this.helper.addSongToQueue(song, false);
+    this.helper.addSongToQueue(song.entryPath, false);
   }
 
   addSongToPlaylist(song: Song): void {
-    this.helper.addSongsToPlaylist([song]);
+    this.helper.addSongsToPlaylist([song.entryPath]);
   }
 }

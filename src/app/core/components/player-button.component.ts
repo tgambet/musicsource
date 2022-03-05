@@ -1,18 +1,18 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  EventEmitter,
   HostBinding,
   Input,
   OnInit,
   Output,
-  EventEmitter,
 } from '@angular/core';
 import { Icons } from '@app/core/utils';
-import { Song } from '@app/database/songs/song.model';
+import { SongId } from '@app/database/songs/song.model';
 import { PlayerFacade } from '@app/player/store/player.facade';
 import { first, map, switchMap, tap, throttleTime } from 'rxjs/operators';
 import { combineLatest, Observable, of } from 'rxjs';
-import { arrayEquals } from '@app/core/utils/array-equals.util';
+import { arrayEqualsUnordered } from '@app/core/utils/array-equals.util';
 
 // https://github.com/angular/angular/issues/8785
 @Component({
@@ -107,10 +107,10 @@ import { arrayEquals } from '@app/core/utils/array-equals.util';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PlayerButtonComponent implements OnInit {
-  @Input() song!: Song;
-  @Input() playlist!: Song[];
+  @Input() index = 0;
+  @Input() queue!: SongId[] | null;
 
-  @Input() playlistMode = false;
+  @Input() currentIfMatchAllQueue = false;
 
   @Input()
   shape: 'round' | 'square' = 'round';
@@ -134,18 +134,27 @@ export class PlayerButtonComponent implements OnInit {
   constructor(private player: PlayerFacade) {}
 
   ngOnInit(): void {
-    this.isCurrent$ = this.playlistMode
-      ? this.player.getPlaylist$().pipe(
-          map((playlist) =>
-            arrayEquals(
-              playlist,
-              this.playlist.map((s) => s.entryPath)
+    this.isCurrent$ = this.currentIfMatchAllQueue
+      ? this.player
+          .getQueue$()
+          .pipe(
+            map(
+              (queue) =>
+                !!(this.queue && arrayEqualsUnordered(queue, this.queue))
             )
           )
-        )
       : this.player
           .getCurrentSong$()
-          .pipe(map((current) => current === this.song.entryPath));
+          .pipe(
+            map(
+              (current) =>
+                !!(
+                  this.queue &&
+                  this.queue.length > 0 &&
+                  current === this.queue[this.index]
+                )
+            )
+          );
 
     this.isPlaying$ = this.isCurrent$.pipe(
       switchMap((current) => (current ? this.player.getPlaying$() : of(false))),
@@ -176,10 +185,7 @@ export class PlayerButtonComponent implements OnInit {
             }
           } else {
             this.player.setPlaying();
-            this.player.setQueue(
-              this.playlist.map((s) => s.entryPath),
-              this.playlist.indexOf(this.song)
-            );
+            this.player.setQueue(this.queue || [], this.index);
             this.player.show();
             this.playlistPlayed.emit();
           }

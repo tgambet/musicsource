@@ -6,7 +6,7 @@ import {
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Icons } from '@app/core/utils/icons.util';
-import { PlaylistListComponent } from '@app/player/playlist-list.component';
+import { QueueListComponent } from '@app/player/queue-list.component';
 import { PlayerFacade } from '@app/player/store/player.facade';
 import { concatMap, filter, switchMap, take, tap } from 'rxjs/operators';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
@@ -31,15 +31,15 @@ import { SongFacade } from '@app/database/songs/song.facade';
     <div class="playlist">
       <ng-container *ngIf="currentSong$ | async as currentSong">
         <!--cdkDropListLockAxis="y"-->
-        <app-playlist-list
+        <app-queue-list
           cdkDropList
           #playlistList
           *ngIf="playlist$ | async as playlist"
-          [playlist]="playlist"
+          [songs]="playlist"
           [currentSong]="currentSong"
           [currentIndex]="currentIndex$ | async"
           (cdkDropListDropped)="drop(playlist, currentSong, $event)"
-        ></app-playlist-list>
+        ></app-queue-list>
       </ng-container>
     </div>
   `,
@@ -87,7 +87,7 @@ import { SongFacade } from '@app/database/songs/song.facade';
 })
 export class PlayComponent implements OnInit {
   @ViewChild('playlistList')
-  playlistList!: PlaylistListComponent;
+  playlistList!: QueueListComponent;
 
   currentSong$ = this.player.getCurrentSong$().pipe(
     filter((id): id is SongId => !!id),
@@ -97,7 +97,7 @@ export class PlayComponent implements OnInit {
   currentCover$!: Observable<string | undefined>;
 
   playlist$ = this.player
-    .getPlaylist$()
+    .getQueue$()
     .pipe(switchMap((ids) => this.songs.getByKeys(ids)));
 
   icons = Icons;

@@ -83,9 +83,9 @@ import { HelperFacade } from '@app/helper/helper.facade';
             </app-title>
             <div class="track-list-container">
               <app-track-list-item
-                [song]="song"
-                [playlist]="disk.songs"
                 *ngFor="let song of disk.songs; trackBy: trackBy"
+                [song]="song"
+                [queue]="getIds(disk.songs)"
                 [trackNumber]="song.tags.track.no"
                 [class.selected]="(currentSongPath$ | async) === song.entryPath"
                 cdkMonitorSubtreeFocus
@@ -241,5 +241,9 @@ export class PageAlbumComponent implements OnInit {
 
   toggleLiked(album: Album): void {
     this.albums.toggleLiked(album);
+  }
+
+  getIds(songs: Song[]): SongId[] {
+    return songs.map((s) => s.entryPath);
   }
 }

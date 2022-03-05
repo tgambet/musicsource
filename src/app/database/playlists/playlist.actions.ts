@@ -1,5 +1,5 @@
 import { createAction, props } from '@ngrx/store';
-import { Playlist } from '@app/database/playlists/playlist.model';
+import { Playlist, PlaylistId } from '@app/database/playlists/playlist.model';
 import { IdUpdate } from '@app/core/utils';
 
 export const removeAllPlaylists = createAction('playlists/remove-all');
@@ -24,4 +24,9 @@ export const updatePlaylist = createAction(
 export const addPlaylist = createAction(
   '[Playlist] Create Playlist',
   props<{ playlist: Playlist }>()
+);
+
+export const deletePlaylist = createAction(
+  '[Playlist] Delete Playlist',
+  props<{ id: PlaylistId }>()
 );

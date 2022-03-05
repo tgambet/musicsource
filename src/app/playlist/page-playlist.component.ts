@@ -8,6 +8,9 @@ import { PlayerFacade } from '@app/player/store/player.facade';
 import { PictureFacade } from '@app/database/pictures/picture.facade';
 import { SongFacade } from '@app/database/songs/song.facade';
 import { PlaylistFacade } from '@app/database/playlists/playlist.facade';
+import { HelperFacade } from '@app/helper/helper.facade';
+import { map } from 'rxjs/operators';
+import { MenuItem } from '@app/core/components/menu.component';
 
 @Component({
   selector: 'app-playlist-page',
@@ -44,7 +47,8 @@ import { PlaylistFacade } from '@app/database/playlists/playlist.facade';
           </div>
           <div class="actions">
             <ng-container *ngIf="songs$ | async as songs">
-              <!--              <button
+              <ng-container *ngIf="songs.length > 0">
+                <!--              <button
                 mat-stroked-button
                 color="accent"
                 *ngIf="songs.length === 0"
@@ -52,38 +56,48 @@ import { PlaylistFacade } from '@app/database/playlists/playlist.facade';
                 <app-icon [path]="icons.playlistEdit"></app-icon>
                 <span>Edit playlist</span>
               </button>-->
-              <button
-                mat-raised-button
-                class="play-button"
-                color="accent"
-                *ngIf="songs.length > 0"
-                (click)="shufflePlay(songs)"
-              >
-                <app-icon [path]="icons.shuffle"></app-icon>
-                <span>Shuffle</span>
-              </button>
-              <button
-                mat-stroked-button
-                class="shuffle-button"
-                color="accent"
-                *ngIf="songs.length > 0"
-              >
-                <app-icon [path]="icons.heartOutline"></app-icon>
-                <span>Add to your likes</span>
-              </button>
+                <button
+                  mat-raised-button
+                  class="play-button"
+                  color="accent"
+                  (click)="shufflePlay(playlist)"
+                >
+                  <app-icon [path]="icons.shuffle"></app-icon>
+                  <span>Shuffle</span>
+                </button>
+                <button
+                  mat-stroked-button
+                  class="shuffle-button"
+                  color="accent"
+                  (click)="toggleLiked(playlist)"
+                >
+                  <app-icon
+                    [path]="
+                      !!playlist.likedOn ? icons.heart : icons.heartOutline
+                    "
+                  ></app-icon>
+                  <span>{{
+                    !!playlist.likedOn
+                      ? 'Remove from your likes'
+                      : 'Add to your likes'
+                  }}</span>
+                </button>
+                <app-menu
+                  [disableRipple]="true"
+                  [menuItems]="menuItems$ | async"
+                ></app-menu>
+              </ng-container>
             </ng-container>
-            <!--<app-menu [disableRipple]="true"></app-menu>-->
           </div>
         </app-container-page>
       </header>
       <app-container-page>
-        <app-song-list
-          [songs]="songs"
-          *ngIf="songs$ | async as songs"
-        ></app-song-list>
-        <p class="empty" *ngIf="(songs$ | async)?.length === 0">
-          No songs in this playlist yet
-        </p>
+        <ng-container *ngIf="songs$ | async as songs">
+          <app-song-list [songs]="songs"></app-song-list>
+          <p class="empty" *ngIf="songs.length === 0">
+            No songs in this playlist yet
+          </p>
+        </ng-container>
       </app-container-page>
     </ng-container>
   `,
@@ -118,6 +132,7 @@ export class PagePlaylistComponent implements OnInit {
   cover$!: Observable<string | undefined>;
   color$!: Observable<string>;
   songs$!: Observable<Song[]>;
+  menuItems$!: Observable<MenuItem[]>;
 
   icons = Icons;
 
@@ -126,7 +141,8 @@ export class PagePlaylistComponent implements OnInit {
     private player: PlayerFacade,
     private pictures: PictureFacade,
     private playlists: PlaylistFacade,
-    private songs: SongFacade
+    private songs: SongFacade,
+    private helper: HelperFacade
   ) {}
 
   ngOnInit(): void {
@@ -144,6 +160,31 @@ export class PagePlaylistComponent implements OnInit {
 
     this.songs$ = this.playlist$.pipe(
       switchMap((playlist) => this.songs.getByKeys(playlist.songs))
+    );
+
+    this.menuItems$ = this.playlist$.pipe(
+      map((playlist) => [
+        {
+          text: 'Shuffle play',
+          icon: this.icons.shuffle,
+          click: () => this.helper.playPlaylist(playlist.id, true),
+        },
+        {
+          text: 'Play next',
+          icon: this.icons.playlistPlay,
+          click: () => this.helper.addPlaylistToQueue(playlist.id, true),
+        },
+        {
+          text: 'Add to queue',
+          icon: this.icons.playlistMusic,
+          click: () => this.helper.addPlaylistToQueue(playlist.id),
+        },
+        {
+          text: 'Add to playlist',
+          icon: this.icons.playlistPlus,
+          click: () => this.helper.addPlaylistToPlaylist(playlist.id),
+        },
+      ])
     );
 
     // this.songs$ = this.info$.pipe(
@@ -170,10 +211,11 @@ export class PagePlaylistComponent implements OnInit {
     return Math.floor(sec / 60);
   }
 
-  shufflePlay(songs: Song[]): void {
-    this.player.setPlaying();
-    this.player.setQueue(songs.map((s) => s.entryPath));
-    this.player.shuffle();
-    this.player.show();
+  shufflePlay(playlist: Playlist): void {
+    this.helper.playPlaylist(playlist.id, true);
+  }
+
+  toggleLiked(playlist: Playlist): void {
+    this.playlists.toggleLiked(playlist);
   }
 }

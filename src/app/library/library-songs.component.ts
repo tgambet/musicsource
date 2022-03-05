@@ -36,7 +36,7 @@ import { SongIndex } from '@app/database/songs/song.reducer';
         <ng-container *ngFor="let song of songs$ | async; trackBy: trackBy">
           <app-song-list-item
             [song]="song"
-            [playlist]="[song]"
+            [queue]="[song.entryPath]"
             cdkMonitorSubtreeFocus
             [class.selected]="(currentSongPath$ | async) === song.entryPath"
           ></app-song-list-item>
