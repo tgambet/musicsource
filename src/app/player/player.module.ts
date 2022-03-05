@@ -2,8 +2,8 @@ import { NgModule } from '@angular/core';
 import { CoreModule } from '@app/core/core.module';
 import { PlayComponent } from '@app/player/play.component';
 import { PlayerComponent } from '@app/player/player.component';
-import { PlaylistListComponent } from '@app/player/playlist-list.component';
-import { PlaylistListItemComponent } from '@app/player/playlist-list-item.component';
+import { QueueListComponent } from '@app/player/queue-list.component';
+import { QueueItemComponent } from '@app/player/queue-item.component';
 import { RouterModule, Routes } from '@angular/router';
 import { EffectsModule } from '@ngrx/effects';
 import { PlayerEffects } from '@app/player/store/player.effects';
@@ -25,8 +25,8 @@ const routes: Routes = [
   declarations: [
     PlayComponent,
     PlayerComponent,
-    PlaylistListComponent,
-    PlaylistListItemComponent,
+    QueueListComponent,
+    QueueItemComponent,
   ],
   imports: [
     CoreModule,

@@ -9,7 +9,7 @@ import {
   selectLoading,
   selectMuted,
   selectPlaying,
-  selectPlaylist,
+  selectQueue,
   selectShow,
   selectVolume,
 } from '@app/player/store/player.selectors';
@@ -53,8 +53,8 @@ export class PlayerFacade {
     return this.store.select(selectDuration);
   }
 
-  getPlaylist$(): Observable<SongId[]> {
-    return this.store.select(selectPlaylist);
+  getQueue$(): Observable<SongId[]> {
+    return this.store.select(selectQueue);
   }
 
   getCurrentIndex$(): Observable<number> {

@@ -2,7 +2,7 @@ import { SongId } from '@app/database/songs/song.model';
 
 export interface PlayerState {
   show: boolean;
-  playlist: SongId[];
+  queue: SongId[];
   currentIndex: number;
   playing: boolean;
   loading: boolean;
@@ -13,7 +13,7 @@ export interface PlayerState {
 
 export const initialState: PlayerState = {
   show: false,
-  playlist: [],
+  queue: [],
   currentIndex: 0,
   playing: false,
   loading: false,

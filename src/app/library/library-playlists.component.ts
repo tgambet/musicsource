@@ -39,13 +39,12 @@ import { HelperFacade } from '@app/helper/helper.facade';
         <!--        <div class="playlist likes">-->
         <!--          <app-playlist-likes></app-playlist-likes>-->
         <!--        </div>-->
-        <ng-container
+        <div
+          class="playlist"
           *ngFor="let playlist of playlists$ | async; trackBy: trackBy"
         >
-          <div class="playlist">
-            <app-playlist [playlist]="playlist"></app-playlist>
-          </div>
-        </ng-container>
+          <app-playlist [playlist]="playlist"></app-playlist>
+        </div>
       </div>
     </app-library-content>
   `,
@@ -107,7 +106,6 @@ export class LibraryPlaylistsComponent implements OnInit {
         direction: ((params.get('dir') || 'desc') === 'asc'
           ? 'next'
           : 'prev') as IDBCursorDirection,
-        likes: params.get('likes') === '1',
       }))
     );
 
@@ -116,12 +114,7 @@ export class LibraryPlaylistsComponent implements OnInit {
         this.playlists.getAll(sort.index as any).pipe(
           // filter((models) => models.length > 0),
           switchMap((models, j) => {
-            let mods;
-            if (sort.likes) {
-              mods = models.filter((a) => !!a.likedOn);
-            } else {
-              mods = [...models];
-            }
+            const mods = [...models];
             if (sort.direction === 'prev') {
               mods.reverse();
             }

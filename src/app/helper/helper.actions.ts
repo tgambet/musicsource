@@ -1,10 +1,16 @@
 import { createAction, props } from '@ngrx/store';
 import { AlbumId } from '@app/database/albums/album.model';
-import { Song } from '@app/database/songs/song.model';
+import { Song, SongId } from '@app/database/songs/song.model';
+import { PlaylistId } from '@app/database/playlists/playlist.model';
 
 export const playAlbum = createAction(
   'helper/album-play',
   props<{ id: AlbumId; shuffle: boolean }>()
+);
+
+export const playPlaylist = createAction(
+  'helper/playlist-play',
+  props<{ id: PlaylistId; shuffle: boolean }>()
 );
 
 export const addAlbumToQueue = createAction(
@@ -12,9 +18,14 @@ export const addAlbumToQueue = createAction(
   props<{ id: AlbumId; next: boolean }>()
 );
 
+export const addPlaylistToQueue = createAction(
+  'helper/playlist-addToQueue',
+  props<{ id: PlaylistId; next: boolean }>()
+);
+
 export const addSongsToPlaylist = createAction(
   'helper/songs-addToPlaylist',
-  props<{ songs: Song[] }>()
+  props<{ songs: SongId[] }>()
 );
 
 export const addAlbumToPlaylist = createAction(
@@ -22,9 +33,14 @@ export const addAlbumToPlaylist = createAction(
   props<{ id: AlbumId }>()
 );
 
+export const addPlaylistToPlaylist = createAction(
+  'helper/playlist-addToPlaylist',
+  props<{ id: PlaylistId }>()
+);
+
 export const addSongsToQueue = createAction(
   'helper/songs-addToQueue',
-  props<{ songs: Song[]; next: boolean; message: string }>()
+  props<{ songs: SongId[]; next: boolean; message: string }>()
 );
 
 export const removeSongFromQueue = createAction(

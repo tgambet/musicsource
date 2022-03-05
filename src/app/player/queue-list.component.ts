@@ -1,20 +1,20 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { Song } from '@app/database/songs/song.model';
+import { Song, SongId } from '@app/database/songs/song.model';
 
 @Component({
-  selector: 'app-playlist-list',
+  selector: 'app-queue-list',
   template: `
-    <app-playlist-list-item
+    <app-queue-item
       class="item"
       cdkDrag
       cdkMonitorSubtreeFocus
-      *ngFor="let song of playlist; trackBy: trackBy; let i = index"
+      *ngFor="let song of songs; trackBy: trackBy; let i = index"
       [song]="song"
-      [playlist]="playlist"
+      [queue]="getIds(songs)"
       [class.selected]="
         song.entryPath === currentSong?.entryPath && currentIndex === i
       "
-    ></app-playlist-list-item>
+    ></app-queue-item>
   `,
   styles: [
     `
@@ -60,12 +60,16 @@ import { Song } from '@app/database/songs/song.model';
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class PlaylistListComponent {
-  @Input() playlist!: Song[];
+export class QueueListComponent {
+  @Input() songs!: Song[];
   @Input() currentSong!: Song | null;
   @Input() currentIndex!: number | null;
 
   trackBy(index: number, song: Song): string {
     return song.entryPath;
+  }
+
+  getIds(songs: Song[]): SongId[] {
+    return songs.map((s) => s.entryPath);
   }
 }

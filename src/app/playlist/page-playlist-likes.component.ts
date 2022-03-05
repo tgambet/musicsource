@@ -6,11 +6,9 @@ import {
 } from '@angular/core';
 import { Song } from '@app/database/songs/song.model';
 import { EMPTY, Observable } from 'rxjs';
-import { first, tap } from 'rxjs/operators';
 import { Icons } from '@app/core/utils/icons.util';
 import { SongListComponent } from '@app/core/components/song-list.component';
 import { MenuItem } from '@app/core/components/menu.component';
-import { HelperFacade } from '@app/helper/helper.facade';
 
 @Component({
   selector: 'app-page-playlist-likes',
@@ -41,7 +39,7 @@ import { HelperFacade } from '@app/helper/helper.facade';
               class="play-button"
               color="accent"
               [disabled]="songs.length === 0"
-              (click)="shuffle(songs)"
+              (click)="shuffle()"
             >
               <app-icon [path]="icons.shuffle"></app-icon>
               <span>Shuffle</span>
@@ -90,42 +88,40 @@ export class PagePlaylistLikesComponent implements OnInit {
     {
       text: 'Play next',
       icon: Icons.playlistPlay,
-      click: (): void => {
-        this.songs$
-          .pipe(
-            first(),
-            tap((songs) =>
-              this.helper.addSongsToQueue(
-                songs,
-                true,
-                'Your likes will play next'
-              )
-            )
-          )
-          .subscribe();
-      },
+      // click: (): void => {
+      //   this.songs$
+      //     .pipe(
+      //       first(),
+      //       tap((songs) =>
+      //         this.helper.addSongsToQueue(
+      //           songs,
+      //           true,
+      //           'Your likes will play next'
+      //         )
+      //       )
+      //     )
+      //     .subscribe();
+      // },
     },
     {
       text: 'Add to queue',
       icon: Icons.playlistPlus,
-      click: (): void => {
-        this.songs$
-          .pipe(
-            first(),
-            tap((songs) =>
-              this.helper.addSongsToQueue(
-                songs,
-                false,
-                'Your likes added to queue'
-              )
-            )
-          )
-          .subscribe();
-      },
+      // click: (): void => {
+      //   this.songs$
+      //     .pipe(
+      //       first(),
+      //       tap((songs) =>
+      //         this.helper.addSongsToQueue(
+      //           songs,
+      //           false,
+      //           'Your likes added to queue'
+      //         )
+      //       )
+      //     )
+      //     .subscribe();
+      // },
     },
   ];
-
-  constructor(private helper: HelperFacade) {}
 
   ngOnInit(): void {
     this.songs$ = EMPTY;
@@ -143,7 +139,7 @@ export class PagePlaylistLikesComponent implements OnInit {
     return Math.floor(sec / 60);
   }
 
-  shuffle(songs: Song[]): void {
+  shuffle(): void {
     // this.helper.shufflePlaySongs(songs);
   }
 }

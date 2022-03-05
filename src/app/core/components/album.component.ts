@@ -10,7 +10,7 @@ import { MenuItem } from '@app/core/components/menu.component';
 import { PlayerFacade } from '@app/player/store/player.facade';
 import { filter, map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
-import { Song } from '@app/database/songs/song.model';
+import { SongId } from '@app/database/songs/song.model';
 import { HistoryService } from '@app/core/services/history.service';
 import { AlbumFacade } from '@app/database/albums/album.facade';
 import { SongFacade } from '@app/database/songs/song.facade';
@@ -26,8 +26,8 @@ import { HelperFacade } from '@app/helper/helper.facade';
       [coverRouterLink]="['/', 'album', album.id]"
       (playlistPlayed)="albumPlayed()"
       tabindex="-1"
-      [song]="song$ | async"
-      [playlist]="playlist$ | async"
+      [startIndex]="0"
+      [queue]="queue$ | async"
     >
       <img
         *ngIf="cover$ | async as cover; else icon"
@@ -76,8 +76,7 @@ export class AlbumComponent implements OnInit {
   icons = Icons;
   menuItems$!: Observable<MenuItem[]>;
 
-  song$!: Observable<Song | undefined>;
-  playlist$!: Observable<Song[] | undefined>;
+  queue$!: Observable<SongId[]>;
   cover$!: Observable<string | undefined>;
 
   constructor(
@@ -90,9 +89,10 @@ export class AlbumComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.playlist$ = this.songs.getByAlbumKey(this.album.id);
-
-    this.song$ = this.playlist$.pipe(map((pl) => pl && pl[0]));
+    this.queue$ = this.songs.getByAlbumKey(this.album.id).pipe(
+      map((songs) => songs ?? []),
+      map((songs) => songs && songs.map((s) => s.entryPath))
+    );
 
     this.cover$ = this.pictures.getAlbumCover(
       this.album,

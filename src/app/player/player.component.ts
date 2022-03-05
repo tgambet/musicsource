@@ -358,7 +358,7 @@ export class PlayerComponent implements OnInit, OnDestroy {
         // ),
         tap(
           (event) =>
-            (this.isPlayRoute = event.urlAfterRedirects.startsWith('/play'))
+            (this.isPlayRoute = /\/play$/.test(event.urlAfterRedirects))
         ),
         tap(() => this.cdr.markForCheck())
       )
@@ -470,12 +470,12 @@ export class PlayerComponent implements OnInit, OnDestroy {
       {
         text: 'Play next',
         icon: this.icons.playlistPlay,
-        click: () => this.helper.addSongToQueue(song, true),
+        click: () => this.helper.addSongToQueue(song.entryPath, true),
       },
       {
         text: 'Add to queue',
         icon: this.icons.playlistMusic,
-        click: () => this.helper.addSongToQueue(song, false),
+        click: () => this.helper.addSongToQueue(song.entryPath, false),
       },
       {
         text: !!song.likedOn ? 'Remove from your likes' : 'Add to your likes',
@@ -485,7 +485,7 @@ export class PlayerComponent implements OnInit, OnDestroy {
       {
         text: 'Add to playlist',
         icon: this.icons.playlistPlus,
-        click: () => this.helper.addSongsToPlaylist([song]),
+        click: () => this.helper.addSongsToPlaylist([song.entryPath]),
       },
       {
         text: 'Remove from queue',

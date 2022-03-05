@@ -21,10 +21,13 @@ import { shuffleArray } from '@app/core/utils';
 import {
   addAlbumToPlaylist,
   addAlbumToQueue,
+  addPlaylistToPlaylist,
+  addPlaylistToQueue,
   addSongsToPlaylist,
   addSongsToQueue,
   openSnack,
   playAlbum,
+  playPlaylist,
   removeSongFromQueue,
 } from '@app/helper/helper.actions';
 import { Playlist } from '@app/database/playlists/playlist.model';
@@ -42,6 +45,7 @@ export class HelperEffects implements OnRunEffects {
       switchMap(({ id, shuffle }) =>
         this.songs.getByAlbumKey(id).pipe(
           filter((songs): songs is Song[] => !!songs),
+          first(),
           concatMap((songs) =>
             of(
               setPlaying({ playing: true }),
@@ -49,6 +53,28 @@ export class HelperEffects implements OnRunEffects {
                 queue: shuffle
                   ? shuffleArray(songs.map((s) => s.entryPath))
                   : songs.map((s) => s.entryPath),
+                currentIndex: 0,
+              }),
+              show()
+            )
+          )
+        )
+      )
+    )
+  );
+
+  playPlaylist$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(playPlaylist),
+      switchMap(({ id, shuffle }) =>
+        this.playlists.getByKey(id).pipe(
+          filter((playlist): playlist is Playlist => !!playlist),
+          first(),
+          concatMap((playlist) =>
+            of(
+              setPlaying({ playing: true }),
+              setQueue({
+                queue: shuffle ? shuffleArray(playlist.songs) : playlist.songs,
                 currentIndex: 0,
               }),
               show()
@@ -67,9 +93,29 @@ export class HelperEffects implements OnRunEffects {
           filter((songs): songs is Song[] => !!songs),
           map((songs) =>
             addSongsToQueue({
-              songs,
+              songs: songs.map((s) => s.entryPath),
               next,
               message: next ? 'Album will play next' : 'Album added to queue',
+            })
+          )
+        )
+      )
+    )
+  );
+
+  addPlaylistToQueue$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(addPlaylistToQueue),
+      switchMap(({ id, next }) =>
+        this.playlists.getByKey(id).pipe(
+          filter((playlist): playlist is Playlist => !!playlist),
+          map((playlist) =>
+            addSongsToQueue({
+              songs: playlist.songs,
+              next,
+              message: next
+                ? 'Playlist will play next'
+                : 'Playlist added to queue',
             })
           )
         )
@@ -97,16 +143,17 @@ export class HelperEffects implements OnRunEffects {
               filter((result): result is Playlist => !!result),
               tap((result) => this.playlists.addSongsTo(result, songs)),
               concatMap((result) =>
-                this.snack
-                  .open(`Added to ${result.title}`, 'VIEW', {
-                    panelClass: 'snack-top', // TODO
-                  })
-                  .onAction()
-                  .pipe(
-                    tap(() =>
-                      this.router.navigate(['/', 'playlist', result.id])
-                    )
-                  )
+                this.player.isShown$().pipe(
+                  first(),
+                  concatMap((shown) =>
+                    this.snack
+                      .open(`Added to ${result.title}`, 'VIEW', {
+                        panelClass: shown ? 'snack-top' : 'snack',
+                      })
+                      .onAction()
+                  ),
+                  tap(() => this.router.navigate(['/', 'playlist', result.id]))
+                )
               )
             )
         )
@@ -120,7 +167,23 @@ export class HelperEffects implements OnRunEffects {
       switchMap(({ id }) =>
         this.songs.getByAlbumKey(id).pipe(
           filter((songs): songs is Song[] => !!songs),
-          map((songs) => addSongsToPlaylist({ songs }))
+          first(),
+          map((songs) =>
+            addSongsToPlaylist({ songs: songs.map((s) => s.entryPath) })
+          )
+        )
+      )
+    )
+  );
+
+  addPlaylistToPlaylist$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(addPlaylistToPlaylist),
+      switchMap(({ id }) =>
+        this.playlists.getByKey(id).pipe(
+          filter((playlist): playlist is Playlist => !!playlist),
+          first(),
+          map((playlist) => addSongsToPlaylist({ songs: playlist.songs }))
         )
       )
     )
@@ -148,11 +211,7 @@ export class HelperEffects implements OnRunEffects {
     this.actions$.pipe(
       ofType(addSongsToQueue),
       concatMap(({ songs, next, message }) =>
-        of(
-          addToQueue({ queue: songs.map((s) => s.entryPath), next }),
-          show(),
-          openSnack({ message })
-        )
+        of(addToQueue({ queue: songs, next }), show(), openSnack({ message }))
       )
     )
   );
@@ -162,7 +221,7 @@ export class HelperEffects implements OnRunEffects {
       ofType(removeSongFromQueue),
       concatMap(({ song }) =>
         combineLatest([
-          this.player.getPlaylist$(),
+          this.player.getQueue$(),
           this.player.getCurrentIndex$(),
         ]).pipe(
           first(),
