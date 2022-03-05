@@ -86,6 +86,7 @@ import { MatMenu } from '@angular/material/menu';
       }
       .mat-menu-item app-icon {
         margin-right: 16px;
+        opacity: 0.5;
       }
     `,
   ],

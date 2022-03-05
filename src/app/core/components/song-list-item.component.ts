@@ -124,7 +124,7 @@ import { HelperFacade } from '@app/helper/helper.facade';
         background-color: rgba(0, 0, 0, 0.75);
       }
       app-icon {
-        color: grey;
+        opacity: 0.5;
       }
       .title {
         flex: 12 1 0;

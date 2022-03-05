@@ -8,8 +8,7 @@ import { Icons } from '@app/core/utils';
 import { Album } from '@app/database/albums/album.model';
 import { MenuItem } from '@app/core/components/menu.component';
 import { PlayerFacade } from '@app/player/store/player.facade';
-import { ComponentHelperService } from '@app/core/services/component-helper.service';
-import { filter, first, map, tap } from 'rxjs/operators';
+import { filter, map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { Song } from '@app/database/songs/song.model';
 import { HistoryService } from '@app/core/services/history.service';
@@ -83,12 +82,11 @@ export class AlbumComponent implements OnInit {
 
   constructor(
     private player: PlayerFacade,
-    private helper: ComponentHelperService,
     private history: HistoryService,
     private albums: AlbumFacade,
     private songs: SongFacade,
     private pictures: PictureFacade,
-    private helper2: HelperFacade
+    private helper: HelperFacade
   ) {}
 
   ngOnInit(): void {
@@ -107,17 +105,17 @@ export class AlbumComponent implements OnInit {
         {
           icon: Icons.shuffle,
           text: 'Shuffle play',
-          click: () => this.helper2.playAlbum(album.id, true),
+          click: () => this.helper.playAlbum(album.id, true),
         },
         {
           icon: Icons.playlistPlay,
           text: 'Play next',
-          click: () => this.helper2.addAlbumToQueue(album.id, true),
+          click: () => this.helper.addAlbumToQueue(album.id, true),
         },
         {
           icon: Icons.playlistMusic,
           text: 'Add to queue',
-          click: () => this.helper2.addAlbumToQueue(album.id, false),
+          click: () => this.helper.addAlbumToQueue(album.id, false),
         },
         {
           icon: album.likedOn ? Icons.heart : Icons.heartOutline,
@@ -127,15 +125,7 @@ export class AlbumComponent implements OnInit {
         {
           icon: Icons.playlistPlus,
           text: 'Add to playlist',
-          click: () => {
-            this.songs
-              .getByAlbumKey(album.id)
-              .pipe(
-                first(),
-                tap((tracks) => this.helper2.addSongsToPlaylist(tracks || []))
-              )
-              .subscribe();
-          },
+          click: () => this.helper.addAlbumToPlaylist(album.id),
         },
         {
           icon: Icons.accountMusic,
