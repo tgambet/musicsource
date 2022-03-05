@@ -1,14 +1,7 @@
 import { Injectable } from '@angular/core';
-import { first, tap } from 'rxjs/operators';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { combineLatest } from 'rxjs';
-import { Song } from '@app/database/songs/song.model';
-import { PlayerFacade } from '@app/player/store/player.facade';
 
 @Injectable()
 export class ComponentHelperService {
-  constructor(private player: PlayerFacade, private snack: MatSnackBar) {}
-
   // toggleLikedSong(song: Song): Observable<Song> {
   //   return this.library
   //     .toggleSongFavorite(song)
@@ -21,7 +14,6 @@ export class ComponentHelperService {
   //       )
   //     );
   // }
-
   // toggleLikedAlbum(album: Album): void {
   //   this.library.toggleLikedAlbum(album);
   //   // return (
@@ -37,7 +29,6 @@ export class ComponentHelperService {
   //   // )
   //   // );
   // }
-
   // toggleLikedArtist(artist: Artist): void {
   //   this.library.toggleArtistFavorite(artist);
   // TODO
@@ -55,7 +46,6 @@ export class ComponentHelperService {
   //   //   )
   //   // );
   // }
-
   // addSongsToPlaylist(songs: Song[]): void {
   //   const dialog = this.dialog.open(PlaylistAddComponent, {
   //     width: '275px',
@@ -119,7 +109,6 @@ export class ComponentHelperService {
   //     )
   //     .subscribe();
   // }
-
   // shufflePlayArtist(/*artist: Artist*/): Observable<Song[]> {
   //   return EMPTY;
   //   // return this.songs.getByArtistKey(artist.id).pipe(
@@ -134,66 +123,61 @@ export class ComponentHelperService {
   //   //   })
   //   // );
   // }
-
-  playNext(song: Song): void {
-    this.player.addToPlaylist([song.entryPath], true);
-    this.player.show();
-    this.openSnack('Song will play next');
-  }
-
-  addToQueue(song: Song): void {
-    this.player.addToPlaylist([song.entryPath]);
-    this.player.show();
-    this.openSnack('Song added to queue');
-  }
-
-  removeFromQueue(song: Song): void {
-    combineLatest([this.player.getPlaylist$(), this.player.getCurrentIndex$()])
-      .pipe(
-        first(),
-        tap(([playlist, index]) => {
-          const newPlaylist = [...playlist];
-          newPlaylist.splice(playlist.indexOf(song.entryPath), 1);
-          this.player.setPlaylist(
-            newPlaylist,
-            Math.min(index, newPlaylist.length - 1)
-          );
-        })
-      )
-      .subscribe();
-  }
-
-  openSnack(message: string): void {
-    this.player
-      .isShown$()
-      .pipe(
-        first(),
-        tap((shown) =>
-          this.snack.open(message, undefined, {
-            panelClass: shown ? 'snack-top' : 'snack',
-          })
-        )
-      )
-      .subscribe();
-  }
-
-  shufflePlaySongs(songs: Song[]): void {
-    this.player.setPlaying();
-    this.player.setPlaylist(songs.map((s) => s.entryPath));
-    this.player.shuffle();
-    this.player.show();
-  }
-
-  addSongsToQueue(songs: Song[], next = false): void {
-    this.player.addToPlaylist(
-      songs.map((s) => s.entryPath),
-      next
-    );
-    this.player.show();
-    if (next) {
-      this.openSnack('Songs will play next');
-    } else {
-      this.openSnack('Songs added to queue');
-    }
-  }
+  // playNext(song: Song): void {
+  //   this.player.addToQueue([song.entryPath], true);
+  //   this.player.show();
+  //   this.openSnack('Song will play next');
+  // }
+  //
+  // addToQueue(song: Song): void {
+  //   this.player.addToQueue([song.entryPath]);
+  //   this.player.show();
+  //   this.openSnack('Song added to queue');
+  // }
+  // removeFromQueue(song: Song): void {
+  //   combineLatest([this.player.getPlaylist$(), this.player.getCurrentIndex$()])
+  //     .pipe(
+  //       first(),
+  //       tap(([playlist, index]) => {
+  //         const newPlaylist = [...playlist];
+  //         newPlaylist.splice(playlist.indexOf(song.entryPath), 1);
+  //         this.player.setQueue(
+  //           newPlaylist,
+  //           Math.min(index, newPlaylist.length - 1)
+  //         );
+  //       })
+  //     )
+  //     .subscribe();
+  // }
+  // openSnack(message: string): void {
+  //   this.player
+  //     .isShown$()
+  //     .pipe(
+  //       first(),
+  //       tap((shown) =>
+  //         this.snack.open(message, undefined, {
+  //           panelClass: shown ? 'snack-top' : 'snack',
+  //         })
+  //       )
+  //     )
+  //     .subscribe();
+  // }
+  // shufflePlaySongs(songs: Song[]): void {
+  //   this.player.setPlaying();
+  //   this.player.setQueue(songs.map((s) => s.entryPath));
+  //   this.player.shuffle();
+  //   this.player.show();
+  // }
+  // addSongsToQueue(songs: Song[], next = false): void {
+  //   this.player.addToQueue(
+  //     songs.map((s) => s.entryPath),
+  //     next
+  //   );
+  //   this.player.show();
+  //   if (next) {
+  //     this.openSnack('Songs will play next');
+  //   } else {
+  //     this.openSnack('Songs added to queue');
+  //   }
+  // }
 }

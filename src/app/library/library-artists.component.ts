@@ -10,7 +10,6 @@ import { Observable, of } from 'rxjs';
 import { Artist } from '@app/database/artists/artist.model';
 import { map, switchMap } from 'rxjs/operators';
 import { Icons } from '@app/core/utils/icons.util';
-import { ComponentHelperService } from '@app/core/services/component-helper.service';
 import { PlayerFacade } from '@app/player/store/player.facade';
 import { HistoryService } from '@app/core/services/history.service';
 import { ArtistFacade } from '@app/database/artists/artist.facade';
@@ -77,7 +76,6 @@ export class LibraryArtistsComponent implements OnInit {
   constructor(
     private player: PlayerFacade,
     private route: ActivatedRoute,
-    private helper: ComponentHelperService,
     private cdr: ChangeDetectorRef,
     private history: HistoryService,
     private artists: ArtistFacade

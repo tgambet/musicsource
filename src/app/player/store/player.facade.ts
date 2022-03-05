@@ -16,7 +16,7 @@ import {
 import { Observable } from 'rxjs';
 import { SongId } from '@app/database/songs/song.model';
 import {
-  addToPlaylist,
+  addToQueue,
   hide,
   pause,
   resume,
@@ -24,7 +24,7 @@ import {
   setLoading,
   setNextIndex,
   setPlaying,
-  setPlaylist,
+  setQueue,
   setPrevIndex,
   setVolume,
   show,
@@ -89,12 +89,12 @@ export class PlayerFacade {
     return this.store.select(selectHasPrevSong);
   }
 
-  setPlaylist(playlist: SongId[], currentIndex = 0): void {
-    this.store.dispatch(setPlaylist({ playlist, currentIndex }));
+  setQueue(queue: SongId[], currentIndex = 0): void {
+    this.store.dispatch(setQueue({ queue, currentIndex }));
   }
 
-  addToPlaylist(playlist: SongId[], next = false): void {
-    this.store.dispatch(addToPlaylist({ playlist, next }));
+  addToQueue(queue: SongId[], next = false): void {
+    this.store.dispatch(addToQueue({ queue, next }));
   }
 
   setCurrentIndex(index: number): void {
@@ -134,7 +134,7 @@ export class PlayerFacade {
   }
 
   hide(): void {
-    this.store.dispatch(setPlaylist({ playlist: [], currentIndex: 0 }));
+    this.store.dispatch(setQueue({ queue: [], currentIndex: 0 }));
     this.store.dispatch(hide());
   }
 

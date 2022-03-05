@@ -172,7 +172,7 @@ export class PagePlaylistComponent implements OnInit {
 
   shufflePlay(songs: Song[]): void {
     this.player.setPlaying();
-    this.player.setPlaylist(songs.map((s) => s.entryPath));
+    this.player.setQueue(songs.map((s) => s.entryPath));
     this.player.shuffle();
     this.player.show();
   }

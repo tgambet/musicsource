@@ -1,14 +1,14 @@
 import { ActionReducer, createReducer, on } from '@ngrx/store';
 import { initialState, PlayerState } from '@app/player/store/player.state';
 import {
-  addToPlaylist,
+  addToQueue,
   hide,
   setCurrentIndex,
   setDuration,
   setLoading,
   setNextIndex,
   setPlaying,
-  setPlaylist,
+  setQueue,
   setPrevIndex,
   show,
   shuffle,
@@ -27,18 +27,18 @@ export const playerReducer: ActionReducer<PlayerState> = createReducer(
     ...state,
     show: false,
   })),
-  on(setPlaylist, (state, { playlist, currentIndex }) => ({
+  on(setQueue, (state, { queue, currentIndex }) => ({
     ...state,
-    playlist,
+    playlist: queue,
     currentIndex,
   })),
-  on(addToPlaylist, (state, { playlist, next }) => {
+  on(addToQueue, (state, { queue, next }) => {
     const index = state.currentIndex;
     const newPlaylist = [...state.playlist];
     if (next) {
-      newPlaylist.splice(index + 1, 0, ...playlist); // Mutation
+      newPlaylist.splice(index + 1, 0, ...queue); // Mutation
     } else {
-      newPlaylist.push(...playlist);
+      newPlaylist.push(...queue);
     }
     return {
       ...state,

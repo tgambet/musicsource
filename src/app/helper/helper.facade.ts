@@ -5,7 +5,9 @@ import {
   addAlbumToPlaylist,
   addAlbumToQueue,
   addSongsToPlaylist,
+  addSongsToQueue,
   playAlbum,
+  removeSongFromQueue,
 } from './helper.actions';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { PlaylistNewComponent } from '@app/core/dialogs/playlist-new.component';
@@ -61,5 +63,21 @@ export class HelperFacade {
 
   addAlbumToPlaylist(id: AlbumId): void {
     this.store.dispatch(addAlbumToPlaylist({ id }));
+  }
+
+  addSongsToQueue(songs: Song[], next: boolean, message: string): void {
+    this.store.dispatch(addSongsToQueue({ songs, next, message }));
+  }
+
+  addSongToQueue(song: Song, next: boolean): void {
+    this.addSongsToQueue(
+      [song],
+      next,
+      next ? 'Song will play next' : 'Song added to Queue'
+    );
+  }
+
+  removeSongFromQueue(song: Song): void {
+    this.store.dispatch(removeSongFromQueue({ song }));
   }
 }

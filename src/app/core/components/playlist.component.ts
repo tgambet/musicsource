@@ -130,7 +130,7 @@ export class PlaylistComponent implements OnInit {
         first(),
         tap((songs) => {
           this.player.setPlaying();
-          this.player.setPlaylist(
+          this.player.setQueue(
             songs.map((s) => s.entryPath),
             0
           );

@@ -44,7 +44,6 @@ import { PlaylistComponent } from '@app/core/components/playlist.component';
 import { PlaylistLikesComponent } from '@app/core/components/playlist-likes.component';
 import { PlaylistNewComponent } from '@app/core/dialogs/playlist-new.component';
 import { PlaylistAddComponent } from '@app/core/dialogs/playlist-add.component';
-import { ComponentHelperService } from '@app/core/services/component-helper.service';
 import { HistoryService } from '@app/core/services/history.service';
 import { ArtistListItemComponent } from '@app/core/components/artist-list-item.component';
 
@@ -101,7 +100,6 @@ const DECLARATIONS = [
 
 const PROVIDERS = [
   // AudioService,
-  ComponentHelperService,
   // ExtractorService,
   // FileService,
   HistoryService,

@@ -2,7 +2,6 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { Song } from '@app/database/songs/song.model';
 import { Icons } from '@app/core/utils/icons.util';
 import { PlayerFacade } from '@app/player/store/player.facade';
-import { ComponentHelperService } from '@app/core/services/component-helper.service';
 import { SongFacade } from '@app/database/songs/song.facade';
 import { HelperFacade } from '@app/helper/helper.facade';
 
@@ -141,8 +140,7 @@ export class TrackListItemComponent {
 
   constructor(
     private player: PlayerFacade,
-    private helper2: HelperFacade,
-    private helper: ComponentHelperService,
+    private helper: HelperFacade,
     private songs: SongFacade
   ) {}
 
@@ -151,14 +149,14 @@ export class TrackListItemComponent {
   }
 
   playNext(song: Song): void {
-    this.helper.playNext(song);
+    this.helper.addSongToQueue(song, true);
   }
 
   addToQueue(song: Song): void {
-    this.helper.addToQueue(song);
+    this.helper.addSongToQueue(song, false);
   }
 
   addSongToPlaylist(song: Song): void {
-    this.helper2.addSongsToPlaylist([song]);
+    this.helper.addSongsToPlaylist([song]);
   }
 }

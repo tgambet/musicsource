@@ -131,7 +131,7 @@ export class PlayComponent implements OnInit {
   drop(playlist: Song[], currentSong: Song, event: CdkDragDrop<Song[]>): void {
     const newPlaylist = [...playlist.map((s) => s.entryPath)];
     moveItemInArray(newPlaylist, event.previousIndex, event.currentIndex);
-    this.player.setPlaylist(
+    this.player.setQueue(
       newPlaylist,
       newPlaylist.indexOf(currentSong.entryPath)
     );

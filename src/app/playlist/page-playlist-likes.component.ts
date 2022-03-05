@@ -9,8 +9,8 @@ import { EMPTY, Observable } from 'rxjs';
 import { first, tap } from 'rxjs/operators';
 import { Icons } from '@app/core/utils/icons.util';
 import { SongListComponent } from '@app/core/components/song-list.component';
-import { ComponentHelperService } from '@app/core/services/component-helper.service';
 import { MenuItem } from '@app/core/components/menu.component';
+import { HelperFacade } from '@app/helper/helper.facade';
 
 @Component({
   selector: 'app-page-playlist-likes',
@@ -94,7 +94,13 @@ export class PagePlaylistLikesComponent implements OnInit {
         this.songs$
           .pipe(
             first(),
-            tap((songs) => this.helper.addSongsToQueue(songs, true))
+            tap((songs) =>
+              this.helper.addSongsToQueue(
+                songs,
+                true,
+                'Your likes will play next'
+              )
+            )
           )
           .subscribe();
       },
@@ -106,14 +112,20 @@ export class PagePlaylistLikesComponent implements OnInit {
         this.songs$
           .pipe(
             first(),
-            tap((songs) => this.helper.addSongsToQueue(songs, false))
+            tap((songs) =>
+              this.helper.addSongsToQueue(
+                songs,
+                false,
+                'Your likes added to queue'
+              )
+            )
           )
           .subscribe();
       },
     },
   ];
 
-  constructor(private helper: ComponentHelperService) {}
+  constructor(private helper: HelperFacade) {}
 
   ngOnInit(): void {
     this.songs$ = EMPTY;
@@ -132,6 +144,6 @@ export class PagePlaylistLikesComponent implements OnInit {
   }
 
   shuffle(songs: Song[]): void {
-    this.helper.shufflePlaySongs(songs);
+    // this.helper.shufflePlaySongs(songs);
   }
 }
