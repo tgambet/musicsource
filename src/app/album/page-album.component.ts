@@ -10,12 +10,11 @@ import {
   switchMap,
 } from 'rxjs';
 import { Album, AlbumId } from '@app/database/albums/album.model';
-import { filter, first, map, mergeMap, tap } from 'rxjs/operators';
+import { filter, map, mergeMap } from 'rxjs/operators';
 import { Song, SongId } from '@app/database/songs/song.model';
 import { Icons } from '@app/core/utils/icons.util';
 import { PlayerFacade } from '@app/player/store/player.facade';
 import { MenuItem } from '@app/core/components/menu.component';
-import { ComponentHelperService } from '@app/core/services/component-helper.service';
 import { AlbumFacade } from '@app/database/albums/album.facade';
 import { PictureFacade } from '@app/database/pictures/picture.facade';
 import { SongFacade } from '@app/database/songs/song.facade';
@@ -80,7 +79,7 @@ import { HelperFacade } from '@app/helper/helper.facade';
         <div class="track-list" *ngIf="disks$ | async as disks">
           <ng-container *ngFor="let disk of disks">
             <app-title size="small" *ngIf="disks.length > 1">
-              CD{{ disk.key }}
+              Disk {{ disk.key }}
             </app-title>
             <div class="track-list-container">
               <app-track-list-item
@@ -147,8 +146,7 @@ export class PageAlbumComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private player: PlayerFacade,
-    private helper2: HelperFacade,
-    private helper: ComponentHelperService,
+    private helper: HelperFacade,
     private albums: AlbumFacade,
     private pictures: PictureFacade,
     private songs: SongFacade
@@ -211,22 +209,22 @@ export class PageAlbumComponent implements OnInit {
         {
           text: 'Shuffle play',
           icon: this.icons.shuffle,
-          click: () => this.helper2.playAlbum(album.id, true),
+          click: () => this.helper.playAlbum(album.id, true),
         },
         {
           text: 'Play next',
           icon: this.icons.playlistPlay,
-          click: () => this.helper2.addAlbumToQueue(album.id, true),
+          click: () => this.helper.addAlbumToQueue(album.id, true),
         },
         {
           text: 'Add to queue',
           icon: this.icons.playlistMusic,
-          click: () => this.helper2.addAlbumToQueue(album.id),
+          click: () => this.helper.addAlbumToQueue(album.id),
         },
         {
           text: 'Add to playlist',
           icon: this.icons.playlistPlus,
-          click: () => this.addToPlaylist(),
+          click: () => this.helper.addAlbumToPlaylist(album.id),
         },
       ])
     );
@@ -238,20 +236,10 @@ export class PageAlbumComponent implements OnInit {
   }
 
   play(album: Album): void {
-    this.helper2.playAlbum(album.id);
+    this.helper.playAlbum(album.id);
   }
 
   toggleLiked(album: Album): void {
     this.albums.toggleLiked(album);
-  }
-
-  // TODO
-  addToPlaylist(): void {
-    this.songs$
-      .pipe(
-        first(),
-        tap((songs) => this.helper2.addSongsToPlaylist(songs))
-      )
-      .subscribe();
   }
 }

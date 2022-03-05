@@ -53,7 +53,7 @@ import { PictureFacade } from '@app/database/pictures/picture.facade';
         <app-icon [path]="icons.dotsVertical" [size]="24"></app-icon>
       </button>
     </div>
-    <mat-menu #menu="matMenu" [hasBackdrop]="false">
+    <mat-menu #menu="matMenu" [overlapTrigger]="true">
       <ng-template matMenuContent>
         <button mat-menu-item (click)="shufflePlay.emit()">
           <app-icon [path]="icons.shuffle"></app-icon>
