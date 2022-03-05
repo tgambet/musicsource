@@ -11,6 +11,7 @@ import { ScrollerService } from '@app/main/scroller.service';
 import { DatabaseModule } from '@app/database/database.module';
 import { PlaylistNewComponent } from '@app/core/dialogs/playlist-new.component';
 import { ScannerModule } from '@app/scanner/scanner.module';
+import { HelperModule } from '@app/helper/helper.module';
 
 /*const routes: Routes = [
   {
@@ -139,6 +140,7 @@ const routes: Routes = [
     PlayerModule,
     DatabaseModule,
     ScannerModule,
+    HelperModule,
   ],
   providers: [
     MainGuard,
