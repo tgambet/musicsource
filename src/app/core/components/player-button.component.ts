@@ -176,7 +176,7 @@ export class PlayerButtonComponent implements OnInit {
             }
           } else {
             this.player.setPlaying();
-            this.player.setPlaylist(
+            this.player.setQueue(
               this.playlist.map((s) => s.entryPath),
               this.playlist.indexOf(this.song)
             );

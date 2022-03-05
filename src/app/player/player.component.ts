@@ -21,7 +21,6 @@ import {
 } from 'rxjs';
 import { Song, SongId } from '@app/database/songs/song.model';
 import { PlayerFacade } from '@app/player/store/player.facade';
-import { ComponentHelperService } from '@app/core/services/component-helper.service';
 import { MenuItem } from '@app/core/components/menu.component';
 import { PictureFacade } from '@app/database/pictures/picture.facade';
 import { SongFacade } from '@app/database/songs/song.facade';
@@ -334,8 +333,7 @@ export class PlayerComponent implements OnInit, OnDestroy {
     private player: PlayerFacade,
     private pictures: PictureFacade,
     private songs: SongFacade,
-    private helper: ComponentHelperService,
-    private helper2: HelperFacade,
+    private helper: HelperFacade,
     private cdr: ChangeDetectorRef
   ) {}
 
@@ -472,12 +470,12 @@ export class PlayerComponent implements OnInit, OnDestroy {
       {
         text: 'Play next',
         icon: this.icons.playlistPlay,
-        click: () => this.helper.playNext(song),
+        click: () => this.helper.addSongToQueue(song, true),
       },
       {
         text: 'Add to queue',
         icon: this.icons.playlistMusic,
-        click: () => this.helper.addToQueue(song),
+        click: () => this.helper.addSongToQueue(song, false),
       },
       {
         text: !!song.likedOn ? 'Remove from your likes' : 'Add to your likes',
@@ -487,12 +485,12 @@ export class PlayerComponent implements OnInit, OnDestroy {
       {
         text: 'Add to playlist',
         icon: this.icons.playlistPlus,
-        click: () => this.helper2.addSongsToPlaylist([song]),
+        click: () => this.helper.addSongsToPlaylist([song]),
       },
       {
         text: 'Remove from queue',
         icon: this.icons.minusCircleOutline,
-        click: () => this.helper.removeFromQueue(song),
+        click: () => this.helper.removeSongFromQueue(song),
       },
       {
         text: 'Go to album',

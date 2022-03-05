@@ -6,28 +6,32 @@ import {
   ofType,
   OnRunEffects,
 } from '@ngrx/effects';
-import { concatMap, Observable, of, switchMap } from 'rxjs';
+import { combineLatest, concatMap, Observable, of, switchMap } from 'rxjs';
 import { Router } from '@angular/router';
 import { SongFacade } from '@app/database/songs/song.facade';
 import {
-  addToPlaylist,
+  addToQueue,
   setPlaying,
-  setPlaylist,
+  setQueue,
   show,
 } from '@app/player/store/player.actions';
-import { filter, map, tap } from 'rxjs/operators';
+import { filter, first, map, tap } from 'rxjs/operators';
 import { Song } from '@app/database/songs/song.model';
 import { shuffleArray } from '@app/core/utils';
 import {
   addAlbumToPlaylist,
   addAlbumToQueue,
   addSongsToPlaylist,
+  addSongsToQueue,
+  openSnack,
   playAlbum,
+  removeSongFromQueue,
 } from '@app/helper/helper.actions';
 import { Playlist } from '@app/database/playlists/playlist.model';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { PlaylistFacade } from '@app/database/playlists/playlist.facade';
 import { HelperFacade } from '@app/helper/helper.facade';
+import { PlayerFacade } from '@app/player/store/player.facade';
 
 // noinspection JSUnusedGlobalSymbols
 @Injectable()
@@ -41,8 +45,8 @@ export class HelperEffects implements OnRunEffects {
           concatMap((songs) =>
             of(
               setPlaying({ playing: true }),
-              setPlaylist({
-                playlist: shuffle
+              setQueue({
+                queue: shuffle
                   ? shuffleArray(songs.map((s) => s.entryPath))
                   : songs.map((s) => s.entryPath),
                 currentIndex: 0,
@@ -61,14 +65,12 @@ export class HelperEffects implements OnRunEffects {
       switchMap(({ id, next }) =>
         this.songs.getByAlbumKey(id).pipe(
           filter((songs): songs is Song[] => !!songs),
-          concatMap((songs) =>
-            of(
-              addToPlaylist({
-                playlist: songs.map((s) => s.entryPath),
-                next,
-              }),
-              show()
-            )
+          map((songs) =>
+            addSongsToQueue({
+              songs,
+              next,
+              message: next ? 'Album will play next' : 'Album added to queue',
+            })
           )
         )
       )
@@ -124,13 +126,67 @@ export class HelperEffects implements OnRunEffects {
     )
   );
 
+  openSnack$ = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(openSnack),
+        switchMap(({ message }) =>
+          this.player.isShown$().pipe(
+            first(),
+            tap((shown) =>
+              this.snack.open(message, undefined, {
+                panelClass: shown ? 'snack-top' : 'snack',
+              })
+            )
+          )
+        )
+      ),
+    { dispatch: false }
+  );
+
+  addSongsToQueue$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(addSongsToQueue),
+      concatMap(({ songs, next, message }) =>
+        of(
+          addToQueue({ queue: songs.map((s) => s.entryPath), next }),
+          show(),
+          openSnack({ message })
+        )
+      )
+    )
+  );
+
+  removeSongFromQueue$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(removeSongFromQueue),
+      concatMap(({ song }) =>
+        combineLatest([
+          this.player.getPlaylist$(),
+          this.player.getCurrentIndex$(),
+        ]).pipe(
+          first(),
+          map(([playlist, index]) => {
+            const newPlaylist = [...playlist];
+            newPlaylist.splice(playlist.indexOf(song.entryPath), 1);
+            return setQueue({
+              queue: newPlaylist,
+              currentIndex: Math.min(index, newPlaylist.length - 1),
+            });
+          })
+        )
+      )
+    )
+  );
+
   constructor(
     private actions$: Actions,
     private router: Router,
     private songs: SongFacade,
     private snack: MatSnackBar,
     private playlists: PlaylistFacade,
-    private helper: HelperFacade
+    private helper: HelperFacade,
+    private player: PlayerFacade
   ) {}
 
   ngrxOnRunEffects(

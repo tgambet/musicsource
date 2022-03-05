@@ -6,7 +6,6 @@ import {
 } from '@angular/core';
 import { Song } from '@app/database/songs/song.model';
 import { Icons } from '@app/core/utils/icons.util';
-import { ComponentHelperService } from '@app/core/services/component-helper.service';
 import { Observable } from 'rxjs';
 import { PictureFacade } from '@app/database/pictures/picture.facade';
 import { SongFacade } from '@app/database/songs/song.facade';
@@ -190,8 +189,7 @@ export class SongListItemComponent implements OnInit {
   icons = Icons;
 
   constructor(
-    private helper2: HelperFacade,
-    private helper: ComponentHelperService,
+    private helper: HelperFacade,
     private pictures: PictureFacade,
     private songs: SongFacade
   ) {}
@@ -209,14 +207,14 @@ export class SongListItemComponent implements OnInit {
   }
 
   playNext(song: Song): void {
-    this.helper.playNext(song);
+    this.helper.addSongToQueue(song, true);
   }
 
   addToQueue(song: Song): void {
-    this.helper.addToQueue(song);
+    this.helper.addSongToQueue(song, false);
   }
 
   addSongToPlaylist(song: Song): void {
-    this.helper2.addSongsToPlaylist([song]);
+    this.helper.addSongsToPlaylist([song]);
   }
 }

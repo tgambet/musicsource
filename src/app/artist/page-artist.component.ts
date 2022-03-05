@@ -10,7 +10,6 @@ import { Artist, ArtistId } from '@app/database/artists/artist.model';
 import { ActivatedRoute } from '@angular/router';
 import { Album } from '@app/database/albums/album.model';
 import { Song } from '@app/database/songs/song.model';
-import { ComponentHelperService } from '@app/core/services/component-helper.service';
 import { HistoryService } from '@app/core/services/history.service';
 import { ArtistFacade } from '@app/database/artists/artist.facade';
 import { AlbumFacade } from '@app/database/albums/album.facade';
@@ -180,7 +179,6 @@ export class PageArtistComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private cdr: ChangeDetectorRef,
-    private helper: ComponentHelperService,
     private history: HistoryService,
     private artists: ArtistFacade,
     private pictures: PictureFacade,
