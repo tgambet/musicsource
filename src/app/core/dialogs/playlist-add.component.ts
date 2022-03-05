@@ -17,7 +17,7 @@ import { PlaylistFacade } from '@app/database/playlists/playlist.facade';
       </ng-container>
     </mat-dialog-content>
     <div class="dialog-actions">
-      <button mat-button [mat-dialog-close]="true" class="new-playlist">
+      <button mat-button [mat-dialog-close]="null" class="new-playlist">
         New playlist
       </button>
     </div>

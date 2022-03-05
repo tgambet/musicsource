@@ -25,6 +25,7 @@ import { ComponentHelperService } from '@app/core/services/component-helper.serv
 import { MenuItem } from '@app/core/components/menu.component';
 import { PictureFacade } from '@app/database/pictures/picture.facade';
 import { SongFacade } from '@app/database/songs/song.facade';
+import { HelperFacade } from '@app/helper/helper.facade';
 
 @Component({
   selector: 'app-player',
@@ -334,6 +335,7 @@ export class PlayerComponent implements OnInit, OnDestroy {
     private pictures: PictureFacade,
     private songs: SongFacade,
     private helper: ComponentHelperService,
+    private helper2: HelperFacade,
     private cdr: ChangeDetectorRef
   ) {}
 
@@ -485,7 +487,7 @@ export class PlayerComponent implements OnInit, OnDestroy {
       {
         text: 'Add to playlist',
         icon: this.icons.playlistPlus,
-        click: () => this.helper.addSongsToPlaylist([song]),
+        click: () => this.helper2.addSongsToPlaylist([song]),
       },
       {
         text: 'Remove from queue',

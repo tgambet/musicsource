@@ -1,24 +1,13 @@
 import { Injectable } from '@angular/core';
 import { first, tap } from 'rxjs/operators';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { combineLatest, EMPTY, Observable } from 'rxjs';
+import { combineLatest } from 'rxjs';
 import { Song } from '@app/database/songs/song.model';
-import { PlaylistAddComponent } from '@app/core/dialogs/playlist-add.component';
-import { MatDialog } from '@angular/material/dialog';
-import { Router } from '@angular/router';
 import { PlayerFacade } from '@app/player/store/player.facade';
-import { PlaylistFacade } from '@app/database/playlists/playlist.facade';
-import { NoopScrollStrategy } from '@angular/cdk/overlay';
 
 @Injectable()
 export class ComponentHelperService {
-  constructor(
-    private player: PlayerFacade,
-    private snack: MatSnackBar,
-    private dialog: MatDialog,
-    private router: Router,
-    private playlists: PlaylistFacade //private songs: SongFacade
-  ) {}
+  constructor(private player: PlayerFacade, private snack: MatSnackBar) {}
 
   // toggleLikedSong(song: Song): Observable<Song> {
   //   return this.library
@@ -67,84 +56,84 @@ export class ComponentHelperService {
   //   // );
   // }
 
-  addSongsToPlaylist(songs: Song[]): void {
-    const dialog = this.dialog.open(PlaylistAddComponent, {
-      width: '275px',
-      maxHeight: '80%',
-      height: 'auto',
-      panelClass: 'playlists-dialog',
-      scrollStrategy: new NoopScrollStrategy(),
-    });
+  // addSongsToPlaylist(songs: Song[]): void {
+  //   const dialog = this.dialog.open(PlaylistAddComponent, {
+  //     width: '275px',
+  //     maxHeight: '80%',
+  //     height: 'auto',
+  //     panelClass: 'playlists-dialog',
+  //     scrollStrategy: new NoopScrollStrategy(),
+  //   });
+  //
+  //   dialog
+  //     .afterClosed()
+  //     .pipe(
+  //       tap((result) => {
+  //         if (result === undefined) {
+  //           return;
+  //         }
+  //         if (result === true) {
+  //           // Redirect to new playlist and add song
+  //           return;
+  //         } else {
+  //           const snack = this.snack.open(`Added to ${result.title}`, 'VIEW', {
+  //             panelClass: 'snack-top',
+  //           });
+  //
+  //           snack
+  //             .onAction()
+  //             .pipe(
+  //               tap(() => this.router.navigate(['/', 'playlist', result.hash]))
+  //             )
+  //             .subscribe();
+  //
+  //           this.playlists.addSongsTo(result, songs);
+  //         }
+  //       })
+  //       // concatTap(
+  //       //   (result) =>
+  //       //     result === undefined
+  //       //       ? EMPTY
+  //       //       : result === true
+  //       //       ? EMPTY
+  //       //       : of(this.playlists.addSongsToPlaylist(result, songs))
+  //       //   // .pipe(
+  //       //   //   concatMap((key) =>
+  //       //   //     this.player.isShown$().pipe(
+  //       //   //       first(),
+  //       //   //       concatMap((shown) =>
+  //       //   //         this.snack
+  //       //   //           .open(`Added to ${result}`, 'VIEW', {
+  //       //   //             panelClass: shown ? 'snack-top' : 'snack',
+  //       //   //           })
+  //       //   //           .onAction()
+  //       //   //       ),
+  //       //   //       tap(() =>
+  //       //   //         this.router.navigate(['/', 'playlist', key.toString()])
+  //       //   //       )
+  //       //   //     )
+  //       //   //   )
+  //       //   // )
+  //       // ),
+  //       // map(() => void 0)
+  //     )
+  //     .subscribe();
+  // }
 
-    dialog
-      .afterClosed()
-      .pipe(
-        tap((result) => {
-          if (result === undefined) {
-            return;
-          }
-          if (result === true) {
-            // TODO Redirect to new playlist and add song
-            return;
-          } else {
-            const snack = this.snack.open(`Added to ${result.title}`, 'VIEW', {
-              panelClass: 'snack-top', // TODO
-            });
-
-            snack
-              .onAction()
-              .pipe(
-                tap(() => this.router.navigate(['/', 'playlist', result.hash]))
-              )
-              .subscribe();
-
-            this.playlists.addSongsTo(result, songs);
-          }
-        })
-        // concatTap(
-        //   (result) =>
-        //     result === undefined
-        //       ? EMPTY
-        //       : result === true
-        //       ? EMPTY // TODO Redirect to new playlist and add song
-        //       : of(this.playlists.addSongsToPlaylist(result, songs))
-        //   // .pipe(
-        //   //   concatMap((key) =>
-        //   //     this.player.isShown$().pipe(
-        //   //       first(),
-        //   //       concatMap((shown) =>
-        //   //         this.snack
-        //   //           .open(`Added to ${result}`, 'VIEW', {
-        //   //             panelClass: shown ? 'snack-top' : 'snack',
-        //   //           })
-        //   //           .onAction()
-        //   //       ),
-        //   //       tap(() =>
-        //   //         this.router.navigate(['/', 'playlist', key.toString()])
-        //   //       )
-        //   //     )
-        //   //   )
-        //   // )
-        // ),
-        // map(() => void 0)
-      )
-      .subscribe();
-  }
-
-  shufflePlayArtist(/*artist: Artist*/): Observable<Song[]> {
-    return EMPTY;
-    // return this.songs.getByArtistKey(artist.id).pipe(
-    //   first(),
-    //   filter((songs): songs is Song[] => !!songs),
-    //   map((songs) => shuffleArray(songs)),
-    //   map((songs) => songs.slice(0, 100)),
-    //   tap((songs) => {
-    //     this.player.setPlaying();
-    //     this.player.setPlaylist(songs);
-    //     this.player.show();
-    //   })
-    // );
-  }
+  // shufflePlayArtist(/*artist: Artist*/): Observable<Song[]> {
+  //   return EMPTY;
+  //   // return this.songs.getByArtistKey(artist.id).pipe(
+  //   //   first(),
+  //   //   filter((songs): songs is Song[] => !!songs),
+  //   //   map((songs) => shuffleArray(songs)),
+  //   //   map((songs) => songs.slice(0, 100)),
+  //   //   tap((songs) => {
+  //   //     this.player.setPlaying();
+  //   //     this.player.setPlaylist(songs);
+  //   //     this.player.show();
+  //   //   })
+  //   // );
+  // }
 
   playNext(song: Song): void {
     this.player.addToPlaylist([song.entryPath], true);

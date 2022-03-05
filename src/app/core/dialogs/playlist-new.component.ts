@@ -1,5 +1,5 @@
-import { ChangeDetectionStrategy, Component, ViewChild } from '@angular/core';
-import { MatDialogConfig } from '@angular/material/dialog';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
 import { NoopScrollStrategy } from '@angular/cdk/overlay';
 import {
   AbstractControl,
@@ -8,9 +8,7 @@ import {
   ValidationErrors,
   Validators,
 } from '@angular/forms';
-import { RoutedDialogDirective } from '@app/core/directives/routed-dialog.directive';
 import { Observable } from 'rxjs';
-import { ActivatedRoute, Router } from '@angular/router';
 import { first, map } from 'rxjs/operators';
 import { PlaylistFacade } from '@app/database/playlists/playlist.facade';
 import {
@@ -41,46 +39,39 @@ import {
 @Component({
   selector: 'app-playlist-dialog',
   template: `
-    <ng-template
-      appRoutedDialog
-      outlet="dialog"
-      [config]="config"
-      #dialog="appRoutedDialog"
-    >
-      <app-title size="small">New playlist</app-title>
-      <form class="example-form" [formGroup]="form" (submit)="createPlaylist()">
-        <mat-form-field
-          class="example-full-width"
-          color="accent"
-          hideRequiredMarker="true"
-        >
-          <mat-label>Title</mat-label>
-          <input
-            matInput
-            placeholder=""
-            type="text"
-            required
-            formControlName="title"
-          />
-          <mat-error *ngIf="form.get('title')?.hasError('required')">
-            Required
-          </mat-error>
-          <mat-error *ngIf="form.get('title')?.hasError('taken')">
-            A playlist with that name already exists
-          </mat-error>
-        </mat-form-field>
-        <mat-form-field class="example-full-width" color="accent">
-          <mat-label>Description</mat-label>
-          <input matInput placeholder="" formControlName="description" />
-        </mat-form-field>
-        <div class="actions">
-          <button mat-button color="accent" matDialogClose type="reset">
-            Cancel
-          </button>
-          <button mat-raised-button color="accent">Save</button>
-        </div>
-      </form>
-    </ng-template>
+    <app-title size="small">New playlist</app-title>
+    <form class="example-form" [formGroup]="form" (submit)="createPlaylist()">
+      <mat-form-field
+        class="example-full-width"
+        color="accent"
+        hideRequiredMarker="true"
+      >
+        <mat-label>Title</mat-label>
+        <input
+          matInput
+          placeholder=""
+          type="text"
+          required
+          formControlName="title"
+        />
+        <mat-error *ngIf="form.get('title')?.hasError('required')">
+          Required
+        </mat-error>
+        <mat-error *ngIf="form.get('title')?.hasError('taken')">
+          A playlist with that name already exists
+        </mat-error>
+      </mat-form-field>
+      <mat-form-field class="example-full-width" color="accent">
+        <mat-label>Description</mat-label>
+        <input matInput placeholder="" formControlName="description" />
+      </mat-form-field>
+      <div class="actions">
+        <button mat-button color="accent" [matDialogClose]="false" type="reset">
+          Cancel
+        </button>
+        <button mat-raised-button color="accent">Save</button>
+      </div>
+    </form>
   `,
   styles: [
     `
@@ -108,9 +99,6 @@ import {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PlaylistNewComponent {
-  @ViewChild('dialog', { static: true })
-  dialog!: RoutedDialogDirective;
-
   config: MatDialogConfig = {
     width: '90%',
     maxWidth: '500px',
@@ -136,9 +124,8 @@ export class PlaylistNewComponent {
   });
 
   constructor(
-    private route: ActivatedRoute,
-    private router: Router,
-    private playlists: PlaylistFacade
+    private playlists: PlaylistFacade,
+    private dialog: MatDialogRef<PlaylistNewComponent>
   ) {}
 
   createPlaylist(): void {
@@ -151,7 +138,7 @@ export class PlaylistNewComponent {
         ...f,
       };
       this.playlists.create(playlist);
-      this.dialog.close();
+      this.dialog.close(playlist);
     }
   }
 }
