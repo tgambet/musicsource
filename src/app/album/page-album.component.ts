@@ -19,6 +19,7 @@ import { ComponentHelperService } from '@app/core/services/component-helper.serv
 import { AlbumFacade } from '@app/database/albums/album.facade';
 import { PictureFacade } from '@app/database/pictures/picture.facade';
 import { SongFacade } from '@app/database/songs/song.facade';
+import { HelperFacade } from '@app/helper/helper.facade';
 
 @Component({
   selector: 'app-page-album',
@@ -70,8 +71,7 @@ import { SongFacade } from '@app/database/songs/song.facade';
             </button>
             <app-menu
               [disableRipple]="true"
-              [hasBackdrop]="true"
-              [menuItems]="menuItems"
+              [menuItems]="menuItems$ | async"
             ></app-menu>
           </div>
         </app-container-page>
@@ -140,17 +140,15 @@ export class PageAlbumComponent implements OnInit {
 
   cover$!: Observable<string | undefined>;
 
-  menuItems!: MenuItem[];
+  menuItems$!: Observable<MenuItem[]>;
 
   icons = Icons;
 
   constructor(
     private route: ActivatedRoute,
     private player: PlayerFacade,
-    // private snack: MatSnackBar,
-    // private dialog: MatDialog,
+    private helper2: HelperFacade,
     private helper: ComponentHelperService,
-    // private history: HistoryService,
     private albums: AlbumFacade,
     private pictures: PictureFacade,
     private songs: SongFacade
@@ -208,88 +206,30 @@ export class PageAlbumComponent implements OnInit {
       )
     );
 
-    this.menuItems = this.getMenuItem();
-  }
-
-  play(album: Album, index = 0): void {
-    this.songs$
-      .pipe(
-        first(),
-        tap((songs) => {
-          this.player.setPlaying();
-          this.player.setPlaylist(
-            songs.map((s) => s.entryPath),
-            index
-          );
-          this.player.show();
-          // this.history.albumPlayed(album);
-        })
-      )
-      .subscribe();
-  }
-
-  shufflePlay(): void {
-    this.songs$
-      .pipe(
-        first(),
-        tap((songs) => {
-          this.player.setPlaying();
-          this.player.setPlaylist(songs.map((s) => s.entryPath));
-          this.player.shuffle();
-          this.player.show();
-          // this.history.albumPlayed(album);
-        })
-      )
-      .subscribe();
-  }
-
-  addToQueue(next?: boolean): void {
-    this.songs$
-      .pipe(
-        first(),
-        tap((songs) => {
-          this.player.addToPlaylist(
-            songs.map((s) => s.entryPath),
-            next
-          );
-          this.player.show();
-        })
-      )
-      .subscribe();
-  }
-
-  addToPlaylist(): void {
-    this.songs$
-      .pipe(
-        first(),
-        tap((songs) => this.helper.addSongsToPlaylist(songs))
-      )
-      .subscribe();
-  }
-
-  getMenuItem(): MenuItem[] {
-    return [
-      {
-        text: 'Shuffle play',
-        icon: this.icons.shuffle,
-        click: () => this.shufflePlay(),
-      },
-      {
-        text: 'Play next',
-        icon: this.icons.playlistPlay,
-        click: () => this.addToQueue(true),
-      },
-      {
-        text: 'Add to queue',
-        icon: this.icons.playlistMusic,
-        click: () => this.addToQueue(),
-      },
-      {
-        text: 'Add to playlist',
-        icon: this.icons.playlistPlus,
-        click: () => this.addToPlaylist(),
-      },
-    ];
+    this.menuItems$ = this.album$.pipe(
+      map((album) => [
+        {
+          text: 'Shuffle play',
+          icon: this.icons.shuffle,
+          click: () => this.helper2.playAlbum(album.id, true),
+        },
+        {
+          text: 'Play next',
+          icon: this.icons.playlistPlay,
+          click: () => this.helper2.addAlbumToQueue(album.id, true),
+        },
+        {
+          text: 'Add to queue',
+          icon: this.icons.playlistMusic,
+          click: () => this.helper2.addAlbumToQueue(album.id),
+        },
+        {
+          text: 'Add to playlist',
+          icon: this.icons.playlistPlus,
+          click: () => this.addToPlaylist(),
+        },
+      ])
+    );
   }
 
   getLength(songs: Song[]): number {
@@ -297,7 +237,21 @@ export class PageAlbumComponent implements OnInit {
     return Math.floor(sec / 60);
   }
 
+  play(album: Album): void {
+    this.helper2.playAlbum(album.id);
+  }
+
   toggleLiked(album: Album): void {
     this.albums.toggleLiked(album);
+  }
+
+  // TODO
+  addToPlaylist(): void {
+    this.songs$
+      .pipe(
+        first(),
+        tap((songs) => this.helper.addSongsToPlaylist(songs))
+      )
+      .subscribe();
   }
 }

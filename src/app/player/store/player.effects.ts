@@ -142,7 +142,7 @@ export class PlayerEffects implements OnRunEffects {
   );
 
   mute$ = createEffect(
-    () => () =>
+    () =>
       this.actions$.pipe(
         ofType(toggleMute),
         tap(() => this.audio.toggleMute())

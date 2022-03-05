@@ -135,7 +135,7 @@ export class CoverComponent {
   @Input() playlist!: Song[] | null | undefined;
   @Input() title!: string;
   @Input() coverRouterLink!: any[] | string;
-  @Input() menuItems!: MenuItem[];
+  @Input() menuItems!: MenuItem[] | null;
   @Input() menuTriggerIcon = Icons.dotsVertical;
   @Output() playlistPlayed = new EventEmitter<void>();
 }
