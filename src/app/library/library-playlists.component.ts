@@ -14,6 +14,7 @@ import {
   scheduled,
 } from 'rxjs';
 import { PlaylistFacade } from '@app/database/playlists/playlist.facade';
+import { HelperFacade } from '@app/helper/helper.facade';
 
 @Component({
   selector: 'app-library-playlists',
@@ -24,26 +25,10 @@ import { PlaylistFacade } from '@app/database/playlists/playlist.facade';
     >
       <div class="playlists">
         <div class="playlist new">
-          <a
-            class="cover"
-            matRipple
-            [routerLink]="['/', { outlets: { dialog: 'new-playlist' } }]"
-            [preserveFragment]="true"
-            queryParamsHandling="preserve"
-          >
+          <a class="cover" matRipple (click)="newPlaylist()">
             <app-icon [path]="icons.plus" [size]="36"></app-icon>
           </a>
-          <app-label
-            [topLabel]="{
-              text: 'New playlist',
-              routerLink: [
-                '/',
-                'library',
-                { outlets: { dialog: 'new-playlist' } }
-              ]
-            }"
-            size="small"
-          ></app-label>
+          <app-label [topLabel]="'New playlist'" size="small"></app-label>
         </div>
         <!--        <div-->
         <!--          class="playlist"-->
@@ -80,6 +65,7 @@ import { PlaylistFacade } from '@app/database/playlists/playlist.facade';
         width: 160px;
       }
       .new .cover {
+        cursor: pointer;
         width: 160px;
         height: 160px;
         display: flex;
@@ -108,7 +94,7 @@ export class LibraryPlaylistsComponent implements OnInit {
   sort!: any;
 
   constructor(
-    // private library: LibraryFacade,
+    private helper: HelperFacade,
     private playlists: PlaylistFacade,
     private router: Router,
     private route: ActivatedRoute
@@ -179,4 +165,7 @@ export class LibraryPlaylistsComponent implements OnInit {
   // playlistUpdate(): void {
   //   this.cdr.markForCheck();
   // }
+  newPlaylist() {
+    this.helper.newPlaylistDialog(); // TODO snack
+  }
 }

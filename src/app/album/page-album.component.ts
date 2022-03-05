@@ -250,7 +250,7 @@ export class PageAlbumComponent implements OnInit {
     this.songs$
       .pipe(
         first(),
-        tap((songs) => this.helper.addSongsToPlaylist(songs))
+        tap((songs) => this.helper2.addSongsToPlaylist(songs))
       )
       .subscribe();
   }

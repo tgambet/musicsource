@@ -9,7 +9,6 @@ import { MainGuard } from '@app/main/main.guard';
 import { PagePlaylistLikesComponent } from '@app/playlist/page-playlist-likes.component';
 import { ScrollerService } from '@app/main/scroller.service';
 import { DatabaseModule } from '@app/database/database.module';
-import { PlaylistNewComponent } from '@app/core/dialogs/playlist-new.component';
 import { ScannerModule } from '@app/scanner/scanner.module';
 import { HelperModule } from '@app/helper/helper.module';
 
@@ -80,12 +79,6 @@ import { HelperModule } from '@app/helper/helper.module';
 ];*/
 
 const routes: Routes = [
-  // TODO
-  {
-    outlet: 'dialog',
-    path: 'new-playlist',
-    component: PlaylistNewComponent,
-  },
   {
     path: '',
     component: MainComponent,

@@ -11,6 +11,7 @@ import { Observable } from 'rxjs';
 import { PictureFacade } from '@app/database/pictures/picture.facade';
 import { SongFacade } from '@app/database/songs/song.facade';
 import { getArtistId } from '@app/database/artists/artist.model';
+import { HelperFacade } from '@app/helper/helper.facade';
 
 @Component({
   selector: 'app-song-list-item',
@@ -189,6 +190,7 @@ export class SongListItemComponent implements OnInit {
   icons = Icons;
 
   constructor(
+    private helper2: HelperFacade,
     private helper: ComponentHelperService,
     private pictures: PictureFacade,
     private songs: SongFacade
@@ -215,6 +217,6 @@ export class SongListItemComponent implements OnInit {
   }
 
   addSongToPlaylist(song: Song): void {
-    this.helper.addSongsToPlaylist([song]);
+    this.helper2.addSongsToPlaylist([song]);
   }
 }

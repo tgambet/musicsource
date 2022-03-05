@@ -132,7 +132,7 @@ export class AlbumComponent implements OnInit {
               .getByAlbumKey(album.id)
               .pipe(
                 first(),
-                tap((tracks) => this.helper.addSongsToPlaylist(tracks || []))
+                tap((tracks) => this.helper2.addSongsToPlaylist(tracks || []))
               )
               .subscribe();
           },

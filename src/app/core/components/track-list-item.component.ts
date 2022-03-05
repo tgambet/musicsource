@@ -4,6 +4,7 @@ import { Icons } from '@app/core/utils/icons.util';
 import { PlayerFacade } from '@app/player/store/player.facade';
 import { ComponentHelperService } from '@app/core/services/component-helper.service';
 import { SongFacade } from '@app/database/songs/song.facade';
+import { HelperFacade } from '@app/helper/helper.facade';
 
 @Component({
   selector: 'app-track-list-item',
@@ -140,6 +141,7 @@ export class TrackListItemComponent {
 
   constructor(
     private player: PlayerFacade,
+    private helper2: HelperFacade,
     private helper: ComponentHelperService,
     private songs: SongFacade
   ) {}
@@ -157,6 +159,6 @@ export class TrackListItemComponent {
   }
 
   addSongToPlaylist(song: Song): void {
-    this.helper.addSongsToPlaylist([song]);
+    this.helper2.addSongsToPlaylist([song]);
   }
 }
