@@ -57,6 +57,14 @@ export class DatabaseService {
     );
   }
 
+  delete$<T>(store: string, key: IDBValidKey): Observable<undefined> {
+    return this.db$.pipe(
+      concatMap((db) => db.transaction$(store, 'readwrite')),
+      map((transaction) => transaction.objectStore<T>(store)),
+      concatMap((objStore) => objStore.delete$(key))
+    );
+  }
+
   updateMany$<T extends { id: T['id'] }>(
     store: string,
     updates: IdUpdate<T>[]
