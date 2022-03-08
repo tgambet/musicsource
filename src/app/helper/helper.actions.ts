@@ -50,5 +50,17 @@ export const removeSongFromQueue = createAction(
 
 export const openSnack = createAction(
   'helper/snack-open',
-  props<{ message: string }>()
+  props<{ message: string; action?: string; cb?: () => void }>()
+);
+
+export const createPlaylist = createAction('helper/playlist-new');
+
+export const deletePlaylist = createAction(
+  'helper/playlist-delete',
+  props<{ id: PlaylistId }>()
+);
+
+export const editPlaylist = createAction(
+  'helper/playlist-edit',
+  props<{ id: PlaylistId }>()
 );

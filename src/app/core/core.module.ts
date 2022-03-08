@@ -46,6 +46,7 @@ import { PlaylistNewComponent } from '@app/core/dialogs/playlist-new.component';
 import { PlaylistAddComponent } from '@app/core/dialogs/playlist-add.component';
 import { HistoryService } from '@app/core/services/history.service';
 import { ArtistListItemComponent } from '@app/core/components/artist-list-item.component';
+import { ConfirmComponent } from '@app/core/dialogs/confirm.component';
 
 const IMPORTS = [
   CommonModule,
@@ -70,6 +71,7 @@ const DECLARATIONS = [
   AlbumComponent,
   ArtistComponent,
   ArtistListItemComponent,
+  ConfirmComponent,
   ContainerComponent,
   ContainerHomeComponent,
   ContainerPageComponent,

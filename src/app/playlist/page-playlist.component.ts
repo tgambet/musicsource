@@ -9,7 +9,7 @@ import { PictureFacade } from '@app/database/pictures/picture.facade';
 import { SongFacade } from '@app/database/songs/song.facade';
 import { PlaylistFacade } from '@app/database/playlists/playlist.facade';
 import { HelperFacade } from '@app/helper/helper.facade';
-import { map } from 'rxjs/operators';
+import { filter, map } from 'rxjs/operators';
 import { MenuItem } from '@app/core/components/menu.component';
 
 @Component({
@@ -148,9 +148,9 @@ export class PagePlaylistComponent implements OnInit {
   ngOnInit(): void {
     const playlistKey = this.route.snapshot.data.info as PlaylistId;
 
-    this.playlist$ = this.playlists.getByKey(
-      playlistKey
-    ) as Observable<Playlist>;
+    this.playlist$ = this.playlists
+      .getByKey(playlistKey)
+      .pipe(filter((playlist): playlist is Playlist => !!playlist));
 
     this.cover$ = this.playlist$.pipe(
       switchMap((playlist) => this.pictures.getCover(playlist.pictureKey))
@@ -165,11 +165,6 @@ export class PagePlaylistComponent implements OnInit {
     this.menuItems$ = this.playlist$.pipe(
       map((playlist) => [
         {
-          text: 'Shuffle play',
-          icon: this.icons.shuffle,
-          click: () => this.helper.playPlaylist(playlist.id, true),
-        },
-        {
           text: 'Play next',
           icon: this.icons.playlistPlay,
           click: () => this.helper.addPlaylistToQueue(playlist.id, true),
@@ -183,6 +178,16 @@ export class PagePlaylistComponent implements OnInit {
           text: 'Add to playlist',
           icon: this.icons.playlistPlus,
           click: () => this.helper.addPlaylistToPlaylist(playlist.id),
+        },
+        {
+          text: 'Edit playlist',
+          icon: this.icons.playlistEdit,
+          click: () => this.helper.editPlaylist(playlist.id),
+        },
+        {
+          text: 'Delete playlist',
+          icon: this.icons.delete,
+          click: () => this.helper.deletePlaylist(playlist.id),
         },
       ])
     );

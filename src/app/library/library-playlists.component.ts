@@ -155,10 +155,7 @@ export class LibraryPlaylistsComponent implements OnInit {
     return playlist.title;
   }
 
-  // playlistUpdate(): void {
-  //   this.cdr.markForCheck();
-  // }
   newPlaylist() {
-    this.helper.newPlaylistDialog(); // TODO snack
+    this.helper.createEmptyPlaylist();
   }
 }
