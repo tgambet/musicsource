@@ -12,26 +12,6 @@ import { first, map } from 'rxjs/operators';
 import { PlaylistFacade } from '@app/database/playlists/playlist.facade';
 import { PlaylistId } from '@app/database/playlists/playlist.model';
 
-// @Directive({
-//   selector: '[appUniquePlaylistTitleValidator]',
-//   providers: [
-//     {
-//       provide: NG_ASYNC_VALIDATORS,
-//       useExisting: UniquePlaylistTitleValidator,
-//       multi: true,
-//     },
-//   ],
-// })
-// export class UniquePlaylistTitleValidator implements AsyncValidator {
-//   constructor(private library: LibraryFacade) {}
-//
-//   validate(ctrl: AbstractControl): Observable<ValidationErrors | null> {
-//     return this.library
-//       .getPlaylist(ctrl.value)
-//       .pipe(map((p) => (p ? { taken: 'title' } : null)));
-//   }
-// }
-
 export interface PlaylistData {
   id?: PlaylistId;
   title: string;
