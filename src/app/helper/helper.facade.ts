@@ -8,17 +8,30 @@ import {
   addPlaylistToQueue,
   addSongsToPlaylist,
   addSongsToQueue,
+  createPlaylist,
+  deletePlaylist,
+  editPlaylist,
   playAlbum,
   playPlaylist,
   removeSongFromQueue,
 } from './helper.actions';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
-import { PlaylistNewComponent } from '@app/core/dialogs/playlist-new.component';
+import {
+  PlaylistData,
+  PlaylistNewComponent,
+} from '@app/core/dialogs/playlist-new.component';
 import { NoopScrollStrategy } from '@angular/cdk/overlay';
 import { Song, SongId } from '@app/database/songs/song.model';
 import { Router } from '@angular/router';
-import { Playlist, PlaylistId } from '@app/database/playlists/playlist.model';
+import {
+  getPlaylistId,
+  Playlist,
+  PlaylistId,
+} from '@app/database/playlists/playlist.model';
 import { PlaylistAddComponent } from '@app/core/dialogs/playlist-add.component';
+import { filter, map, tap } from 'rxjs/operators';
+import * as PlaylistsActions from '@app/database/playlists/playlist.actions';
+import { Observable } from 'rxjs';
 
 @Injectable()
 export class HelperFacade {
@@ -28,7 +41,27 @@ export class HelperFacade {
     private dialog: MatDialog
   ) {}
 
-  newPlaylistDialog(): MatDialogRef<PlaylistNewComponent, null | Playlist> {
+  newPlaylist(): Observable<Playlist> {
+    return this.newPlaylistDialog()
+      .afterClosed()
+      .pipe(
+        filter((data): data is PlaylistData => !!data),
+        map((data) => ({
+          songs: [],
+          createdOn: new Date().getTime(),
+          id: getPlaylistId(data.title + Date.now()),
+          title: data.title,
+          description: data.description,
+        })),
+        tap((playlist) =>
+          this.store.dispatch(PlaylistsActions.addPlaylist({ playlist }))
+        )
+      );
+  }
+
+  newPlaylistDialog(
+    data?: PlaylistData
+  ): MatDialogRef<PlaylistNewComponent, null | PlaylistData> {
     return this.dialog.open(PlaylistNewComponent, {
       width: '90%',
       maxWidth: '500px',
@@ -36,6 +69,7 @@ export class HelperFacade {
       disableClose: true,
       scrollStrategy: new NoopScrollStrategy(),
       closeOnNavigation: false,
+      data,
     });
   }
 
@@ -94,5 +128,17 @@ export class HelperFacade {
 
   addPlaylistToPlaylist(id: PlaylistId): void {
     this.store.dispatch(addPlaylistToPlaylist({ id }));
+  }
+
+  deletePlaylist(id: PlaylistId): void {
+    this.store.dispatch(deletePlaylist({ id }));
+  }
+
+  editPlaylist(id: PlaylistId): void {
+    this.store.dispatch(editPlaylist({ id }));
+  }
+
+  createEmptyPlaylist(): void {
+    this.store.dispatch(createPlaylist());
   }
 }

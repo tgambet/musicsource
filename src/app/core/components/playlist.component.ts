@@ -149,9 +149,14 @@ export class PlaylistComponent implements OnInit {
           disabled: playlist.songs.length === 0,
         },
         {
+          text: 'Edit playlist',
+          icon: Icons.playlistEdit,
+          click: () => this.helper.editPlaylist(playlist.id),
+        },
+        {
           icon: Icons.delete,
           text: 'Delete playlist',
-          click: () => this.playlists.delete(playlist.id),
+          click: () => this.helper.deletePlaylist(playlist.id),
         },
       ])
     );

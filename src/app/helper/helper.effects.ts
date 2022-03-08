@@ -6,7 +6,14 @@ import {
   ofType,
   OnRunEffects,
 } from '@ngrx/effects';
-import { combineLatest, concatMap, Observable, of, switchMap } from 'rxjs';
+import {
+  combineLatest,
+  concatMap,
+  EMPTY,
+  Observable,
+  of,
+  switchMap,
+} from 'rxjs';
 import { Router } from '@angular/router';
 import { SongFacade } from '@app/database/songs/song.facade';
 import {
@@ -15,6 +22,7 @@ import {
   setQueue,
   show,
 } from '@app/player/store/player.actions';
+import * as PlaylistActions from '@app/database/playlists/playlist.actions';
 import { filter, first, map, tap } from 'rxjs/operators';
 import { Song } from '@app/database/songs/song.model';
 import { shuffleArray } from '@app/core/utils';
@@ -25,6 +33,9 @@ import {
   addPlaylistToQueue,
   addSongsToPlaylist,
   addSongsToQueue,
+  createPlaylist,
+  deletePlaylist,
+  editPlaylist,
   openSnack,
   playAlbum,
   playPlaylist,
@@ -35,6 +46,9 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { PlaylistFacade } from '@app/database/playlists/playlist.facade';
 import { HelperFacade } from '@app/helper/helper.facade';
 import { PlayerFacade } from '@app/player/store/player.facade';
+import { MatDialog } from '@angular/material/dialog';
+import { ConfirmComponent } from '@app/core/dialogs/confirm.component';
+import { PlaylistData } from '@app/core/dialogs/playlist-new.component';
 
 // noinspection JSUnusedGlobalSymbols
 @Injectable()
@@ -103,6 +117,16 @@ export class HelperEffects implements OnRunEffects {
     )
   );
 
+  createEmptyPlaylist$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(createPlaylist),
+      concatMap(() => this.helper.newPlaylist()),
+      map((playlist) =>
+        openSnack({ message: `Playlist ${playlist.title} created` })
+      )
+    )
+  );
+
   addPlaylistToQueue$ = createEffect(() =>
     this.actions$.pipe(
       ofType(addPlaylistToQueue),
@@ -123,42 +147,30 @@ export class HelperEffects implements OnRunEffects {
     )
   );
 
-  addSongsToPlaylist$ = createEffect(
-    () =>
-      this.actions$.pipe(
-        ofType(addSongsToPlaylist),
-        switchMap(({ songs }) =>
-          this.helper
-            .addToPlaylistDialog()
-            .afterClosed()
-            .pipe(
-              filter(
-                (result): result is null | Playlist => result !== undefined
-              ),
-              concatMap((result) =>
-                result === null
-                  ? this.helper.newPlaylistDialog().afterClosed()
-                  : of(result)
-              ),
-              filter((result): result is Playlist => !!result),
-              tap((result) => this.playlists.addSongsTo(result, songs)),
-              concatMap((result) =>
-                this.player.isShown$().pipe(
-                  first(),
-                  concatMap((shown) =>
-                    this.snack
-                      .open(`Added to ${result.title}`, 'VIEW', {
-                        panelClass: shown ? 'snack-top' : 'snack',
-                      })
-                      .onAction()
-                  ),
-                  tap(() => this.router.navigate(['/', 'playlist', result.id]))
-                )
-              )
+  addSongsToPlaylist$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(addSongsToPlaylist),
+      switchMap(({ songs }) =>
+        this.helper
+          .addToPlaylistDialog()
+          .afterClosed()
+          .pipe(
+            filter((result): result is null | Playlist => result !== undefined),
+            concatMap((result) =>
+              result === null ? this.helper.newPlaylist() : of(result)
+            ),
+            filter((result): result is Playlist => !!result),
+            tap((result) => this.playlists.addSongsTo(result, songs)),
+            map((result) =>
+              openSnack({
+                message: `Added to ${result.title}`,
+                action: 'VIEW',
+                cb: () => this.router.navigate(['/', 'playlist', result.id]),
+              })
             )
-        )
-      ),
-    { dispatch: false }
+          )
+      )
+    )
   );
 
   addAlbumToPlaylist$ = createEffect(() =>
@@ -193,14 +205,17 @@ export class HelperEffects implements OnRunEffects {
     () =>
       this.actions$.pipe(
         ofType(openSnack),
-        switchMap(({ message }) =>
+        switchMap(({ message, action, cb }) =>
           this.player.isShown$().pipe(
             first(),
-            tap((shown) =>
-              this.snack.open(message, undefined, {
-                panelClass: shown ? 'snack-top' : 'snack',
-              })
-            )
+            concatMap((shown) =>
+              this.snack
+                .open(message, action, {
+                  panelClass: shown ? 'snack-top' : 'snack',
+                })
+                .onAction()
+            ),
+            tap(() => cb && cb())
           )
         )
       ),
@@ -238,6 +253,65 @@ export class HelperEffects implements OnRunEffects {
     )
   );
 
+  deletePlaylist$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(deletePlaylist),
+      concatMap(({ id }) =>
+        this.dialog
+          .open(ConfirmComponent, {
+            data: {
+              text: 'Do you really want to delete this playlist?',
+              action: 'Delete playlist',
+            },
+          })
+          .afterClosed()
+          .pipe(
+            concatMap((result) => {
+              if (!result) {
+                return EMPTY;
+              }
+              this.router.navigate(['/', 'library', 'playlists'], {
+                preserveFragment: true,
+              });
+              return of(
+                PlaylistActions.deletePlaylist({ id }),
+                openSnack({ message: 'Playlist deleted' })
+              );
+            })
+          )
+      )
+    )
+  );
+
+  editPlaylist$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(editPlaylist),
+      switchMap(({ id }) =>
+        this.playlists.getByKey(id).pipe(
+          first(),
+          filter((playlist): playlist is Playlist => !!playlist),
+          concatMap((playlist) =>
+            this.helper
+              .newPlaylistDialog({
+                id: playlist.id,
+                title: playlist.title,
+                description: playlist.description,
+              })
+              .afterClosed()
+              .pipe(
+                filter((data): data is PlaylistData => !!data),
+                map((data) =>
+                  PlaylistActions.updatePlaylist({
+                    update: { key: playlist.id, changes: data },
+                  })
+                )
+              )
+          )
+        )
+      )
+    )
+  );
+
   constructor(
     private actions$: Actions,
     private router: Router,
@@ -245,7 +319,8 @@ export class HelperEffects implements OnRunEffects {
     private snack: MatSnackBar,
     private playlists: PlaylistFacade,
     private helper: HelperFacade,
-    private player: PlayerFacade
+    private player: PlayerFacade,
+    private dialog: MatDialog
   ) {}
 
   ngrxOnRunEffects(

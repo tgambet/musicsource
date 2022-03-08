@@ -1,6 +1,5 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
-import { NoopScrollStrategy } from '@angular/cdk/overlay';
+import { ChangeDetectionStrategy, Component, Inject } from '@angular/core';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import {
   AbstractControl,
   FormControl,
@@ -11,10 +10,7 @@ import {
 import { Observable } from 'rxjs';
 import { first, map } from 'rxjs/operators';
 import { PlaylistFacade } from '@app/database/playlists/playlist.facade';
-import {
-  getPlaylistId,
-  Playlist,
-} from '@app/database/playlists/playlist.model';
+import { PlaylistId } from '@app/database/playlists/playlist.model';
 
 // @Directive({
 //   selector: '[appUniquePlaylistTitleValidator]',
@@ -36,11 +32,18 @@ import {
 //   }
 // }
 
+export interface PlaylistData {
+  id?: PlaylistId;
+  title: string;
+  description?: string;
+}
+
 @Component({
   selector: 'app-playlist-dialog',
   template: `
-    <app-title size="small">New playlist</app-title>
-    <form class="example-form" [formGroup]="form" (submit)="createPlaylist()">
+    <app-title size="small" *ngIf="!data?.id">New playlist</app-title>
+    <app-title size="small" *ngIf="!!data?.id">Edit playlist</app-title>
+    <form class="example-form" [formGroup]="form" (submit)="close()">
       <mat-form-field
         class="example-full-width"
         color="accent"
@@ -53,6 +56,8 @@ import {
           type="text"
           required
           formControlName="title"
+          autocomplete="false"
+          spellcheck="false"
         />
         <mat-error *ngIf="form.get('title')?.hasError('required')">
           Required
@@ -63,7 +68,14 @@ import {
       </mat-form-field>
       <mat-form-field class="example-full-width" color="accent">
         <mat-label>Description</mat-label>
-        <input matInput placeholder="" formControlName="description" />
+        <input
+          matInput
+          placeholder=""
+          type="text"
+          formControlName="description"
+          autocomplete="false"
+          spellcheck="false"
+        />
       </mat-form-field>
       <div class="actions">
         <button mat-button color="accent" [matDialogClose]="false" type="reset">
@@ -99,46 +111,35 @@ import {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PlaylistNewComponent {
-  config: MatDialogConfig = {
-    width: '90%',
-    maxWidth: '500px',
-    hasBackdrop: true,
-    disableClose: true,
-    scrollStrategy: new NoopScrollStrategy(),
-    closeOnNavigation: false,
-  };
-
-  form = new FormGroup({
-    title: new FormControl('', {
-      validators: [Validators.required],
-      asyncValidators: (
-        control: AbstractControl
-      ): Observable<ValidationErrors | null> =>
-        this.playlists.getByIndexKey(control.value, 'title').pipe(
-          first(),
-          map((p) => (p.length > 0 ? { taken: 'title' } : null))
-        ),
-      updateOn: 'change',
-    }),
-    description: new FormControl(''),
-  });
+  form: FormGroup;
 
   constructor(
     private playlists: PlaylistFacade,
-    private dialog: MatDialogRef<PlaylistNewComponent>
-  ) {}
+    private dialog: MatDialogRef<PlaylistNewComponent>,
+    @Inject(MAT_DIALOG_DATA) public data?: PlaylistData
+  ) {
+    this.form = new FormGroup({
+      title: new FormControl(data?.title, {
+        validators: [Validators.required],
+        asyncValidators: (
+          control: AbstractControl
+        ): Observable<ValidationErrors | null> =>
+          this.playlists.getByIndexKey(control.value, 'title').pipe(
+            first(),
+            map((p) =>
+              p.length > 0 && p[0].id !== data?.id ? { taken: 'title' } : null
+            )
+          ),
+        updateOn: 'change',
+      }),
+      description: new FormControl(data?.description),
+    });
+  }
 
-  createPlaylist(): void {
+  close(): void {
     if (this.form.valid) {
-      const f = this.form.getRawValue();
-      const playlist: Playlist = {
-        songs: [],
-        createdOn: new Date().getTime(),
-        id: getPlaylistId(f.title),
-        ...f,
-      };
-      this.playlists.create(playlist);
-      this.dialog.close(playlist);
+      const data = this.form.getRawValue() as PlaylistData;
+      this.dialog.close(data);
     }
   }
 }
