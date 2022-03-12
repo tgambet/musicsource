@@ -8,6 +8,7 @@ import { LibrarySongsComponent } from '@app/library/library-songs.component';
 import { CoreModule } from '@app/core/core.module';
 import { RouterModule, Routes } from '@angular/router';
 import { LibraryLikesComponent } from '@app/library/library-likes.component';
+import { RouterComponent } from '@app/core/components/router.component';
 
 const routes: Routes = [
   {
@@ -15,12 +16,19 @@ const routes: Routes = [
     component: LibraryComponent,
     data: { animation: 'default' },
     children: [
-      { path: '', redirectTo: 'albums', pathMatch: 'full' },
+      { path: '', redirectTo: 'songs', pathMatch: 'full' },
       { path: 'playlists', component: LibraryPlaylistsComponent },
       { path: 'albums', component: LibraryAlbumsComponent },
       { path: 'artists', component: LibraryArtistsComponent },
       { path: 'songs', component: LibrarySongsComponent },
-      { path: 'likes', component: LibraryLikesComponent },
+      {
+        path: 'likes',
+        component: RouterComponent,
+        children: [
+          { path: '', redirectTo: 'all', pathMatch: 'full' },
+          { path: ':type', component: LibraryLikesComponent },
+        ],
+      },
     ],
   },
 ];
