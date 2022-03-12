@@ -96,7 +96,6 @@ export class LibraryAlbumsComponent
         direction: ((params.get('dir') || 'desc') === 'asc'
           ? 'next'
           : 'prev') as IDBCursorDirection,
-        likes: params.get('likes') === '1',
       }))
     );
 
@@ -105,12 +104,7 @@ export class LibraryAlbumsComponent
         this.albums.getAll(sort.index as any).pipe(
           // filter((albums) => albums.length > 0),
           switchMap((albums) => {
-            let albs;
-            if (sort.likes) {
-              albs = albums.filter((a) => !!a.likedOn);
-            } else {
-              albs = [...albums];
-            }
+            const albs = [...albums];
             if (sort.direction === 'prev') {
               albs.reverse();
             }

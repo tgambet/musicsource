@@ -10,7 +10,11 @@ export interface Link {
   routerLink: any[] | string;
 }
 
-type BottomLabel = undefined | string | Link | (undefined | string | Link)[];
+export type BottomLabel =
+  | undefined
+  | string
+  | Link
+  | (undefined | string | Link)[];
 
 @Component({
   selector: 'app-label',
@@ -19,6 +23,7 @@ type BottomLabel = undefined | string | Link | (undefined | string | Link)[];
       <a
         *ngIf="asLink(topLabel); let label; else: topText"
         [routerLink]="label.routerLink"
+        (mousedown)="$event.stopPropagation()"
       >
         {{ label.text }}
       </a>
@@ -32,6 +37,7 @@ type BottomLabel = undefined | string | Link | (undefined | string | Link)[];
           <a
             *ngIf="asLink(label); let label; else: labelText"
             [routerLink]="label.routerLink"
+            (mousedown)="$event.stopPropagation()"
             >{{ label.text }}</a
           >
           <ng-template #labelText>

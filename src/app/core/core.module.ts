@@ -47,6 +47,14 @@ import { PlaylistAddComponent } from '@app/core/dialogs/playlist-add.component';
 import { HistoryService } from '@app/core/services/history.service';
 import { ArtistListItemComponent } from '@app/core/components/artist-list-item.component';
 import { ConfirmComponent } from '@app/core/dialogs/confirm.component';
+import { FiltersComponent } from '@app/core/components/filters.component';
+import { MatChipsModule } from '@angular/material/chips';
+import { RouterComponent } from '@app/core/components/router.component';
+import {
+  ListComponent,
+  OptMatRippleDirective,
+} from '@app/core/components/list.component';
+import { LinkComponent } from '@app/core/components/link.component';
 
 const IMPORTS = [
   CommonModule,
@@ -54,6 +62,7 @@ const IMPORTS = [
   CdkTreeModule,
   DragDropModule,
   MatButtonModule,
+  MatChipsModule,
   MatDialogModule,
   MatInputModule,
   MatMenuModule,
@@ -77,6 +86,7 @@ const DECLARATIONS = [
   ContainerPageComponent,
   CoverComponent,
   DurationPipe,
+  FiltersComponent,
   GenreComponent,
   HListComponent,
   HListItemDirective,
@@ -84,13 +94,17 @@ const DECLARATIONS = [
   IconLikes2Component,
   IconLikesComponent,
   LabelComponent,
+  LinkComponent,
+  ListComponent,
   MenuComponent,
+  OptMatRippleDirective,
   PlaylistComponent,
   PlaylistNewComponent,
   PlaylistAddComponent,
   PlaylistLikesComponent,
   PlayerButtonComponent,
   // RecentActivityComponent,
+  RouterComponent,
   SelectComponent,
   RoutedDialogDirective,
   SongListComponent,

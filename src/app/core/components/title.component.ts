@@ -95,7 +95,7 @@ import {
         font-family: 'YT Sans', sans-serif;
         font-size: 45px;
         line-height: 54px;
-        letter-spacing: -0.45px;
+        /*letter-spacing: -0.45px;*/
       }
       p {
         margin-bottom: 2px;

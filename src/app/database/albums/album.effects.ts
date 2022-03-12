@@ -1,11 +1,12 @@
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { catchError, concatMap, map } from 'rxjs/operators';
-import { of } from 'rxjs';
+import { EMPTY, of } from 'rxjs';
 import {
   loadAlbums,
   loadAlbumsFailure,
   loadAlbumsSuccess,
+  updateAlbum,
 } from './album.actions';
 import { Album } from '@app/database/albums/album.model';
 import { DatabaseService } from '@app/database/database.service';
@@ -38,18 +39,18 @@ export class AlbumEffects {
   //   { dispatch: false }
   // );
 
-  // updateAlbum$ = createEffect(
-  //   () =>
-  //     this.actions$.pipe(
-  //       ofType(updateAlbum),
-  //       concatMap(({ update: { changes, key } }) =>
-  //         this.database.update$<Album>('albums', changes, key).pipe(
-  //           catchError(() => EMPTY) // TODO
-  //         )
-  //       )
-  //     ),
-  //   { dispatch: false }
-  // );
+  updateAlbum$ = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(updateAlbum),
+        concatMap(({ update: { changes, key } }) =>
+          this.database
+            .update$<Album>('albums', changes, key)
+            .pipe(catchError(() => EMPTY))
+        )
+      ),
+    { dispatch: false }
+  );
 
   constructor(private actions$: Actions, private database: DatabaseService) {}
 }
