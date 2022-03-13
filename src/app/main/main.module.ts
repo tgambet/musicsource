@@ -6,7 +6,6 @@ import { CoreModule } from '@app/core/core.module';
 import { PlayerModule } from '@app/player/player.module';
 import { RouterModule, Routes } from '@angular/router';
 import { MainGuard } from '@app/main/main.guard';
-import { PagePlaylistLikesComponent } from '@app/playlist/page-playlist-likes.component';
 import { ScrollerService } from '@app/main/scroller.service';
 import { DatabaseModule } from '@app/database/database.module';
 import { ScannerModule } from '@app/scanner/scanner.module';
@@ -110,11 +109,6 @@ const routes: Routes = [
         path: 'playlist',
         loadChildren: () =>
           import('../playlist/playlist.module').then((m) => m.PlaylistModule),
-      },
-      {
-        path: 'likes',
-        data: { animation: 'default' },
-        component: PagePlaylistLikesComponent,
       },
       {
         path: 'play',

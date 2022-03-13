@@ -7,6 +7,11 @@ import { PagePlaylistResolver } from '@app/playlist/page-playlist-resolver.servi
 
 const routes: Routes = [
   {
+    path: 'likes',
+    component: PagePlaylistLikesComponent,
+    data: { animation: 'default' },
+  },
+  {
     path: ':id',
     component: PagePlaylistComponent,
     data: { animation: 'default' },

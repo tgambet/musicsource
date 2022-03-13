@@ -8,14 +8,14 @@ import { MenuItem } from '@app/core/components/menu.component';
     <app-cover
       title="Your likes"
       [menuItems]="menuItems"
-      [coverRouterLink]="['/', 'likes']"
+      [coverRouterLink]="['/playlist', 'likes']"
     >
       <app-icon-likes2></app-icon-likes2>
     </app-cover>
     <app-label
       [topLabel]="{
         text: 'Your Likes',
-        routerLink: ['/', 'likes']
+        routerLink: ['/playlist', 'likes']
       }"
       [bottomLabel]="'Auto playlist'"
       size="small"

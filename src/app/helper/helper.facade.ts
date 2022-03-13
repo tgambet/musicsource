@@ -13,6 +13,7 @@ import {
   editPlaylist,
   playAlbum,
   playPlaylist,
+  playSongs,
   removeSongFromQueue,
 } from './helper.actions';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
@@ -140,5 +141,9 @@ export class HelperFacade {
 
   createEmptyPlaylist(): void {
     this.store.dispatch(createPlaylist());
+  }
+
+  playSongs(songs: SongId[], shuffle: boolean): void {
+    this.store.dispatch(playSongs({ songs, shuffle }));
   }
 }

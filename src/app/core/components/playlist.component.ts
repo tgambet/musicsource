@@ -119,10 +119,6 @@ export class PlaylistComponent implements OnInit {
         //   icon: Icons.radio,
         //   text: 'Start radio',
         // },
-        // {
-        //   icon: Icons.pencil,
-        //   text: 'Edit playlist',
-        // },
         {
           icon: Icons.playlistPlay,
           text: 'Play next',
