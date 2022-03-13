@@ -1,10 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  EventEmitter,
-  Input,
-  Output,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { Icons } from '@app/core/utils';
 import { MenuItem } from './menu.component';
 import { SongId } from '@app/database/songs/song.model';
@@ -18,7 +12,6 @@ import { SongId } from '@app/database/songs/song.model';
       [index]="startIndex"
       [queue]="queue"
       [currentIfMatchAllQueue]="true"
-      (playlistPlayed)="playlistPlayed.emit()"
       spinnerPosition="outside"
       *ngIf="queue && queue.length > 0"
     ></app-player-button>
@@ -137,5 +130,4 @@ export class CoverComponent {
   @Input() coverRouterLink!: any[] | string;
   @Input() menuItems!: MenuItem[] | null;
   @Input() menuTriggerIcon = Icons.dotsVertical;
-  @Output() playlistPlayed = new EventEmitter<void>();
 }
