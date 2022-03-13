@@ -1,14 +1,11 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  OnInit,
-  ViewChild,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { Song } from '@app/database/songs/song.model';
-import { EMPTY, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 import { Icons } from '@app/core/utils/icons.util';
-import { SongListComponent } from '@app/core/components/song-list.component';
 import { MenuItem } from '@app/core/components/menu.component';
+import { SongFacade } from '@app/database/songs/song.facade';
+import { map } from 'rxjs/operators';
+import { HelperFacade } from '@app/helper/helper.facade';
 
 @Component({
   selector: 'app-page-playlist-likes',
@@ -28,7 +25,7 @@ import { MenuItem } from '@app/core/components/menu.component';
               {{ songs.length }} songs • {{ getLength(songs) }} minutes
             </p>
             <p class="description">
-              All the songs you liked in MusicSource appears here.
+              All the songs you liked in MusicSource appear here.
             </p>
           </div>
         </div>
@@ -39,14 +36,14 @@ import { MenuItem } from '@app/core/components/menu.component';
               class="play-button"
               color="accent"
               [disabled]="songs.length === 0"
-              (click)="shuffle()"
+              (click)="shuffle(songs)"
             >
               <app-icon [path]="icons.shuffle"></app-icon>
               <span>Shuffle</span>
             </button>
             <app-menu
               [disableRipple]="true"
-              [menuItems]="menuItems"
+              [menuItems]="menuItems$ | async"
               [hasBackdrop]="true"
               [disabled]="songs.length === 0"
               *ngIf="songs.length > 0"
@@ -59,7 +56,6 @@ import { MenuItem } from '@app/core/components/menu.component';
       <app-song-list
         *ngIf="songs$ | async as songs"
         [songs]="songs"
-        #songList
       ></app-song-list>
       <p class="empty" *ngIf="(songs$ | async)?.length === 0">
         No liked songs yet.
@@ -77,61 +73,43 @@ import { MenuItem } from '@app/core/components/menu.component';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PagePlaylistLikesComponent implements OnInit {
-  @ViewChild('songList', { static: false })
-  songList?: SongListComponent;
-
   songs$!: Observable<Song[]>;
 
   icons = Icons;
 
-  menuItems: MenuItem[] = [
-    {
-      text: 'Play next',
-      icon: Icons.playlistPlay,
-      // click: (): void => {
-      //   this.songs$
-      //     .pipe(
-      //       first(),
-      //       tap((songs) =>
-      //         this.helper.addSongsToQueue(
-      //           songs,
-      //           true,
-      //           'Your likes will play next'
-      //         )
-      //       )
-      //     )
-      //     .subscribe();
-      // },
-    },
-    {
-      text: 'Add to queue',
-      icon: Icons.playlistPlus,
-      // click: (): void => {
-      //   this.songs$
-      //     .pipe(
-      //       first(),
-      //       tap((songs) =>
-      //         this.helper.addSongsToQueue(
-      //           songs,
-      //           false,
-      //           'Your likes added to queue'
-      //         )
-      //       )
-      //     )
-      //     .subscribe();
-      // },
-    },
-  ];
+  menuItems$!: Observable<MenuItem[]>;
+
+  constructor(private songs: SongFacade, private helper: HelperFacade) {}
 
   ngOnInit(): void {
-    this.songs$ = EMPTY;
+    this.songs$ = this.songs
+      .getAll('likedOn')
+      .pipe(map((songs) => [...songs].reverse()));
 
-    // this.songs$ = this.library.getSongs('likedOn', undefined, 'prev').pipe(
-    //   map(({ value }) => value),
-    //   scanArray(),
-    //   startWith([]),
-    //   shareReplay(1)
-    // );
+    this.menuItems$ = this.songs$.pipe(
+      map((songs) => [
+        {
+          text: 'Play next',
+          icon: Icons.playlistPlay,
+          click: () =>
+            this.helper.addSongsToQueue(
+              songs.map((s) => s.entryPath),
+              true,
+              'Your likes will play next'
+            ),
+        },
+        {
+          text: 'Add to queue',
+          icon: Icons.playlistPlus,
+          click: () =>
+            this.helper.addSongsToQueue(
+              songs.map((s) => s.entryPath),
+              false,
+              'Your likes have been added to queue'
+            ),
+        },
+      ])
+    );
   }
 
   getLength(songs: Song[]): number {
@@ -139,7 +117,10 @@ export class PagePlaylistLikesComponent implements OnInit {
     return Math.floor(sec / 60);
   }
 
-  shuffle(): void {
-    // this.helper.shufflePlaySongs(songs);
+  shuffle(songs: Song[]): void {
+    this.helper.playSongs(
+      songs.map((s) => s.entryPath),
+      true
+    );
   }
 }

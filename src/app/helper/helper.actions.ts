@@ -3,6 +3,11 @@ import { AlbumId } from '@app/database/albums/album.model';
 import { Song, SongId } from '@app/database/songs/song.model';
 import { PlaylistId } from '@app/database/playlists/playlist.model';
 
+export const playSongs = createAction(
+  'helper/songs-play',
+  props<{ songs: SongId[]; shuffle: boolean }>()
+);
+
 export const playAlbum = createAction(
   'helper/album-play',
   props<{ id: AlbumId; shuffle: boolean }>()

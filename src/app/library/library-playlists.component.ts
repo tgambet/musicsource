@@ -30,15 +30,9 @@ import { HelperFacade } from '@app/helper/helper.facade';
           </a>
           <app-label [topLabel]="'New playlist'" size="small"></app-label>
         </div>
-        <!--        <div-->
-        <!--          class="playlist"-->
-        <!--          *ngFor="let playlist of newPlaylists$ | async; trackBy: trackBy"-->
-        <!--        >-->
-        <!--          <app-playlist [playlist]="playlist"></app-playlist>-->
-        <!--        </div>-->
-        <!--        <div class="playlist likes">-->
-        <!--          <app-playlist-likes></app-playlist-likes>-->
-        <!--        </div>-->
+        <div class="playlist likes">
+          <app-playlist-likes></app-playlist-likes>
+        </div>
         <div
           class="playlist"
           *ngFor="let playlist of playlists$ | async; trackBy: trackBy"

@@ -39,6 +39,7 @@ import {
   openSnack,
   playAlbum,
   playPlaylist,
+  playSongs,
   removeSongFromQueue,
 } from '@app/helper/helper.actions';
 import { Playlist } from '@app/database/playlists/playlist.model';
@@ -53,6 +54,22 @@ import { PlaylistData } from '@app/core/dialogs/playlist-new.component';
 // noinspection JSUnusedGlobalSymbols
 @Injectable()
 export class HelperEffects implements OnRunEffects {
+  playSongs$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(playSongs),
+      switchMap(({ songs, shuffle }) =>
+        of(
+          setPlaying({ playing: true }),
+          setQueue({
+            queue: shuffle ? shuffleArray(songs) : songs,
+            currentIndex: 0,
+          }),
+          show()
+        )
+      )
+    )
+  );
+
   playAlbum$ = createEffect(() =>
     this.actions$.pipe(
       ofType(playAlbum),
@@ -60,17 +77,8 @@ export class HelperEffects implements OnRunEffects {
         this.songs.getByAlbumKey(id).pipe(
           filter((songs): songs is Song[] => !!songs),
           first(),
-          concatMap((songs) =>
-            of(
-              setPlaying({ playing: true }),
-              setQueue({
-                queue: shuffle
-                  ? shuffleArray(songs.map((s) => s.entryPath))
-                  : songs.map((s) => s.entryPath),
-                currentIndex: 0,
-              }),
-              show()
-            )
+          map((songs) =>
+            playSongs({ songs: songs.map((s) => s.entryPath), shuffle })
           )
         )
       )
@@ -84,16 +92,7 @@ export class HelperEffects implements OnRunEffects {
         this.playlists.getByKey(id).pipe(
           filter((playlist): playlist is Playlist => !!playlist),
           first(),
-          concatMap((playlist) =>
-            of(
-              setPlaying({ playing: true }),
-              setQueue({
-                queue: shuffle ? shuffleArray(playlist.songs) : playlist.songs,
-                currentIndex: 0,
-              }),
-              show()
-            )
-          )
+          map((playlist) => playSongs({ songs: playlist.songs, shuffle }))
         )
       )
     )
@@ -105,6 +104,7 @@ export class HelperEffects implements OnRunEffects {
       switchMap(({ id, next }) =>
         this.songs.getByAlbumKey(id).pipe(
           filter((songs): songs is Song[] => !!songs),
+          first(),
           map((songs) =>
             addSongsToQueue({
               songs: songs.map((s) => s.entryPath),
@@ -133,6 +133,7 @@ export class HelperEffects implements OnRunEffects {
       switchMap(({ id, next }) =>
         this.playlists.getByKey(id).pipe(
           filter((playlist): playlist is Playlist => !!playlist),
+          first(),
           map((playlist) =>
             addSongsToQueue({
               songs: playlist.songs,
@@ -260,7 +261,7 @@ export class HelperEffects implements OnRunEffects {
         this.dialog
           .open(ConfirmComponent, {
             data: {
-              text: 'Do you really want to delete this playlist?',
+              text: 'Are you sure you want to delete this playlist?',
               action: 'Delete playlist',
             },
           })
