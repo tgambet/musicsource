@@ -40,6 +40,7 @@ import { MediaSessionService } from '@app/player/media-session.service';
 import { Title } from '@angular/platform-browser';
 import { EntryFacade } from '@app/database/entries/entry.facade';
 import { SongFacade } from '@app/database/songs/song.facade';
+import { concatTap } from '@app/core/utils';
 
 // noinspection JSUnusedGlobalSymbols
 @Injectable()
@@ -60,6 +61,7 @@ export class PlayerEffects implements OnRunEffects {
             concatMap((playing) =>
               this.entries.getByKey(entryPath).pipe(
                 filter((entry): entry is FileEntry => !!entry),
+                first(),
                 tap((entry) => (this.handle = entry.handle)),
                 concatMap((entry) =>
                   requestPermission(entry.handle).pipe(
@@ -70,7 +72,8 @@ export class PlayerEffects implements OnRunEffects {
                     concatMap(() =>
                       this.songs.getByKey(entryPath).pipe(
                         filter((s): s is Song => !!s),
-                        tap((song) => this.media.setMetadata(song)),
+                        first(),
+                        concatTap((song) => this.media.setMetadata(song)),
                         tap((song) =>
                           this.title.setTitle(
                             `${song.title} • ${song.artists[0].name} - MusicSource`
@@ -173,9 +176,7 @@ export class PlayerEffects implements OnRunEffects {
     private songs: SongFacade,
     private media: MediaSessionService,
     private title: Title
-  ) {
-    this.media.init();
-  }
+  ) {}
 
   ngrxOnRunEffects(
     resolvedEffects$: Observable<EffectNotification>

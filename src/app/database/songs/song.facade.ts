@@ -26,7 +26,7 @@ export class SongFacade {
       : this.store.select(selectSongAll);
   }
 
-  getByKey(key: string): Observable<Song | undefined> {
+  getByKey(key: SongId): Observable<Song | undefined> {
     return this.store.select(selectSongByKey(key));
   }
 
