@@ -10,12 +10,14 @@ import { Icons } from '@app/core/utils';
 import { Observable } from 'rxjs';
 import { MatRipple } from '@angular/material/core';
 import { Router } from '@angular/router';
+import { MenuItem } from '@app/core/components/menu.component';
 
 export interface ListItem {
   title: string;
   label: BottomLabel;
   cover$: Observable<string | undefined>;
   routerLink?: any[] | null;
+  menuItems: MenuItem[];
 }
 
 @Directive({
@@ -67,7 +69,13 @@ export class OptMatRippleDirective extends MatRipple implements OnInit {
           [topLabel]="item.title"
         ></app-label>
       </div>
-      <div class="controls"></div>
+      <div class="controls">
+        <app-menu
+          [menuItems]="item.menuItems"
+          [disableRipple]="true"
+          (mousedown)="$event.stopPropagation()"
+        ></app-menu>
+      </div>
     </div>
   `,
   styles: [
@@ -112,6 +120,13 @@ export class OptMatRippleDirective extends MatRipple implements OnInit {
       }
       .meta {
         flex: 1 1 auto;
+      }
+      .controls {
+        display: none;
+        color: #aaa;
+      }
+      .item:hover .controls {
+        display: initial;
       }
     `,
   ],

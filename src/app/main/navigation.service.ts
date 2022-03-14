@@ -20,7 +20,9 @@ export class NavigationService {
         ),
         filter((event) => event.url === '/library'),
         concatTap(() =>
-          from(this.router.navigateByUrl(`/library/${this.page || 'playlist'}`))
+          from(
+            this.router.navigateByUrl(`/library/${this.page || 'playlists'}`)
+          )
         ),
         tapError((err) => console.error(err)),
         catchError(() => this.router.navigate(['/library', 'playlists']))
@@ -34,7 +36,7 @@ export class NavigationService {
         ),
         filter((event) => this.regexp.test(event.url)),
         map((event) => this.regexp.exec(event.url)?.groups?.page),
-        tap((page) => (this.page = page))
+        tap((page) => (this.page = page?.replace(/#.+$/, '')))
       )
       .subscribe();
   }

@@ -17,6 +17,7 @@ import { ListItem } from '@app/core/components/list.component';
 import { PictureFacade } from '@app/database/pictures/picture.facade';
 import { toDuration } from '@app/core/pipes/duration.pipe';
 import { Icons } from '@app/core/utils';
+import { HelperFacade } from '@app/helper/helper.facade';
 
 @Component({
   selector: 'app-library-likes',
@@ -36,6 +37,7 @@ import { Icons } from '@app/core/utils';
           ></app-list>
           <app-link
             [link]="['..', 'playlists']"
+            fragment="top"
             *ngIf="(routeParam$ | async) === 'all'"
           >
             Show All
@@ -48,6 +50,7 @@ import { Icons } from '@app/core/utils';
           <app-list [items]="albums" [defaultIcon]="icons.album"></app-list>
           <app-link
             [link]="['..', 'albums']"
+            fragment="top"
             *ngIf="(routeParam$ | async) === 'all'"
           >
             Show All
@@ -60,6 +63,7 @@ import { Icons } from '@app/core/utils';
           <app-list [items]="songs"></app-list>
           <app-link
             [link]="['..', 'songs']"
+            fragment="top"
             *ngIf="(routeParam$ | async) === 'all'"
           >
             Show All
@@ -76,6 +80,7 @@ import { Icons } from '@app/core/utils';
           ></app-list>
           <app-link
             [link]="['..', 'artists']"
+            fragment="top"
             *ngIf="(routeParam$ | async) === 'all'"
           >
             Show All
@@ -128,7 +133,8 @@ export class LibraryLikesComponent implements OnInit {
     private albums: AlbumFacade,
     private songs: SongFacade,
     private artists: ArtistFacade,
-    private pictures: PictureFacade
+    private pictures: PictureFacade,
+    private helper: HelperFacade
   ) {}
 
   ngOnInit() {
@@ -152,47 +158,165 @@ export class LibraryLikesComponent implements OnInit {
 
     this.playlistsItems$ = playlists$.pipe(
       map((playlists) =>
-        playlists.map((p) => ({
-          title: p.title,
-          label: ['Playlist', `${p.songs.length} songs`],
+        playlists.map((playlist) => ({
+          title: playlist.title,
+          label: ['Playlist', `${playlist.songs.length} songs`],
           cover$: of(undefined),
-          routerLink: ['/playlist', p.id],
+          routerLink: ['/playlist', playlist.id],
+          menuItems: [
+            {
+              icon: Icons.shuffle,
+              text: 'Shuffle play',
+              click: () => this.helper.playPlaylist(playlist.id, true),
+              disabled: playlist.songs.length === 0,
+            },
+            // {
+            //   icon: Icons.radio,
+            //   text: 'Start radio',
+            // },
+            {
+              icon: Icons.playlistPlay,
+              text: 'Play next',
+              click: () => this.helper.addPlaylistToQueue(playlist.id, true),
+              disabled: playlist.songs.length === 0,
+            },
+            {
+              icon: Icons.playlistMusic,
+              text: 'Add to queue',
+              click: () => this.helper.addPlaylistToQueue(playlist.id, false),
+              disabled: playlist.songs.length === 0,
+            },
+            {
+              icon: playlist.likedOn ? Icons.heart : Icons.heartOutline,
+              text: playlist.likedOn
+                ? 'Remove from your likes'
+                : 'Add to your likes',
+              click: () => this.playlists.toggleLiked(playlist),
+            },
+            {
+              icon: Icons.playlistPlus,
+              text: 'Add to playlist',
+              click: () => this.helper.addPlaylistToPlaylist(playlist.id),
+              disabled: playlist.songs.length === 0,
+            },
+            {
+              text: 'Edit playlist',
+              icon: Icons.playlistEdit,
+              click: () => this.helper.editPlaylist(playlist.id),
+            },
+            {
+              icon: Icons.delete,
+              text: 'Delete playlist',
+              click: () => this.helper.deletePlaylist(playlist.id),
+            },
+          ],
         }))
       )
     );
 
     this.albumsItems$ = albums$.pipe(
       map((albums) =>
-        albums.map((a) => ({
-          title: a.title,
+        albums.map((album) => ({
+          title: album.title,
           label: [
             'Album',
             {
-              text: a.albumArtist.name,
-              routerLink: ['/artist', a.albumArtist.id],
+              text: album.albumArtist.name,
+              routerLink: ['/artist', album.albumArtist.id],
             },
-            a.year?.toString(),
+            album.year?.toString(),
           ],
-          cover$: this.pictures.getAlbumCover(a, 56),
-          routerLink: ['/album', a.id],
+          cover$: this.pictures.getAlbumCover(album, 56),
+          routerLink: ['/album', album.id],
+          menuItems: [
+            {
+              icon: Icons.shuffle,
+              text: 'Shuffle play',
+              click: () => this.helper.playAlbum(album.id, true),
+            },
+            {
+              icon: Icons.playlistPlay,
+              text: 'Play next',
+              click: () => this.helper.addAlbumToQueue(album.id, true),
+            },
+            {
+              icon: Icons.playlistMusic,
+              text: 'Add to queue',
+              click: () => this.helper.addAlbumToQueue(album.id, false),
+            },
+            {
+              icon: album.likedOn ? Icons.heart : Icons.heartOutline,
+              text: album.likedOn
+                ? 'Remove from your likes'
+                : 'Add to your likes',
+              click: () => this.albums.toggleLiked(album),
+            },
+            {
+              icon: Icons.playlistPlus,
+              text: 'Add to playlist',
+              click: () => this.helper.addAlbumToPlaylist(album.id),
+            },
+            {
+              icon: Icons.accountMusic,
+              text: 'Go to artist',
+              routerLink: ['/', 'artist', album.albumArtist?.id],
+              disabled: !album.albumArtist,
+            },
+          ],
         }))
       )
     );
 
     this.songsItems$ = songs$.pipe(
       map((songs) =>
-        songs.map((a) => ({
-          title: a.title || '',
+        songs.map((song) => ({
+          title: song.title || '',
           label: [
             'Song',
             {
-              text: a.artists[0]?.name,
-              routerLink: ['/artist', a.artists[0]?.id],
+              text: song.artists[0]?.name,
+              routerLink: ['/artist', song.artists[0]?.id],
             },
-            { text: a.album.title, routerLink: ['/album', a.album.id] },
-            toDuration(a.duration),
+            { text: song.album.title, routerLink: ['/album', song.album.id] },
+            toDuration(song.duration),
           ],
-          cover$: this.pictures.getSongCover(a, 56),
+          cover$: this.pictures.getSongCover(song, 56),
+          menuItems: [
+            {
+              icon: Icons.playlistPlay,
+              text: 'Play next',
+              click: () => this.helper.addSongToQueue(song.entryPath, true),
+            },
+            {
+              icon: Icons.playlistMusic,
+              text: 'Add to queue',
+              click: () => this.helper.addSongToQueue(song.entryPath, false),
+            },
+            {
+              icon: song.likedOn ? Icons.heart : Icons.heartOutline,
+              text: song.likedOn
+                ? 'Remove from your likes'
+                : 'Add to your likes',
+              click: () => this.songs.toggleLiked(song),
+            },
+            {
+              icon: Icons.playlistPlus,
+              text: 'Add to playlist',
+              click: () => this.helper.addSongsToPlaylist([song.entryPath]),
+            },
+            {
+              icon: Icons.album,
+              text: 'Go to album',
+              routerLink: ['/', 'album', song.album.id],
+              disabled: !song.album,
+            },
+            {
+              icon: Icons.accountMusic,
+              text: 'Go to artist',
+              routerLink: ['/', 'artist', song.artists[0]?.id],
+              disabled: !song.artists[0],
+            },
+          ],
         }))
       )
     );
@@ -204,6 +328,14 @@ export class LibraryLikesComponent implements OnInit {
           label: ['Artist'],
           cover$: this.pictures.getArtistCover(a, 56),
           routerLink: ['/artist', a.id],
+          menuItems: [
+            {
+              icon: Icons.shuffle,
+              text: 'Shuffle play',
+              // eslint-disable-next-line @typescript-eslint/no-empty-function
+              click: () => {}, // TODO
+            },
+          ],
         }))
       )
     );

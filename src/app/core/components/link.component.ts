@@ -3,7 +3,7 @@ import { Component, ChangeDetectionStrategy, Input } from '@angular/core';
 @Component({
   selector: 'app-link',
   template: `
-    <button mat-button [routerLink]="link" [preserveFragment]="true">
+    <button mat-button [routerLink]="link" [fragment]="fragment">
       <ng-content></ng-content>
     </button>
   `,
@@ -26,4 +26,5 @@ import { Component, ChangeDetectionStrategy, Input } from '@angular/core';
 })
 export class LinkComponent {
   @Input() link: any[] | string | undefined | null;
+  @Input() fragment?: string;
 }

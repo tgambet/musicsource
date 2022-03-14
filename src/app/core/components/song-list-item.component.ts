@@ -52,6 +52,7 @@ import { HelperFacade } from '@app/helper/helper.facade';
       >
         <app-icon
           [path]="!!song.likedOn ? icons.heart : icons.heartOutline"
+          [class.accent]="!!song.likedOn"
         ></app-icon>
       </button>
       <button
@@ -122,8 +123,8 @@ import { HelperFacade } from '@app/helper/helper.facade';
         opacity: 0;
         background-color: rgba(0, 0, 0, 0.75);
       }
-      app-icon {
-        opacity: 0.5;
+      app-icon.accent {
+        color: white;
       }
       .title {
         flex: 12 1 0;

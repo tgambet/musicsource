@@ -74,7 +74,7 @@ import { MatMenu } from '@angular/material/menu';
         overflow: hidden;
         background: transparent;
         border: none;
-        color: white;
+        color: inherit;
         cursor: pointer;
       }
       .trigger app-icon {
