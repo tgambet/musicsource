@@ -4,9 +4,9 @@ import { filter, map, tap } from 'rxjs/operators';
 
 @Injectable()
 export class NavigationService {
-  libraryPage?: 'playlists' | 'albums' | 'songs' | 'artists' | 'likes';
+  page?: string;
 
-  regexp = /\/library\/(?<page>.+)(\/.+)*(#.+)/;
+  regexp = /\/library\/(?<page>.+)(#.+)/;
 
   constructor(private router: Router) {}
 
@@ -18,9 +18,12 @@ export class NavigationService {
         ),
         filter((event) => event.url === '/library'),
         tap(() =>
-          this.router.navigate(['/library', this.libraryPage || 'playlists'], {
-            preserveFragment: true,
-          })
+          this.router.navigate(
+            ['/library', ...(this.page ? this.page.split('/') : ['playlists'])],
+            {
+              preserveFragment: true,
+            }
+          )
         )
       )
       .subscribe();
@@ -32,7 +35,7 @@ export class NavigationService {
         ),
         filter((event) => this.regexp.test(event.url)),
         map((event) => this.regexp.exec(event.url)?.groups?.page),
-        tap((page) => (this.libraryPage = page as any))
+        tap((page) => (this.page = page))
       )
       .subscribe();
   }
