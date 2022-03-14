@@ -1,21 +1,19 @@
 import { Inject, Injectable } from '@angular/core';
 import {
   defer,
-  EMPTY,
   from,
   Observable,
   of,
   ReplaySubject,
+  shareReplay,
   Subject,
 } from 'rxjs';
-import { concatMap, tap } from 'rxjs/operators';
+import { concatMap, map, tap } from 'rxjs/operators';
 import { DOCUMENT } from '@angular/common';
-import { tapError } from '@app/core/utils/tap-error.util';
+import { concatTap } from '@app/core/utils';
 
 @Injectable()
 export class AudioService {
-  isInitialized = false;
-
   timeUpdate$: Subject<number> = new ReplaySubject(1);
   duration$: Subject<number> = new ReplaySubject(1);
   playing$: Subject<boolean> = new ReplaySubject(1);
@@ -23,88 +21,17 @@ export class AudioService {
   loading$: Subject<boolean> = new ReplaySubject(1);
   volume$: Subject<number> = new ReplaySubject(1);
 
-  private context!: AudioContext;
-  private audio!: HTMLMediaElement;
-
-  private objectUrl!: string;
-
-  constructor(@Inject(DOCUMENT) document: Document) {
-    this.initialize()
-      .pipe(
-        tapError((e) => console.log(e)),
-        tap(({ context, source, audio }) => {
-          const body = document.querySelector('body');
-          if (!body) {
-            return;
-          }
-          body.appendChild(audio);
-          // audio.setAttribute('controls', 'true');
-          source./*connect(gain).*/ connect(context.destination);
-          this.audio = audio;
-          // this.audio.load();
-          this.context = context;
-          this.isInitialized = true;
-
-          // this.audioMotion = new AudioMotionAnalyzer(undefined, {
-          //   source,
-          //   audioCtx: context,
-          //   radial: true,
-          //   mode: 2,
-          //   showScaleX: false,
-          //   overlay: true,
-          //   showBgColor: true,
-          //   bgAlpha: 0.7,
-          //   showPeaks: false,
-          //   start: false,
-          // });
-        })
-      )
-      .subscribe();
-  }
-
-  setSrc(file: File): Observable<void> {
-    if (!this.isInitialized) {
-      console.warn('AudioService not initialized!');
-      return EMPTY;
-    }
-    return defer(() => from(this.context.resume())).pipe(
-      tap(() => URL.revokeObjectURL(this.objectUrl)),
-      tap(() => {
-        this.objectUrl = URL.createObjectURL(file);
-        this.audio.src = this.objectUrl;
-      })
-    );
-  }
-
-  seek(n: number): void {
-    this.audio.currentTime = n;
-  }
-
-  pause(): void {
-    this.audio.pause();
-  }
-
-  setVolume(volume: number): void {
-    this.audio.volume = volume;
-  }
-
-  toggleMute(): void {
-    this.audio.muted = !this.audio.muted;
-  }
-
-  async resume(): Promise<void> {
-    if (this.audio.src) {
-      await this.audio.play();
-    }
-  }
-
-  private initialize(): Observable<{
+  private audioContext$: Observable<{
     context: AudioContext;
     source: MediaElementAudioSourceNode;
     // gain: AudioWorkletNode;
     audio: HTMLMediaElement;
-  }> {
-    return defer(() => of(new AudioContext())).pipe(
+  }>;
+  private audio!: HTMLMediaElement;
+  private objectUrl!: string;
+
+  constructor(@Inject(DOCUMENT) document: Document) {
+    this.audioContext$ = defer(() => of(new AudioContext())).pipe(
       concatMap((context) => {
         // context.audioWorklet.addModule('/worklets/test.worker.js').then(() => {
         // const gain = new AudioWorkletNode(context, 'test-processor');
@@ -126,7 +53,99 @@ export class AudioService {
         const source = context.createMediaElementSource(audio);
         return of({ context, source /*, gain*/, audio });
         //})
-      })
+      }),
+      tap(({ context, source, audio }) => {
+        const body = document.querySelector('body');
+        if (!body) {
+          return;
+        }
+        body.appendChild(audio);
+        // audio.setAttribute('controls', 'true');
+        source./*connect(gain).*/ connect(context.destination);
+        this.audio = audio;
+        // this.audio.load();
+        // this.context = context;
+        //this.isInitialized = true;
+        // this.audioMotion = new AudioMotionAnalyzer(undefined, {
+        //   source,
+        //   audioCtx: context,
+        //   radial: true,
+        //   mode: 2,
+        //   showScaleX: false,
+        //   overlay: true,
+        //   showBgColor: true,
+        //   bgAlpha: 0.7,
+        //   showPeaks: false,
+        //   start: false,
+        // });
+      }),
+      shareReplay(1)
     );
+
+    // this.initialize()
+    //   .pipe(
+    //     tapError((e) => console.log(e)),
+    //     tap(({ context, source, audio }) => {
+    //       const body = document.querySelector('body');
+    //       if (!body) {
+    //         return;
+    //       }
+    //       body.appendChild(audio);
+    //       // audio.setAttribute('controls', 'true');
+    //       source./*connect(gain).*/ connect(context.destination);
+    //       this.audio = audio;
+    //       // this.audio.load();
+    //       this.context = context;
+    //       this.isInitialized = true;
+    //
+    //       // this.audioMotion = new AudioMotionAnalyzer(undefined, {
+    //       //   source,
+    //       //   audioCtx: context,
+    //       //   radial: true,
+    //       //   mode: 2,
+    //       //   showScaleX: false,
+    //       //   overlay: true,
+    //       //   showBgColor: true,
+    //       //   bgAlpha: 0.7,
+    //       //   showPeaks: false,
+    //       //   start: false,
+    //       // });
+    //     })
+    //   )
+    //   .subscribe();
+  }
+
+  setSrc(file: File): Observable<void> {
+    return this.audioContext$.pipe(
+      concatTap(({ context }) => from(context.resume())),
+      tap(() => URL.revokeObjectURL(this.objectUrl)),
+      tap(() => (this.objectUrl = URL.createObjectURL(file))),
+      tap(() => (this.audio.src = this.objectUrl)),
+      map(() => void 0)
+    );
+  }
+
+  seek(n: number): void {
+    this.audio.currentTime = n;
+  }
+
+  pause(): void {
+    if (this.audio) {
+      this.audio.pause();
+    }
+  }
+
+  setVolume(volume: number): void {
+    this.audio.volume = volume;
+  }
+
+  toggleMute(): void {
+    this.audio.muted = !this.audio.muted;
+  }
+
+  async resume(): Promise<void> {
+    if (this.audio.src) {
+      await this.audio.play();
+    }
   }
 }
