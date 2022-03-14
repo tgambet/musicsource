@@ -24,7 +24,6 @@ import { HelperFacade } from '@app/helper/helper.facade';
       [title]="album.title"
       [menuItems]="menuItems$ | async"
       [coverRouterLink]="['/', 'album', album.id]"
-      (playlistPlayed)="albumPlayed()"
       tabindex="-1"
       [startIndex]="0"
       [queue]="queue$ | async"
@@ -130,14 +129,10 @@ export class AlbumComponent implements OnInit {
         {
           icon: Icons.accountMusic,
           text: 'Go to artist',
-          routerLink: ['/', 'artist', album.albumArtist.id],
+          routerLink: ['/', 'artist', album.albumArtist?.id],
           disabled: !album.albumArtist,
         },
       ])
     );
-  }
-
-  albumPlayed(): void {
-    // this.history.albumPlayed(this.album);
   }
 }
