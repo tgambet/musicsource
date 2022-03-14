@@ -10,72 +10,7 @@ import { ScrollerService } from '@app/main/scroller.service';
 import { DatabaseModule } from '@app/database/database.module';
 import { ScannerModule } from '@app/scanner/scanner.module';
 import { HelperModule } from '@app/helper/helper.module';
-
-/*const routes: Routes = [
-  {
-    path: 'welcome',
-    loadChildren: () =>
-      import('./welcome/welcome.module').then((m) => m.WelcomeModule),
-  },
-  // {
-  //   outlet: 'dialog',
-  //   path: 'settings',
-  //   component: SettingsComponent,
-  //   children: [
-  //     { path: '', redirectTo: 'library', pathMatch: 'full' },
-  //     { path: 'library', component: LibrarySettingsComponent },
-  //   ],
-  // },
-  {
-    outlet: 'dialog',
-    path: 'new-playlist',
-    component: PlaylistNewComponent,
-  },
-  {
-    path: '',
-    component: AppComponent,
-    canActivate: [MainGuard],
-    canActivateChild: [MainGuard],
-    children: [
-      {
-        path: '',
-        redirectTo: 'library',
-        pathMatch: 'full',
-        data: { animation: 'default' },
-      },
-      {
-        path: 'library',
-        loadChildren: () =>
-          import('./library/library.module').then((m) => m.LibraryModule),
-      },
-      {
-        path: 'album',
-        loadChildren: () =>
-          import('./album/album.module').then((m) => m.AlbumModule),
-      },
-      {
-        path: 'artist',
-        loadChildren: () =>
-          import('./artist/artist.module').then((m) => m.ArtistModule),
-      },
-      {
-        path: 'playlist',
-        loadChildren: () =>
-          import('./playlist/playlist.module').then((m) => m.PlaylistModule),
-      },
-      {
-        path: 'likes',
-        data: { animation: 'default' },
-        component: PagePlaylistLikesComponent,
-      },
-      {
-        path: 'play',
-        loadChildren: () => PlayerModule,
-      },
-    ],
-  },
-  { path: '**', component: WelcomeComponent }, // TODO Not found component
-];*/
+import { NavigationService } from '@app/main/navigation.service';
 
 const routes: Routes = [
   {
@@ -84,12 +19,12 @@ const routes: Routes = [
     canActivate: [MainGuard],
     canActivateChild: [MainGuard],
     children: [
-      {
-        path: '',
-        redirectTo: 'library',
-        pathMatch: 'full',
-        data: { animation: 'default' },
-      },
+      // {
+      //   path: '',
+      //   redirectTo: 'library',
+      //   pathMatch: 'full',
+      //   data: { animation: 'default' },
+      // },
       {
         path: 'library',
         loadChildren: () =>
@@ -132,6 +67,7 @@ const routes: Routes = [
   providers: [
     MainGuard,
     ScrollerService,
+    NavigationService,
     {
       provide: MAT_SNACK_BAR_DEFAULT_OPTIONS,
       useValue: {

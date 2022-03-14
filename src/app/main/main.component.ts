@@ -27,6 +27,7 @@ import { loadPlaylists } from '@app/database/playlists/playlist.actions';
 import { loadEntries } from '@app/database/entries/entry.actions';
 import { loadPictures } from '@app/database/pictures/picture.actions';
 import { first, tap } from 'rxjs/operators';
+import { NavigationService } from '@app/main/navigation.service';
 
 // export const debugAnimation = (name: string) => (
 //   from: any,
@@ -161,7 +162,8 @@ export class MainComponent implements OnInit {
     private albums: AlbumFacade,
     private store: Store,
     private appRef: ApplicationRef,
-    private zone: NgZone
+    private zone: NgZone,
+    private navigator: NavigationService
   ) {}
 
   // @HostListener('window:scroll', ['$event'])
@@ -192,6 +194,8 @@ export class MainComponent implements OnInit {
     this.scroller.scroll$.subscribe((top) => (this.scrolledTop = top === 0));
     // this.store.dispatch(loadPictures());
     // this.albums.getByYear(2020).subscribe((years) => console.log(years));
+
+    this.navigator.register();
   }
 
   prepareRoute(outlet: RouterOutlet): string {
