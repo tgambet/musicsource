@@ -12,6 +12,7 @@ import {
   deletePlaylist,
   editPlaylist,
   playAlbum,
+  playArtist,
   playPlaylist,
   playSongs,
   removeSongFromQueue,
@@ -33,6 +34,7 @@ import { PlaylistAddComponent } from '@app/core/dialogs/playlist-add.component';
 import { filter, map, tap } from 'rxjs/operators';
 import * as PlaylistsActions from '@app/database/playlists/playlist.actions';
 import { Observable } from 'rxjs';
+import { ArtistId } from '@app/database/artists/artist.model';
 
 @Injectable()
 export class HelperFacade {
@@ -145,5 +147,9 @@ export class HelperFacade {
 
   playSongs(songs: SongId[], shuffle: boolean): void {
     this.store.dispatch(playSongs({ songs, shuffle }));
+  }
+
+  playArtist(id: ArtistId): void {
+    this.store.dispatch(playArtist({ id }));
   }
 }

@@ -2,6 +2,7 @@ import { createAction, props } from '@ngrx/store';
 import { AlbumId } from '@app/database/albums/album.model';
 import { Song, SongId } from '@app/database/songs/song.model';
 import { PlaylistId } from '@app/database/playlists/playlist.model';
+import { ArtistId } from '@app/database/artists/artist.model';
 
 export const playSongs = createAction(
   'helper/songs-play',
@@ -16,6 +17,11 @@ export const playAlbum = createAction(
 export const playPlaylist = createAction(
   'helper/playlist-play',
   props<{ id: PlaylistId; shuffle: boolean }>()
+);
+
+export const playArtist = createAction(
+  'helper/artist-play',
+  props<{ id: ArtistId }>()
 );
 
 export const addAlbumToQueue = createAction(

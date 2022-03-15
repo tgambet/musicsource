@@ -332,8 +332,7 @@ export class LibraryLikesComponent implements OnInit {
             {
               icon: Icons.shuffle,
               text: 'Shuffle play',
-              // eslint-disable-next-line @typescript-eslint/no-empty-function
-              click: () => {}, // TODO
+              click: () => this.helper.playArtist(a.id),
             },
           ],
         }))

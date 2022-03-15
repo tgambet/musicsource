@@ -14,6 +14,7 @@ import { HistoryService } from '@app/core/services/history.service';
 import { ArtistFacade } from '@app/database/artists/artist.facade';
 import { AlbumFacade } from '@app/database/albums/album.facade';
 import { PictureFacade } from '@app/database/pictures/picture.facade';
+import { HelperFacade } from '@app/helper/helper.facade';
 
 @Component({
   selector: 'app-page-artist',
@@ -29,7 +30,11 @@ import { PictureFacade } from '@app/database/pictures/picture.facade';
         <app-container-page class="header-container">
           <app-title>{{ artist.name }}</app-title>
           <div class="actions">
-            <button mat-raised-button color="accent" (click)="shufflePlay()">
+            <button
+              mat-raised-button
+              color="accent"
+              (click)="shufflePlay(artist)"
+            >
               <app-icon [path]="icons.shuffle"></app-icon>
               <span>Shuffle</span>
             </button>
@@ -182,7 +187,8 @@ export class PageArtistComponent implements OnInit {
     private history: HistoryService,
     private artists: ArtistFacade,
     private pictures: PictureFacade,
-    private albums: AlbumFacade
+    private albums: AlbumFacade,
+    private helper: HelperFacade
   ) {}
 
   ngOnInit(): void {
@@ -201,8 +207,8 @@ export class PageArtistComponent implements OnInit {
     this.songs$ = EMPTY; // this.songs.getByAlbumKey(''); // TODO
   }
 
-  shufflePlay(/*artist: Artist*/): void {
-    // this.helper.shufflePlayArtist(artist).subscribe();
+  shufflePlay(artist: Artist): void {
+    this.helper.playArtist(artist.id);
     // this.history.artistPlayed(artist);
   }
 

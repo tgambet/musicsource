@@ -38,6 +38,7 @@ import {
   editPlaylist,
   openSnack,
   playAlbum,
+  playArtist,
   playPlaylist,
   playSongs,
   removeSongFromQueue,
@@ -50,6 +51,7 @@ import { PlayerFacade } from '@app/player/store/player.facade';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmComponent } from '@app/core/dialogs/confirm.component';
 import { PlaylistData } from '@app/core/dialogs/playlist-new.component';
+import { ArtistFacade } from '@app/database/artists/artist.facade';
 
 // noinspection JSUnusedGlobalSymbols
 @Injectable()
@@ -93,6 +95,24 @@ export class HelperEffects implements OnRunEffects {
           filter((playlist): playlist is Playlist => !!playlist),
           first(),
           map((playlist) => playSongs({ songs: playlist.songs, shuffle }))
+        )
+      )
+    )
+  );
+
+  playArtist$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(playArtist),
+      switchMap(({ id }) =>
+        this.songs.getByArtistKey(id).pipe(
+          filter((songs): songs is Song[] => !!songs),
+          first(),
+          map((songs) =>
+            shuffleArray(songs)
+              .slice(0, 50)
+              .map((s) => s.entryPath)
+          ),
+          map((songs) => playSongs({ songs, shuffle: false }))
         )
       )
     )
@@ -317,6 +337,7 @@ export class HelperEffects implements OnRunEffects {
     private actions$: Actions,
     private router: Router,
     private songs: SongFacade,
+    private artists: ArtistFacade,
     private snack: MatSnackBar,
     private playlists: PlaylistFacade,
     private helper: HelperFacade,
