@@ -7,7 +7,7 @@ import {
 import { SelectOption } from '@app/core/components/select.component';
 import { Filter } from '@app/core/components/filters.component';
 import { ActivatedRoute, Router } from '@angular/router';
-import { map } from 'rxjs/operators';
+import { filter, first, map } from 'rxjs/operators';
 import { combineLatest, Observable, of } from 'rxjs';
 import { PlaylistFacade } from '@app/database/playlists/playlist.facade';
 import { AlbumFacade } from '@app/database/albums/album.facade';
@@ -18,6 +18,7 @@ import { PictureFacade } from '@app/database/pictures/picture.facade';
 import { toDuration } from '@app/core/pipes/duration.pipe';
 import { Icons } from '@app/core/utils';
 import { HelperFacade } from '@app/helper/helper.facade';
+import { Song } from '@app/database/songs/song.model';
 
 @Component({
   selector: 'app-library-likes',
@@ -210,6 +211,7 @@ export class LibraryLikesComponent implements OnInit {
               click: () => this.helper.deletePlaylist(playlist.id),
             },
           ],
+          queue$: of(playlist.songs),
         }))
       )
     );
@@ -263,6 +265,11 @@ export class LibraryLikesComponent implements OnInit {
               disabled: !album.albumArtist,
             },
           ],
+          queue$: this.songs.getByAlbumKey(album.id).pipe(
+            filter((songs): songs is Song[] => !!songs),
+            first(),
+            map((songs) => songs.map((s) => s.entryPath))
+          ),
         }))
       )
     );
@@ -317,6 +324,7 @@ export class LibraryLikesComponent implements OnInit {
               disabled: !song.artists[0],
             },
           ],
+          queue$: of([song.entryPath]),
         }))
       )
     );

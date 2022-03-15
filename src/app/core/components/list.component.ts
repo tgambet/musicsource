@@ -11,6 +11,7 @@ import { Observable } from 'rxjs';
 import { MatRipple } from '@angular/material/core';
 import { Router } from '@angular/router';
 import { MenuItem } from '@app/core/components/menu.component';
+import { SongId } from '@app/database/songs/song.model';
 
 export interface ListItem {
   title: string;
@@ -18,6 +19,7 @@ export interface ListItem {
   cover$: Observable<string | undefined>;
   routerLink?: any[] | null;
   menuItems: MenuItem[];
+  queue$?: Observable<SongId[]>;
 }
 
 @Directive({
@@ -53,12 +55,14 @@ export class OptMatRippleDirective extends MatRipple implements OnInit {
           <ng-template #icon>
             <app-icon [path]="defaultIcon" [size]="26"></app-icon>
           </ng-template>
-          <!--        <app-player-button-->
-          <!--          size="small"-->
-          <!--          [queue]="queue"-->
-          <!--          [index]="queue.indexOf(song.entryPath)"-->
-          <!--          *ngIf="queue"-->
-          <!--        ></app-player-button>-->
+          <app-player-button
+            class="player-button"
+            (mousedown)="$event.stopPropagation()"
+            (click)="$event.stopPropagation()"
+            *ngIf="item.queue$ | async as queue"
+            size="small"
+            [queue]="queue"
+          ></app-player-button>
         </div>
       </div>
       <div class="meta">
@@ -114,6 +118,23 @@ export class OptMatRippleDirective extends MatRipple implements OnInit {
         display: flex;
         align-items: center;
         justify-content: center;
+        position: relative;
+      }
+      .player-button {
+        position: absolute;
+        height: 100%;
+        width: 100%;
+        background-color: rgba(0, 0, 0, 0.75);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-width: 12px;
+      }
+      .player-button.stopped {
+        display: none;
+      }
+      .item:hover .player-button {
+        display: flex;
       }
       .inner-cover.round {
         border-radius: 50%;
