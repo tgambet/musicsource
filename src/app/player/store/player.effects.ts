@@ -6,7 +6,7 @@ import {
   ofType,
   OnRunEffects,
 } from '@ngrx/effects';
-import { EMPTY, Observable, of } from 'rxjs';
+import { combineLatest, EMPTY, Observable, of } from 'rxjs';
 import {
   pause,
   resume,
@@ -14,7 +14,9 @@ import {
   setLoading,
   setNextIndex,
   setPlaying,
+  setQueue,
   setVolume,
+  shuffle,
   toggleMute,
 } from '@app/player/store/player.actions';
 import {
@@ -40,7 +42,7 @@ import { MediaSessionService } from '@app/player/media-session.service';
 import { Title } from '@angular/platform-browser';
 import { EntryFacade } from '@app/database/entries/entry.facade';
 import { SongFacade } from '@app/database/songs/song.facade';
-import { concatTap } from '@app/core/utils';
+import { concatTap, shuffleArray } from '@app/core/utils';
 
 // noinspection JSUnusedGlobalSymbols
 @Injectable()
@@ -165,6 +167,25 @@ export class PlayerEffects implements OnRunEffects {
 
   loading$ = createEffect(() =>
     this.audio.loading$.pipe(map((loading) => setLoading({ loading })))
+  );
+
+  shuffle$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(shuffle),
+      switchMap(() =>
+        combineLatest([
+          this.player.getQueue$(),
+          this.player.getCurrentIndex$(),
+        ]).pipe(first())
+      ),
+      map(([queue, currentIndex]) => {
+        const current = queue[currentIndex];
+        let newQueue = [...queue];
+        newQueue.splice(currentIndex, 1);
+        newQueue = [current, ...shuffleArray(newQueue)];
+        return setQueue({ queue: newQueue, currentIndex: 0 });
+      })
+    )
   );
 
   constructor(
