@@ -17,7 +17,11 @@ const indexes = [
   // { name: 'genre', multiEntry: true },
   { name: 'title' },
   { name: 'albumId', keySelector: (song: Song) => song.album.id },
-  // { name: 'artistId' },
+  {
+    name: 'artists',
+    keySelector: (song: Song) => song.artists.map((a) => a.id),
+    multiEntry: true,
+  },
   { name: 'likedOn' },
   // { name: 'lastModified' },
   { name: 'updatedOn' },

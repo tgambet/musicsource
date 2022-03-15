@@ -1356,17 +1356,17 @@
     dot "^1.1.3"
     fs-extra "^9.0.1"
 
-"@creasource/ngrx-idb@0.0.3":
-  version "0.0.3"
-  resolved "https://registry.yarnpkg.com/@creasource/ngrx-idb/-/ngrx-idb-0.0.3.tgz#e6e6fcabb742a2a432c1d275ace3c00301aa94d3"
-  integrity sha512-RRnZGQrzh/AIDXnaz2wN130EbbTJWa8qMlwBolX6x/1b9YIyoe84S0JPHD40Csd01+Iq/8JIQkaw0jszc4nedw==
+"@creasource/ngrx-idb@0.0.5":
+  version "0.0.5"
+  resolved "https://registry.yarnpkg.com/@creasource/ngrx-idb/-/ngrx-idb-0.0.5.tgz#de3e1ba0565c28cf12dba9e49a8bb0b7758b82c9"
+  integrity sha512-RbyfV1v/rnaGgLmbs74UT0Vf8jZgZsokmFiEqoDmKd6DpPkCa8UdvwnwDAKMAvqxlyDNglnqKMsYTOaq7qXjVg==
   dependencies:
     tslib "^2.3.0"
 
-"@creasource/ngx-idb@0.0.3":
-  version "0.0.3"
-  resolved "https://registry.yarnpkg.com/@creasource/ngx-idb/-/ngx-idb-0.0.3.tgz#9d3c9f33a4a050764d1f50f87143683b4f9d790c"
-  integrity sha512-UK59nvR9au1QMEY2RTf7T/JM+gOOO+gOBEQ6EbCoouR3UQr3KypLIsszcHCfCZWzNo37FfwcdTaUlhgEKjtlaw==
+"@creasource/ngx-idb@0.0.5":
+  version "0.0.5"
+  resolved "https://registry.yarnpkg.com/@creasource/ngx-idb/-/ngx-idb-0.0.5.tgz#6450429234f15f4e27257467d977c2e2693c87bb"
+  integrity sha512-pt3cpB5NERNK7OLQNWM0gk09m7cIJ8CMMm4yslQILuLtXJUpIzvg3iL4ZIP+U/3HrS6r742+2dMgvQKMU2kqTw==
   dependencies:
     tslib "^2.3.0"
 

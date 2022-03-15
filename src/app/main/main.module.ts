@@ -19,12 +19,12 @@ const routes: Routes = [
     canActivate: [MainGuard],
     canActivateChild: [MainGuard],
     children: [
-      // {
-      //   path: '',
-      //   redirectTo: 'library',
-      //   pathMatch: 'full',
-      //   data: { animation: 'default' },
-      // },
+      {
+        path: '',
+        redirectTo: 'library',
+        pathMatch: 'full',
+        data: { animation: 'default' },
+      },
       {
         path: 'library',
         loadChildren: () =>
