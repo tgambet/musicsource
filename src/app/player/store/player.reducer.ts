@@ -11,11 +11,9 @@ import {
   setQueue,
   setPrevIndex,
   show,
-  shuffle,
   toggleMute,
   setVolume,
 } from '@app/player/store/player.actions';
-import { shuffleArray } from '@app/core/utils/shuffle-array.util';
 
 export const playerReducer: ActionReducer<PlayerState> = createReducer(
   initialState,
@@ -68,10 +66,6 @@ export const playerReducer: ActionReducer<PlayerState> = createReducer(
   on(setDuration, (state, { duration }) => ({
     ...state,
     duration,
-  })),
-  on(shuffle, (state) => ({
-    ...state,
-    queue: shuffleArray(state.queue),
   })),
   on(toggleMute, (state) => ({
     ...state,

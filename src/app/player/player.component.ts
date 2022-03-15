@@ -442,7 +442,6 @@ export class PlayerComponent implements OnInit, OnDestroy {
   }
 
   shuffle(): void {
-    this.player.setCurrentIndex(0);
     this.player.shuffle();
   }
 
