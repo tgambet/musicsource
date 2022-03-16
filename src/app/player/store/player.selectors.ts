@@ -60,3 +60,8 @@ export const selectVolume = createSelector(
   selectPlayerState,
   (state) => state.volume
 );
+
+export const selectRepeat = createSelector(
+  selectPlayerState,
+  (state) => state.repeat
+);

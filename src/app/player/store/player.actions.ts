@@ -24,6 +24,7 @@ export const setPrevIndex = createAction('player/set-prev-index');
 
 export const resume = createAction('player/resume');
 export const pause = createAction('player/pause');
+export const reset = createAction('player/reset');
 
 export const setPlaying = createAction(
   'player/set-playing',
@@ -47,4 +48,9 @@ export const toggleMute = createAction('player/toggleMute');
 export const setVolume = createAction(
   'player/volume',
   props<{ volume: number }>()
+);
+
+export const setRepeat = createAction(
+  'player/repeat',
+  props<{ value: 'all' | 'once' | 'none' }>()
 );

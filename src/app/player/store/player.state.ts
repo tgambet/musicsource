@@ -9,6 +9,7 @@ export interface PlayerState {
   duration?: number;
   muted: boolean;
   volume: number;
+  repeat: 'all' | 'once' | 'none';
 }
 
 export const initialState: PlayerState = {
@@ -20,4 +21,5 @@ export const initialState: PlayerState = {
   duration: undefined,
   muted: false,
   volume: 1,
+  repeat: 'none',
 };

@@ -38,6 +38,7 @@ import {
   mdiPlaylistPlus,
   mdiPlus,
   mdiRepeat,
+  mdiRepeatOnce,
   mdiShuffleVariant,
   mdiSkipNext,
   mdiSkipPrevious,
@@ -92,6 +93,7 @@ export class Icons {
   static plus = mdiPlus;
   static radio = mdiAccessPoint;
   static repeat = mdiRepeat;
+  static repeatOnce = mdiRepeatOnce;
   static search = mdiMagnify;
   static shuffle = mdiShuffleVariant;
   static skipNext = mdiSkipNext;

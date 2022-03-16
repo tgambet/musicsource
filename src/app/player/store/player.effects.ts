@@ -6,10 +6,12 @@ import {
   ofType,
   OnRunEffects,
 } from '@ngrx/effects';
-import { combineLatest, EMPTY, Observable, of } from 'rxjs';
+import { combineLatest, EMPTY, from, Observable, of } from 'rxjs';
 import {
   pause,
+  reset,
   resume,
+  setCurrentIndex,
   setDuration,
   setLoading,
   setNextIndex,
@@ -26,7 +28,6 @@ import {
   first,
   map,
   switchMap,
-  take,
   tap,
 } from 'rxjs/operators';
 import { Router } from '@angular/router';
@@ -94,16 +95,38 @@ export class PlayerEffects implements OnRunEffects {
     { dispatch: false }
   );
 
+  reset$ = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(reset),
+        concatTap(() => from(this.audio.reset()))
+      ),
+    { dispatch: false }
+  );
+
   nextSong$ = createEffect(() =>
     this.audio.ended$.pipe(
       switchMap(() =>
-        this.player.hasNextSong$().pipe(
-          take(1),
-          concatMap((hasNextSong) =>
-            hasNextSong
-              ? of(setPlaying({ playing: true }), setNextIndex())
-              : EMPTY
-          )
+        combineLatest([
+          this.player.hasNextSong$(),
+          this.player.getRepeat$(),
+        ]).pipe(
+          first(),
+          concatMap(([hasNextSong, repeat]) => {
+            if (repeat === 'once') {
+              return of(setPlaying({ playing: true }), reset());
+            }
+            if (hasNextSong) {
+              return of(setPlaying({ playing: true }), setNextIndex());
+            }
+            if (repeat === 'all') {
+              return of(
+                setPlaying({ playing: true }),
+                setCurrentIndex({ index: 0 })
+              );
+            }
+            return EMPTY;
+          })
         )
       )
     )
