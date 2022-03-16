@@ -110,10 +110,11 @@ export class PlayerEffects implements OnRunEffects {
         combineLatest([
           this.player.hasNextSong$(),
           this.player.getRepeat$(),
+          this.player.getQueue$().pipe(map((q) => q.length)),
         ]).pipe(
           first(),
-          concatMap(([hasNextSong, repeat]) => {
-            if (repeat === 'once') {
+          concatMap(([hasNextSong, repeat, queueLength]) => {
+            if (repeat === 'once' || (repeat === 'all' && queueLength === 1)) {
               return of(setPlaying({ playing: true }), reset());
             }
             if (hasNextSong) {
