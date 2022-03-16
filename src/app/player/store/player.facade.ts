@@ -10,6 +10,7 @@ import {
   selectMuted,
   selectPlaying,
   selectQueue,
+  selectRepeat,
   selectShow,
   selectVolume,
 } from '@app/player/store/player.selectors';
@@ -30,6 +31,7 @@ import {
   show,
   shuffle,
   toggleMute,
+  setRepeat,
 } from '@app/player/store/player.actions';
 import { AudioService } from '@app/player/audio.service';
 
@@ -81,6 +83,10 @@ export class PlayerFacade {
     return this.store.select(selectVolume);
   }
 
+  getRepeat$(): Observable<'all' | 'once' | 'none'> {
+    return this.store.select(selectRepeat);
+  }
+
   hasNextSong$(): Observable<boolean> {
     return this.store.select(selectHasNextSong);
   }
@@ -115,6 +121,10 @@ export class PlayerFacade {
 
   setVolume(volume: number): void {
     this.store.dispatch(setVolume({ volume }));
+  }
+
+  setRepeat(value: 'all' | 'once' | 'none'): void {
+    this.store.dispatch(setRepeat({ value }));
   }
 
   resume(): void {

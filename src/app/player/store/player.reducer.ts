@@ -13,6 +13,7 @@ import {
   show,
   toggleMute,
   setVolume,
+  setRepeat,
 } from '@app/player/store/player.actions';
 
 export const playerReducer: ActionReducer<PlayerState> = createReducer(
@@ -55,24 +56,10 @@ export const playerReducer: ActionReducer<PlayerState> = createReducer(
     ...state,
     currentIndex: Math.max(0, state.currentIndex - 1),
   })),
-  on(setPlaying, (state, { playing }) => ({
-    ...state,
-    playing,
-  })),
-  on(setLoading, (state, { loading }) => ({
-    ...state,
-    loading,
-  })),
-  on(setDuration, (state, { duration }) => ({
-    ...state,
-    duration,
-  })),
-  on(toggleMute, (state) => ({
-    ...state,
-    muted: !state.muted,
-  })),
-  on(setVolume, (state, { volume }) => ({
-    ...state,
-    volume,
-  }))
+  on(setPlaying, (state, { playing }) => ({ ...state, playing })),
+  on(setLoading, (state, { loading }) => ({ ...state, loading })),
+  on(setDuration, (state, { duration }) => ({ ...state, duration })),
+  on(toggleMute, (state) => ({ ...state, muted: !state.muted })),
+  on(setVolume, (state, { volume }) => ({ ...state, volume })),
+  on(setRepeat, (state, { value }) => ({ ...state, repeat: value }))
 );

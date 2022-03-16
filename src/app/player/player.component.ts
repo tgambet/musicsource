@@ -148,9 +148,19 @@ import { HelperFacade } from '@app/helper/helper.facade';
           [value]="volume$ | async"
         ></mat-slider>
       </div>
-      <button mat-icon-button [disableRipple]="true" color="accent">
-        <app-icon [path]="icons.repeat"></app-icon>
-      </button>
+      <ng-container *ngIf="repeat$ | async as repeat">
+        <button
+          mat-icon-button
+          [disableRipple]="true"
+          color="accent"
+          (click)="setRepeat(repeat)"
+          [class.active]="repeat !== 'none'"
+        >
+          <app-icon
+            [path]="repeat === 'once' ? icons.repeatOnce : icons.repeat"
+          ></app-icon>
+        </button>
+      </ng-container>
       <button
         mat-icon-button
         [disableRipple]="true"
@@ -267,6 +277,9 @@ import { HelperFacade } from '@app/helper/helper.facade';
         margin-right: 8px;
         color: #aaa;
       }
+      .right button.active {
+        color: white;
+      }
       .right .menu {
         color: white;
       }
@@ -321,6 +334,7 @@ export class PlayerComponent implements OnInit, OnDestroy {
   prevEnabled$!: Observable<boolean>;
   muted$!: Observable<boolean>;
   volume$!: Observable<number>;
+  repeat$!: Observable<'all' | 'once' | 'none'>;
 
   isPlayRoute!: boolean;
   isVolumeShown = false;
@@ -394,6 +408,7 @@ export class PlayerComponent implements OnInit, OnDestroy {
     this.prevEnabled$ = this.player.hasPrevSong$();
     this.muted$ = this.player.getMuted$();
     this.volume$ = this.player.getVolume$();
+    this.repeat$ = this.player.getRepeat$();
 
     this.seekerDisabled$ = this.player
       .getDuration$()
@@ -405,6 +420,7 @@ export class PlayerComponent implements OnInit, OnDestroy {
       filter((song): song is Song => !!song)
     );
 
+    // TODO menu$ obs
     const r2$ = this.currentSong$
       .pipe(tap((song) => this.updateMenu(song)))
       .subscribe();
@@ -457,11 +473,6 @@ export class PlayerComponent implements OnInit, OnDestroy {
 
   toggleLiked(song: Song): void {
     this.songs.toggleLiked(song);
-
-    // this.helper.toggleLikedSong(song).subscribe(() => {
-    //   this.updateMenu(song);
-    //   this.cdr.markForCheck();
-    // });
   }
 
   updateMenu(song: Song): void {
@@ -510,5 +521,19 @@ export class PlayerComponent implements OnInit, OnDestroy {
 
   setVolume(volume: number): void {
     this.player.setVolume(volume);
+  }
+
+  setRepeat(repeat: 'all' | 'once' | 'none') {
+    switch (repeat) {
+      case 'all':
+        this.player.setRepeat('once');
+        break;
+      case 'once':
+        this.player.setRepeat('none');
+        break;
+      default:
+        this.player.setRepeat('all');
+        break;
+    }
   }
 }

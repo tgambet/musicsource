@@ -125,6 +125,11 @@ export class AudioService {
     );
   }
 
+  async reset() {
+    this.audio.currentTime = 0;
+    await this.audio.play();
+  }
+
   seek(n: number): void {
     this.audio.currentTime = n;
   }
