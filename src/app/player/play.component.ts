@@ -8,7 +8,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Icons } from '@app/core/utils/icons.util';
 import { QueueListComponent } from '@app/player/queue-list.component';
 import { PlayerFacade } from '@app/player/store/player.facade';
-import { concatMap, filter, switchMap, take, tap } from 'rxjs/operators';
+import { filter, switchMap, take, tap } from 'rxjs/operators';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { Song, SongId } from '@app/database/songs/song.model';
 import { Observable } from 'rxjs';
@@ -19,7 +19,7 @@ import { SongFacade } from '@app/database/songs/song.facade';
   selector: 'app-play',
   template: `
     <div class="cover">
-      <div class="img-container" *ngIf="currentSong$ | async as currentSong">
+      <div class="img-container">
         <img
           class="img"
           *ngIf="currentCover$ | async as cover"
@@ -48,20 +48,21 @@ import { SongFacade } from '@app/database/songs/song.facade';
       :host {
         flex-grow: 1;
         display: flex;
+        flex-direction: column;
         background: black;
-        padding: 64px 96px 0;
+        /* padding: 64px 96px 0;*/
         box-sizing: border-box;
+        max-height: calc(100vh - 64px);
       }
       .cover {
-        flex: 1 1 auto;
-        padding-bottom: 64px;
+        flex: 1 1 33%;
         position: relative;
       }
       .img-container {
         position: absolute;
         top: 0;
         left: 0;
-        bottom: 64px;
+        bottom: 32px;
         right: 0;
       }
       img {
@@ -70,16 +71,40 @@ import { SongFacade } from '@app/database/songs/song.facade';
         object-fit: contain;
       }
       .playlist {
-        flex: 0 0 620px;
-        padding-left: 96px;
+        flex: 1 1 67%;
         position: relative;
       }
-      app-playlist-list {
+      app-queue-list {
         position: absolute;
         height: 100%;
         overflow-y: auto;
-        left: 96px;
+        left: 0;
         right: 0;
+        bottom: 0;
+        font-size: 14px;
+      }
+      @media (min-width: 950px) {
+        :host {
+          padding: 32px 64px 32px;
+          flex-direction: row;
+        }
+        .cover {
+          flex: 1 1 60%;
+          position: relative;
+        }
+        .img-container {
+          top: 0;
+          left: 0;
+          bottom: 32px;
+          right: 64px;
+        }
+        .playlist {
+          flex: 1 1 40%;
+          position: relative;
+        }
+        app-queue-list {
+          font-size: 16px;
+        }
       }
     `,
   ],
@@ -124,7 +149,7 @@ export class PlayComponent implements OnInit {
 
     this.currentCover$ = this.currentSong$.pipe(
       filter((s): s is Song => !!s),
-      concatMap((song) => this.pictures.getSongCover(song))
+      switchMap((song) => this.pictures.getSongCover(song, 1100))
     );
   }
 

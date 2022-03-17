@@ -50,7 +50,7 @@ import { HelperFacade } from '@app/helper/helper.facade';
         <app-icon [path]="icons.dotsVertical" [size]="24"></app-icon>
       </button>
     </span>
-    <mat-menu #menu="matMenu" [hasBackdrop]="false" [overlapTrigger]="false">
+    <mat-menu #menu="matMenu" [hasBackdrop]="true" [overlapTrigger]="true">
       <ng-template matMenuContent>
         <button mat-menu-item (click)="playNext(song)">
           <app-icon [path]="icons.playlistPlay"></app-icon>
@@ -104,6 +104,7 @@ import { HelperFacade } from '@app/helper/helper.facade';
       }
       .cover {
         width: 32px;
+        height: 32px;
         margin-right: 16px;
         border-radius: 2px;
         overflow: hidden;
@@ -115,6 +116,7 @@ import { HelperFacade } from '@app/helper/helper.facade';
         left: -4px;
         opacity: 0;
         background-color: rgba(0, 0, 0, 0.75);
+        box-sizing: content-box;
       }
       .meta {
         display: flex;
@@ -180,7 +182,7 @@ export class QueueItemComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.cover$ = this.pictures.getCover(this.song.pictureId);
+    this.cover$ = this.pictures.getSongCover(this.song, 32);
   }
 
   getArtistId(artist: string): string {

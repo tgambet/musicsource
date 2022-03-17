@@ -24,7 +24,6 @@ import { Song, SongId } from '@app/database/songs/song.model';
       }
       .item {
         flex: 0 0 56px;
-        box-sizing: border-box;
         background-color: black;
       }
       .item.selected {

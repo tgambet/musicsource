@@ -70,8 +70,8 @@ export const slideInAnimation: AnimationTriggerMetadata = trigger(
           position: 'fixed',
           top: 0,
           left: 0,
+          right: 0,
           height: 'calc(100% - 136px)',
-          width: '100vw',
           zIndex: 200,
           transform: 'translateY(100vh)',
         }),
@@ -90,8 +90,8 @@ export const slideInAnimation: AnimationTriggerMetadata = trigger(
           position: 'fixed',
           top: 0,
           left: 0,
+          right: 0,
           height: 'calc(100% - 136px)',
-          width: '100vw',
           zIndex: 200,
           transform: 'translateY(64px)',
         }),
@@ -131,9 +131,14 @@ export const slideInAnimation: AnimationTriggerMetadata = trigger(
       }
       main {
         flex: 1 1 auto;
-        padding-bottom: 72px;
+        padding-bottom: 66px;
         display: flex;
         flex-direction: column;
+      }
+      @media (min-width: 950px) {
+        main {
+          padding-bottom: 72px;
+        }
       }
       aside {
         position: fixed;

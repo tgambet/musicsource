@@ -48,8 +48,8 @@ import { map } from 'rxjs/operators';
       <div class="labels">
         <p class="step">
           {{ scanner.state | titlecase }}...
-          <em>{{ scanner.extractedCount }}/{{ scanner.extractingCount }}</em>
-          <em>{{ scanner.savedCount }}/{{ scanner.savingCount }}</em>
+          <!--<em>{{ scanner.extractedCount }}/{{ scanner.extractingCount }}</em>
+          <em>{{ scanner.savedCount }}/{{ scanner.savingCount }}</em>-->
         </p>
         <p class="step-sub">
           {{ scanner.label }}
