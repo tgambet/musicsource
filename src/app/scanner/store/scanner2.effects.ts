@@ -101,6 +101,8 @@ export class ScannerEffects2 implements OnRunEffects {
   overlayRef?: OverlayRef;
   position?: GlobalPositionStrategy;
 
+  concurrency = navigator.hardwareConcurrency;
+
   openDirectory$ = createEffect(() =>
     this.actions$.pipe(
       ofType(openDirectory),
@@ -229,7 +231,7 @@ export class ScannerEffects2 implements OnRunEffects {
             endWith(extractSuccess({ label: entry.path })),
             catchError((error) => of(extractFailure({ error })))
           ),
-        navigator.hardwareConcurrency
+        this.concurrency
       )
     )
   );
@@ -334,7 +336,7 @@ export class ScannerEffects2 implements OnRunEffects {
             tap({ error: (err) => console.error(fileEntry.path, err) }),
             catchError((error) => of(extractFailure({ error })))
           ),
-        navigator.hardwareConcurrency
+        this.concurrency
       )
     )
   );
@@ -525,6 +527,7 @@ export class ScannerEffects2 implements OnRunEffects {
               { height: 160 },
               { height: 226 },
               { height: 264 },
+              { height: 1100 },
             ])
             .pipe(
               map((sources) => {

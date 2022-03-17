@@ -72,6 +72,7 @@ import { HelperFacade } from '@app/helper/helper.facade';
           [path]="playing.value ? icons.pause : icons.play"
           [size]="40"
         ></app-icon>
+        <!-- TODO 34px on small screen-->
       </button>
       <button
         mat-icon-button
@@ -121,14 +122,15 @@ import { HelperFacade } from '@app/helper/helper.facade';
         <app-menu [hasBackdrop]="true" [menuItems]="menuItems"></app-menu>
       </div>
     </div>
-    <div class="right">
+    <div class="right" (click)="toggleMenu()">
       <div class="volume">
         <button
           mat-icon-button
           [disableRipple]="true"
           color="accent"
           (mouseenter)="showVolume()"
-          (click)="toggleMute()"
+          (click)="toggleMute(); $event.stopPropagation()"
+          (mouseup)="$event.stopPropagation()"
         >
           <app-icon
             [path]="icons.volumeHigh"
@@ -146,6 +148,7 @@ import { HelperFacade } from '@app/helper/helper.facade';
           [step]="0.01"
           (input)="setVolume($event.value === null ? 1 : $event.value)"
           [value]="volume$ | async"
+          (click)="$event.stopPropagation()"
         ></mat-slider>
       </div>
       <ng-container *ngIf="repeat$ | async as repeat">
@@ -153,7 +156,7 @@ import { HelperFacade } from '@app/helper/helper.facade';
           mat-icon-button
           [disableRipple]="true"
           color="accent"
-          (click)="setRepeat(repeat)"
+          (click)="setRepeat(repeat); $event.stopPropagation()"
           [class.active]="repeat !== 'none'"
         >
           <app-icon
@@ -165,7 +168,7 @@ import { HelperFacade } from '@app/helper/helper.facade';
         mat-icon-button
         [disableRipple]="true"
         color="accent"
-        (click)="shuffle()"
+        (click)="shuffle(); $event.stopPropagation()"
       >
         <app-icon [path]="icons.shuffle"></app-icon>
       </button>
@@ -174,7 +177,7 @@ import { HelperFacade } from '@app/helper/helper.facade';
         [disableRipple]="true"
         color="accent"
         class="menu"
-        (click)="toggleMenu()"
+        (click)="toggleMenu(); $event.stopPropagation()"
       >
         <app-icon
           [path]="icons.menuUp"
@@ -192,8 +195,10 @@ import { HelperFacade } from '@app/helper/helper.facade';
         background-color: #212121;
         white-space: nowrap;
         padding-right: 12px;
-        height: 72px;
+        height: 66px;
         position: relative;
+        transition: height 300ms ease;
+        font-size: 14px;
       }
       :host > * {
         position: relative;
@@ -210,10 +215,15 @@ import { HelperFacade } from '@app/helper/helper.facade';
       :host mat-slider.main {
         position: absolute;
         top: -15px;
-        width: calc(100% - 12px);
+        width: calc(100% - 8px);
         padding: 0;
         height: 32px;
         cursor: pointer;
+      }
+      @media (min-width: 950px) {
+        :host mat-slider.main {
+          width: calc(100% - 12px);
+        }
       }
       mat-slider.front {
         top: -16px;
@@ -229,14 +239,12 @@ import { HelperFacade } from '@app/helper/helper.facade';
         margin-right: auto;
       }
       .left button {
-        padding: 8px;
-        box-sizing: content-box;
       }
       .time {
         color: rgb(170, 170, 170);
         font-size: 12px;
-        display: inline-block;
         width: 71px;
+        display: none;
       }
       .center {
         display: flex;
@@ -250,11 +258,12 @@ import { HelperFacade } from '@app/helper/helper.facade';
         background-color: #717171;
         border-radius: 2px;
         overflow: hidden;
+        display: none;
       }
       .meta {
         display: flex;
         flex-direction: column;
-        margin: 0 8px 0 16px;
+        margin: 0 0 0 16px;
         overflow: hidden;
       }
       .meta .top {
@@ -267,21 +276,22 @@ import { HelperFacade } from '@app/helper/helper.facade';
         text-overflow: ellipsis;
         overflow: hidden;
       }
-      .controls {
+      .controls button {
+        display: none;
       }
       .right {
         margin-left: auto;
-        padding-left: 86px;
       }
       .right button {
-        margin-right: 8px;
         color: #aaa;
+        display: none;
       }
       .right button.active {
         color: white;
       }
       .right .menu {
         color: white;
+        display: initial;
       }
       .menu app-icon {
         transition: transform 300ms ease;
@@ -291,8 +301,8 @@ import { HelperFacade } from '@app/helper/helper.facade';
         transform-origin: center center;
       }
       .volume {
-        display: inline-flex;
         position: relative;
+        display: none;
       }
       .volume mat-slider {
         position: absolute;
@@ -312,6 +322,38 @@ import { HelperFacade } from '@app/helper/helper.facade';
       }
       a[href]:hover {
         text-decoration: underline;
+      }
+      @media (min-width: 950px) {
+        :host {
+          height: 72px;
+          font-size: 16px;
+        }
+        .left button {
+          padding: 8px;
+          box-sizing: content-box;
+        }
+        .time {
+          display: inline-block;
+        }
+        .cover {
+          display: initial;
+        }
+        .meta {
+          margin-right: 8px;
+        }
+        .controls button {
+          display: initial;
+        }
+        .right {
+          padding-left: 86px;
+        }
+        .right button {
+          display: initial;
+          margin-right: 8px;
+        }
+        .volume {
+          display: inline-flex;
+        }
       }
     `,
   ],
