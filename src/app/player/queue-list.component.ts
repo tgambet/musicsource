@@ -10,6 +10,7 @@ import { Song, SongId } from '@app/database/songs/song.model';
       cdkMonitorSubtreeFocus
       *ngFor="let song of songs; trackBy: trackBy; let i = index"
       [song]="song"
+      [index]="i"
       [queue]="getIds(songs)"
       [class.selected]="
         song.entryPath === currentSong?.entryPath && currentIndex === i

@@ -255,18 +255,21 @@ export class HelperEffects implements OnRunEffects {
   removeSongFromQueue$ = createEffect(() =>
     this.actions$.pipe(
       ofType(removeSongFromQueue),
-      concatMap(({ song }) =>
+      concatMap(({ index: indexToDelete }) =>
         combineLatest([
           this.player.getQueue$(),
           this.player.getCurrentIndex$(),
         ]).pipe(
           first(),
           map(([playlist, index]) => {
+            // const indexToDelete = playlist.indexOf(song.entryPath);
             const newPlaylist = [...playlist];
-            newPlaylist.splice(playlist.indexOf(song.entryPath), 1);
+            newPlaylist.splice(indexToDelete ?? index, 1);
             return setQueue({
               queue: newPlaylist,
-              currentIndex: Math.min(index, newPlaylist.length - 1),
+              currentIndex:
+                Math.min(index, newPlaylist.length - 1) -
+                ((indexToDelete ?? index) < index ? 1 : 0),
             });
           })
         )

@@ -23,7 +23,7 @@ import {
   PlaylistNewComponent,
 } from '@app/core/dialogs/playlist-new.component';
 import { NoopScrollStrategy } from '@angular/cdk/overlay';
-import { Song, SongId } from '@app/database/songs/song.model';
+import { SongId } from '@app/database/songs/song.model';
 import { Router } from '@angular/router';
 import {
   getPlaylistId,
@@ -117,8 +117,8 @@ export class HelperFacade {
     );
   }
 
-  removeSongFromQueue(song: Song): void {
-    this.store.dispatch(removeSongFromQueue({ song }));
+  removeSongFromQueue(index?: number): void {
+    this.store.dispatch(removeSongFromQueue({ index }));
   }
 
   playPlaylist(id: PlaylistId, shuffle: boolean = false) {

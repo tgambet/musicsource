@@ -119,7 +119,10 @@ import { HelperFacade } from '@app/helper/helper.facade';
             [path]="!!song.likedOn ? icons.heart : icons.heartOutline"
           ></app-icon>
         </button>
-        <app-menu [hasBackdrop]="true" [menuItems]="menuItems"></app-menu>
+        <app-menu
+          [hasBackdrop]="true"
+          [menuItems]="menuItems$ | async"
+        ></app-menu>
       </div>
     </div>
     <div class="right" (click)="toggleMenu()">
@@ -370,7 +373,7 @@ export class PlayerComponent implements OnInit, OnDestroy {
   seekerDisabled$!: Observable<boolean>;
   currentSong$!: Observable<Song>;
   currentSongCover$!: Observable<string | undefined>;
-  menuItems!: MenuItem[];
+  menuItems$!: Observable<MenuItem[]>;
   playing$!: Observable<{ value: boolean }>;
   nextEnabled$!: Observable<boolean>;
   prevEnabled$!: Observable<boolean>;
@@ -462,11 +465,45 @@ export class PlayerComponent implements OnInit, OnDestroy {
       filter((song): song is Song => !!song)
     );
 
-    // TODO menu$ obs
-    const r2$ = this.currentSong$
-      .pipe(tap((song) => this.updateMenu(song)))
-      .subscribe();
-    this.subscription.add(r2$);
+    this.menuItems$ = this.currentSong$.pipe(
+      map((song) => [
+        {
+          text: 'Play next',
+          icon: this.icons.playlistPlay,
+          click: () => this.helper.addSongToQueue(song.entryPath, true),
+        },
+        {
+          text: 'Add to queue',
+          icon: this.icons.playlistMusic,
+          click: () => this.helper.addSongToQueue(song.entryPath, false),
+        },
+        {
+          text: !!song.likedOn ? 'Remove from your likes' : 'Add to your likes',
+          icon: !!song.likedOn ? this.icons.heart : this.icons.heartOutline,
+          click: () => this.toggleLiked(song),
+        },
+        {
+          text: 'Add to playlist',
+          icon: this.icons.playlistPlus,
+          click: () => this.helper.addSongsToPlaylist([song.entryPath]),
+        },
+        {
+          text: 'Remove from queue',
+          icon: this.icons.minusCircleOutline,
+          click: () => this.helper.removeSongFromQueue(),
+        },
+        {
+          text: 'Go to album',
+          icon: this.icons.album,
+          routerLink: ['/album', song.album.id],
+        },
+        {
+          text: 'Go to artist',
+          icon: this.icons.accountMusic,
+          routerLink: ['/artist', song.artists[0].id],
+        },
+      ])
+    );
 
     this.currentSongCover$ = this.currentSong$.pipe(
       switchMap((song) => this.pictures.getSongCover(song, 40))
@@ -515,46 +552,6 @@ export class PlayerComponent implements OnInit, OnDestroy {
 
   toggleLiked(song: Song): void {
     this.songs.toggleLiked(song);
-  }
-
-  updateMenu(song: Song): void {
-    this.menuItems = [
-      {
-        text: 'Play next',
-        icon: this.icons.playlistPlay,
-        click: () => this.helper.addSongToQueue(song.entryPath, true),
-      },
-      {
-        text: 'Add to queue',
-        icon: this.icons.playlistMusic,
-        click: () => this.helper.addSongToQueue(song.entryPath, false),
-      },
-      {
-        text: !!song.likedOn ? 'Remove from your likes' : 'Add to your likes',
-        icon: !!song.likedOn ? this.icons.heart : this.icons.heartOutline,
-        click: () => this.toggleLiked(song),
-      },
-      {
-        text: 'Add to playlist',
-        icon: this.icons.playlistPlus,
-        click: () => this.helper.addSongsToPlaylist([song.entryPath]),
-      },
-      {
-        text: 'Remove from queue',
-        icon: this.icons.minusCircleOutline,
-        click: () => this.helper.removeSongFromQueue(song),
-      },
-      {
-        text: 'Go to album',
-        icon: this.icons.album,
-        routerLink: ['/album', song.album.id],
-      },
-      {
-        text: 'Go to artist',
-        icon: this.icons.accountMusic,
-        routerLink: ['/artist', song.artists[0].id],
-      },
-    ];
   }
 
   toggleMute(): void {
