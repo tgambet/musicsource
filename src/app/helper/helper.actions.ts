@@ -1,6 +1,6 @@
 import { createAction, props } from '@ngrx/store';
 import { AlbumId } from '@app/database/albums/album.model';
-import { Song, SongId } from '@app/database/songs/song.model';
+import { SongId } from '@app/database/songs/song.model';
 import { PlaylistId } from '@app/database/playlists/playlist.model';
 import { ArtistId } from '@app/database/artists/artist.model';
 
@@ -56,7 +56,7 @@ export const addSongsToQueue = createAction(
 
 export const removeSongFromQueue = createAction(
   'helper/songs-removeFromQueue',
-  props<{ song: Song }>()
+  props<{ index?: number }>()
 );
 
 export const openSnack = createAction(

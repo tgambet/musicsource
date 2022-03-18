@@ -71,7 +71,7 @@ import { HelperFacade } from '@app/helper/helper.facade';
           <app-icon [path]="icons.playlistPlus"></app-icon>
           <span>Add to playlist</span>
         </button>
-        <button mat-menu-item (click)="removeFromQueue(song)">
+        <button mat-menu-item (click)="removeFromQueue(index)">
           <app-icon [path]="icons.minusCircleOutline"></app-icon>
           <span>Remove from queue</span>
         </button>
@@ -170,6 +170,7 @@ import { HelperFacade } from '@app/helper/helper.facade';
 export class QueueItemComponent implements OnInit {
   @Input() song!: Song;
   @Input() queue!: SongId[];
+  @Input() index!: number;
 
   cover$!: Observable<string | undefined>;
 
@@ -205,7 +206,7 @@ export class QueueItemComponent implements OnInit {
     this.helper.addSongsToPlaylist([song.entryPath]);
   }
 
-  removeFromQueue(song: Song): void {
-    this.helper.removeSongFromQueue(song);
+  removeFromQueue(index: number): void {
+    this.helper.removeSongFromQueue(index);
   }
 }
