@@ -9,9 +9,9 @@ import { MatTabNav } from '@angular/material/tabs';
 @Component({
   selector: 'app-library',
   template: `
-    <app-container class="recent">
-      <!-- <app-recent-activity></app-recent-activity>-->
-    </app-container>
+    <!--    <app-container class="recent">-->
+    <!--      &lt;!&ndash; <app-recent-activity></app-recent-activity>&ndash;&gt;-->
+    <!--    </app-container>-->
     <div class="container">
       <app-container>
         <nav mat-tab-nav-bar #navBar="matTabNavBar" color="accent">
@@ -109,7 +109,8 @@ import { MatTabNav } from '@angular/material/tabs';
         height: 291px;
       }
       .container {
-        margin-top: 32px;
+        /*margin-top: 32px;*/
+        margin-top: -1px;
         position: sticky;
         top: 63px;
         z-index: 101;

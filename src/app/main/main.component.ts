@@ -1,6 +1,7 @@
 import {
   ApplicationRef,
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   HostBinding,
   NgZone,
@@ -168,7 +169,8 @@ export class MainComponent implements OnInit {
     private store: Store,
     private appRef: ApplicationRef,
     private zone: NgZone,
-    private navigator: NavigationService
+    private navigator: NavigationService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   // @HostListener('window:scroll', ['$event'])
@@ -196,7 +198,10 @@ export class MainComponent implements OnInit {
       .subscribe();
 
     // TODO
-    this.scroller.scroll$.subscribe((top) => (this.scrolledTop = top === 0));
+    this.scroller.scroll$.subscribe((top) => {
+      this.scrolledTop = top === 0;
+      this.cdr.markForCheck();
+    });
     // this.store.dispatch(loadPictures());
     // this.albums.getByYear(2020).subscribe((years) => console.log(years));
 

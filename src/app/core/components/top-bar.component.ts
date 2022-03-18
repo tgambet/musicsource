@@ -12,6 +12,7 @@ import { removeAllPictures } from '@app/database/pictures/picture.actions';
 import { removeAllPlaylists } from '@app/database/playlists/playlist.actions';
 import { removeAllSongs } from '@app/database/songs/song.actions';
 import { openDirectory, scanStart } from '@app/scanner/store/scanner.actions';
+import { PlayerFacade } from '@app/player/store/player.facade';
 
 @Component({
   selector: 'app-top-bar',
@@ -58,7 +59,7 @@ import { openDirectory, scanStart } from '@app/scanner/store/scanner.actions';
         z-index: 100;
         font-weight: 500;
         font-size: 20px;
-        transition: background-color ease 200ms;
+        /*transition: background-color ease 100ms;*/
         border-bottom: 1px solid rgba(255, 255, 255, 0.1);
       }
       :host-context(.scrolled-top) {
@@ -162,7 +163,8 @@ export class TopBarComponent {
   constructor(
     private router: Router,
     private store: Store,
-    private storage: DatabaseService
+    private storage: DatabaseService,
+    private player: PlayerFacade
   ) {}
 
   // scan(): void {
@@ -175,6 +177,8 @@ export class TopBarComponent {
   // }
 
   clear(): void {
+    this.player.pause();
+    this.player.hide();
     this.store.dispatch(removeAllAlbums());
     this.store.dispatch(removeAllArtists());
     this.store.dispatch(removeAllEntries());
