@@ -77,7 +77,7 @@ import { HelperFacade } from '@app/helper/helper.facade';
       </header>
       <app-container-page>
         <div class="track-list" *ngIf="disks$ | async as disks">
-          <ng-container *ngFor="let disk of disks">
+          <ng-container *ngFor="let disk of disks; trackBy: trackByDisk">
             <app-title size="small" *ngIf="disks.length > 1">
               Disk {{ disk.key }}
             </app-title>
@@ -154,6 +154,10 @@ export class PageAlbumComponent implements OnInit {
 
   trackBy(index: number, song: Song): string {
     return song.entryPath;
+  }
+
+  trackByDisk(index: number, disk: { key: number | null }): number {
+    return disk.key || 0;
   }
 
   ngOnInit(): void {

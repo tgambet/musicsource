@@ -8,6 +8,7 @@ import {
   mdiChevronLeft,
   mdiChevronRight,
   mdiClose,
+  mdiCodeTags,
   mdiCog,
   mdiCurrencyUsd,
   mdiDelete,
@@ -66,6 +67,7 @@ export class Icons {
   static close = mdiClose;
   static cog = mdiCog;
   static code = mdiGithub;
+  static codeTag = mdiCodeTags;
   static currencyUsd = mdiCurrencyUsd;
   static delete = mdiDelete;
   static dotsVertical = mdiDotsVertical;

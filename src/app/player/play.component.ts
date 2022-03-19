@@ -85,7 +85,7 @@ import { SongFacade } from '@app/database/songs/song.facade';
       }
       @media (min-width: 950px) {
         :host {
-          padding: 32px 64px 32px;
+          padding: 32px 64px 0;
           flex-direction: row;
         }
         .cover {

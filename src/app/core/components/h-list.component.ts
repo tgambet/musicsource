@@ -78,7 +78,7 @@ import { DOCUMENT } from '@angular/common';
         position: absolute;
         z-index: 1;
         opacity: 1;
-        transition: opacity 300ms ease;
+        /*transition: opacity 300ms ease;*/
         transform: translateY(-50%);
       }
       :host:hover .button,
@@ -87,7 +87,7 @@ import { DOCUMENT } from '@angular/common';
         opacity: 1;
       }
       .button:focus {
-        /*outline: 1px solid red;*/
+        outline: 4px solid #555;
       }
       button[disabled] {
         opacity: 0 !important;
@@ -122,8 +122,8 @@ export class HListComponent implements OnInit, OnDestroy, AfterContentInit {
 
   icons = Icons;
 
-  isNextDisabled!: boolean;
-  isPrevDisabled!: boolean;
+  isNextDisabled = true;
+  isPrevDisabled = true;
 
   private translationP!: number;
   private nextListener!: (event: KeyboardEvent) => void;
@@ -211,6 +211,7 @@ export class HListComponent implements OnInit, OnDestroy, AfterContentInit {
     this.subscription.add(
       this.items.changes.subscribe(() => (this.translation = 0))
     );
+    setTimeout(() => this.update(), 100);
   }
 
   focusNextItem(

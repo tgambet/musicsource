@@ -17,75 +17,52 @@ import { openDirectory, scanStart } from '@app/scanner/store/scanner.actions';
       </a>
     </div>
     <div class="section home">
-      <div class="container">
-        <div class="left action">
-          <app-title>MusicSource</app-title>
-          <p>
-            A modern player for your personal music library, without leaving
-            your browser.
-          </p>
-          <button mat-raised-button color="accent" (click)="scan()">
-            <span class="button">
-              <app-icon [path]="icons.folderMusic" [size]="24"></app-icon>
-              Scan My Library
-            </span>
-          </button>
-          <a mat-raised-button href="https://github.com">
-            <span class="button">
-              <app-icon [path]="icons.code" [size]="24"></app-icon>
-              View Source Code
-            </span>
-          </a>
-        </div>
-        <div class="right picture">
-          <app-h-list class="carousel" [borderRadius]="4">
-            <img
-              src="assets/home.webp"
-              alt="musicsource"
-              appHListItem
-              width="683"
-            />
-            <div
-              style="width:683px; background-color: #101010"
-              appHListItem
-            ></div>
-            <div
-              style="width:683px; background-color: #151515"
-              appHListItem
-            ></div>
-            <div
-              style="width:683px; background-color: #202020"
-              appHListItem
-            ></div>
-            <img
-              src="assets/home.webp"
-              alt="musicsource"
-              appHListItem
-              width="683"
-            />
-          </app-h-list>
-        </div>
+      <div class="left action">
+        <app-title>MusicSource</app-title>
+        <p>A modern player for your personal music library.</p>
+        <button mat-raised-button color="accent" (click)="scan()">
+          <span class="button">
+            <app-icon [path]="icons.folderMusic" [size]="24"></app-icon>
+            <div class="text">
+              <span>Scan My Library</span>
+              <span>Select a folder to scan for music</span>
+            </div>
+          </span>
+        </button>
+        <a mat-raised-button href="https://github.com">
+          <div class="button">
+            <app-icon [path]="icons.codeTag" [size]="24"></app-icon>
+            <div class="text">
+              <span>View Source Code</span>
+              <span>MusicSource is open source!</span>
+            </div>
+          </div>
+        </a>
+      </div>
+      <div class="right picture" style="--aspect-ratio:1.32">
+        <app-h-list class="carousel" [borderRadius]="4">
+          <img src="assets/home.webp" alt="musicsource" appHListItem />
+          <img src="assets/home.webp" alt="musicsource" appHListItem />
+        </app-h-list>
       </div>
     </div>
-    <div class="section features">
-      <div class="container">
-        <div class="left"></div>
-        <div class="right">
-          <app-title>Features</app-title>
-          <ul>
-            <li><div class="li"></div></li>
-            <li><div class="li"></div></li>
-            <li><div class="li"></div></li>
-            <li><div class="li"></div></li>
-          </ul>
-        </div>
-      </div>
-    </div>
+    <!--    <div class="section features">-->
+    <!--      <div class="left"></div>-->
+    <!--      <div class="right">-->
+    <!--        <app-title>Features</app-title>-->
+    <!--        <ul>-->
+    <!--          <li><div class="li"></div></li>-->
+    <!--          <li><div class="li"></div></li>-->
+    <!--          <li><div class="li"></div></li>-->
+    <!--          <li><div class="li"></div></li>-->
+    <!--        </ul>-->
+    <!--      </div>-->
+    <!--    </div>-->
     <footer>
       <app-icon [path]="icons.album" [size]="40"></app-icon>
       <p>
         <app-title size="small">MusicSource</app-title>
-        <span>Copyright © 2021, CreaSource</span>
+        <span>Copyright © 2022, CreaSource</span>
       </p>
     </footer>
   `,
@@ -126,28 +103,35 @@ import { openDirectory, scanStart } from '@app/scanner/store/scanner.actions';
         margin-right: 8px;
       }
       .section {
-        flex: 0 0 85vh;
-        justify-content: center;
+        flex: 1 0 auto;
         border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         display: flex;
-      }
-      .container {
-        display: flex;
+        flex-direction: column;
         align-items: center;
+      }
+      .left {
+        flex: 0 1 auto;
+      }
+      .right {
+        flex: 0 1 auto;
+        position: relative;
         width: 100%;
-        max-width: 1380px;
-        margin: 64px;
       }
       .home {
         background: repeating-linear-gradient(-45deg, #00000000, #161616 8px),
           linear-gradient(-45deg, #363636, #161616 60%, #161616 100%);
+        padding: 32px;
+        justify-content: space-evenly;
       }
-      .left {
-        flex: 0 0 50%;
+      .home .right {
+        max-width: 683px;
       }
       .action {
-        flex: 0 0 45%;
-        margin-right: 32px;
+        text-align: center;
+        margin-bottom: 32px;
+      }
+      .action app-title {
+        justify-content: center;
       }
       .action p {
         margin: 12px 0 24px;
@@ -156,32 +140,67 @@ import { openDirectory, scanStart } from '@app/scanner/store/scanner.actions';
       }
       [mat-raised-button] {
         padding-left: 12px;
-        margin: 0 12px 0 0;
+        margin: 0 12px 16px 0;
+        min-width: 230px;
       }
       .button {
         display: flex;
         align-items: center;
-        text-transform: uppercase;
       }
       .button app-icon {
         margin-right: 8px;
       }
+      .button .text {
+        display: flex;
+        flex-direction: column;
+        text-align: left;
+        line-height: 16px;
+        padding: 8px 0;
+      }
+      .button .text span:first-child {
+        text-transform: uppercase;
+      }
+      .button .text span:last-child {
+        font-size: 12px;
+        font-weight: 300;
+      }
+      .carousel {
+        box-shadow: -5px -5px 20px rgba(0, 0, 0, 0.75);
+        outline: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 4px;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+      }
+      .carousel img:focus {
+        outline: none;
+      }
+      /*
       .right {
         flex: 1 1 auto;
         display: flex;
         flex-direction: column;
         justify-content: center;
-        height: 100%;
         position: relative;
       }
       .carousel {
-        width: 683px;
         box-shadow: -5px -5px 20px rgba(0, 0, 0, 0.75);
         outline: 1px solid rgba(255, 255, 255, 0.1);
         border-radius: 4px;
       }
+      .carousel {
+        width: 450px;
+      }
+      .carousel img {
+        width: 450px;
+      }
       .features {
         background-color: #161616;
+      }
+      .features .left {
+        order: 2;
       }
       .features ul {
         list-style-type: none;
@@ -202,7 +221,7 @@ import { openDirectory, scanStart } from '@app/scanner/store/scanner.actions';
         box-sizing: border-box;
         background-color: #222222;
         height: 200px;
-      }
+      }*/
       footer {
         flex: 0 0 auto;
         box-sizing: border-box;
@@ -218,6 +237,23 @@ import { openDirectory, scanStart } from '@app/scanner/store/scanner.actions';
       footer span {
         color: rgba(255, 255, 255, 0.5);
         font-size: 14px;
+      }
+      @media (min-width: 1024px) {
+        .home {
+          flex-direction: row;
+          flex: 1 1 auto;
+        }
+        .home .right {
+          width: auto;
+          flex-basis: 60%;
+        }
+        .home .left {
+          text-align: left;
+          margin-right: 16px;
+        }
+        .home .left app-title {
+          justify-content: flex-start;
+        }
       }
     `,
   ],
