@@ -168,6 +168,8 @@ import { HelperFacade } from '@app/helper/helper.facade';
         </button>
       </ng-container>
       <button
+        class="shuffle"
+        [class.rotate]="shuffleRotate"
         mat-icon-button
         [disableRipple]="true"
         color="accent"
@@ -358,6 +360,23 @@ import { HelperFacade } from '@app/helper/helper.facade';
           display: inline-flex;
         }
       }
+      .shuffle.rotate app-icon {
+        animation: rotation 0.33s 2 ease;
+      }
+      @keyframes rotation {
+        0% {
+          transform: scaleY(1);
+          color: white;
+        }
+        50% {
+          transform: scaleY(0);
+          color: inherit;
+        }
+        100% {
+          transform: scaleY(1);
+          color: white;
+        }
+      }
     `,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -385,6 +404,7 @@ export class PlayerComponent implements OnInit, OnDestroy {
   isVolumeShown = false;
 
   subscription = new Subscription();
+  shuffleRotate = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -537,6 +557,8 @@ export class PlayerComponent implements OnInit, OnDestroy {
   }
 
   shuffle(): void {
+    this.shuffleRotate = true;
+    setTimeout(() => (this.shuffleRotate = false), 666);
     this.player.shuffle();
   }
 
