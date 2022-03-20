@@ -24,9 +24,9 @@ import { HelperFacade } from '@app/helper/helper.facade';
       ></app-player-button>
     </div>
     <div class="meta">
-      <span class="title" [title]="song.title" (click)="play(queue, index)">{{
-        song.title
-      }}</span>
+      <span class="title" [title]="song.title" (click)="play(queue, index)">
+        {{ song.title }}
+      </span>
       <span class="artists">
         <ng-container *ngFor="let artist of song.tags.artists; let last = last">
           <a [routerLink]="['/', 'artist', getArtistId(artist)]">{{

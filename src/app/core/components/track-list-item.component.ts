@@ -17,12 +17,14 @@ import { HelperFacade } from '@app/helper/helper.facade';
         [queue]="queue"
       ></app-player-button>
     </span>
-    <span
-      class="title"
-      [title]="song.title"
-      (click)="play(queue, queue.indexOf(song.entryPath))"
-      >{{ song.title }}</span
-    >
+    <span class="title">
+      <span
+        [title]="song.title"
+        (click)="play(queue, queue.indexOf(song.entryPath))"
+      >
+        {{ song.title }}
+      </span>
+    </span>
     <span class="controls">
       <button
         [class.liked]="!!song.likedOn"
@@ -103,6 +105,8 @@ import { HelperFacade } from '@app/helper/helper.facade';
       }
       .title {
         flex: 1 1 auto;
+      }
+      .title span {
         cursor: pointer;
       }
       .controls {
