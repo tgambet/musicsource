@@ -19,14 +19,14 @@ import { PlayerFacade } from '@app/player/store/player.facade';
   template: `
     <h1>
       <app-icon [path]="icons.album" [size]="40"></app-icon>
-      <span>MusicSource</span>
+      <a routerLink="/welcome">MusicSource</a>
     </h1>
     <nav>
       <!--      <a routerLink="/home" routerLinkActive="active">-->
       <!--        <app-icon [path]="icons.home"></app-icon>-->
       <!--        <span>Home</span>-->
       <!--      </a>-->
-      <a routerLink="/library" routerLinkActive="active">
+      <a routerLink="/library" routerLinkActive="active" class="link">
         <app-icon [path]="icons.library"></app-icon>
         <span>Library</span>
       </a>
@@ -94,18 +94,21 @@ import { PlayerFacade } from '@app/player/store/player.facade';
       }
       a {
         text-decoration: none;
+      }
+      .link {
+        text-decoration: none;
         padding: 8px;
         margin: 0 16px;
         display: flex;
         align-items: center;
         color: rgba(255, 255, 255, 0.5);
       }
-      a:hover,
-      a.active {
+      .link:hover,
+      .link.active {
         color: white;
         text-decoration: none;
       }
-      a span {
+      .link span {
         display: none;
       }
       @media (min-width: 600px) {
@@ -115,7 +118,7 @@ import { PlayerFacade } from '@app/player/store/player.facade';
         nav app-icon.search {
           margin-right: 8px;
         }
-        a span {
+        .link span {
           display: initial;
         }
       }
