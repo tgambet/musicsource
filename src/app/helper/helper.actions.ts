@@ -75,3 +75,10 @@ export const editPlaylist = createAction(
   'helper/playlist-edit',
   props<{ id: PlaylistId }>()
 );
+
+export const playQueue = createAction(
+  'helper/play-queue',
+  props<{ queue: SongId[]; index: number }>()
+);
+
+export const togglePlay = createAction('helper/toggle-play');

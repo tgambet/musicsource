@@ -19,12 +19,14 @@ import { HelperFacade } from '@app/helper/helper.facade';
       <img *ngIf="cover$ | async as cover" [src]="cover" alt="cover" />
       <app-player-button
         size="small"
-        [index]="queue.indexOf(song.entryPath)"
+        [index]="index"
         [queue]="queue"
       ></app-player-button>
     </div>
     <div class="meta">
-      <span class="title">{{ song.title }}</span>
+      <span class="title" [title]="song.title" (click)="play(queue, index)">{{
+        song.title
+      }}</span>
       <span class="artists">
         <ng-container *ngFor="let artist of song.tags.artists; let last = last">
           <a [routerLink]="['/', 'artist', getArtistId(artist)]">{{
@@ -125,6 +127,7 @@ import { HelperFacade } from '@app/helper/helper.facade';
       }
       .title {
         font-weight: 500;
+        cursor: pointer;
       }
       .artists {
         color: #aaa;
@@ -208,5 +211,9 @@ export class QueueItemComponent implements OnInit {
 
   removeFromQueue(index: number): void {
     this.helper.removeSongFromQueue(index);
+  }
+
+  play(queue: SongId[], index: number) {
+    this.helper.playQueue(queue, index);
   }
 }

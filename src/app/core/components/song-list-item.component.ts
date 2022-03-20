@@ -31,7 +31,12 @@ import { HelperFacade } from '@app/helper/helper.facade';
         *ngIf="queue"
       ></app-player-button>
     </div>
-    <span class="title">{{ song.title }}</span>
+    <span
+      class="title"
+      [title]="song.title"
+      (click)="play(queue, queue.indexOf(song.entryPath))"
+      >{{ song.title }}</span
+    >
     <span class="artists">
       <ng-container *ngFor="let artist of song.tags.artists; let last = last">
         <a [routerLink]="['/', 'artist', getArtistId(artist)]">{{ artist }}</a>
@@ -132,6 +137,7 @@ import { HelperFacade } from '@app/helper/helper.facade';
         overflow: hidden;
         text-overflow: ellipsis;
         margin-right: 8px;
+        cursor: pointer;
       }
       .artists {
         margin-right: 8px;
@@ -217,5 +223,9 @@ export class SongListItemComponent implements OnInit {
 
   addSongToPlaylist(song: Song): void {
     this.helper.addSongsToPlaylist([song.entryPath]);
+  }
+
+  play(queue: SongId[], index: number) {
+    this.helper.playQueue(queue, index);
   }
 }

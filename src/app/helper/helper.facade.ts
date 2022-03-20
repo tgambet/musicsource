@@ -14,8 +14,10 @@ import {
   playAlbum,
   playArtist,
   playPlaylist,
+  playQueue,
   playSongs,
   removeSongFromQueue,
+  togglePlay,
 } from './helper.actions';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import {
@@ -151,5 +153,13 @@ export class HelperFacade {
 
   playArtist(id: ArtistId): void {
     this.store.dispatch(playArtist({ id }));
+  }
+
+  playQueue(queue: SongId[], index: number) {
+    this.store.dispatch(playQueue({ queue, index }));
+  }
+
+  togglePlay() {
+    this.store.dispatch(togglePlay());
   }
 }

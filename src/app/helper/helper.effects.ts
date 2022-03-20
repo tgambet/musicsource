@@ -9,7 +9,7 @@ import {
 import {
   combineLatest,
   concatMap,
-  EMPTY,
+  from,
   Observable,
   of,
   switchMap,
@@ -25,7 +25,7 @@ import {
 import * as PlaylistActions from '@app/database/playlists/playlist.actions';
 import { filter, first, map, tap } from 'rxjs/operators';
 import { Song } from '@app/database/songs/song.model';
-import { shuffleArray } from '@app/core/utils';
+import { concatTap, shuffleArray } from '@app/core/utils';
 import {
   addAlbumToPlaylist,
   addAlbumToQueue,
@@ -40,8 +40,10 @@ import {
   playAlbum,
   playArtist,
   playPlaylist,
+  playQueue,
   playSongs,
   removeSongFromQueue,
+  togglePlay,
 } from '@app/helper/helper.actions';
 import { Playlist } from '@app/database/playlists/playlist.model';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -282,7 +284,7 @@ export class HelperEffects implements OnRunEffects {
       ofType(deletePlaylist),
       concatMap(({ id }) =>
         this.dialog
-          .open(ConfirmComponent, {
+          .open<ConfirmComponent, any, boolean>(ConfirmComponent, {
             data: {
               text: 'Are you sure you want to delete this playlist?',
               action: 'Delete playlist',
@@ -290,18 +292,20 @@ export class HelperEffects implements OnRunEffects {
           })
           .afterClosed()
           .pipe(
-            concatMap((result) => {
-              if (!result) {
-                return EMPTY;
-              }
-              this.router.navigate(['/', 'library', 'playlists'], {
-                preserveFragment: true,
-              });
-              return of(
+            filter((result) => !!result),
+            concatTap(() =>
+              from(
+                this.router.navigate(['/', 'library', 'playlists'], {
+                  preserveFragment: true,
+                })
+              )
+            ),
+            concatMap(() =>
+              of(
                 PlaylistActions.deletePlaylist({ id }),
                 openSnack({ message: 'Playlist deleted' })
-              );
-            })
+              )
+            )
           )
       )
     )
@@ -334,6 +338,39 @@ export class HelperEffects implements OnRunEffects {
         )
       )
     )
+  );
+
+  playQueue$ = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(playQueue),
+        tap(({ queue, index }) => {
+          this.player.setPlaying();
+          this.player.setQueue(queue, index);
+          this.player.show();
+        })
+      ),
+    { dispatch: false }
+  );
+
+  togglePlay$ = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(togglePlay),
+        switchMap(() =>
+          this.player.getPlaying$().pipe(
+            first(),
+            tap((isPlaying) => {
+              if (isPlaying) {
+                this.player.pause();
+              } else {
+                this.player.resume();
+              }
+            })
+          )
+        )
+      ),
+    { dispatch: false }
   );
 
   constructor(

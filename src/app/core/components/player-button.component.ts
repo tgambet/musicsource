@@ -1,18 +1,17 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  EventEmitter,
   HostBinding,
   Input,
   OnInit,
-  Output,
 } from '@angular/core';
 import { Icons } from '@app/core/utils';
 import { SongId } from '@app/database/songs/song.model';
 import { PlayerFacade } from '@app/player/store/player.facade';
-import { first, map, switchMap, tap, throttleTime } from 'rxjs/operators';
-import { combineLatest, Observable, of } from 'rxjs';
+import { map, switchMap, tap, throttleTime } from 'rxjs/operators';
+import { Observable, of } from 'rxjs';
 import { arrayEqualsUnordered } from '@app/core/utils/array-equals.util';
+import { HelperFacade } from '@app/helper/helper.facade';
 
 // https://github.com/angular/angular/issues/8785
 @Component({
@@ -22,8 +21,9 @@ import { arrayEqualsUnordered } from '@app/core/utils/array-equals.util';
       mat-icon-button
       [ngClass]="[size, shape]"
       [class.playing]="isPlaying$ | async"
-      (click)="toggle()"
+      (click)="toggle(isCurrent.value)"
       [disabled]="(isLoading$ | async) === true"
+      *ngIf="isCurrent$ | async as isCurrent"
     >
       <ng-container *ngIf="(isLoading$ | async) === false">
         <app-icon
@@ -108,7 +108,7 @@ import { arrayEqualsUnordered } from '@app/core/utils/array-equals.util';
 })
 export class PlayerButtonComponent implements OnInit {
   @Input() index = 0;
-  @Input() queue!: SongId[] | null;
+  @Input() queue!: SongId[];
 
   @Input() currentIfMatchAllQueue = false;
 
@@ -120,50 +120,40 @@ export class PlayerButtonComponent implements OnInit {
   @Input()
   spinnerPosition: 'outside' | 'inside' = 'inside';
 
-  @Output() playlistPlayed = new EventEmitter<void>();
-
   @HostBinding('class.stopped')
   stopped = true;
 
   isPlaying$!: Observable<boolean>;
   isLoading$!: Observable<boolean>;
-  isCurrent$!: Observable<boolean>;
+  isCurrent$!: Observable<{ value: boolean }>;
 
   icons = Icons;
 
-  constructor(private player: PlayerFacade) {}
+  constructor(private player: PlayerFacade, private helper: HelperFacade) {}
 
   ngOnInit(): void {
     this.isCurrent$ = this.currentIfMatchAllQueue
       ? this.player
           .getQueue$()
           .pipe(
-            map(
-              (queue) =>
-                !!(this.queue && arrayEqualsUnordered(queue, this.queue))
-            )
+            map((queue) => ({ value: arrayEqualsUnordered(queue, this.queue) }))
           )
-      : this.player
-          .getCurrentSong$()
-          .pipe(
-            map(
-              (current) =>
-                !!(
-                  this.queue &&
-                  this.queue.length > 0 &&
-                  current === this.queue[this.index]
-                )
-            )
-          );
+      : this.player.getCurrentSong$().pipe(
+          map((current) => ({
+            value: this.queue.length > 0 && current === this.queue[this.index],
+          }))
+        );
 
     this.isPlaying$ = this.isCurrent$.pipe(
-      switchMap((current) => (current ? this.player.getPlaying$() : of(false))),
+      switchMap((current) =>
+        current.value ? this.player.getPlaying$() : of(false)
+      ),
       tap((playing) => (this.stopped = !playing))
     );
 
     this.isLoading$ = this.isCurrent$.pipe(
       switchMap((current) =>
-        current
+        current.value
           ? this.player
               .getLoading$()
               .pipe(throttleTime(50, undefined, { trailing: true }))
@@ -172,25 +162,29 @@ export class PlayerButtonComponent implements OnInit {
     );
   }
 
-  toggle(): void {
-    combineLatest([this.isCurrent$, this.isPlaying$])
-      .pipe(
-        first(),
-        tap(([isCurrent, isPlaying]) => {
-          if (isCurrent) {
-            if (isPlaying) {
-              this.player.pause();
-            } else {
-              this.player.resume();
-            }
-          } else {
-            this.player.setPlaying();
-            this.player.setQueue(this.queue || [], this.index);
-            this.player.show();
-            this.playlistPlayed.emit();
-          }
-        })
-      )
-      .subscribe();
+  toggle(isCurrent: boolean): void {
+    // combineLatest([this.isPlaying$])
+    //   .pipe(
+    //     first(),
+    //     tap(([isPlaying]) => {
+    //       if (isCurrent) {
+    //         if (isPlaying) {
+    //           this.player.pause();
+    //         } else {
+    //           this.player.resume();
+    //         }
+    //       } else {
+    //         this.player.setPlaying();
+    //         this.player.setQueue(this.queue, this.index);
+    //         this.player.show();
+    //       }
+    //     })
+    //   )
+    //   .subscribe();
+    if (isCurrent) {
+      this.helper.togglePlay();
+    } else {
+      this.helper.playQueue(this.queue, this.index);
+    }
   }
 }

@@ -17,7 +17,12 @@ import { HelperFacade } from '@app/helper/helper.facade';
         [queue]="queue"
       ></app-player-button>
     </span>
-    <span class="title">{{ song.title }}</span>
+    <span
+      class="title"
+      [title]="song.title"
+      (click)="play(queue, queue.indexOf(song.entryPath))"
+      >{{ song.title }}</span
+    >
     <span class="controls">
       <button
         [class.liked]="!!song.likedOn"
@@ -98,6 +103,7 @@ import { HelperFacade } from '@app/helper/helper.facade';
       }
       .title {
         flex: 1 1 auto;
+        cursor: pointer;
       }
       .controls {
         flex: 0 0 auto;
@@ -158,5 +164,9 @@ export class TrackListItemComponent {
 
   addSongToPlaylist(song: Song): void {
     this.helper.addSongsToPlaylist([song.entryPath]);
+  }
+
+  play(queue: SongId[], index: number) {
+    this.helper.playQueue(queue, index);
   }
 }

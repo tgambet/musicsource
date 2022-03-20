@@ -1,8 +1,10 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  EventEmitter,
   HostBinding,
   Input,
+  Output,
 } from '@angular/core';
 
 export interface Link {
@@ -28,7 +30,11 @@ export type BottomLabel =
         {{ label.text }}
       </a>
       <ng-template #topText>
-        <span>{{ topLabel }}</span>
+        <span
+          (click)="topLabelClick.emit()"
+          [class.cursor]="topLabelClickable"
+          >{{ topLabel }}</span
+        >
       </ng-template>
     </p>
     <p class="bottom" [ngClass]="[size]">
@@ -88,12 +94,18 @@ export type BottomLabel =
       a:hover {
         text-decoration: underline;
       }
+      .cursor {
+        cursor: pointer;
+      }
     `,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LabelComponent {
   @Input() topLabel!: undefined | string | Link;
+  @Input() topLabelClickable = false;
+  @Output() topLabelClick = new EventEmitter<void>();
+
   @Input() bottomLabel?: BottomLabel;
   @Input() size: 'small' | 'large' = 'large';
 
