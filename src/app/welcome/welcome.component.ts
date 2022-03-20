@@ -19,7 +19,7 @@ import { openDirectory, scanStart } from '@app/scanner/store/scanner.actions';
     <div class="section home">
       <div class="left action">
         <app-title>MusicSource</app-title>
-        <p>A modern player for your personal music library.</p>
+        <p>A modern desktop player for your personal music library.</p>
         <button mat-raised-button color="accent" (click)="scan()">
           <span class="button">
             <app-icon [path]="icons.folderMusic" [size]="24"></app-icon>
@@ -39,10 +39,14 @@ import { openDirectory, scanStart } from '@app/scanner/store/scanner.actions';
           </div>
         </a>
       </div>
-      <div class="right picture" style="--aspect-ratio:1.32">
+      <div class="right picture" style="--aspect-ratio:1.274875621890547">
         <app-h-list class="carousel" [borderRadius]="4">
-          <img src="assets/home.webp" alt="musicsource" appHListItem />
-          <img src="assets/home.webp" alt="musicsource" appHListItem />
+          <img src="assets/welcome/w2.webp" alt="musicsource" appHListItem />
+          <img src="assets/welcome/w3.webp" alt="musicsource" appHListItem />
+          <img src="assets/welcome/w4.webp" alt="musicsource" appHListItem />
+          <img src="assets/welcome/w5.webp" alt="musicsource" appHListItem />
+          <img src="assets/welcome/w6.webp" alt="musicsource" appHListItem />
+          <img src="assets/welcome/w1.webp" alt="musicsource" appHListItem />
         </app-h-list>
       </div>
     </div>
@@ -62,7 +66,7 @@ import { openDirectory, scanStart } from '@app/scanner/store/scanner.actions';
       <app-icon [path]="icons.album" [size]="40"></app-icon>
       <p>
         <app-title size="small">MusicSource</app-title>
-        <span>Copyright © 2022, CreaSource</span>
+        <span>Created by Thomas Gambet</span>
       </p>
     </footer>
   `,
@@ -124,7 +128,7 @@ import { openDirectory, scanStart } from '@app/scanner/store/scanner.actions';
         justify-content: space-evenly;
       }
       .home .right {
-        max-width: 683px;
+        max-width: 1025px;
       }
       .action {
         text-align: center;
@@ -166,13 +170,16 @@ import { openDirectory, scanStart } from '@app/scanner/store/scanner.actions';
       }
       .carousel {
         box-shadow: -5px -5px 20px rgba(0, 0, 0, 0.75);
-        outline: 1px solid rgba(255, 255, 255, 0.1);
+        /*outline: 1px solid rgba(255, 255, 255, 0.1);*/
         border-radius: 4px;
         position: absolute;
         top: 0;
         left: 0;
         right: 0;
         bottom: 0;
+      }
+      img {
+        image-rendering: smooth;
       }
       .carousel img:focus {
         outline: none;
