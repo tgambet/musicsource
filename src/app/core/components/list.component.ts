@@ -12,6 +12,7 @@ import { MatRipple } from '@angular/material/core';
 import { Router } from '@angular/router';
 import { MenuItem } from '@app/core/components/menu.component';
 import { SongId } from '@app/database/songs/song.model';
+import { HelperFacade } from '@app/helper/helper.facade';
 
 export interface ListItem {
   title: string;
@@ -71,6 +72,9 @@ export class OptMatRippleDirective extends MatRipple implements OnInit {
           align="left"
           [bottomLabel]="item.label"
           [topLabel]="item.title"
+          *ngIf="item.queue$ | async as queue"
+          (topLabelClick)="play(queue)"
+          [topLabelClickable]="true"
         ></app-label>
       </div>
       <div class="controls">
@@ -160,11 +164,15 @@ export class ListComponent {
 
   icons = Icons;
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private helper: HelperFacade) {}
 
   goTo(routerLink: any[] | null | undefined) {
     if (routerLink) {
       this.router.navigate(routerLink);
     }
+  }
+
+  play(queue: SongId[]) {
+    this.helper.playQueue(queue, 0);
   }
 }
