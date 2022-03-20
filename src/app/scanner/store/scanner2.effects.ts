@@ -120,6 +120,7 @@ export class ScannerEffects2 implements OnRunEffects {
   openDialog$ = createEffect(() =>
     this.actions$.pipe(
       ofType(openDirectorySuccess),
+      tap(() => localStorage.setItem('scanned', '1')),
       concatMap((dir) => {
         this.handle = dir.directory.handle;
 
