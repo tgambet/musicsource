@@ -154,7 +154,13 @@ export class HListComponent implements OnInit, OnDestroy, AfterContentInit {
 
   @HostListener('window:resize', ['$event'])
   update(): void {
-    this.zone.runOutsideAngular(() => (this.translation = this.translationP));
+    this.zone.runOutsideAngular(() => {
+      const items = this.items.toArray();
+      const elementToScroll = items[0];
+      if (elementToScroll) {
+        this.scrollLeftTo(elementToScroll, false);
+      }
+    });
   }
 
   @HostListener('keydown.arrowRight', ['$event'])
