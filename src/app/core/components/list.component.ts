@@ -72,10 +72,18 @@ export class OptMatRippleDirective extends MatRipple implements OnInit {
           align="left"
           [bottomLabel]="item.label"
           [topLabel]="item.title"
-          *ngIf="item.queue$ | async as queue"
+          *ngIf="item.queue$ | async as queue; else label"
           (topLabelClick)="play(queue)"
           [topLabelClickable]="true"
         ></app-label>
+        <ng-template #label>
+          <app-label
+            size="large"
+            align="left"
+            [bottomLabel]="item.label"
+            [topLabel]="item.title"
+          ></app-label>
+        </ng-template>
       </div>
       <div class="controls">
         <app-menu
