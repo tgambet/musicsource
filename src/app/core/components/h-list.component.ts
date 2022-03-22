@@ -225,7 +225,7 @@ export class HListComponent implements OnInit, OnDestroy, AfterContentInit {
     current: HListItemDirective,
     scroll = false
   ): void | boolean {
-    const index = this.items.toArray().findIndex((item) => item === current);
+    const index = this.items.toArray().indexOf(current);
     const next = this.items.toArray()[index + 1];
     if (next) {
       if (!this.isItemVisible(next.nativeElement)) {
@@ -246,7 +246,7 @@ export class HListComponent implements OnInit, OnDestroy, AfterContentInit {
     current: HListItemDirective,
     scroll = false
   ): void | boolean {
-    const index = this.items.toArray().findIndex((item) => item === current);
+    const index = this.items.toArray().indexOf(current);
     const prev = this.items.toArray()[index - 1];
     if (prev) {
       if (!this.isItemVisible(prev.nativeElement)) {
@@ -306,10 +306,11 @@ export class HListComponent implements OnInit, OnDestroy, AfterContentInit {
   }
 
   private isItemVisible(item: HTMLElement): boolean {
+    const threshold = item.offsetWidth * 0.1;
     const c1 =
       item.offsetLeft + item.offsetWidth + this.translation <=
-      this.root.offsetWidth;
-    const c2 = item.offsetLeft + this.translation >= 0;
+      this.root.offsetWidth + threshold;
+    const c2 = item.offsetLeft + this.translation >= -threshold;
     return c1 && c2;
   }
 
