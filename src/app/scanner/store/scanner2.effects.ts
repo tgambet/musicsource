@@ -3,7 +3,6 @@ import { Actions, createEffect, ofType } from '@ngrx/effects';
 import {
   defer,
   EMPTY,
-  endWith,
   exhaustMap,
   finalize,
   last,
@@ -12,12 +11,13 @@ import {
   Observable,
   of,
   Subscription,
+  takeUntil,
 } from 'rxjs';
 import { catchError, concatMap, filter, mergeAll, tap } from 'rxjs/operators';
 import { FileService } from '@app/scanner/file.service';
 import { ExtractorService } from '@app/scanner/extractor.service';
 import { FileEntry } from '@app/database/entries/entry.model';
-import { openDirectory, scanEnded } from '@app/scanner/store/scanner.actions';
+import { openDirectory, scanEnd } from '@app/scanner/store/scanner.actions';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { ScanComponent } from '@app/scanner/scan.component';
@@ -29,15 +29,13 @@ import {
 } from '@angular/cdk/overlay';
 import { ComponentPortal } from '@angular/cdk/portal';
 import { PlayerFacade } from '@app/player/store/player.facade';
-import { Store } from '@ngrx/store';
-import { ResizerService } from '@app/scanner/resizer.service';
-import { PictureFacade } from '@app/database/pictures/picture.facade';
 import { DatabaseService } from '@app/database/database.service';
 import { concatTap, tapError } from '@app/core/utils';
 import { EntryFacade } from '@app/database/entries/entry.facade';
 import { SongFacade } from '@app/database/songs/song.facade';
 import { AlbumFacade } from '@app/database/albums/album.facade';
 import { ArtistFacade } from '@app/database/artists/artist.facade';
+import { ScannerFacade } from '@app/scanner/store/scanner.facade';
 
 const extensionIn = (extensions: string[]) => (file: FileEntry) =>
   extensions.some((ext) => file.name.endsWith(`.${ext}`));
@@ -74,6 +72,7 @@ export class ScannerEffects2 /*implements OnRunEffects*/ {
             ),
             concatMap(() => this.files.openDirectory()),
             tap(() => this.openScanDialog()),
+            tap(() => this.scanner.start()),
             tap(() => localStorage.setItem('scanned', '1')),
             tap(() => this.router.navigate(['/library/albums'])),
             tap(() =>
@@ -95,6 +94,11 @@ export class ScannerEffects2 /*implements OnRunEffects*/ {
                   )
                 ),
                 logDuration('extract'),
+                tap(({ song }) =>
+                  this.scanner.setLabel(
+                    `${song.artists[0]?.name} - ${song.title}`
+                  )
+                ),
                 mergeMap(({ song, album, artists }) => [
                   this.songs.put(song),
                   this.albums.put(album),
@@ -104,9 +108,9 @@ export class ScannerEffects2 /*implements OnRunEffects*/ {
                 logDuration('save')
               )
             ),
+            takeUntil(this.actions$.pipe(ofType(scanEnd))),
             tapError((err) => console.error(err.message, err)),
-            catchError(() => EMPTY),
-            endWith(scanEnded()),
+            catchError(() => of(void 0)),
             last(),
             tap(() => this.overlayRef?.dispose()),
             tap(() =>
@@ -476,8 +480,8 @@ export class ScannerEffects2 /*implements OnRunEffects*/ {
 
   constructor(
     private actions$: Actions,
-    private store: Store,
     private files: FileService,
+    private scanner: ScannerFacade,
     private extractor: ExtractorService,
     private router: Router,
     private dialog: MatDialog,
@@ -487,21 +491,8 @@ export class ScannerEffects2 /*implements OnRunEffects*/ {
     private songs: SongFacade,
     private albums: AlbumFacade,
     private artists: ArtistFacade,
-    private resizer: ResizerService,
-    private pictures: PictureFacade,
     private database: DatabaseService
   ) {}
-
-  // ngrxOnRunEffects(
-  //   resolvedEffects$: Observable<EffectNotification>
-  // ): Observable<EffectNotification> {
-  //   return this.actions$.pipe(
-  //     ofType(scanStart),
-  //     exhaustMap(() =>
-  //       resolvedEffects$.pipe(takeUntil(this.actions$.pipe(ofType(scanEnded))))
-  //     )
-  //   );
-  // }
 
   openScanDialog(): void {
     this.position = new GlobalPositionStrategy();
