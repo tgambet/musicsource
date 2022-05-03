@@ -79,7 +79,7 @@ export class PlayerEffects implements OnRunEffects {
                         concatTap((song) => this.media.setMetadata(song)),
                         tap((song) =>
                           this.title.setTitle(
-                            `${song.title} • ${song.artists[0].name} - MusicSource`
+                            `${song.title} • ${song.artists[0].name}`
                           )
                         )
                       )

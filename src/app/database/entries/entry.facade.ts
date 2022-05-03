@@ -10,10 +10,18 @@ import {
   selectEntryTotal,
 } from '@app/database/entries/entry.selectors';
 import { addEntry } from '@app/database/entries/entry.actions';
+import { DatabaseService } from '@app/database/database.service';
+import { tap } from 'rxjs/operators';
 
 @Injectable()
 export class EntryFacade {
-  constructor(private store: Store) {}
+  constructor(private store: Store, private database: DatabaseService) {}
+
+  put(entry: Entry): Observable<IDBValidKey> {
+    return this.database
+      .put$<Entry>('entries', entry)
+      .pipe(tap(() => this.store.dispatch(addEntry({ entry }))));
+  }
 
   getByKey(key: string): Observable<Entry | undefined> {
     return this.store.select(selectEntryByKey(key));
@@ -27,9 +35,5 @@ export class EntryFacade {
 
   getTotal(): Observable<number> {
     return this.store.select(selectEntryTotal);
-  }
-
-  add(entry: Entry): void {
-    this.store.dispatch(addEntry({ entry }));
   }
 }

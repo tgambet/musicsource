@@ -1,113 +1,85 @@
 import { Injectable } from '@angular/core';
-import { Observable, Subject } from 'rxjs';
-import { first } from 'rxjs/operators';
+import {
+  concatMap,
+  fromEvent,
+  Observable,
+  of,
+  ReplaySubject,
+  share,
+  throwError,
+} from 'rxjs';
+import { first, map } from 'rxjs/operators';
 import { FileEntry } from '@app/database/entries/entry.model';
-import { ICommonTagsResult, IFormat } from 'music-metadata/lib/type';
-import { PictureId } from '@app/database/pictures/picture.model';
+import { Artist } from '@app/database/artists/artist.model';
+import { Album } from '@app/database/albums/album.model';
+import { Song } from '@app/database/songs/song.model';
 
-type Result = {
-  common: Omit<ICommonTagsResult, 'picture'>;
-  format: IFormat;
-  lastModified: number;
-  pictures: {
-    id: PictureId;
-    name: string;
-    blob: Blob;
-  }[];
-};
+// type ExtractorResult = {
+//   common: Omit<ICommonTagsResult, 'picture'>;
+//   format: IFormat;
+//   lastModified: number;
+//   pictures: {
+//     id: PictureId;
+//     name: string;
+//     blob: Blob;
+//   }[];
+// };
 
 @Injectable()
 export class ExtractorService {
-  private readonly workers: Worker[] = new Array(navigator.hardwareConcurrency)
-    .fill(0)
-    .map(
-      () =>
-        new Worker(new URL('./extractor.worker', import.meta.url), {
-          name: 'extractor',
-        })
-    );
-  private responses = new Subject<
-    { id: number; result: Result } | { id: number; error: any }
-  >();
-
-  constructor(/*@Inject(DOCUMENT) private document: Document*/) {
-    // const win = document.defaultView;
-    // if (!win) {
-    //   return;
-    // }
-    // import('process')
-    //   .then((process) => {
-    //     (win as any).process = process;
-    //     (win as any).global = window;
-    //     return import('buffer');
-    //   })
-    //   .then((buffer) => {
-    //     (win as any).Buffer = buffer.Buffer;
-    //   });
-
-    // if (typeof Worker !== 'undefined') {
-    // Create a new
-
-    this.workers.forEach(
-      (worker) =>
-        (worker.onmessage = ({ data }) => {
-          this.responses.next(data);
-        })
-    );
-
-    // worker.postMessage('hello');
-    // } else {
-    // Web Workers are not supported in this environment.
-    // You should add a fallback so that your program still executes correctly.
-    // }
-  }
-
-  extract(entry: FileEntry): Observable<Result> {
-    return new Observable((observer) => {
-      const reqId = Math.random();
-      const sub = this.responses
-        .pipe(first(({ id }) => id === reqId))
-        .subscribe({
-          next: (value) => {
-            // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-            'result' in value
-              ? observer.next(value.result)
-              : observer.error(value.error);
-            observer.complete();
-          },
-        });
-      entry.handle
-        .getFile()
-        .then((file) =>
-          this.workers[
-            Math.floor(Math.random() * 100) % this.workers.length
-          ].postMessage({
-            id: reqId,
-            file,
+  readonly workers: Observable<Worker[]> = new Observable<Worker[]>(
+    (observer) => {
+      const workers = new Array(this.workerCount).fill(0).map(
+        () =>
+          new Worker(new URL('./extractor.worker', import.meta.url), {
+            name: 'extractor',
           })
-        )
-        .catch((error) => observer.error(error));
-      return () => {
-        sub.unsubscribe();
-      };
-    });
+      );
+      console.log('Workers created');
+      observer.next(workers);
+      return () => workers.forEach((worker) => worker.terminate());
+    }
+  ).pipe(
+    share({
+      resetOnComplete: false,
+      resetOnRefCountZero: false,
+      resetOnError: false,
+      connector: () => new ReplaySubject(1),
+    })
+  );
 
-    // return defer(() => from(entry.handle.getFile())).pipe(
-    //   // filter(file => this.supportedTypes.includes(file.type)),
-    //   tap((file) => this.worker?.postMessage({ id: 0, file })),
-    //   concatMap((file) =>
-    //     from(
-    //       import('music-metadata-browser').then((musicMetadata) =>
-    //         musicMetadata.parseBlob(file /*{duration: true}*/)
-    //       )
-    //     ).pipe(
-    //       map(({ common, format }) => ({
-    //         common,
-    //         format,
-    //         lastModified: file.lastModified,
-    //       }))
-    //     )
-    //   )
-    // );
+  private readonly workerCount = navigator.hardwareConcurrency;
+
+  extract(entry: FileEntry): Observable<{
+    artists: Artist[];
+    album: Album;
+    song: Song;
+  }> {
+    return this.workers.pipe(
+      map((workers) => workers[Math.floor(Math.random() * this.workerCount)]),
+      map((worker) => {
+        const id = Math.random();
+        worker.postMessage({ id, entry });
+        return [worker, id] as [Worker, number];
+      }),
+      concatMap(([worker, random]) =>
+        fromEvent<
+          MessageEvent<{
+            id: number;
+            result: {
+              artists: Artist[];
+              album: Album;
+              song: Song;
+            };
+            error?: any;
+          }>
+        >(worker, 'message').pipe(first(({ data: { id } }) => id === random))
+      ),
+      first(),
+      map(({ data }) => data),
+      concatMap((result) =>
+        'error' in result ? throwError(() => result.error) : of(result.result)
+      )
+    );
   }
 }

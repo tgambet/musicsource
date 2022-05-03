@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { defer, Observable } from 'rxjs';
+import { animationFrameScheduler, defer, Observable, scheduled } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { tapError } from '@app/core/utils/tap-error.util';
 import {
@@ -10,10 +10,7 @@ import {
 
 @Injectable()
 export class FileService {
-  /**
-   * Opens a directory
-   */
-  open(): Observable<DirectoryEntry> {
+  openDirectory(): Observable<DirectoryEntry> {
     return defer(() => showDirectoryPicker()).pipe(
       tapError((err) => console.log(err)),
       map((handle) => entryFromHandle(handle) as DirectoryEntry)
@@ -22,28 +19,20 @@ export class FileService {
     );
   }
 
-  /**
-   * Walks a Directory recursively, emitting file entries
-   *
-   * @param directory The directory to walk
-   */
-  walk(directory: DirectoryEntry): Observable<Entry> {
-    return new Observable((observer) => {
-      const worker: Worker = new Worker(
-        new URL('./file.worker', import.meta.url),
-        { name: 'scanner' }
-      );
-      worker.onmessage = ({ data }) => {
-        if (data === 'complete') {
-          observer.complete();
+  iterate(dir: DirectoryEntry): Observable<Entry> {
+    const generator: (
+      directory: FileSystemDirectoryHandle
+    ) => AsyncGenerator<Entry, void, void> = async function* (
+      directory: FileSystemDirectoryHandle
+    ) {
+      for await (const entry of directory.values()) {
+        yield entryFromHandle(entry, directory.name);
+        if (entry.kind === 'directory') {
+          yield* generator(entry);
         }
-        observer.next(data);
-      };
-      worker.postMessage(directory);
-      return () => {
-        worker.postMessage('cancel');
-        worker.terminate();
-      };
-    });
+      }
+    };
+
+    return scheduled(generator(dir.handle), animationFrameScheduler);
   }
 }

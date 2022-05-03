@@ -21,7 +21,7 @@ export class DatabaseService {
   constructor(
     @Inject(Database('musicsource')) private databaseService: IndexedDBService
   ) {
-    databaseService.database.subscribe();
+    // databaseService.database.subscribe();
   }
 
   get db$(): Observable<ReactiveIDBDatabase> {

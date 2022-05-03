@@ -12,15 +12,22 @@ import {
   selectSongTotal,
 } from '@app/database/songs/song.selectors';
 import { Update } from '@creasource/ngrx-idb';
-import { updateSong } from '@app/database/songs/song.actions';
-import { map } from 'rxjs/operators';
+import { addSong, updateSong } from '@app/database/songs/song.actions';
+import { map, tap } from 'rxjs/operators';
 import { SongIndex } from '@app/database/songs/song.reducer';
 import { AlbumId } from '@app/database/albums/album.model';
 import { ArtistId } from '@app/database/artists/artist.model';
+import { DatabaseService } from '@app/database/database.service';
 
 @Injectable()
 export class SongFacade {
-  constructor(private store: Store) {}
+  constructor(private store: Store, private database: DatabaseService) {}
+
+  put(song: Song): Observable<IDBValidKey> {
+    return this.database
+      .put$<Song>('songs', song)
+      .pipe(tap(() => this.store.dispatch(addSong({ song }))));
+  }
 
   getAll(index?: SongIndex): Observable<Song[]> {
     return index

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { Observable } from 'rxjs';
+import { concatMap, Observable } from 'rxjs';
 import { Album, AlbumId } from '@app/database/albums/album.model';
 import {
   selectAlbumByAlbumArtistKey,
@@ -9,15 +9,46 @@ import {
   selectAlbumIndexAll,
   selectAlbumTotal,
 } from '@app/database/albums/album.selectors';
-import { updateAlbum } from '@app/database/albums/album.actions';
+import { addAlbum, updateAlbum } from '@app/database/albums/album.actions';
 import { AlbumIndex } from '@app/database/albums/album.reducer';
-import { map } from 'rxjs/operators';
+import { first, map, tap } from 'rxjs/operators';
 import { IdUpdate } from '@app/core/utils';
 import { ArtistId } from '@app/database/artists/artist.model';
+import { DatabaseService } from '@app/database/database.service';
 
 @Injectable()
 export class AlbumFacade {
-  constructor(private store: Store) {}
+  constructor(private store: Store, private database: DatabaseService) {}
+
+  add(album: Album): Observable<IDBValidKey> {
+    return this.database
+      .add$<Album>('albums', album)
+      .pipe(tap(() => this.store.dispatch(addAlbum({ album }))));
+  }
+
+  put(album: Album): Observable<IDBValidKey> {
+    return this.store.select(selectAlbumByKey(album.id)).pipe(
+      first(),
+      tap((stored) => {
+        if (!stored) {
+          this.store.dispatch(addAlbum({ album }));
+        }
+      }),
+      concatMap((stored) => {
+        if (!stored) {
+          return this.database.add$<Album>('albums', album);
+        } else {
+          const albumN = {
+            ...stored,
+            artists: [...stored.artists, ...album.artists].filter(
+              (value, i, arr) => arr.indexOf(value) === i
+            ),
+          };
+          return this.database.put$<Album>('albums', albumN);
+        }
+      })
+    );
+  }
 
   getByKey(key: AlbumId): Observable<Album | undefined> {
     return this.store.select(selectAlbumByKey(key));
