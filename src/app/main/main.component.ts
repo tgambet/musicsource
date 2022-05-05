@@ -26,7 +26,6 @@ import { loadArtists } from '@app/database/artists/artist.actions';
 import { loadSongs } from '@app/database/songs/song.actions';
 import { loadPlaylists } from '@app/database/playlists/playlist.actions';
 import { loadEntries } from '@app/database/entries/entry.actions';
-import { loadPictures } from '@app/database/pictures/picture.actions';
 import { first, tap } from 'rxjs/operators';
 import { NavigationService } from '@app/main/navigation.service';
 
@@ -191,7 +190,7 @@ export class MainComponent implements OnInit {
             this.store.dispatch(loadEntries());
             this.store.dispatch(loadPlaylists());
             this.store.dispatch(loadSongs());
-            this.store.dispatch(loadPictures());
+            // this.store.dispatch(loadPictures());
           });
         })
       )

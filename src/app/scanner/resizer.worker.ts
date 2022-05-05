@@ -1,5 +1,12 @@
+import { FileEntry } from '@app/database/entries/entry.model';
+
 addEventListener('message', async ({ data }) => {
-  const { id, imageData, width, height } = data;
+  const {
+    id,
+    entry,
+    width,
+    height,
+  }: { id: number; entry: FileEntry; width: number; height: number } = data;
 
   const canvas = new OffscreenCanvas(width, height);
   const ctx: OffscreenCanvasRenderingContext2D | null = canvas.getContext('2d');
@@ -14,7 +21,8 @@ addEventListener('message', async ({ data }) => {
 
   let bitmap;
   try {
-    bitmap = await createImageBitmap(imageData as Blob, {
+    const file = await entry.handle.getFile();
+    bitmap = await createImageBitmap(file, {
       resizeHeight: height * 2,
       resizeWidth: width * 2,
       resizeQuality: 'high',

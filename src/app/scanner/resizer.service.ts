@@ -1,6 +1,16 @@
 import { Injectable } from '@angular/core';
-import { merge, Observable, Subject, toArray } from 'rxjs';
-import { first } from 'rxjs/operators';
+import {
+  concatMap,
+  fromEvent,
+  merge,
+  Observable,
+  of,
+  ReplaySubject,
+  share,
+  throwError,
+  toArray,
+} from 'rxjs';
+import { first, map } from 'rxjs/operators';
 
 type Result = {
   height: number;
@@ -10,26 +20,49 @@ type Result = {
 
 @Injectable()
 export class ResizerService {
-  private readonly workers: Worker[] = new Array(8).fill(0).map(
-    () =>
-      new Worker(new URL('./resizer.worker', import.meta.url), {
-        name: 'resizer',
-      })
+  readonly workers: Observable<Worker[]> = new Observable<Worker[]>(
+    (observer) => {
+      const workers = new Array(this.workerCount).fill(0).map(
+        () =>
+          new Worker(new URL('./resizer.worker', import.meta.url), {
+            name: 'resizer',
+          })
+      );
+      console.log('Resizer workers created');
+      observer.next(workers);
+      return () => workers.forEach((worker) => worker.terminate());
+    }
+  ).pipe(
+    share({
+      resetOnComplete: false,
+      resetOnRefCountZero: true,
+      resetOnError: false,
+      connector: () => new ReplaySubject(1),
+    })
   );
-  private responses = new Subject<
-    { id: number; result: Result } | { id: number; error: any }
-  >();
+
+  private readonly workerCount = navigator.hardwareConcurrency;
+
+  // private readonly workers: Worker[] = new Array(8).fill(0).map(
+  //   () =>
+  //     new Worker(new URL('./resizer.worker', import.meta.url), {
+  //       name: 'resizer',
+  //     })
+  // );
+  // private responses = new Subject<
+  //   { id: number; result: Result } | { id: number; error: any }
+  // >();
 
   constructor() {
-    this.workers.forEach(
-      (worker) =>
-        (worker.onmessage = ({ data }) => {
-          this.responses.next(data);
-        })
-    );
-    this.workers.forEach((worker) => {
-      worker.onerror = ({ error }) => console.error(3, error);
-    });
+    // this.workers.forEach(
+    //   (worker) =>
+    //     (worker.onmessage = ({ data }) => {
+    //       this.responses.next(data);
+    //     })
+    // );
+    // this.workers.forEach((worker) => {
+    //   worker.onerror = ({ error }) => console.error(3, error);
+    // });
   }
 
   resize(
@@ -45,32 +78,32 @@ export class ResizerService {
     blob: Blob,
     size: { height: number; width?: number }
   ): Observable<Result> {
-    return new Observable((observer) => {
-      const reqId = Math.random();
-      const sub = this.responses
-        .pipe(first(({ id }) => id === reqId))
-        .subscribe({
-          next: (value) => {
-            // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-            'result' in value
-              ? observer.next(value.result)
-              : observer.error(value.error);
-            observer.complete();
-          },
+    return this.workers.pipe(
+      map((workers) => workers[Math.floor(Math.random() * this.workerCount)]),
+      map((worker) => {
+        const id = Math.random();
+        worker.postMessage({
+          id,
+          imageData: blob,
+          width: size.width ?? size.height,
+          height: size.height,
         });
-
-      this.workers[
-        Math.floor(Math.random() * 100) % this.workers.length
-      ].postMessage({
-        id: reqId,
-        imageData: blob,
-        width: size.width ?? size.height,
-        height: size.height,
-      });
-
-      return () => {
-        sub.unsubscribe();
-      };
-    });
+        return [worker, id] as [Worker, number];
+      }),
+      concatMap(([worker, random]) =>
+        fromEvent<
+          MessageEvent<{
+            id: number;
+            result: any;
+            error?: any;
+          }>
+        >(worker, 'message').pipe(first(({ data: { id } }) => id === random))
+      ),
+      first(),
+      map(({ data }) => data),
+      concatMap((result) =>
+        'error' in result ? throwError(() => result.error) : of(result.result)
+      )
+    );
   }
 }

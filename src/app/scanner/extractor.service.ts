@@ -13,17 +13,20 @@ import { FileEntry } from '@app/database/entries/entry.model';
 import { Artist } from '@app/database/artists/artist.model';
 import { Album } from '@app/database/albums/album.model';
 import { Song } from '@app/database/songs/song.model';
+import { Picture } from '@app/database/pictures/picture.model';
 
-// type ExtractorResult = {
-//   common: Omit<ICommonTagsResult, 'picture'>;
-//   format: IFormat;
-//   lastModified: number;
-//   pictures: {
-//     id: PictureId;
-//     name: string;
-//     blob: Blob;
-//   }[];
-// };
+type ExtractorWorkerMessage = {
+  id: number;
+  result: ExtractorResult;
+  error?: any;
+};
+
+export type ExtractorResult = {
+  artists: Artist[];
+  album: Album;
+  song: Song;
+  pictures: Picture[];
+};
 
 @Injectable()
 export class ExtractorService {
@@ -35,14 +38,14 @@ export class ExtractorService {
             name: 'extractor',
           })
       );
-      console.log('Workers created');
+      console.log('Extractor workers created');
       observer.next(workers);
       return () => workers.forEach((worker) => worker.terminate());
     }
   ).pipe(
     share({
       resetOnComplete: false,
-      resetOnRefCountZero: false,
+      resetOnRefCountZero: true,
       resetOnError: false,
       connector: () => new ReplaySubject(1),
     })
@@ -50,11 +53,7 @@ export class ExtractorService {
 
   private readonly workerCount = navigator.hardwareConcurrency;
 
-  extract(entry: FileEntry): Observable<{
-    artists: Artist[];
-    album: Album;
-    song: Song;
-  }> {
+  extract(entry: FileEntry): Observable<ExtractorResult> {
     return this.workers.pipe(
       map((workers) => workers[Math.floor(Math.random() * this.workerCount)]),
       map((worker) => {
@@ -63,17 +62,9 @@ export class ExtractorService {
         return [worker, id] as [Worker, number];
       }),
       concatMap(([worker, random]) =>
-        fromEvent<
-          MessageEvent<{
-            id: number;
-            result: {
-              artists: Artist[];
-              album: Album;
-              song: Song;
-            };
-            error?: any;
-          }>
-        >(worker, 'message').pipe(first(({ data: { id } }) => id === random))
+        fromEvent<MessageEvent<ExtractorWorkerMessage>>(worker, 'message').pipe(
+          first(({ data: { id } }) => id === random)
+        )
       ),
       first(),
       map(({ data }) => data),

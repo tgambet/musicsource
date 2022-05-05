@@ -36,6 +36,7 @@ import { SongFacade } from '@app/database/songs/song.facade';
 import { AlbumFacade } from '@app/database/albums/album.facade';
 import { ArtistFacade } from '@app/database/artists/artist.facade';
 import { ScannerFacade } from '@app/scanner/store/scanner.facade';
+import { PictureFacade } from '@app/database/pictures/picture.facade';
 
 const extensionIn = (extensions: string[]) => (file: FileEntry) =>
   extensions.some((ext) => file.name.endsWith(`.${ext}`));
@@ -99,10 +100,11 @@ export class ScannerEffects2 /*implements OnRunEffects*/ {
                     `${song.artists[0]?.name} - ${song.title}`
                   )
                 ),
-                mergeMap(({ song, album, artists }) => [
+                mergeMap(({ song, album, artists, pictures }) => [
                   this.songs.put(song),
                   this.albums.put(album),
                   ...artists.map((artist) => this.artists.put(artist)),
+                  ...pictures.map((picture) => this.pictures.put(picture)),
                 ]),
                 mergeAll(),
                 logDuration('save')
@@ -491,6 +493,7 @@ export class ScannerEffects2 /*implements OnRunEffects*/ {
     private songs: SongFacade,
     private albums: AlbumFacade,
     private artists: ArtistFacade,
+    private pictures: PictureFacade,
     private database: DatabaseService
   ) {}
 

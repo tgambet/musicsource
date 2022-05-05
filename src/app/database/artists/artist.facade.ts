@@ -1,9 +1,13 @@
 import { Injectable } from '@angular/core';
-import { concatMap, EMPTY, Observable } from 'rxjs';
+import { concatMap, Observable } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { ArtistIndex } from '@app/database/artists/artist.reducer';
 import { Artist, ArtistId } from '@app/database/artists/artist.model';
-import { addArtist, updateArtist } from '@app/database/artists/artist.actions';
+import {
+  addArtist,
+  updateArtist,
+  upsertArtist,
+} from '@app/database/artists/artist.actions';
 import {
   selectArtistByKey,
   selectArtistIndexAll,
@@ -11,7 +15,7 @@ import {
 } from '@app/database/artists/artist.selectors';
 import { IdUpdate } from '@app/core/utils';
 import { DatabaseService } from '@app/database/database.service';
-import { first, tap } from 'rxjs/operators';
+import { tap } from 'rxjs/operators';
 
 @Injectable()
 export class ArtistFacade {
@@ -24,12 +28,14 @@ export class ArtistFacade {
   }
 
   put(artist: Artist): Observable<IDBValidKey> {
-    return this.store.select(selectArtistByKey(artist.id)).pipe(
-      first(),
-      concatMap((r) =>
-        r ? EMPTY : this.database.put$<Artist>('artists', artist)
-      ),
-      tap(() => this.store.dispatch(addArtist({ artist })))
+    return this.database.db$.pipe(
+      concatMap((db) => db.transaction$('artists', 'readwrite')),
+      concatMap((transaction) => transaction.objectStore$<Artist>('artists')),
+      concatMap((store) =>
+        store
+          .put$(artist)
+          .pipe(tap(() => this.store.dispatch(upsertArtist({ artist }))))
+      )
     );
   }
 

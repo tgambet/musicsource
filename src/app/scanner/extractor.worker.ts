@@ -12,29 +12,16 @@ import { FileEntry } from '@app/database/entries/entry.model';
 import { Artist, getArtistId } from '@app/database/artists/artist.model';
 import { Album, getAlbumId } from '@app/database/albums/album.model';
 import { getSongId, Song } from '@app/database/songs/song.model';
-import { ICommonTagsResult, IFormat } from 'music-metadata/lib/type';
+import { getPictureId } from '@app/database/pictures/picture.model';
+import { readAsDataURL } from '@app/core/utils/read-as-data-url.util';
+import { firstValueFrom } from 'rxjs';
 
-export type ExtractorResult = {
-  common: Omit<ICommonTagsResult, 'picture'>;
-  format: IFormat;
-  lastModified: number;
-  // pictures: {
-  //   id: PictureId;
-  //   name: string;
-  //   blob: Blob;
-  // }[];
-};
+addEventListener('message', async ({ data }) => {
+  const { id, entry }: { id: number; entry: FileEntry } = data;
 
-const extractAudio = (
-  entry: FileEntry,
-  result: ExtractorResult,
-  updatedOn: number
-): {
-  artists: Artist[];
-  album: Album;
-  song: Song;
-} => {
-  const { common: tags, format, lastModified } = result;
+  const file = await entry.handle.getFile();
+
+  const { common: tags, format } = await mm.parseBlob(file);
 
   if (
     tags.albumartist === undefined ||
@@ -42,12 +29,11 @@ const extractAudio = (
     tags.artists === undefined ||
     tags.title === undefined
   ) {
-    throw new Error('empty tags');
+    postMessage({ id, error: 'empty tags' });
+    return;
   }
 
-  // const date = new Date();
-  // date.setMilliseconds(0);
-  // const updatedOn = date.getTime();
+  const updatedOn = Date.now();
 
   const artists: Artist[] = tags.artists.map((name) => ({
     id: getArtistId(name),
@@ -80,7 +66,7 @@ const extractAudio = (
     title: tags.title,
     artists: artists.map((a) => ({ name: a.name, id: a.id })),
     album: { title: album.title, id: album.id },
-    lastModified,
+    lastModified: file.lastModified,
     format,
     updatedOn,
     duration: format.duration,
@@ -88,66 +74,22 @@ const extractAudio = (
     // pictureId: pictures[0]?.id,
   };
 
-  return { album, artists, song };
-
-  //     return merge(
-  //       // ...pictures.map(({ id, name, blob }) =>
-  //       //   this.addOrUpdatePicture(id, name || entry.name, entry.path, blob)
-  //       // ),
-  //       this.addOrUpdateAlbum(
-  //         album.id,
-  //         album.title,
-  //         album.albumArtist,
-  //         album.artists,
-  //         album.updatedOn,
-  //         album.folder,
-  //         album.year
-  //       ),
-  //       of(
-  //         ...artists.map((artist) => saveArtist({ artist })),
-  //         saveSong({ song }),
-  //         extractSuccess({
-  //           label: `${song.artists[0].name} - ${song.title}`,
-  //         })
-  //       )
-  //     );
-  //   }),
-  //   tap({ error: (err) => console.error(entry.path, err) }),
-  //   catchError((error) => of(extractFailure({ error })))
-  //   // map((action) => this.store.dispatch(action)),
-  //   // last()
-  // );
-};
-
-addEventListener('message', ({ data }) => {
-  const { id, entry }: { id: number; entry: FileEntry } = data;
-
-  entry.handle
-    .getFile()
-    .then((file) =>
-      mm.parseBlob(file).then(({ common, format }) => {
-        // const pictures = (common.picture || []).map((picture) => {
-        //   const blob = new Blob([picture.data], { type: picture.format });
-        //   return {
-        //     id: getPictureId(picture.data.toString()),
-        //     name: picture.name || picture.description,
-        //     blob,
-        //   };
-        // });
-        delete common.picture;
-        return {
-          common,
-          format,
-          lastModified: file.lastModified,
-          // pictures,
-        };
-      })
-    )
-    .then((result) => extractAudio(entry, result, Date.now()))
-    .then((result) => {
-      postMessage({ id, result });
+  const pictures = await Promise.all(
+    (tags.picture || []).map(async (picture) => {
+      const blob = new Blob([picture.data], { type: picture.format });
+      const original = await firstValueFrom(readAsDataURL(blob));
+      return {
+        id: getPictureId(picture.data.toString()),
+        name: picture.name || picture.description,
+        original,
+        sources: [],
+        entries: [entry],
+        songs: [song.entryPath],
+        albums: [album.id],
+        artists: [albumArtist.id],
+      };
     })
-    .catch((error) => {
-      postMessage({ id, error });
-    });
+  );
+
+  postMessage({ id, result: { album, artists, song, pictures } });
 });
