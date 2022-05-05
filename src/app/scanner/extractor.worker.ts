@@ -13,8 +13,6 @@ import { Artist, getArtistId } from '@app/database/artists/artist.model';
 import { Album, getAlbumId } from '@app/database/albums/album.model';
 import { getSongId, Song } from '@app/database/songs/song.model';
 import { getPictureId } from '@app/database/pictures/picture.model';
-import { readAsDataURL } from '@app/core/utils/read-as-data-url.util';
-import { firstValueFrom } from 'rxjs';
 
 addEventListener('message', async ({ data }) => {
   const { id, entry }: { id: number; entry: FileEntry } = data;
@@ -74,22 +72,18 @@ addEventListener('message', async ({ data }) => {
     // pictureId: pictures[0]?.id,
   };
 
-  const pictures = await Promise.all(
-    (tags.picture || []).map(async (picture) => {
-      const blob = new Blob([picture.data], { type: picture.format });
-      const original = await firstValueFrom(readAsDataURL(blob));
-      return {
-        id: getPictureId(picture.data.toString()),
-        name: picture.name || picture.description,
-        original,
-        sources: [],
-        entries: [entry],
-        songs: [song.entryPath],
-        albums: [album.id],
-        artists: [albumArtist.id],
-      };
-    })
-  );
+  const pictures = (tags.picture || []).map((picture) => ({
+    id: getPictureId(picture.data.toString()),
+    name: picture.name || picture.description,
+    original: undefined,
+    sources: [],
+    entries: [entry],
+    songs: [song.entryPath],
+    albums: [album.id],
+    artists: [albumArtist.id],
+  }));
+
+  delete tags.picture;
 
   postMessage({ id, result: { album, artists, song, pictures } });
 });
