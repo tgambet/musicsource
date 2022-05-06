@@ -64,6 +64,23 @@ const musicSourceDatabase: ReactiveIDBDatabaseOptions = {
         {
           name: 'pictures',
           options: { keyPath: 'id' },
+          indexes: [
+            {
+              name: 'artists',
+              keyPath: 'artists',
+              options: { multiEntry: true },
+            },
+            {
+              name: 'albums',
+              keyPath: 'albums',
+              options: { multiEntry: true },
+            },
+            {
+              name: 'songs',
+              keyPath: 'songs',
+              options: { multiEntry: true },
+            },
+          ],
         },
         {
           name: 'albums',

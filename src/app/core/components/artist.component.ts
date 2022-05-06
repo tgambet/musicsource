@@ -1,7 +1,7 @@
 import { Component, ChangeDetectionStrategy, Input } from '@angular/core';
 import { Icons } from '@app/core/utils/icons.util';
 import { Artist } from '@app/database/artists/artist.model';
-import { Observable } from 'rxjs';
+import { EMPTY, Observable } from 'rxjs';
 import { PictureFacade } from '@app/database/pictures/picture.facade';
 
 @Component({
@@ -68,6 +68,6 @@ export class ArtistComponent {
   icons = Icons;
 
   constructor(private pictures: PictureFacade) {
-    this.cover$ = this.pictures.getArtistCover(this.artist);
+    this.cover$ = EMPTY; // TODO this.pictures.getArtistCover(this.artist);
   }
 }

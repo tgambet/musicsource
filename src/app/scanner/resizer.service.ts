@@ -2,15 +2,14 @@ import { Injectable } from '@angular/core';
 import {
   concatMap,
   fromEvent,
-  merge,
   Observable,
   of,
   ReplaySubject,
   share,
   throwError,
-  toArray,
 } from 'rxjs';
-import { first, map } from 'rxjs/operators';
+import { first, map, switchMap } from 'rxjs/operators';
+import { Picture } from '@app/database/pictures/picture.model';
 
 type Result = {
   height: number;
@@ -28,7 +27,6 @@ export class ResizerService {
             name: 'resizer',
           })
       );
-      console.log('Resizer workers created');
       observer.next(workers);
       return () => workers.forEach((worker) => worker.terminate());
     }
@@ -65,17 +63,17 @@ export class ResizerService {
     // });
   }
 
-  resize(
-    blob: Blob,
-    sizes: { height: number; width?: number }[]
-  ): Observable<Result[]> {
-    return merge(...sizes.map((size) => this.resizeOne(blob, size))).pipe(
-      toArray()
-    );
-  }
+  // resize(
+  //   blob: Blob,
+  //   sizes: { height: number; width?: number }[]
+  // ): Observable<Result[]> {
+  //   return merge(...sizes.map((size) => this.resizeOne(blob, size))).pipe(
+  //     toArray()
+  //   );
+  // }
 
   resizeOne(
-    blob: Blob,
+    picture: Picture,
     size: { height: number; width?: number }
   ): Observable<Result> {
     return this.workers.pipe(
@@ -84,13 +82,13 @@ export class ResizerService {
         const id = Math.random();
         worker.postMessage({
           id,
-          imageData: blob,
-          width: size.width ?? size.height,
+          picture,
           height: size.height,
+          width: size.width ?? size.height,
         });
         return [worker, id] as [Worker, number];
       }),
-      concatMap(([worker, random]) =>
+      switchMap(([worker, random]) =>
         fromEvent<
           MessageEvent<{
             id: number;

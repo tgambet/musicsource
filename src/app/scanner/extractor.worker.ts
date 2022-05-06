@@ -12,7 +12,7 @@ import { FileEntry } from '@app/database/entries/entry.model';
 import { Artist, getArtistId } from '@app/database/artists/artist.model';
 import { Album, getAlbumId } from '@app/database/albums/album.model';
 import { getSongId, Song } from '@app/database/songs/song.model';
-import { getPictureId } from '@app/database/pictures/picture.model';
+import { getPictureId, Picture } from '@app/database/pictures/picture.model';
 
 addEventListener('message', async ({ data }) => {
   const { id, entry }: { id: number; entry: FileEntry } = data;
@@ -72,10 +72,11 @@ addEventListener('message', async ({ data }) => {
     // pictureId: pictures[0]?.id,
   };
 
-  const pictures = (tags.picture || []).map((picture) => ({
+  const pictures: Picture[] = (tags.picture || []).map((picture) => ({
     id: getPictureId(picture.data.toString()),
     name: picture.name || picture.description,
-    original: undefined,
+    data: picture.data,
+    format: picture.format,
     sources: [],
     entries: [entry],
     songs: [song.entryPath],

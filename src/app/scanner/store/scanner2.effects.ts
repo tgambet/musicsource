@@ -37,6 +37,7 @@ import { AlbumFacade } from '@app/database/albums/album.facade';
 import { ArtistFacade } from '@app/database/artists/artist.facade';
 import { ScannerFacade } from '@app/scanner/store/scanner.facade';
 import { PictureFacade } from '@app/database/pictures/picture.facade';
+import { ResizerService } from '@app/scanner/resizer.service';
 
 const extensionIn = (extensions: string[]) => (file: FileEntry) =>
   extensions.some((ext) => file.name.endsWith(`.${ext}`));
@@ -68,9 +69,11 @@ export class ScannerEffects2 /*implements OnRunEffects*/ {
         ofType(openDirectory),
         exhaustMap(() =>
           this.database.db$.pipe(
+            tap(() => (this.subscription = new Subscription())),
             tap(() =>
               this.subscription.add(this.extractor.workers.subscribe())
             ),
+            tap(() => this.subscription.add(this.resizer.workers.subscribe())),
             concatMap(() => this.files.openDirectory()),
             tap(() => this.openScanDialog()),
             tap(() => this.scanner.start()),
@@ -101,10 +104,10 @@ export class ScannerEffects2 /*implements OnRunEffects*/ {
                   )
                 ),
                 mergeMap(({ song, album, artists, pictures }) => [
-                  this.songs.put(song),
-                  this.albums.put(album),
-                  ...artists.map((artist) => this.artists.put(artist)),
                   ...pictures.map((picture) => this.pictures.put(picture)),
+                  ...artists.map((artist) => this.artists.put(artist)),
+                  this.albums.put(album),
+                  this.songs.put(song),
                 ]),
                 mergeAll(),
                 logDuration('save')
@@ -485,6 +488,7 @@ export class ScannerEffects2 /*implements OnRunEffects*/ {
     private files: FileService,
     private scanner: ScannerFacade,
     private extractor: ExtractorService,
+    private resizer: ResizerService,
     private router: Router,
     private dialog: MatDialog,
     private overlay: Overlay,

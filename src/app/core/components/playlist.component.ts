@@ -6,7 +6,7 @@ import {
 } from '@angular/core';
 import { Icons } from '@app/core/utils';
 import { Playlist } from '@app/database/playlists/playlist.model';
-import { Observable, of } from 'rxjs';
+import { EMPTY, Observable, of } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 import { MenuItem } from '@app/core/components/menu.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -101,7 +101,7 @@ export class PlaylistComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.cover$ = this.pictures.getCover(this.playlist.pictureKey);
+    this.cover$ = EMPTY; // TODO this.pictures.getCover(this.playlist.pictureKey);
 
     // TODO
     this.color$ = of('red');

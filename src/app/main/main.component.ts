@@ -28,6 +28,7 @@ import { loadPlaylists } from '@app/database/playlists/playlist.actions';
 import { loadEntries } from '@app/database/entries/entry.actions';
 import { first, tap } from 'rxjs/operators';
 import { NavigationService } from '@app/main/navigation.service';
+import { loadPictures } from '@app/database/pictures/picture.actions';
 
 // export const debugAnimation = (name: string) => (
 //   from: any,
@@ -190,7 +191,7 @@ export class MainComponent implements OnInit {
             this.store.dispatch(loadEntries());
             this.store.dispatch(loadPlaylists());
             this.store.dispatch(loadSongs());
-            // this.store.dispatch(loadPictures());
+            this.store.dispatch(loadPictures());
           });
         })
       )

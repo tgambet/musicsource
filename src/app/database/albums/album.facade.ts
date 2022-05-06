@@ -46,11 +46,10 @@ export class AlbumFacade {
                 }
               : album
           ),
-          concatMap((updated) =>
-            store
-              .put$(updated)
-              .pipe(tap(() => this.store.dispatch(upsertAlbum({ album }))))
-          )
+          tap((updated) =>
+            this.store.dispatch(upsertAlbum({ album: updated }))
+          ),
+          concatMap((updated) => store.put$(updated))
         )
       )
     );

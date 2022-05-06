@@ -15,6 +15,7 @@ import { ArtistFacade } from '@app/database/artists/artist.facade';
 import { AlbumFacade } from '@app/database/albums/album.facade';
 import { PictureFacade } from '@app/database/pictures/picture.facade';
 import { HelperFacade } from '@app/helper/helper.facade';
+import { first } from 'rxjs/operators';
 
 @Component({
   selector: 'app-page-artist',
@@ -197,7 +198,8 @@ export class PageArtistComponent implements OnInit {
     this.artist$ = this.artists.getByKey(artistKey) as Observable<Artist>;
 
     this.cover$ = this.artist$.pipe(
-      switchMap((artist) => this.pictures.getArtistBanner(artist))
+      first(),
+      switchMap((artist) => this.pictures.getArtistCover(artist, 0))
     );
 
     this.albums$ = this.albums.getByArtistKey(artistKey); // TODO hash vs name

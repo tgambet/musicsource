@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { Playlist, PlaylistId } from '@app/database/playlists/playlist.model';
-import { Observable, of, switchMap } from 'rxjs';
+import { EMPTY, Observable, of, switchMap } from 'rxjs';
 import { Song } from '@app/database/songs/song.model';
 import { ActivatedRoute } from '@angular/router';
 import { Icons } from '@app/core/utils/icons.util';
@@ -153,7 +153,7 @@ export class PagePlaylistComponent implements OnInit {
       .pipe(filter((playlist): playlist is Playlist => !!playlist));
 
     this.cover$ = this.playlist$.pipe(
-      switchMap((playlist) => this.pictures.getCover(playlist.pictureKey))
+      switchMap(() => EMPTY) // TODO this.pictures.getCover(playlist.pictureKey))
     );
 
     this.color$ = of('red');
