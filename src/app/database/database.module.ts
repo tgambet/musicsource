@@ -37,10 +37,20 @@ import { EntryFacade } from '@app/database/entries/entry.facade';
 import { PictureFacade } from '@app/database/pictures/picture.facade';
 import { PlaylistFacade } from '@app/database/playlists/playlist.facade';
 import { SongFacade } from '@app/database/songs/song.facade';
+import { SettingsFacade } from '@app/database/settings/settings.facade';
+import { SettingsEffects } from '@app/database/settings/settings.effects';
 
 const musicSourceDatabase: ReactiveIDBDatabaseOptions = {
   name: 'musicsource',
   schema: [
+    {
+      version: 2,
+      stores: [
+        {
+          name: 'settings',
+        },
+      ],
+    },
     {
       version: 1,
       stores: [
@@ -122,6 +132,7 @@ const musicSourceDatabase: ReactiveIDBDatabaseOptions = {
       PictureEffects,
       PlaylistEffects,
       SongEffects,
+      SettingsEffects,
     ]),
     StoreModule.forFeature(albumFeatureKey, albumReducer),
     StoreModule.forFeature(artistFeatureKey, artistReducer),
@@ -138,6 +149,7 @@ const musicSourceDatabase: ReactiveIDBDatabaseOptions = {
     PictureFacade,
     PlaylistFacade,
     SongFacade,
+    SettingsFacade,
   ],
 })
 export class DatabaseModule {}

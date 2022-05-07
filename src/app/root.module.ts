@@ -5,7 +5,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '@env/environment';
-import { RouterModule, Routes } from '@angular/router';
+import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { ActionReducer, MetaReducer, StoreModule } from '@ngrx/store';
 import { EffectsModule } from '@ngrx/effects';
@@ -45,6 +45,7 @@ export const metaReducers: MetaReducer<any>[] = [];
       scrollPositionRestoration: 'disabled',
       // anchorScrolling: 'enabled',
       // onSameUrlNavigation: 'reload',
+      preloadingStrategy: PreloadAllModules,
     }),
     StoreModule.forRoot(
       {},

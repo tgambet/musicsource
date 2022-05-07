@@ -1,8 +1,7 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { Icons } from '@app/core/utils';
-import { openDirectory, scanStart } from '@app/scanner/store/scanner.actions';
+import { openDirectory } from '@app/scanner/store/scanner.actions';
 
 @Component({
   selector: 'app-welcome',
@@ -19,7 +18,9 @@ import { openDirectory, scanStart } from '@app/scanner/store/scanner.actions';
     <div class="section home">
       <div class="left action">
         <app-title>MusicSource</app-title>
-        <p>A modern desktop player for your personal music library.</p>
+        <p class="sub-line">
+          A modern desktop player for your personal music library.
+        </p>
         <button mat-raised-button color="accent" (click)="scan()">
           <span class="button">
             <app-icon [path]="icons.folderMusic" [size]="24"></app-icon>
@@ -141,6 +142,9 @@ import { openDirectory, scanStart } from '@app/scanner/store/scanner.actions';
         margin: 12px 0 24px;
         line-height: 1.5;
         color: rgba(255, 255, 255, 0.5);
+      }
+      .sub-line {
+        font-size: 1.25em;
       }
       [mat-raised-button] {
         padding-left: 12px;
@@ -269,12 +273,9 @@ import { openDirectory, scanStart } from '@app/scanner/store/scanner.actions';
 export class WelcomeComponent {
   icons = Icons;
 
-  constructor(private router: Router, private store: Store) {}
+  constructor(private store: Store) {}
 
   scan(): void {
-    this.router.navigate(['library']).then(() => {
-      this.store.dispatch(scanStart());
-      this.store.dispatch(openDirectory());
-    });
+    this.store.dispatch(openDirectory({}));
   }
 }

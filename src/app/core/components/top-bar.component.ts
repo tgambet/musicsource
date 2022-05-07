@@ -3,16 +3,9 @@ import { Icons } from '@app/core/utils';
 import { MenuItem } from './menu.component';
 import { Router } from '@angular/router';
 import { DatabaseService } from '@app/database/database.service';
-import { tap } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
-import { removeAllAlbums } from '@app/database/albums/album.actions';
-import { removeAllArtists } from '@app/database/artists/artist.actions';
-import { removeAllEntries } from '@app/database/entries/entry.actions';
-import { removeAllPictures } from '@app/database/pictures/picture.actions';
-import { removeAllPlaylists } from '@app/database/playlists/playlist.actions';
-import { removeAllSongs } from '@app/database/songs/song.actions';
-import { openDirectory, scanStart } from '@app/scanner/store/scanner.actions';
 import { PlayerFacade } from '@app/player/store/player.facade';
+import { SettingsFacade } from '@app/database/settings/settings.facade';
 
 @Component({
   selector: 'app-top-bar',
@@ -138,18 +131,24 @@ export class TopBarComponent {
   icons = Icons;
   menuItems: MenuItem[] = [
     {
-      text: 'Clear database',
-      icon: Icons.delete,
-      click: (): void => this.clear(),
+      text: 'Synchronize library',
+      icon: Icons.sync,
+      click: (): void => this.settings.synchronizeLibrary(),
     },
     {
-      text: 'Quick scan a folder',
-      icon: Icons.folderSearch,
-      click: (): void => {
-        this.store.dispatch(scanStart());
-        this.store.dispatch(openDirectory());
-      },
+      text: 'Clear database',
+      icon: Icons.delete,
+      click: (): void => this.settings.clearDatabase(),
+      color: 'red',
     },
+    // {
+    //   text: 'Quick scan a folder',
+    //   icon: Icons.folderSearch,
+    //   click: (): void => {
+    //     this.store.dispatch(scanStart());
+    //     this.store.dispatch(openDirectory({}));
+    //   },
+    // },
     // {
     //   text: 'Library settings',
     //   icon: Icons.folderCog,
@@ -167,7 +166,8 @@ export class TopBarComponent {
     private router: Router,
     private store: Store,
     private storage: DatabaseService,
-    private player: PlayerFacade
+    private player: PlayerFacade,
+    private settings: SettingsFacade
   ) {}
 
   // scan(): void {
@@ -179,21 +179,21 @@ export class TopBarComponent {
   //   //   .then(() => this.store.dispatch(openDirectory()));
   // }
 
-  clear(): void {
-    this.player.pause();
-    this.player.hide();
-    this.store.dispatch(removeAllAlbums());
-    this.store.dispatch(removeAllArtists());
-    this.store.dispatch(removeAllEntries());
-    this.store.dispatch(removeAllPictures());
-    this.store.dispatch(removeAllPlaylists());
-    this.store.dispatch(removeAllSongs());
-    this.storage
-      .clear$()
-      .pipe(
-        tap(() => localStorage.clear()),
-        tap(() => this.router.navigate(['/welcome']))
-      )
-      .subscribe();
-  }
+  // clear(): void {
+  //   this.player.pause();
+  //   this.player.hide();
+  //   this.store.dispatch(removeAllAlbums());
+  //   this.store.dispatch(removeAllArtists());
+  //   this.store.dispatch(removeAllEntries());
+  //   this.store.dispatch(removeAllPictures());
+  //   this.store.dispatch(removeAllPlaylists());
+  //   this.store.dispatch(removeAllSongs());
+  //   this.storage
+  //     .clear$()
+  //     .pipe(
+  //       tap(() => localStorage.clear()),
+  //       tap(() => this.router.navigate(['/welcome']))
+  //     )
+  //     .subscribe();
+  // }
 }
