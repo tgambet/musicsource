@@ -1,6 +1,10 @@
 import { createAction, props } from '@ngrx/store';
+import { DirectoryEntry } from '@app/database/entries/entry.model';
 
-export const openDirectory = createAction('scanner/open');
+export const openDirectory = createAction(
+  'scanner/open',
+  props<{ directory?: DirectoryEntry }>()
+);
 export const scanStart = createAction('scanner/start');
 export const scanEnd = createAction('scanner/end');
 export const setLabel = createAction(

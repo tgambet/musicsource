@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { concatMap, Observable, of } from 'rxjs';
+import { concatMap, identity, Observable, of } from 'rxjs';
 import { Picture } from '@app/database/pictures/picture.model';
 import { catchError, filter, first, map, switchMap, tap } from 'rxjs/operators';
 import { Album } from '@app/database/albums/album.model';
@@ -34,7 +34,10 @@ export class PictureFacade {
   ) {}
 
   put(picture: Picture): Observable<IDBValidKey> {
-    const uniq = <T>(value: T, i: number, arr: T[]) => arr.indexOf(value) === i;
+    const uniq =
+      <T>(mapFn: (t: T) => any = identity) =>
+      (value: T, i: number, arr: T[]) =>
+        arr.map(mapFn).indexOf(mapFn(value)) === i;
 
     return this.database.db$.pipe(
       concatMap((db) => db.transaction$('pictures', 'readwrite')),
@@ -45,11 +48,17 @@ export class PictureFacade {
             stored
               ? {
                   ...stored,
-                  sources: [...stored.sources, ...picture.sources],
-                  entries: [...stored.entries, ...picture.entries].filter(uniq),
-                  songs: [...stored.songs, ...picture.songs].filter(uniq),
-                  artists: [...stored.artists, ...picture.artists].filter(uniq),
-                  albums: [...stored.albums, ...picture.albums].filter(uniq),
+                  sources: [...stored.sources, ...picture.sources].filter(
+                    uniq((e) => e.height)
+                  ),
+                  entries: [...stored.entries, ...picture.entries].filter(
+                    uniq((e) => e.path)
+                  ),
+                  songs: [...stored.songs, ...picture.songs].filter(uniq()),
+                  artists: [...stored.artists, ...picture.artists].filter(
+                    uniq()
+                  ),
+                  albums: [...stored.albums, ...picture.albums].filter(uniq()),
                 }
               : picture
           ),

@@ -38,6 +38,7 @@ import { ArtistFacade } from '@app/database/artists/artist.facade';
 import { ScannerFacade } from '@app/scanner/store/scanner.facade';
 import { PictureFacade } from '@app/database/pictures/picture.facade';
 import { ResizerService } from '@app/scanner/resizer.service';
+import { SettingsFacade } from '@app/database/settings/settings.facade';
 
 const extensionIn = (extensions: string[]) => (file: FileEntry) =>
   extensions.some((ext) => file.name.endsWith(`.${ext}`));
@@ -67,14 +68,24 @@ export class ScannerEffects2 /*implements OnRunEffects*/ {
     () =>
       this.actions$.pipe(
         ofType(openDirectory),
-        exhaustMap(() =>
+        exhaustMap(({ directory: dirOpt }) =>
           this.database.db$.pipe(
             tap(() => (this.subscription = new Subscription())),
             tap(() =>
               this.subscription.add(this.extractor.workers.subscribe())
             ),
             tap(() => this.subscription.add(this.resizer.workers.subscribe())),
-            concatMap(() => this.files.openDirectory()),
+            concatMap(() =>
+              dirOpt
+                ? of(dirOpt)
+                : this.files
+                    .openDirectory()
+                    .pipe(
+                      concatTap((directory) =>
+                        this.settings.setRootDirectory(directory)
+                      )
+                    )
+            ),
             tap(() => this.openScanDialog()),
             tap(() => this.scanner.start()),
             tap(() => localStorage.setItem('scanned', '1')),
@@ -156,7 +167,8 @@ export class ScannerEffects2 /*implements OnRunEffects*/ {
     private albums: AlbumFacade,
     private artists: ArtistFacade,
     private pictures: PictureFacade,
-    private database: DatabaseService
+    private database: DatabaseService,
+    private settings: SettingsFacade
   ) {}
 
   openScanDialog(): void {

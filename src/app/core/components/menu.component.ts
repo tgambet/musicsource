@@ -35,6 +35,7 @@ import { MatMenu } from '@angular/material/menu';
             [disabled]="item.disabled"
             *ngIf="item.routerLink"
             [routerLink]="item.routerLink"
+            [class]="item.color"
           >
             <app-icon
               *ngIf="item.icon"
@@ -48,6 +49,7 @@ import { MatMenu } from '@angular/material/menu';
             (click)="item.click ? item.click() : undefined"
             [disabled]="item.disabled"
             *ngIf="!item.routerLink"
+            [class]="item.color"
           >
             <app-icon
               *ngIf="item.icon"
@@ -65,6 +67,7 @@ import { MatMenu } from '@angular/material/menu';
       :host {
         display: inline-block;
       }
+
       .trigger {
         padding: 0;
         width: 40px;
@@ -77,16 +80,26 @@ import { MatMenu } from '@angular/material/menu';
         color: inherit;
         cursor: pointer;
       }
+
       .trigger app-icon {
         position: relative;
         z-index: 1;
       }
+
       .trigger:focus {
         outline: none;
       }
+
       .mat-menu-item app-icon {
         margin-right: 16px;
+      }
+
+      .mat-menu-item:not(.red) app-icon {
         opacity: 0.5;
+      }
+
+      .red {
+        color: #d06969;
       }
     `,
   ],
@@ -116,4 +129,5 @@ export interface MenuItem {
   disabled?: boolean;
   click?: () => void;
   routerLink?: string | any[];
+  color?: string;
 }
