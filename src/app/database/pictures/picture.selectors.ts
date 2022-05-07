@@ -27,6 +27,11 @@ export const {
 export const selectPictureByKey = (key: PictureId) =>
   createSelector(selectPictureEntities, (entities) => entities[key]);
 
+export const selectPicturesLoaded = createSelector(
+  selectPictureState,
+  (state) => state.loaded
+);
+
 export const selectPictureByAlbum = (id: AlbumId) =>
   createSelector(
     selectPictureEntities,

@@ -13,10 +13,11 @@ import { createIDBEntityAdapter, IDBEntityState } from '@creasource/ngrx-idb';
 
 export const pictureFeatureKey = 'pictures';
 
-export type PictureState = IDBEntityState<
-  Picture,
-  'artists' | 'albums' | 'songs'
->;
+export interface PictureState
+  extends IDBEntityState<Picture, 'artists' | 'albums' | 'songs'> {
+  loaded: boolean;
+  error?: any;
+}
 
 export const pictureAdapter = createIDBEntityAdapter<
   Picture,
@@ -30,17 +31,19 @@ export const pictureAdapter = createIDBEntityAdapter<
   ],
 });
 
-export const initialState = pictureAdapter.getInitialState();
+export const initialState = pictureAdapter.getInitialState({
+  loaded: false,
+});
 
-export const pictureReducer = createReducer(
+export const pictureReducer = createReducer<PictureState>(
   initialState,
 
   on(removeAllPictures, (state) => pictureAdapter.removeAll(state)),
   on(loadPictures, (state) => state),
   on(loadPicturesSuccess, (state, { data }) =>
-    pictureAdapter.addMany(data, state)
+    pictureAdapter.addMany(data, { ...state, loaded: true })
   ),
-  on(loadPicturesFailure, (state) => state),
+  on(loadPicturesFailure, (state, { error }) => ({ ...state, error })),
   on(addPicture, (state, action) =>
     pictureAdapter.addOne(action.picture, state)
   ),

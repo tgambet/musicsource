@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { concatMap, Observable, of } from 'rxjs';
 import { Picture } from '@app/database/pictures/picture.model';
-import { catchError, filter, first, map, tap } from 'rxjs/operators';
+import { catchError, filter, first, map, switchMap, tap } from 'rxjs/operators';
 import { Album } from '@app/database/albums/album.model';
 import { SongFacade } from '@app/database/songs/song.facade';
 import { Song } from '@app/database/songs/song.model';
@@ -17,7 +17,10 @@ import {
   selectPictureByAlbum,
   selectPictureBySong,
   selectPicturesByArtist,
+  selectPicturesLoaded,
 } from '@app/database/pictures/picture.selectors';
+
+export type PictureSize = 0 | 32 | 40 | 56 | 160 | 226 | 264 | 1100;
 
 @Injectable()
 export class PictureFacade {
@@ -59,13 +62,12 @@ export class PictureFacade {
     );
   }
 
-  // -------------------------------------------------------
-
-  /**
-   * Get cover from folder or first song that has a picture
-   */
-  getAlbumCover(album: Album, size: number): Observable<string | undefined> {
-    return this.store.select(selectPictureByAlbum(album.id)).pipe(
+  getAlbumCover(
+    album: Album,
+    size: PictureSize
+  ): Observable<string | undefined> {
+    return this.waitForPicturesLoaded().pipe(
+      switchMap(() => this.store.select(selectPictureByAlbum(album.id))),
       first(),
       concatMap((picture) =>
         picture
@@ -84,8 +86,9 @@ export class PictureFacade {
     );
   }
 
-  getSongCover(song: Song, size: number): Observable<string | undefined> {
-    return this.store.select(selectPictureBySong(song.entryPath)).pipe(
+  getSongCover(song: Song, size: PictureSize): Observable<string | undefined> {
+    return this.waitForPicturesLoaded().pipe(
+      switchMap(() => this.store.select(selectPictureBySong(song.entryPath))),
       first(),
       concatMap((picture) =>
         picture
@@ -106,10 +109,11 @@ export class PictureFacade {
 
   getArtistCover(
     artist: Artist,
-    size: number
+    size: PictureSize
     // names = ['folder', 'cover', 'fanart']
   ): Observable<string | undefined> {
-    return this.store.select(selectPicturesByArtist(artist.id)).pipe(
+    return this.waitForPicturesLoaded().pipe(
+      switchMap(() => this.store.select(selectPicturesByArtist(artist.id))),
       first(),
       concatMap((pictures) =>
         pictures
@@ -192,7 +196,7 @@ export class PictureFacade {
   //     tapError((err) => console.error(err, path, name))
   //   );
 
-  private getPictureBySize = (size: number) =>
+  private getPictureBySize = (size: PictureSize) =>
     concatMap(
       (picture: Picture | undefined) =>
         picture
@@ -241,4 +245,10 @@ export class PictureFacade {
             )
           : of(undefined) // throwError(() => 'picture not found')
     );
+
+  private waitForPicturesLoaded(): Observable<boolean> {
+    return this.store
+      .select(selectPicturesLoaded)
+      .pipe(first((loaded) => loaded));
+  }
 }
