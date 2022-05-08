@@ -11,7 +11,7 @@ import { openDirectory } from '@app/scanner/store/scanner.actions';
         <app-icon [path]="icons.album" [size]="40"></app-icon>
         <span>MusicSource</span>
       </h1>
-      <a href="https://github.com" aria-label="Github">
+      <a href="https://github.com/tgambet/musicsource" aria-label="Github">
         <app-icon [path]="icons.code" [size]="36"></app-icon>
       </a>
     </div>
@@ -30,7 +30,7 @@ import { openDirectory } from '@app/scanner/store/scanner.actions';
             </div>
           </span>
         </button>
-        <a mat-raised-button href="https://github.com">
+        <a mat-raised-button href="https://github.com/tgambet/musicsource">
           <div class="button">
             <app-icon [path]="icons.codeTag" [size]="24"></app-icon>
             <div class="text">
