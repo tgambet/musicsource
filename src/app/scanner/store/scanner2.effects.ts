@@ -93,7 +93,6 @@ export class ScannerEffects2 /*implements OnRunEffects*/ {
             tap(() =>
               window.addEventListener('beforeunload', this.unloadListener)
             ),
-            // TODO save directory for future sync
             concatMap((directory) =>
               this.files.iterate(directory).pipe(
                 logDuration('iterate'),
@@ -104,7 +103,7 @@ export class ScannerEffects2 /*implements OnRunEffects*/ {
                 ),
                 mergeMap((entry) =>
                   this.extractor.extract(entry).pipe(
-                    tapError((err) => console.error(entry.path, err)),
+                    tapError((err) => console.warn(entry.path, err)),
                     catchError(() => EMPTY)
                   )
                 ),
