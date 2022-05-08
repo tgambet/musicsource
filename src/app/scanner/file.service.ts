@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { animationFrameScheduler, defer, Observable, scheduled } from 'rxjs';
+import { defer, from, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { tapError } from '@app/core/utils/tap-error.util';
 import {
@@ -33,6 +33,7 @@ export class FileService {
       }
     };
 
-    return scheduled(generator(dir.handle), animationFrameScheduler);
+    // return scheduled(generator(dir.handle), animationFrameScheduler);
+    return from(generator(dir.handle));
   }
 }

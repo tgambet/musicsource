@@ -20,7 +20,11 @@ addEventListener('message', async ({ data }) => {
   try {
     const file = await entry.handle.getFile();
 
-    const { common: tags, format } = await mm.parseBlob(file);
+    const { common: tags, format } = await mm.parseBlob(file, {
+      duration: false,
+      skipCovers: false,
+      skipPostHeaders: false,
+    });
 
     // if (
     //   tags.albumartist === undefined ||
