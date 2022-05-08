@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { CoreModule } from '@app/core/core.module';
 import { WelcomeComponent } from '@app/welcome/welcome.component';
 import { RouterModule, Routes } from '@angular/router';
+import { SupportService } from '@app/welcome/support.service';
 
 const routes: Routes = [
   {
@@ -19,6 +20,6 @@ const routes: Routes = [
     // DatabaseModule,
     // ScannerModule,
   ],
-  providers: [],
+  providers: [SupportService],
 })
 export class WelcomeModule {}

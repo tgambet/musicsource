@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Icons } from '@app/core/utils';
 import { openDirectory } from '@app/scanner/store/scanner.actions';
+import { SupportService } from '@app/welcome/support.service';
 
 @Component({
   selector: 'app-welcome',
@@ -21,7 +22,15 @@ import { openDirectory } from '@app/scanner/store/scanner.actions';
         <p class="sub-line">
           A modern desktop player for your personal music library.
         </p>
-        <button mat-raised-button color="accent" (click)="scan()">
+        <p class="support" *ngIf="!supported">
+          You current browser or device does not support this application.
+        </p>
+        <button
+          mat-raised-button
+          color="accent"
+          (click)="scan()"
+          [disabled]="!supported"
+        >
           <span class="button">
             <app-icon [path]="icons.folderMusic" [size]="24"></app-icon>
             <div class="text">
@@ -188,6 +197,10 @@ import { openDirectory } from '@app/scanner/store/scanner.actions';
       .carousel img:focus {
         outline: none;
       }
+      .support {
+        font-weight: bold;
+        color: #e53935 !important;
+      }
       /*
       .right {
         flex: 1 1 auto;
@@ -273,7 +286,11 @@ import { openDirectory } from '@app/scanner/store/scanner.actions';
 export class WelcomeComponent {
   icons = Icons;
 
-  constructor(private store: Store) {}
+  supported = false;
+
+  constructor(private store: Store, private support: SupportService) {
+    this.supported = support.checkFileSystemSupport();
+  }
 
   scan(): void {
     this.store.dispatch(openDirectory({}));
