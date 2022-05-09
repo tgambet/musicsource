@@ -13,6 +13,7 @@ import { Icons } from '@app/core/utils/icons.util';
 import { PlayerFacade } from '@app/player/store/player.facade';
 import { HistoryService } from '@app/core/services/history.service';
 import { ArtistFacade } from '@app/database/artists/artist.facade';
+import { HelperFacade } from '@app/helper/helper.facade';
 
 @Component({
   selector: 'app-library-artists',
@@ -30,7 +31,7 @@ import { ArtistFacade } from '@app/database/artists/artist.facade';
           >-->
           <app-artist-list-item
             [artist]="artist"
-            (shufflePlay)="shufflePlay()"
+            (shufflePlay)="shufflePlay(artist)"
             (toggleLiked)="toggleLiked(artist)"
             cdkMonitorSubtreeFocus
           ></app-artist-list-item>
@@ -78,7 +79,8 @@ export class LibraryArtistsComponent implements OnInit {
     private route: ActivatedRoute,
     private cdr: ChangeDetectorRef,
     private history: HistoryService,
-    private artists: ArtistFacade
+    private artists: ArtistFacade,
+    private helper: HelperFacade
   ) {}
 
   ngOnInit(): void {
@@ -139,8 +141,7 @@ export class LibraryArtistsComponent implements OnInit {
     this.artists.toggleLiked(artist);
   }
 
-  shufflePlay(/*artist: Artist*/): void {
-    // this.helper.shufflePlayArtist(artist).subscribe();
-    // this.history.artistPlayed(artist);
+  shufflePlay(artist: Artist): void {
+    this.helper.playArtist(artist.id);
   }
 }

@@ -211,7 +211,6 @@ export class PageArtistComponent implements OnInit {
 
   shufflePlay(artist: Artist): void {
     this.helper.playArtist(artist.id);
-    // this.history.artistPlayed(artist);
   }
 
   toggleLiked(artist: Artist): void {
