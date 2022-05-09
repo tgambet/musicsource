@@ -145,8 +145,8 @@ export class PlayerFacade {
     this.store.dispatch(pause());
   }
 
-  setLoading(): void {
-    this.store.dispatch(setLoading({ loading: true }));
+  setLoading(loading = true): void {
+    this.store.dispatch(setLoading({ loading }));
   }
 
   show(): void {

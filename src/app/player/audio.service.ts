@@ -113,9 +113,11 @@ export class AudioService {
     this.audio.muted = !this.audio.muted;
   }
 
-  async resume(): Promise<void> {
+  resume(): Promise<void> {
     if (this.audio.src) {
-      await this.audio.play();
+      return this.audio.play();
+    } else {
+      return Promise.resolve();
     }
   }
 }

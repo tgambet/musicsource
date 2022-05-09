@@ -44,6 +44,7 @@ import { Title } from '@angular/platform-browser';
 import { EntryFacade } from '@app/database/entries/entry.facade';
 import { SongFacade } from '@app/database/songs/song.facade';
 import { concatTap, shuffleArray } from '@app/core/utils';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 // noinspection JSUnusedGlobalSymbols
 @Injectable()
@@ -57,38 +58,42 @@ export class PlayerEffects implements OnRunEffects {
         // distinctUntilChanged((s1, s2) => s1?.entryPath === s2?.entryPath),
         filter((song): song is SongId => !!song),
         tap(() => this.player.setLoading()),
+        tap(() => this.player.pause()),
         switchMap((entryPath) =>
-          this.player.getPlaying$().pipe(
+          this.entries.getByKey(entryPath).pipe(
+            filter((entry): entry is FileEntry => !!entry),
             first(),
-            tap(() => this.player.pause()),
-            concatMap((playing) =>
-              this.entries.getByKey(entryPath).pipe(
-                filter((entry): entry is FileEntry => !!entry),
-                first(),
-                tap((entry) => (this.handle = entry.handle)),
-                concatMap((entry) =>
-                  requestPermission(entry.handle).pipe(
-                    tapError(() => this.player.hide()),
-                    catchError(() => EMPTY),
-                    concatMap(() => entry.handle.getFile()),
-                    tap((file) => this.audio.setSrc(file)),
-                    concatMap(() =>
-                      this.songs.getByKey(entryPath).pipe(
-                        filter((s): s is Song => !!s),
-                        first(),
-                        concatTap((song) => this.media.setMetadata(song)),
-                        tap((song) =>
-                          this.title.setTitle(
-                            `${song.title} • ${song.artists[0].name}`
-                          )
-                        )
+            tap((entry) => (this.handle = entry.handle)),
+            concatMap((entry) =>
+              requestPermission(entry.handle).pipe(
+                tapError(() => this.player.hide()),
+                catchError(() => EMPTY),
+                concatMap(() => entry.handle.getFile()),
+                tap((file) => this.audio.setSrc(file)),
+                concatMap(() =>
+                  this.songs.getByKey(entryPath).pipe(
+                    filter((s): s is Song => !!s),
+                    first(),
+                    concatTap((song) => this.media.setMetadata(song)),
+                    tap((song) =>
+                      this.title.setTitle(
+                        `${song.title} • ${song.artists[0].name}`
                       )
-                    ),
-                    concatMap(() => (playing ? this.audio.resume() : EMPTY))
+                    )
                   )
-                )
+                ),
+                concatMap(() => from(this.audio.resume()))
               )
-            )
+            ),
+            tapError((err) =>
+              this.snack.open(err.message, undefined, {
+                panelClass: 'snack-top',
+              })
+            ),
+            tapError(() => this.player.setLoading(false)),
+            tapError(() => this.player.setPlaying(false)),
+            tapError((err) => console.error(err)),
+            catchError(() => EMPTY)
           )
         )
       ),
@@ -137,7 +142,16 @@ export class PlayerEffects implements OnRunEffects {
     () =>
       this.actions$.pipe(
         ofType(resume),
-        tap(() => this.audio.resume())
+        switchMap(() =>
+          from(this.audio.resume()).pipe(
+            tapError((err) =>
+              this.snack.open(err.message, undefined, {
+                panelClass: 'snack-top',
+              })
+            ),
+            catchError(() => EMPTY)
+          )
+        )
       ),
     {
       dispatch: false,
@@ -222,7 +236,8 @@ export class PlayerEffects implements OnRunEffects {
     private entries: EntryFacade,
     private songs: SongFacade,
     private media: MediaSessionService,
-    private title: Title
+    private title: Title,
+    private snack: MatSnackBar
   ) {}
 
   ngrxOnRunEffects(
