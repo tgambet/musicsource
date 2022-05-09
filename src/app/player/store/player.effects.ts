@@ -71,7 +71,7 @@ export class PlayerEffects implements OnRunEffects {
                     tapError(() => this.player.hide()),
                     catchError(() => EMPTY),
                     concatMap(() => entry.handle.getFile()),
-                    concatMap((file) => this.audio.setSrc(file)),
+                    tap((file) => this.audio.setSrc(file)),
                     concatMap(() =>
                       this.songs.getByKey(entryPath).pipe(
                         filter((s): s is Song => !!s),
@@ -211,6 +211,8 @@ export class PlayerEffects implements OnRunEffects {
       })
     )
   );
+
+  // analyzer$ = createEffect(() => this.actions$.pipe(ofType()));
 
   constructor(
     private actions$: Actions,

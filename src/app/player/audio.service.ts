@@ -1,16 +1,7 @@
 import { Inject, Injectable } from '@angular/core';
-import {
-  defer,
-  from,
-  Observable,
-  of,
-  ReplaySubject,
-  shareReplay,
-  Subject,
-} from 'rxjs';
-import { concatMap, map, tap } from 'rxjs/operators';
+import { ReplaySubject, Subject } from 'rxjs';
 import { DOCUMENT } from '@angular/common';
-import { concatTap } from '@app/core/utils';
+import AudioMotionAnalyzer from 'audiomotion-analyzer';
 
 @Injectable()
 export class AudioService {
@@ -21,66 +12,46 @@ export class AudioService {
   loading$: Subject<boolean> = new ReplaySubject(1);
   volume$: Subject<number> = new ReplaySubject(1);
 
-  private audioContext$: Observable<{
-    context: AudioContext;
-    source: MediaElementAudioSourceNode;
-    // gain: AudioWorkletNode;
-    audio: HTMLMediaElement;
-  }>;
-  private audio!: HTMLMediaElement;
+  readonly audioMotion!: AudioMotionAnalyzer;
+
+  private readonly audio!: HTMLMediaElement;
   private objectUrl!: string;
 
   constructor(@Inject(DOCUMENT) document: Document) {
-    this.audioContext$ = defer(() => of(new AudioContext())).pipe(
-      concatMap((context) => {
-        // context.audioWorklet.addModule('/worklets/test.worker.js').then(() => {
-        // const gain = new AudioWorkletNode(context, 'test-processor');
-        const audio = document.createElement('audio');
-        audio.addEventListener('timeupdate', () =>
-          this.timeUpdate$.next(audio.currentTime)
-        );
-        audio.addEventListener('durationchange', () =>
-          this.duration$.next(audio.duration)
-        );
-        audio.addEventListener('pause', () => this.playing$.next(false));
-        audio.addEventListener('play', () => this.playing$.next(true));
-        audio.addEventListener('ended', () => this.ended$.next());
-        audio.addEventListener('loadstart', () => this.loading$.next(true));
-        audio.addEventListener('canplay', () => this.loading$.next(false));
-        audio.addEventListener('volumechange', (event) =>
-          this.volume$.next((event.target as HTMLMediaElement)?.volume)
-        );
-        const source = context.createMediaElementSource(audio);
-        return of({ context, source /*, gain*/, audio });
-        //})
-      }),
-      tap(({ context, source, audio }) => {
-        const body = document.querySelector('body');
-        if (!body) {
-          return;
-        }
-        body.appendChild(audio);
-        // audio.setAttribute('controls', 'true');
-        source./*connect(gain).*/ connect(context.destination);
-        this.audio = audio;
-        // this.audio.load();
-        // this.context = context;
-        //this.isInitialized = true;
-        // this.audioMotion = new AudioMotionAnalyzer(undefined, {
-        //   source,
-        //   audioCtx: context,
-        //   radial: true,
-        //   mode: 2,
-        //   showScaleX: false,
-        //   overlay: true,
-        //   showBgColor: true,
-        //   bgAlpha: 0.7,
-        //   showPeaks: false,
-        //   start: false,
-        // });
-      }),
-      shareReplay(1)
+    const audio = document.createElement('audio');
+    audio.addEventListener('timeupdate', () =>
+      this.timeUpdate$.next(audio.currentTime)
     );
+    audio.addEventListener('durationchange', () =>
+      this.duration$.next(audio.duration)
+    );
+    audio.addEventListener('pause', () => this.playing$.next(false));
+    audio.addEventListener('play', () => this.playing$.next(true));
+    audio.addEventListener('ended', () => this.ended$.next());
+    audio.addEventListener('loadstart', () => this.loading$.next(true));
+    audio.addEventListener('canplay', () => this.loading$.next(false));
+    audio.addEventListener('volumechange', (event) =>
+      this.volume$.next((event.target as HTMLMediaElement)?.volume)
+    );
+    const body = document.querySelector('body');
+    if (!body) {
+      return;
+    }
+    body.appendChild(audio);
+    this.audio = audio;
+    this.audioMotion = new AudioMotionAnalyzer(undefined, {
+      bgAlpha: 0.5,
+      connectSpeakers: true,
+      mode: 2,
+      overlay: true,
+      radial: true,
+      showBgColor: true,
+      showPeaks: false,
+      showScaleX: false,
+      source: audio,
+      start: false,
+      useCanvas: false,
+    });
 
     // this.initialize()
     //   .pipe(
@@ -115,14 +86,10 @@ export class AudioService {
     //   .subscribe();
   }
 
-  setSrc(file: File): Observable<void> {
-    return this.audioContext$.pipe(
-      concatTap(({ context }) => from(context.resume())),
-      tap(() => URL.revokeObjectURL(this.objectUrl)),
-      tap(() => (this.objectUrl = URL.createObjectURL(file))),
-      tap(() => (this.audio.src = this.objectUrl)),
-      map(() => void 0)
-    );
+  setSrc(file: File): void {
+    URL.revokeObjectURL(this.objectUrl);
+    this.objectUrl = URL.createObjectURL(file);
+    this.audio.src = this.objectUrl;
   }
 
   async reset() {
@@ -135,9 +102,7 @@ export class AudioService {
   }
 
   pause(): void {
-    if (this.audio) {
-      this.audio.pause();
-    }
+    this.audio?.pause();
   }
 
   setVolume(volume: number): void {

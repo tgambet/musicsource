@@ -14,6 +14,7 @@ import {
   toggleMute,
   setVolume,
   setRepeat,
+  toggleAnalyzer,
 } from '@app/player/store/player.actions';
 
 export const playerReducer: ActionReducer<PlayerState> = createReducer(
@@ -61,5 +62,6 @@ export const playerReducer: ActionReducer<PlayerState> = createReducer(
   on(setDuration, (state, { duration }) => ({ ...state, duration })),
   on(toggleMute, (state) => ({ ...state, muted: !state.muted })),
   on(setVolume, (state, { volume }) => ({ ...state, volume })),
-  on(setRepeat, (state, { value }) => ({ ...state, repeat: value }))
+  on(setRepeat, (state, { value }) => ({ ...state, repeat: value })),
+  on(toggleAnalyzer, (state) => ({ ...state, analyzer: !state.analyzer }))
 );

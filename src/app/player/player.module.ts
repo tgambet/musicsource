@@ -11,7 +11,7 @@ import { StoreModule } from '@ngrx/store';
 import { playerReducer } from '@app/player/store/player.reducer';
 import { PlayerFacade } from '@app/player/store/player.facade';
 import { MediaSessionService } from '@app/player/media-session.service';
-import { AudioService } from '@app/player/audio.service';
+import { AnalyzerService } from '@app/player/analyzer.service';
 
 const routes: Routes = [
   {
@@ -34,7 +34,7 @@ const routes: Routes = [
     StoreModule.forFeature('player', playerReducer),
     EffectsModule.forFeature([PlayerEffects]),
   ],
-  providers: [PlayerFacade, MediaSessionService, AudioService],
+  providers: [PlayerFacade, MediaSessionService, AnalyzerService],
   exports: [PlayerComponent],
 })
 export class PlayerModule {}
