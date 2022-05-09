@@ -33,6 +33,7 @@ import {
   mdiPause,
   mdiPencil,
   mdiPlay,
+  mdiPlayCircle,
   mdiPlaylistEdit,
   mdiPlaylistMusic,
   mdiPlaylistPlay,
@@ -88,6 +89,7 @@ export class Icons {
   static pause = mdiPause;
   static pencil = mdiPencil;
   static play = mdiPlay;
+  static playCircle = mdiPlayCircle;
   static playlistEdit = mdiPlaylistEdit;
   static playlistMusic = mdiPlaylistMusic;
   static playlistPlay = mdiPlaylistPlay;
