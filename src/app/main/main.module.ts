@@ -11,6 +11,7 @@ import { DatabaseModule } from '@app/database/database.module';
 import { ScannerModule } from '@app/scanner/scanner.module';
 import { HelperModule } from '@app/helper/helper.module';
 import { NavigationService } from '@app/main/navigation.service';
+import { AudioService } from '@app/player/audio.service';
 
 const routes: Routes = [
   {
@@ -69,6 +70,7 @@ const routes: Routes = [
     MainGuard,
     ScrollerService,
     NavigationService,
+    AudioService,
     {
       provide: MAT_SNACK_BAR_DEFAULT_OPTIONS,
       useValue: {

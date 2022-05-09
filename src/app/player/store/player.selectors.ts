@@ -65,3 +65,8 @@ export const selectRepeat = createSelector(
   selectPlayerState,
   (state) => state.repeat
 );
+
+export const selectAnalyzer = createSelector(
+  selectPlayerState,
+  (state) => state.analyzer
+);

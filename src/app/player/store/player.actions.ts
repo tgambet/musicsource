@@ -54,3 +54,5 @@ export const setRepeat = createAction(
   'player/repeat',
   props<{ value: 'all' | 'once' | 'none' }>()
 );
+
+export const toggleAnalyzer = createAction('player/analyzer');

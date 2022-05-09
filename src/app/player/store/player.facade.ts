@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
 import {
+  selectAnalyzer,
   selectCurrentIndex,
   selectCurrentSong,
   selectDuration,
@@ -32,6 +33,7 @@ import {
   shuffle,
   toggleMute,
   setRepeat,
+  toggleAnalyzer,
 } from '@app/player/store/player.actions';
 import { AudioService } from '@app/player/audio.service';
 
@@ -87,6 +89,10 @@ export class PlayerFacade {
     return this.store.select(selectRepeat);
   }
 
+  getAnalyzer$(): Observable<boolean> {
+    return this.store.select(selectAnalyzer);
+  }
+
   hasNextSong$(): Observable<boolean> {
     return this.store.select(selectHasNextSong);
   }
@@ -121,6 +127,10 @@ export class PlayerFacade {
 
   setVolume(volume: number): void {
     this.store.dispatch(setVolume({ volume }));
+  }
+
+  toggleAnalyzer(): void {
+    this.store.dispatch(toggleAnalyzer());
   }
 
   setRepeat(value: 'all' | 'once' | 'none'): void {
