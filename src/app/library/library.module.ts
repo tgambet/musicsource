@@ -16,7 +16,7 @@ const routes: Routes = [
     component: LibraryComponent,
     data: { animation: 'default' },
     children: [
-      { path: '', redirectTo: 'songs', pathMatch: 'full' },
+      { path: '', redirectTo: 'albums', pathMatch: 'full' },
       { path: 'playlists', component: LibraryPlaylistsComponent },
       { path: 'albums', component: LibraryAlbumsComponent },
       { path: 'artists', component: LibraryArtistsComponent },

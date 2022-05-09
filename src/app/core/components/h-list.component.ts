@@ -33,6 +33,7 @@ import { DOCUMENT } from '@angular/common';
       [disabled]="isPrevDisabled"
       [style.top]="this.buttonsTopPosition"
       #prevButton
+      aria-label="Previous"
     >
       <app-icon [path]="icons.chevronLeft"></app-icon>
     </button>
@@ -52,6 +53,7 @@ import { DOCUMENT } from '@angular/common';
       [disabled]="isNextDisabled"
       [style.top]="this.buttonsTopPosition"
       #nextButton
+      aria-label="Next"
     >
       <app-icon [path]="icons.chevronRight"></app-icon>
     </button>

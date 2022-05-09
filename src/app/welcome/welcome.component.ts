@@ -30,12 +30,27 @@ import { SupportService } from '@app/welcome/support.service';
           color="accent"
           (click)="scan()"
           [disabled]="!supported"
+          *ngIf="!available"
         >
           <span class="button">
             <app-icon [path]="icons.folderMusic" [size]="24"></app-icon>
             <div class="text">
               <span>Scan My Library</span>
               <span>Select a folder to scan for music</span>
+            </div>
+          </span>
+        </button>
+        <button
+          mat-raised-button
+          color="accent"
+          [routerLink]="['/library']"
+          *ngIf="available"
+        >
+          <span class="button">
+            <app-icon [path]="icons.playCircle" [size]="24"></app-icon>
+            <div class="text">
+              <span>Open application</span>
+              <span>You're all set up</span>
             </div>
           </span>
         </button>
@@ -286,11 +301,10 @@ import { SupportService } from '@app/welcome/support.service';
 export class WelcomeComponent {
   icons = Icons;
 
-  supported = false;
+  supported = this.support.checkFileSystemSupport();
+  available = this.support.isAppAvailable();
 
-  constructor(private store: Store, private support: SupportService) {
-    this.supported = support.checkFileSystemSupport();
-  }
+  constructor(private store: Store, private support: SupportService) {}
 
   scan(): void {
     this.store.dispatch(openDirectory({}));

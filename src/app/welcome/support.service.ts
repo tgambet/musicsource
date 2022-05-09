@@ -16,4 +16,8 @@ export class SupportService {
       false
     );
   }
+
+  isAppAvailable(): boolean {
+    return localStorage.getItem('scanned') === '1';
+  }
 }
