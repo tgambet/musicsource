@@ -6,7 +6,7 @@ import {
   ofType,
   OnRunEffects,
 } from '@ngrx/effects';
-import { combineLatest, EMPTY, from, Observable, of } from 'rxjs';
+import { combineLatest, EMPTY, from, Observable, of, throwError } from 'rxjs';
 import {
   pause,
   reset,
@@ -33,11 +33,8 @@ import {
 import { Router } from '@angular/router';
 import { AudioService } from '@app/player/audio.service';
 import { PlayerFacade } from '@app/player/store/player.facade';
-import { Song, SongId } from '@app/database/songs/song.model';
-import {
-  FileEntry,
-  requestPermission,
-} from '@app/database/entries/entry.model';
+import { SongId } from '@app/database/songs/song.model';
+import { requestPermission } from '@app/database/entries/entry.model';
 import { tapError } from '@app/core/utils/tap-error.util';
 import { MediaSessionService } from '@app/player/media-session.service';
 import { Title } from '@angular/platform-browser';
@@ -55,44 +52,51 @@ export class PlayerEffects implements OnRunEffects {
   play$ = createEffect(
     () =>
       this.player.getCurrentSong$().pipe(
-        // distinctUntilChanged((s1, s2) => s1?.entryPath === s2?.entryPath),
-        filter((song): song is SongId => !!song),
+        // distinctUntilChanged((s1, s2) => s1?.id === s2?.id),
+        filter((songId): songId is SongId => !!songId),
         tap(() => this.player.setLoading()),
         tap(() => this.player.pause()),
-        switchMap((entryPath) =>
-          this.entries.getByKey(entryPath).pipe(
-            filter((entry): entry is FileEntry => !!entry),
+        switchMap((songId) =>
+          this.songs.getByKey(songId).pipe(
             first(),
-            tap((entry) => (this.handle = entry.handle)),
-            concatMap((entry) =>
-              requestPermission(entry.handle).pipe(
-                tapError(() => this.player.hide()),
-                catchError(() => EMPTY),
-                concatMap(() => entry.handle.getFile()),
-                tap((file) => this.audio.setSrc(file)),
-                concatMap(() =>
-                  this.songs.getByKey(entryPath).pipe(
-                    filter((s): s is Song => !!s),
-                    first(),
-                    concatTap((song) => this.media.setMetadata(song)),
-                    tap((song) =>
+            concatMap((song) =>
+              song ? of(song) : throwError(() => new Error('Song not found'))
+            ),
+            concatMap((song) =>
+              this.entries.getByKey(song.entries[0]).pipe(
+                first(),
+                concatMap((entry) =>
+                  entry && entry.kind === 'file'
+                    ? of(entry)
+                    : throwError(() => new Error('Entry not found'))
+                ),
+                tap((entry) => (this.handle = entry.handle)),
+                concatMap((entry) =>
+                  requestPermission(entry.handle).pipe(
+                    tapError(() => this.player.hide()),
+                    catchError(() => EMPTY),
+                    concatMap(() => entry.handle.getFile()),
+                    tap((file) => this.audio.setSrc(file)),
+                    concatTap(() => this.media.setMetadata(song)),
+                    tap(() =>
                       this.title.setTitle(
                         `${song.title} • ${song.artists[0].name}`
                       )
-                    )
+                    ),
+                    concatMap(() => from(this.audio.resume()))
                   )
-                ),
-                concatMap(() => from(this.audio.resume()))
+                )
               )
             ),
-            tapError((err) =>
+            tapError((err) => {
               this.snack.open(err.message, undefined, {
                 panelClass: 'snack-top',
-              })
-            ),
-            tapError(() => this.player.setLoading(false)),
-            tapError(() => this.player.setPlaying(false)),
-            tapError((err) => console.error(err)),
+              });
+              this.player.setLoading(false);
+              this.player.setPlaying(false);
+              this.player.hide();
+              console.error(err);
+            }),
             catchError(() => EMPTY)
           )
         )

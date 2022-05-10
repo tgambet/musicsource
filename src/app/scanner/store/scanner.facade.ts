@@ -6,6 +6,7 @@ import {
   selectState,
 } from '@app/scanner/store/scanner.selectors';
 import {
+  quickSync,
   scanEnd,
   scanStart,
   setLabel,
@@ -29,5 +30,9 @@ export class ScannerFacade {
 
   setLabel(label: string): void {
     this.store.dispatch(setLabel({ label }));
+  }
+
+  quickSync() {
+    this.store.dispatch(quickSync());
   }
 }

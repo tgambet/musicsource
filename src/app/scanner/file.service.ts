@@ -21,12 +21,13 @@ export class FileService {
 
   iterate(dir: DirectoryEntry): Observable<Entry> {
     const generator: (
-      directory: FileSystemDirectoryHandle
+      directory: DirectoryEntry
     ) => AsyncGenerator<Entry, void, void> = async function* (
-      directory: FileSystemDirectoryHandle
+      directory: DirectoryEntry
     ) {
-      for await (const entry of directory.values()) {
-        yield entryFromHandle(entry, directory.name);
+      for await (const handle of directory.handle.values()) {
+        const entry = entryFromHandle(handle, directory.path);
+        yield entry;
         if (entry.kind === 'directory') {
           yield* generator(entry);
         }
@@ -34,6 +35,6 @@ export class FileService {
     };
 
     // return scheduled(generator(dir.handle), animationFrameScheduler);
-    return from(generator(dir.handle));
+    return from(generator(dir));
   }
 }

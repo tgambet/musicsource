@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import { EntryIndex } from '@app/database/entries/entry.reducer';
-import { Entry } from '@app/database/entries/entry.model';
+import { Entry, EntryId } from '@app/database/entries/entry.model';
 import {
   selectEntryAll,
   selectEntryByKey,
@@ -11,7 +11,7 @@ import {
 } from '@app/database/entries/entry.selectors';
 import { addEntry } from '@app/database/entries/entry.actions';
 import { DatabaseService } from '@app/database/database.service';
-import { tap } from 'rxjs/operators';
+import { map, tap } from 'rxjs/operators';
 
 @Injectable()
 export class EntryFacade {
@@ -23,7 +23,7 @@ export class EntryFacade {
       .pipe(tap(() => this.store.dispatch(addEntry({ entry }))));
   }
 
-  getByKey(key: string): Observable<Entry | undefined> {
+  getByKey(key: EntryId): Observable<Entry | undefined> {
     return this.store.select(selectEntryByKey(key));
   }
 
@@ -35,5 +35,9 @@ export class EntryFacade {
 
   getTotal(): Observable<number> {
     return this.store.select(selectEntryTotal);
+  }
+
+  exists(id: EntryId): Observable<boolean> {
+    return this.database.getKey$('entries', id).pipe(map((key) => !!key));
   }
 }

@@ -1,16 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import {
-  clearDatabase,
-  synchronizeLibrary,
-} from '@app/database/settings/settings.actions';
-import { filter, map, mergeMap, switchMap, tap } from 'rxjs/operators';
-import { openDirectory } from '@app/scanner/store/scanner.actions';
-import { SettingsFacade } from '@app/database/settings/settings.facade';
-import {
-  DirectoryEntry,
-  requestPermission,
-} from '@app/database/entries/entry.model';
+import { clearDatabase } from '@app/database/settings/settings.actions';
+import { filter, mergeMap, switchMap, tap } from 'rxjs/operators';
 import { concatTap } from '@app/core/utils';
 import { removeAllAlbums } from '@app/database/albums/album.actions';
 import { removeAllArtists } from '@app/database/artists/artist.actions';
@@ -28,16 +19,6 @@ import { from } from 'rxjs';
 @Injectable()
 // noinspection JSUnusedGlobalSymbols
 export class SettingsEffects {
-  synchronize$ = createEffect(() =>
-    this.actions$.pipe(
-      ofType(synchronizeLibrary),
-      switchMap(() => this.settings.getRootDirectory()),
-      filter((directory): directory is DirectoryEntry => !!directory),
-      concatTap((dir) => requestPermission(dir.handle)),
-      map((directory) => openDirectory({ directory }))
-    )
-  );
-
   clearDB$ = createEffect(() =>
     this.actions$.pipe(
       ofType(clearDatabase),
@@ -74,7 +55,6 @@ export class SettingsEffects {
     private router: Router,
     private dialog: MatDialog,
     private actions$: Actions,
-    private settings: SettingsFacade,
     private database: DatabaseService
   ) {}
 }

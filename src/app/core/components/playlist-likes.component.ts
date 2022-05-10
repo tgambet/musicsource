@@ -53,7 +53,7 @@ export class PlaylistLikesComponent implements OnInit {
       .getAll('likedOn')
       .pipe(map((songs) => [...songs].reverse()));
 
-    this.queue$ = songs$.pipe(map((songs) => songs.map((s) => s.entryPath)));
+    this.queue$ = songs$.pipe(map((songs) => songs.map((s) => s.id)));
 
     this.menuItems$ = songs$.pipe(
       map((songs) => [
@@ -62,7 +62,7 @@ export class PlaylistLikesComponent implements OnInit {
           icon: Icons.shuffle,
           click: () =>
             this.helper.playSongs(
-              songs.map((s) => s.entryPath),
+              songs.map((s) => s.id),
               true
             ),
         },
@@ -71,7 +71,7 @@ export class PlaylistLikesComponent implements OnInit {
           icon: Icons.playlistPlay,
           click: () =>
             this.helper.addSongsToQueue(
-              songs.map((s) => s.entryPath),
+              songs.map((s) => s.id),
               true,
               'Your likes will play next'
             ),
@@ -81,7 +81,7 @@ export class PlaylistLikesComponent implements OnInit {
           icon: Icons.playlistPlus,
           click: () =>
             this.helper.addSongsToQueue(
-              songs.map((s) => s.entryPath),
+              songs.map((s) => s.id),
               false,
               'Your likes have been added to queue'
             ),

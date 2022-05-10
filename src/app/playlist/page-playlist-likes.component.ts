@@ -93,7 +93,7 @@ export class PagePlaylistLikesComponent implements OnInit {
           icon: Icons.playlistPlay,
           click: () =>
             this.helper.addSongsToQueue(
-              songs.map((s) => s.entryPath),
+              songs.map((s) => s.id),
               true,
               'Your likes will play next'
             ),
@@ -103,7 +103,7 @@ export class PagePlaylistLikesComponent implements OnInit {
           icon: Icons.playlistPlus,
           click: () =>
             this.helper.addSongsToQueue(
-              songs.map((s) => s.entryPath),
+              songs.map((s) => s.id),
               false,
               'Your likes have been added to queue'
             ),
@@ -119,7 +119,7 @@ export class PagePlaylistLikesComponent implements OnInit {
 
   shuffle(songs: Song[]): void {
     this.helper.playSongs(
-      songs.map((s) => s.entryPath),
+      songs.map((s) => s.id),
       true
     );
   }

@@ -22,3 +22,8 @@ export const updateSong = createAction(
 );
 
 export const addSong = createAction('[Song] Add Song', props<{ song: Song }>());
+
+export const upsertSong = createAction(
+  '[Song] Upsert Song',
+  props<{ song: Song }>()
+);

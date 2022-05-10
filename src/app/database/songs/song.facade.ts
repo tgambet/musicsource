@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { Observable } from 'rxjs';
+import { concatMap, Observable } from 'rxjs';
 import { Song, SongId } from '@app/database/songs/song.model';
 import {
   selectSongAll,
@@ -12,7 +12,11 @@ import {
   selectSongTotal,
 } from '@app/database/songs/song.selectors';
 import { Update } from '@creasource/ngrx-idb';
-import { addSong, updateSong } from '@app/database/songs/song.actions';
+import {
+  addSong,
+  updateSong,
+  upsertSong,
+} from '@app/database/songs/song.actions';
 import { map, tap } from 'rxjs/operators';
 import { SongIndex } from '@app/database/songs/song.reducer';
 import { AlbumId } from '@app/database/albums/album.model';
@@ -23,10 +27,33 @@ import { DatabaseService } from '@app/database/database.service';
 export class SongFacade {
   constructor(private store: Store, private database: DatabaseService) {}
 
-  put(song: Song): Observable<IDBValidKey> {
+  add(song: Song): Observable<IDBValidKey> {
     return this.database
-      .put$<Song>('songs', song)
+      .add$<Song>('songs', song)
       .pipe(tap(() => this.store.dispatch(addSong({ song }))));
+  }
+
+  put(song: Song): Observable<IDBValidKey> {
+    const uniq = <T>(value: T, i: number, arr: T[]) => arr.indexOf(value) === i;
+
+    return this.database.db$.pipe(
+      concatMap((db) => db.transaction$('songs', 'readwrite')),
+      concatMap((transaction) => transaction.objectStore$<Song>('songs')),
+      concatMap((store) =>
+        store.get$(song.id).pipe(
+          map((stored) =>
+            stored
+              ? {
+                  ...stored,
+                  entries: [...stored.entries, ...song.entries].filter(uniq),
+                }
+              : song
+          ),
+          tap((updated) => this.store.dispatch(upsertSong({ song: updated }))),
+          concatMap((updated) => store.put$(updated))
+        )
+      )
+    );
   }
 
   getAll(index?: SongIndex): Observable<Song[]> {
@@ -81,6 +108,6 @@ export class SongFacade {
     const update = {
       likedOn: !!song.likedOn ? undefined : new Date().getTime(),
     };
-    this.update({ key: song.entryPath, changes: update });
+    this.update({ key: song.id, changes: update });
   }
 }

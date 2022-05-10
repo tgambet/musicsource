@@ -195,12 +195,9 @@ export class PlayComponent implements OnInit, AfterViewInit {
   }
 
   drop(playlist: Song[], currentSong: Song, event: CdkDragDrop<Song[]>): void {
-    const newPlaylist = [...playlist.map((s) => s.entryPath)];
+    const newPlaylist = [...playlist.map((s) => s.id)];
     moveItemInArray(newPlaylist, event.previousIndex, event.currentIndex);
-    this.player.setQueue(
-      newPlaylist,
-      newPlaylist.indexOf(currentSong.entryPath)
-    );
+    this.player.setQueue(newPlaylist, newPlaylist.indexOf(currentSong.id));
   }
 
   analyzerToggle() {

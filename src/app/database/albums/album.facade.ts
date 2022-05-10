@@ -43,6 +43,8 @@ export class AlbumFacade {
               ? {
                   ...stored,
                   artists: [...stored.artists, ...album.artists].filter(uniq),
+                  entries: [...stored.entries, ...album.entries].filter(uniq),
+                  updatedOn: Math.max(stored.updatedOn, album.updatedOn),
                 }
               : album
           ),

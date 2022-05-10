@@ -15,7 +15,7 @@ import {
 } from '@app/database/artists/artist.selectors';
 import { IdUpdate } from '@app/core/utils';
 import { DatabaseService } from '@app/database/database.service';
-import { tap } from 'rxjs/operators';
+import { map, tap } from 'rxjs/operators';
 
 @Injectable()
 export class ArtistFacade {
@@ -28,13 +28,27 @@ export class ArtistFacade {
   }
 
   put(artist: Artist): Observable<IDBValidKey> {
+    const uniq = <T>(value: T, i: number, arr: T[]) => arr.indexOf(value) === i;
+
     return this.database.db$.pipe(
       concatMap((db) => db.transaction$('artists', 'readwrite')),
       concatMap((transaction) => transaction.objectStore$<Artist>('artists')),
       concatMap((store) =>
-        store
-          .put$(artist)
-          .pipe(tap(() => this.store.dispatch(upsertArtist({ artist }))))
+        store.get$(artist.id).pipe(
+          map((stored) =>
+            stored
+              ? {
+                  ...stored,
+                  entries: [...stored.entries, ...artist.entries].filter(uniq),
+                  updatedOn: Math.max(stored.updatedOn, artist.updatedOn),
+                }
+              : artist
+          ),
+          tap((updated) =>
+            this.store.dispatch(upsertArtist({ artist: updated }))
+          ),
+          concatMap((updated) => store.put$(updated))
+        )
       )
     );
   }

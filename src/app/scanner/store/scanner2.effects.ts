@@ -1,23 +1,44 @@
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import {
+  concat,
   defer,
   EMPTY,
   exhaustMap,
   finalize,
-  last,
+  from,
   mergeMap,
   MonoTypeOperatorFunction,
   Observable,
   of,
+  OperatorFunction,
   Subscription,
   takeUntil,
 } from 'rxjs';
-import { catchError, concatMap, filter, mergeAll, tap } from 'rxjs/operators';
+import {
+  catchError,
+  concatMap,
+  filter,
+  first,
+  map,
+  mergeAll,
+  switchMap,
+  tap,
+} from 'rxjs/operators';
 import { FileService } from '@app/scanner/file.service';
 import { ExtractorService } from '@app/scanner/extractor.service';
-import { FileEntry } from '@app/database/entries/entry.model';
-import { openDirectory, scanEnd } from '@app/scanner/store/scanner.actions';
+import {
+  DirectoryEntry,
+  Entry,
+  EntryId,
+  FileEntry,
+  requestPermission,
+} from '@app/database/entries/entry.model';
+import {
+  openDirectory,
+  quickSync,
+  scanEnd,
+} from '@app/scanner/store/scanner.actions';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { ScanComponent } from '@app/scanner/scan.component';
@@ -39,6 +60,15 @@ import { ScannerFacade } from '@app/scanner/store/scanner.facade';
 import { PictureFacade } from '@app/database/pictures/picture.facade';
 import { ResizerService } from '@app/scanner/resizer.service';
 import { SettingsFacade } from '@app/database/settings/settings.facade';
+import { removeFromArray } from '@app/core/utils/removeFromArray.util';
+import { ReactiveIDBTransaction } from '@creasource/reactive-idb';
+import { loadAlbums } from '@app/database/albums/album.actions';
+import { loadArtists } from '@app/database/artists/artist.actions';
+import { loadEntries } from '@app/database/entries/entry.actions';
+import { loadPlaylists } from '@app/database/playlists/playlist.actions';
+import { loadSongs } from '@app/database/songs/song.actions';
+import { loadPictures } from '@app/database/pictures/picture.actions';
+import { Store } from '@ngrx/store';
 
 const extensionIn = (extensions: string[]) => (file: FileEntry) =>
   extensions.some((ext) => file.name.endsWith(`.${ext}`));
@@ -64,20 +94,17 @@ export class ScannerEffects2 /*implements OnRunEffects*/ {
 
   subscription = new Subscription();
 
-  openDirectory$ = createEffect(
+  scan$ = createEffect(
     () =>
       this.actions$.pipe(
         ofType(openDirectory),
         exhaustMap(({ directory: dirOpt }) =>
           this.database.db$.pipe(
-            tap(() => (this.subscription = new Subscription())),
-            tap(() =>
-              this.subscription.add(this.extractor.workers.subscribe())
-            ),
-            tap(() => this.subscription.add(this.resizer.workers.subscribe())),
             concatMap(() =>
               dirOpt
-                ? of(dirOpt)
+                ? of(dirOpt).pipe(
+                    concatTap((dir) => requestPermission(dir.handle))
+                  )
                 : this.files
                     .openDirectory()
                     .pipe(
@@ -86,52 +113,36 @@ export class ScannerEffects2 /*implements OnRunEffects*/ {
                       )
                     )
             ),
-            tap(() => this.openScanDialog()),
-            tap(() => this.scanner.start()),
-            tap(() => localStorage.setItem('scanned', '1')),
-            tap(() => this.router.navigate(['/library/albums'])),
-            tap(() =>
-              window.addEventListener('beforeunload', this.unloadListener)
-            ),
-            concatMap((directory) =>
-              this.files.iterate(directory).pipe(
-                logDuration('iterate'),
-                concatTap((entry) => this.entries.put(entry)),
-                filter(
-                  (entry): entry is FileEntry =>
-                    entry.kind === 'file' && isAudio(entry)
-                ),
-                mergeMap((entry) =>
-                  this.extractor.extract(entry).pipe(
-                    tapError((err) => console.warn(entry.path, err)),
-                    catchError(() => EMPTY)
-                  )
-                ),
-                logDuration('extract'),
-                tap(({ song }) =>
-                  this.scanner.setLabel(
-                    `${song.artists[0]?.name} - ${song.title}`
-                  )
-                ),
-                mergeMap(({ song, album, artists, pictures }) => [
-                  ...pictures.map((picture) => this.pictures.put(picture)),
-                  ...artists.map((artist) => this.artists.put(artist)),
-                  this.albums.put(album),
-                  this.songs.put(song),
-                ]),
-                mergeAll(),
-                logDuration('save')
-              )
-            ),
-            takeUntil(this.actions$.pipe(ofType(scanEnd))),
-            tapError((err) => console.error(err.message, err)),
-            catchError(() => of(void 0)),
-            last(),
-            tap(() => this.overlayRef?.dispose()),
-            tap(() =>
-              window.removeEventListener('beforeunload', this.unloadListener)
-            ),
-            tap(() => this.subscription.unsubscribe())
+            tap(() => this.router.navigateByUrl('/library')),
+            this.beforeScan(),
+            concatMap((directory) => this.files.iterate(directory)),
+            logDuration('iterate'),
+            this.extractAndSave,
+            logDuration('extract'),
+            this.afterScan
+          )
+        )
+      ),
+    { dispatch: false }
+  );
+
+  sync$ = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(quickSync),
+        exhaustMap(() =>
+          of(1).pipe(
+            this.beforeScan(),
+            concatMap(() => concat(this.syncDeleted(), this.syncAdded())),
+            this.afterScan,
+            finalize(() => {
+              this.store.dispatch(loadAlbums());
+              this.store.dispatch(loadArtists());
+              this.store.dispatch(loadEntries());
+              this.store.dispatch(loadPlaylists());
+              this.store.dispatch(loadSongs());
+              this.store.dispatch(loadPictures());
+            })
           )
         )
       ),
@@ -167,7 +178,8 @@ export class ScannerEffects2 /*implements OnRunEffects*/ {
     private artists: ArtistFacade,
     private pictures: PictureFacade,
     private database: DatabaseService,
-    private settings: SettingsFacade
+    private settings: SettingsFacade,
+    private store: Store
   ) {}
 
   openScanDialog(): void {
@@ -185,9 +197,145 @@ export class ScannerEffects2 /*implements OnRunEffects*/ {
 
     this.position.bottom('24px');
     this.position.left('24px');
-
     this.overlayRef.attach(new ComponentPortal(ScanComponent));
   }
+
+  syncAdded = () =>
+    this.settings.getRootDirectory().pipe(
+      filter((dir): dir is DirectoryEntry => !!dir),
+      concatTap((dir) => requestPermission(dir.handle)),
+      concatMap((directory) => this.files.iterate(directory)),
+      mergeMap((entry) =>
+        this.entries.exists(entry.id).pipe(map((exists) => ({ exists, entry })))
+      ),
+      filter(({ exists }) => !exists),
+      map(({ entry }) => entry),
+      this.extractAndSave,
+      logDuration('added')
+    );
+
+  syncDeleted = () =>
+    this.settings.getRootDirectory().pipe(
+      filter((dir): dir is DirectoryEntry => !!dir),
+      concatTap((dir) => requestPermission(dir.handle)),
+      switchMap(() =>
+        this.database.walk$<Entry>('entries').pipe(
+          concatMap((r) =>
+            r.value.kind === 'file'
+              ? from(r.value.handle.getFile()).pipe(
+                  map(() => undefined),
+                  catchError(() => of(r.key)),
+                  filter((key): key is IDBValidKey => !!key)
+                )
+              : from(r.value.handle.keys()).pipe(
+                  first(),
+                  map(() => undefined),
+                  catchError(() => of(r.key)),
+                  filter((key): key is IDBValidKey => !!key)
+                )
+          ),
+          concatTap((entryKey) => this.database.delete$('entries', entryKey)),
+          concatMap((entryKey) =>
+            this.database.db$.pipe(
+              concatMap((db) =>
+                db.transaction$(
+                  ['pictures', 'songs', 'albums', 'artists'],
+                  'readwrite'
+                )
+              ),
+              concatMap((transaction) =>
+                ['pictures', 'songs', 'albums', 'artists'].map((storeName) =>
+                  this.updateEntries(
+                    entryKey as EntryId,
+                    storeName
+                  )(transaction)
+                )
+              )
+            )
+          ),
+          mergeAll()
+        )
+      ),
+      logDuration('deleted')
+    );
+
+  updateEntries =
+    <T extends { entries: EntryId[] }>(entryKey: EntryId, storeName: string) =>
+    (transaction: ReactiveIDBTransaction) =>
+      transaction.objectStore$<T>(storeName).pipe(
+        concatMap((store) =>
+          store
+            .index('entries')
+            .getAllKeys$(entryKey)
+            .pipe(
+              concatMap((pictKeys) =>
+                pictKeys.map((key) =>
+                  store.get$(key).pipe(
+                    filter((t): t is T => !!t),
+                    map((t) => ({
+                      ...t,
+                      entries: removeFromArray(t.entries, entryKey as EntryId),
+                    })),
+                    concatMap((updated) =>
+                      updated.entries.length === 0
+                        ? store.delete$(key)
+                        : store.put$(updated)
+                    )
+                  )
+                )
+              ),
+              mergeAll()
+            )
+        )
+      );
+
+  extractAndSave: OperatorFunction<Entry, IDBValidKey> = (obs) =>
+    obs.pipe(
+      concatTap((entry) => this.entries.put(entry)),
+      filter(
+        (entry): entry is FileEntry => entry.kind === 'file' && isAudio(entry)
+      ),
+      mergeMap((entry) =>
+        this.extractor.extract(entry).pipe(
+          tapError((err) => console.warn(entry.path, err)),
+          catchError(() => EMPTY)
+        )
+      ),
+      tap(({ song }) =>
+        this.scanner.setLabel(`${song.artists[0]?.name} - ${song.title}`)
+      ),
+      mergeMap(({ song, album, artists, pictures }) => [
+        ...pictures.map((picture) => this.pictures.put(picture)),
+        ...artists.map((artist) => this.artists.put(artist)),
+        this.albums.put(album),
+        this.songs.put(song),
+      ]),
+      mergeAll()
+    );
+
+  beforeScan = <T>() =>
+    tap<T>(() => {
+      this.subscription.unsubscribe();
+      this.subscription = new Subscription();
+      this.subscription.add(this.extractor.workers.subscribe());
+      this.subscription.add(this.resizer.workers.subscribe());
+      this.openScanDialog();
+      this.scanner.start();
+      localStorage.setItem('scanned', '1');
+      window.addEventListener('beforeunload', this.unloadListener);
+    });
+
+  afterScan: OperatorFunction<any, any> = (obs) =>
+    obs.pipe(
+      takeUntil(this.actions$.pipe(ofType(scanEnd))),
+      tapError((err) => console.error(err.message, err)),
+      catchError(() => EMPTY),
+      finalize(() => {
+        this.overlayRef?.dispose();
+        window.removeEventListener('beforeunload', this.unloadListener);
+        this.subscription.unsubscribe();
+      })
+    );
 
   unloadListener(e: BeforeUnloadEvent): void {
     e.preventDefault();

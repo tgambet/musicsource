@@ -44,24 +44,16 @@ const musicSourceDatabase: ReactiveIDBDatabaseOptions = {
   name: 'musicsource',
   schema: [
     {
-      version: 2,
-      stores: [
-        {
-          name: 'settings',
-        },
-      ],
-    },
-    {
       version: 1,
       stores: [
         {
           name: 'entries',
-          options: { keyPath: 'path' },
+          options: { keyPath: 'id' },
           indexes: ['parent'],
         },
         {
           name: 'songs',
-          options: { keyPath: 'entryPath' },
+          options: { keyPath: 'id' },
           indexes: [
             // { name: 'artists', options: { multiEntry: true } },
             // { name: 'genre', options: { multiEntry: true } },
@@ -69,6 +61,11 @@ const musicSourceDatabase: ReactiveIDBDatabaseOptions = {
             'title',
             'likedOn',
             'updatedOn',
+            {
+              name: 'entries',
+              keyPath: 'entries',
+              options: { multiEntry: true },
+            },
           ],
         },
         {
@@ -90,6 +87,11 @@ const musicSourceDatabase: ReactiveIDBDatabaseOptions = {
               keyPath: 'songs',
               options: { multiEntry: true },
             },
+            {
+              name: 'entries',
+              keyPath: 'entries',
+              options: { multiEntry: true },
+            },
           ],
         },
         {
@@ -104,17 +106,34 @@ const musicSourceDatabase: ReactiveIDBDatabaseOptions = {
             // 'albumArtist',
             'likedOn',
             'updatedOn',
+            {
+              name: 'entries',
+              keyPath: 'entries',
+              options: { multiEntry: true },
+            },
           ],
         },
         {
           name: 'artists',
           options: { keyPath: 'id' },
-          indexes: ['name', 'likedOn', 'updatedOn'],
+          indexes: [
+            'name',
+            'likedOn',
+            'updatedOn',
+            {
+              name: 'entries',
+              keyPath: 'entries',
+              options: { multiEntry: true },
+            },
+          ],
         },
         {
           name: 'playlists',
           options: { keyPath: 'id' },
           indexes: ['title', 'createdOn'],
+        },
+        {
+          name: 'settings',
         },
       ],
     },

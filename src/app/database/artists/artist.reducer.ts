@@ -38,7 +38,7 @@ export const artistReducer = createReducer(
   on(removeAllArtists, (state) => artistAdapter.removeAll(state)),
   on(loadArtists, (state) => state),
   on(loadArtistsSuccess, (state, action) =>
-    artistAdapter.addMany(action.data, state)
+    artistAdapter.setAll(action.data, state)
   ),
   on(loadArtistsFailure, (state) => state),
   on(addArtist, (state, action) => artistAdapter.addOne(action.artist, state)),

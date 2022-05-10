@@ -27,15 +27,12 @@ import { HelperFacade } from '@app/helper/helper.facade';
       <app-player-button
         size="small"
         [queue]="queue"
-        [index]="queue.indexOf(song.entryPath)"
+        [index]="queue.indexOf(song.id)"
         *ngIf="queue"
       ></app-player-button>
     </div>
     <span class="title">
-      <span
-        [title]="song.title"
-        (click)="play(queue, queue.indexOf(song.entryPath))"
-      >
+      <span [title]="song.title" (click)="play(queue, queue.indexOf(song.id))">
         {{ song.title }}
       </span>
     </span>
@@ -218,15 +215,15 @@ export class SongListItemComponent implements OnInit {
   }
 
   playNext(song: Song): void {
-    this.helper.addSongToQueue(song.entryPath, true);
+    this.helper.addSongToQueue(song.id, true);
   }
 
   addToQueue(song: Song): void {
-    this.helper.addSongToQueue(song.entryPath, false);
+    this.helper.addSongToQueue(song.id, false);
   }
 
   addSongToPlaylist(song: Song): void {
-    this.helper.addSongsToPlaylist([song.entryPath]);
+    this.helper.addSongsToPlaylist([song.id]);
   }
 
   play(queue: SongId[], index: number) {

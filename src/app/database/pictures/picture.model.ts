@@ -3,7 +3,7 @@ import { hash } from '@app/core/utils';
 import { SongId } from '@app/database/songs/song.model';
 import { AlbumId } from '@app/database/albums/album.model';
 import { ArtistId } from '@app/database/artists/artist.model';
-import { FileEntry } from '@app/database/entries/entry.model';
+import { EntryId } from '@app/database/entries/entry.model';
 
 export type PictureId = Opaque<string, Picture>;
 
@@ -16,7 +16,7 @@ export type Picture = {
   data: Buffer;
   format: string;
   sources: { src: string; height: number; width?: number }[];
-  entries: FileEntry[];
+  entries: EntryId[];
   songs: SongId[];
   albums: AlbumId[];
   artists: ArtistId[];

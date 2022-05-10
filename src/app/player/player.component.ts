@@ -490,12 +490,12 @@ export class PlayerComponent implements OnInit, OnDestroy {
         {
           text: 'Play next',
           icon: this.icons.playlistPlay,
-          click: () => this.helper.addSongToQueue(song.entryPath, true),
+          click: () => this.helper.addSongToQueue(song.id, true),
         },
         {
           text: 'Add to queue',
           icon: this.icons.playlistMusic,
-          click: () => this.helper.addSongToQueue(song.entryPath, false),
+          click: () => this.helper.addSongToQueue(song.id, false),
         },
         {
           text: !!song.likedOn ? 'Remove from your likes' : 'Add to your likes',
@@ -505,7 +505,7 @@ export class PlayerComponent implements OnInit, OnDestroy {
         {
           text: 'Add to playlist',
           icon: this.icons.playlistPlus,
-          click: () => this.helper.addSongsToPlaylist([song.entryPath]),
+          click: () => this.helper.addSongsToPlaylist([song.id]),
         },
         {
           text: 'Remove from queue',

@@ -90,7 +90,7 @@ export class AlbumComponent implements OnInit {
   ngOnInit(): void {
     this.queue$ = this.songs.getByAlbumKey(this.album.id).pipe(
       map((songs) => songs ?? []),
-      map((songs) => songs.map((s) => s.entryPath))
+      map((songs) => songs.map((s) => s.id))
     );
 
     this.cover$ = this.pictures.getAlbumCover(
