@@ -60,7 +60,7 @@ import { ScannerFacade } from '@app/scanner/store/scanner.facade';
 import { PictureFacade } from '@app/database/pictures/picture.facade';
 import { ResizerService } from '@app/scanner/resizer.service';
 import { SettingsFacade } from '@app/database/settings/settings.facade';
-import { removeFromArray } from '@app/core/utils/removeFromArray.util';
+import { removeFromArray } from '@app/core/utils/remove-from-array.util';
 import { ReactiveIDBTransaction } from '@creasource/reactive-idb';
 import { loadAlbums } from '@app/database/albums/album.actions';
 import { loadArtists } from '@app/database/artists/artist.actions';

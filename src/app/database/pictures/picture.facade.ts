@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { concatMap, identity, Observable, of } from 'rxjs';
+import { concatMap, Observable, of } from 'rxjs';
 import { Picture } from '@app/database/pictures/picture.model';
 import { catchError, filter, first, map, switchMap, tap } from 'rxjs/operators';
 import { Album } from '@app/database/albums/album.model';
@@ -19,6 +19,7 @@ import {
   selectPicturesByArtist,
   selectPicturesLoaded,
 } from '@app/database/pictures/picture.selectors';
+import { uniq } from '@app/core/utils/uniq.util';
 
 export type PictureSize = 0 | 32 | 40 | 56 | 160 | 226 | 264 | 1100;
 
@@ -34,11 +35,6 @@ export class PictureFacade {
   ) {}
 
   put(picture: Picture): Observable<IDBValidKey> {
-    const uniq =
-      <T>(mapFn: (t: T) => any = identity) =>
-      (value: T, i: number, arr: T[]) =>
-        arr.map(mapFn).indexOf(mapFn(value)) === i;
-
     return this.database.db$.pipe(
       concatMap((db) => db.transaction$('pictures', 'readwrite')),
       concatMap((transaction) => transaction.objectStore$<Picture>('pictures')),

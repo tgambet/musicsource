@@ -22,6 +22,7 @@ import { SongIndex } from '@app/database/songs/song.reducer';
 import { AlbumId } from '@app/database/albums/album.model';
 import { ArtistId } from '@app/database/artists/artist.model';
 import { DatabaseService } from '@app/database/database.service';
+import { uniq } from '@app/core/utils/uniq.util';
 
 @Injectable()
 export class SongFacade {
@@ -34,8 +35,6 @@ export class SongFacade {
   }
 
   put(song: Song): Observable<IDBValidKey> {
-    const uniq = <T>(value: T, i: number, arr: T[]) => arr.indexOf(value) === i;
-
     return this.database.db$.pipe(
       concatMap((db) => db.transaction$('songs', 'readwrite')),
       concatMap((transaction) => transaction.objectStore$<Song>('songs')),
@@ -45,7 +44,7 @@ export class SongFacade {
             stored
               ? {
                   ...stored,
-                  entries: [...stored.entries, ...song.entries].filter(uniq),
+                  entries: [...stored.entries, ...song.entries].filter(uniq()),
                 }
               : song
           ),
