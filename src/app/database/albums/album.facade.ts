@@ -19,6 +19,7 @@ import { map, tap } from 'rxjs/operators';
 import { IdUpdate } from '@app/core/utils';
 import { ArtistId } from '@app/database/artists/artist.model';
 import { DatabaseService } from '@app/database/database.service';
+import { uniq } from '@app/core/utils/uniq.util';
 
 @Injectable()
 export class AlbumFacade {
@@ -31,8 +32,6 @@ export class AlbumFacade {
   }
 
   put(album: Album): Observable<IDBValidKey> {
-    const uniq = <T>(value: T, i: number, arr: T[]) => arr.indexOf(value) === i;
-
     return this.database.db$.pipe(
       concatMap((db) => db.transaction$('albums', 'readwrite')),
       concatMap((transaction) => transaction.objectStore$<Album>('albums')),
@@ -42,8 +41,8 @@ export class AlbumFacade {
             stored
               ? {
                   ...stored,
-                  artists: [...stored.artists, ...album.artists].filter(uniq),
-                  entries: [...stored.entries, ...album.entries].filter(uniq),
+                  artists: [...stored.artists, ...album.artists].filter(uniq()),
+                  entries: [...stored.entries, ...album.entries].filter(uniq()),
                   updatedOn: Math.max(stored.updatedOn, album.updatedOn),
                 }
               : album
