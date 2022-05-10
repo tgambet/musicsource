@@ -40,7 +40,7 @@ export class OptMatRippleDirective extends MatRipple implements OnInit {
   selector: 'app-list',
   template: `
     <div
-      *ngFor="let item of items"
+      *ngFor="let item of items; trackBy: trackBy"
       class="item"
       [appMatRipple]="!!item.routerLink"
       [class.cursor]="!!item.routerLink"
@@ -180,7 +180,11 @@ export class ListComponent {
     }
   }
 
-  play(queue: SongId[]) {
+  play(queue: SongId[]): void {
     this.helper.playQueue(queue, 0);
+  }
+
+  trackBy(index: number, item: ListItem): string {
+    return item.title;
   }
 }

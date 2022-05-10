@@ -36,9 +36,9 @@ import { SongIndex } from '@app/database/songs/song.reducer';
         <ng-container *ngFor="let song of songs$ | async; trackBy: trackBy">
           <app-song-list-item
             [song]="song"
-            [queue]="[song.entryPath]"
+            [queue]="[song.id]"
             cdkMonitorSubtreeFocus
-            [class.selected]="(currentSongPath$ | async) === song.entryPath"
+            [class.selected]="(currentSongPath$ | async) === song.id"
           ></app-song-list-item>
         </ng-container>
         <div [style.height.px]="bottom$ | async" class="filler"></div>
@@ -56,7 +56,7 @@ import { SongIndex } from '@app/database/songs/song.reducer';
         <!--              [playlist]="[song]"-->
         <!--              *ngIf="!sort.likes || !!song.likedOn"-->
         <!--              cdkMonitorSubtreeFocus-->
-        <!--              [class.selected]="(currentSongPath$ | async) === song.entryPath"-->
+        <!--              [class.selected]="(currentSongPath$ | async) === song.id"-->
         <!--            ></app-song-list-item>-->
         <!--          </ng-container>-->
         <!--          <p class="empty" *ngIf="i === 0">Nothing to display</p>-->
@@ -128,7 +128,7 @@ export class LibrarySongsComponent implements OnInit {
   currentSongPath$ = this.player.getCurrentSong$().pipe(
     filter((id): id is SongId => !!id),
     switchMap((path) => this.songs.getByKey(path)),
-    map((song) => song?.entryPath)
+    map((song) => song?.id)
   );
 
   constructor(
@@ -276,6 +276,6 @@ export class LibrarySongsComponent implements OnInit {
   // }
 
   trackBy(index: number, song: Song): string {
-    return song.entryPath;
+    return song.id;
   }
 }

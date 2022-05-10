@@ -3,14 +3,16 @@ import { AlbumId } from '@app/database/albums/album.model';
 import { PictureId } from '@app/database/pictures/picture.model';
 import { ArtistId } from '@app/database/artists/artist.model';
 import { Opaque } from 'type-fest';
+import { EntryId } from '@app/database/entries/entry.model';
+import { hash } from '@app/core/utils';
 
 export type SongId = Opaque<string, Song>;
 
-export const getSongId = (path: string): SongId => path as SongId;
+export const getSongId = (path: string): SongId => hash(path) as SongId;
 
 export type Song = {
-  entryPath: SongId;
-  folder: string;
+  id: SongId;
+  entries: EntryId[];
   title?: string;
   album: { title: string; id: AlbumId };
   artists: { name: string; id: ArtistId }[];

@@ -2,6 +2,7 @@ import { hash } from '@app/core/utils';
 import { Opaque } from 'type-fest';
 import { PictureId } from '@app/database/pictures/picture.model';
 import { ArtistId } from '@app/database/artists/artist.model';
+import { EntryId } from '@app/database/entries/entry.model';
 
 export type AlbumId = Opaque<string, Album>;
 
@@ -10,6 +11,7 @@ export const getAlbumId = (artist?: string, title?: string): AlbumId =>
 
 export type Album = {
   id: AlbumId;
+  entries: EntryId[];
   albumArtist: { name: string; id: ArtistId };
   artists: ArtistId[];
   likedOn?: number;

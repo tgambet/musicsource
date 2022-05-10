@@ -41,7 +41,7 @@ export const pictureReducer = createReducer<PictureState>(
   on(removeAllPictures, (state) => pictureAdapter.removeAll(state)),
   on(loadPictures, (state) => state),
   on(loadPicturesSuccess, (state, { data }) =>
-    pictureAdapter.addMany(data, { ...state, loaded: true })
+    pictureAdapter.setAll(data, { ...state, loaded: true })
   ),
   on(loadPicturesFailure, (state, { error }) => ({ ...state, error })),
   on(addPicture, (state, action) =>

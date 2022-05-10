@@ -52,7 +52,7 @@ export class PictureFacade {
                     uniq((e) => e.height)
                   ),
                   entries: [...stored.entries, ...picture.entries].filter(
-                    uniq((e) => e.path)
+                    uniq()
                   ),
                   songs: [...stored.songs, ...picture.songs].filter(uniq()),
                   artists: [...stored.artists, ...picture.artists].filter(
@@ -97,13 +97,13 @@ export class PictureFacade {
 
   getSongCover(song: Song, size: PictureSize): Observable<string | undefined> {
     return this.waitForPicturesLoaded().pipe(
-      switchMap(() => this.store.select(selectPictureBySong(song.entryPath))),
+      switchMap(() => this.store.select(selectPictureBySong(song.id))),
       first(),
       concatMap((picture) =>
         picture
           ? of(picture)
           : this.database
-              .get$<Picture>('pictures', song.entryPath, 'songs')
+              .get$<Picture>('pictures', song.id, 'songs')
               .pipe(
                 tap(
                   (p) => p && this.store.dispatch(upsertPicture({ picture: p }))

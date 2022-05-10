@@ -18,7 +18,7 @@ export type EntryIndex = typeof indexes[number];
 export type EntryState = IDBEntityState<Entry, EntryIndex>;
 
 export const entryAdapter = createIDBEntityAdapter<Entry, EntryIndex>({
-  keySelector: (model) => model.path,
+  keySelector: (model) => model.id,
   indexes,
 });
 
@@ -30,7 +30,7 @@ export const entryReducer = createReducer(
   on(removeAllEntries, (state) => entryAdapter.removeAll(state)),
   on(loadEntries, (state) => state),
   on(loadEntriesSuccess, (state, action) =>
-    entryAdapter.addMany(action.data, state)
+    entryAdapter.setAll(action.data, state)
   ),
   on(loadEntriesFailure, (state) => state),
   on(addEntry, (state, { entry }) => entryAdapter.addOne(entry, state))

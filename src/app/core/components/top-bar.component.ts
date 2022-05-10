@@ -6,6 +6,7 @@ import { DatabaseService } from '@app/database/database.service';
 import { Store } from '@ngrx/store';
 import { PlayerFacade } from '@app/player/store/player.facade';
 import { SettingsFacade } from '@app/database/settings/settings.facade';
+import { ScannerFacade } from '@app/scanner/store/scanner.facade';
 
 @Component({
   selector: 'app-top-bar',
@@ -133,7 +134,7 @@ export class TopBarComponent {
     {
       text: 'Synchronize library',
       icon: Icons.sync,
-      click: (): void => this.settings.synchronizeLibrary(),
+      click: (): void => this.scanner.quickSync(),
     },
     {
       text: 'Clear database',
@@ -167,7 +168,8 @@ export class TopBarComponent {
     private store: Store,
     private storage: DatabaseService,
     private player: PlayerFacade,
-    private settings: SettingsFacade
+    private settings: SettingsFacade,
+    private scanner: ScannerFacade
   ) {}
 
   // scan(): void {

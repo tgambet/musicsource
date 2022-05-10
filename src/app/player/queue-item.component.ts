@@ -194,11 +194,11 @@ export class QueueItemComponent implements OnInit {
   }
 
   playNext(song: Song): void {
-    this.helper.addSongToQueue(song.entryPath, true);
+    this.helper.addSongToQueue(song.id, true);
   }
 
   addToQueue(song: Song): void {
-    this.helper.addSongToQueue(song.entryPath, false);
+    this.helper.addSongToQueue(song.id, false);
   }
 
   toggleLiked(song: Song): void {
@@ -206,7 +206,7 @@ export class QueueItemComponent implements OnInit {
   }
 
   addToPlaylist(song: Song): void {
-    this.helper.addSongsToPlaylist([song.entryPath]);
+    this.helper.addSongsToPlaylist([song.id]);
   }
 
   removeFromQueue(index: number): void {

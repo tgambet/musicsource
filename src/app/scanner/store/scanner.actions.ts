@@ -1,6 +1,8 @@
 import { createAction, props } from '@ngrx/store';
 import { DirectoryEntry } from '@app/database/entries/entry.model';
 
+export const quickSync = createAction('scanner/sync');
+
 export const openDirectory = createAction(
   'scanner/open',
   props<{ directory?: DirectoryEntry }>()

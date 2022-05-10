@@ -87,7 +87,7 @@ import { HelperFacade } from '@app/helper/helper.facade';
                 [song]="song"
                 [queue]="getIds(disk.songs)"
                 [trackNumber]="song.tags.track.no"
-                [class.selected]="(currentSongPath$ | async) === song.entryPath"
+                [class.selected]="(currentSongPath$ | async) === song.id"
                 cdkMonitorSubtreeFocus
               ></app-track-list-item>
             </div>
@@ -134,7 +134,7 @@ export class PageAlbumComponent implements OnInit {
   currentSongPath$ = this.player.getCurrentSong$().pipe(
     filter((id): id is SongId => !!id),
     switchMap((path) => this.songs.getByKey(path)),
-    map((song) => song?.entryPath)
+    map((song) => song?.id)
   );
 
   cover$!: Observable<string | undefined>;
@@ -153,7 +153,7 @@ export class PageAlbumComponent implements OnInit {
   ) {}
 
   trackBy(index: number, song: Song): string {
-    return song.entryPath;
+    return song.id;
   }
 
   trackByDisk(index: number, disk: { key: number | null }): number {
@@ -248,6 +248,6 @@ export class PageAlbumComponent implements OnInit {
   }
 
   getIds(songs: Song[]): SongId[] {
-    return songs.map((s) => s.entryPath);
+    return songs.map((s) => s.id);
   }
 }

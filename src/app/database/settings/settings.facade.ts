@@ -3,10 +3,7 @@ import { DatabaseService } from '@app/database/database.service';
 import { Observable } from 'rxjs';
 import { Settings } from '@app/database/settings/settings.model';
 import { Store } from '@ngrx/store';
-import {
-  clearDatabase,
-  synchronizeLibrary,
-} from '@app/database/settings/settings.actions';
+import { clearDatabase } from '@app/database/settings/settings.actions';
 
 @Injectable()
 export class SettingsFacade {
@@ -14,10 +11,6 @@ export class SettingsFacade {
 
   clearDatabase(): void {
     this.store.dispatch(clearDatabase());
-  }
-
-  synchronizeLibrary(): void {
-    this.store.dispatch(synchronizeLibrary());
   }
 
   getRootDirectory(): Observable<Settings['rootDirectory'] | undefined> {

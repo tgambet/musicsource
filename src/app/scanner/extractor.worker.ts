@@ -41,16 +41,18 @@ addEventListener('message', async ({ data }) => {
     const albumTitle = tags.album || 'Unknown album';
     const title = tags.title || entry.name;
 
-    const updatedOn = Date.now();
+    const updatedOn = file.lastModified;
 
     const artists: Artist[] = artistsTags.map((name) => ({
       id: getArtistId(name),
+      entries: [entry.id],
       name,
       updatedOn,
     }));
 
     const albumArtist: Artist = {
       id: getArtistId(albumArtistName),
+      entries: [entry.id],
       name: albumArtistName,
       updatedOn,
     };
@@ -61,6 +63,7 @@ addEventListener('message', async ({ data }) => {
 
     const album: Album = {
       id: getAlbumId(albumArtist.name, albumTitle),
+      entries: [entry.id],
       title: albumTitle,
       albumArtist: {
         name: albumArtist.name,
@@ -73,8 +76,8 @@ addEventListener('message', async ({ data }) => {
     };
 
     const song: Song = {
-      entryPath: getSongId(entry.path),
-      folder: entry.parent,
+      id: getSongId(`${title}-${albumTitle}-${albumArtistName}`),
+      entries: [entry.id],
       title,
       artists: artists.map((a) => ({ name: a.name, id: a.id })),
       album: { title: album.title, id: album.id },
@@ -91,8 +94,8 @@ addEventListener('message', async ({ data }) => {
       data: picture.data,
       format: picture.format,
       sources: [],
-      entries: [entry],
-      songs: [song.entryPath],
+      entries: [entry.id],
+      songs: [song.id],
       albums: [album.id],
       artists: [albumArtist.id],
     }));

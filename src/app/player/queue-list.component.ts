@@ -12,9 +12,7 @@ import { Song, SongId } from '@app/database/songs/song.model';
       [song]="song"
       [index]="i"
       [queue]="getIds(songs)"
-      [class.selected]="
-        song.entryPath === currentSong?.entryPath && currentIndex === i
-      "
+      [class.selected]="song.id === currentSong?.id && currentIndex === i"
     ></app-queue-item>
   `,
   styles: [
@@ -66,10 +64,10 @@ export class QueueListComponent {
   @Input() currentIndex!: number | null;
 
   trackBy(index: number, song: Song): string {
-    return song.entryPath;
+    return song.id;
   }
 
   getIds(songs: Song[]): SongId[] {
-    return songs.map((s) => s.entryPath);
+    return songs.map((s) => s.id);
   }
 }

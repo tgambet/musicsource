@@ -25,7 +25,7 @@
 // });
 //
 // export const songAdapter: EntityAdapter<Song> = createEntityAdapter<Song>({
-//   selectId: (model) => model.entryPath,
+//   selectId: (model) => model.id,
 // });
 //
 // export const pictureAdapter: EntityAdapter<Picture> = createEntityAdapter<

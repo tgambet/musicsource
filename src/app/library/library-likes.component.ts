@@ -8,7 +8,7 @@ import { SelectOption } from '@app/core/components/select.component';
 import { Filter } from '@app/core/components/filters.component';
 import { ActivatedRoute, Router } from '@angular/router';
 import { filter, first, map } from 'rxjs/operators';
-import { combineLatest, Observable, of } from 'rxjs';
+import { combineLatest, distinctUntilChanged, Observable, of } from 'rxjs';
 import { PlaylistFacade } from '@app/database/playlists/playlist.facade';
 import { AlbumFacade } from '@app/database/albums/album.facade';
 import { SongFacade } from '@app/database/songs/song.facade';
@@ -144,7 +144,12 @@ export class LibraryLikesComponent implements OnInit {
     );
 
     const obs$ = <T>(obs: Observable<T[]>, key: string) =>
-      combineLatest([this.routeParam$, obs]).pipe(
+      combineLatest([
+        this.routeParam$,
+        obs.pipe(
+          distinctUntilChanged((prev, curr) => prev.length === curr.length)
+        ),
+      ]).pipe(
         map(([type, models]) =>
           type === key || type === 'all'
             ? [...models].reverse().slice(0, type === key ? Infinity : 3)
@@ -268,7 +273,7 @@ export class LibraryLikesComponent implements OnInit {
           queue$: this.songs.getByAlbumKey(album.id).pipe(
             filter((songs): songs is Song[] => !!songs),
             first(),
-            map((songs) => songs.map((s) => s.entryPath))
+            map((songs) => songs.map((s) => s.id))
           ),
         }))
       )
@@ -292,12 +297,12 @@ export class LibraryLikesComponent implements OnInit {
             {
               icon: Icons.playlistPlay,
               text: 'Play next',
-              click: () => this.helper.addSongToQueue(song.entryPath, true),
+              click: () => this.helper.addSongToQueue(song.id, true),
             },
             {
               icon: Icons.playlistMusic,
               text: 'Add to queue',
-              click: () => this.helper.addSongToQueue(song.entryPath, false),
+              click: () => this.helper.addSongToQueue(song.id, false),
             },
             {
               icon: song.likedOn ? Icons.heart : Icons.heartOutline,
@@ -309,7 +314,7 @@ export class LibraryLikesComponent implements OnInit {
             {
               icon: Icons.playlistPlus,
               text: 'Add to playlist',
-              click: () => this.helper.addSongsToPlaylist([song.entryPath]),
+              click: () => this.helper.addSongsToPlaylist([song.id]),
             },
             {
               icon: Icons.album,
@@ -324,7 +329,7 @@ export class LibraryLikesComponent implements OnInit {
               disabled: !song.artists[0],
             },
           ],
-          queue$: of([song.entryPath]),
+          queue$: of([song.id]),
         }))
       )
     );

@@ -13,15 +13,12 @@ import { HelperFacade } from '@app/helper/helper.facade';
       <app-player-button
         class="player-button"
         size="small"
-        [index]="queue.indexOf(song.entryPath)"
+        [index]="queue.indexOf(song.id)"
         [queue]="queue"
       ></app-player-button>
     </span>
     <span class="title">
-      <span
-        [title]="song.title"
-        (click)="play(queue, queue.indexOf(song.entryPath))"
-      >
+      <span [title]="song.title" (click)="play(queue, queue.indexOf(song.id))">
         {{ song.title }}
       </span>
     </span>
@@ -159,15 +156,15 @@ export class TrackListItemComponent {
   }
 
   playNext(song: Song): void {
-    this.helper.addSongToQueue(song.entryPath, true);
+    this.helper.addSongToQueue(song.id, true);
   }
 
   addToQueue(song: Song): void {
-    this.helper.addSongToQueue(song.entryPath, false);
+    this.helper.addSongToQueue(song.id, false);
   }
 
   addSongToPlaylist(song: Song): void {
-    this.helper.addSongsToPlaylist([song.entryPath]);
+    this.helper.addSongsToPlaylist([song.id]);
   }
 
   play(queue: SongId[], index: number) {

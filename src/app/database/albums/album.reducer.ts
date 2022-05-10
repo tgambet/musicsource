@@ -41,7 +41,7 @@ export const albumReducer = createReducer(
   on(removeAllAlbums, (state) => albumAdapter.removeAll(state)),
   on(loadAlbums, (state) => state),
   on(loadAlbumsSuccess, (state, action) =>
-    albumAdapter.addMany(action.data, state)
+    albumAdapter.setAll(action.data, state)
   ),
   on(loadAlbumsFailure, (state) => state),
   on(addAlbum, (state, action) => albumAdapter.addOne(action.album, state)),

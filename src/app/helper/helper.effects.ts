@@ -81,9 +81,7 @@ export class HelperEffects implements OnRunEffects {
         this.songs.getByAlbumKey(id).pipe(
           filter((songs): songs is Song[] => !!songs),
           first(),
-          map((songs) =>
-            playSongs({ songs: songs.map((s) => s.entryPath), shuffle })
-          )
+          map((songs) => playSongs({ songs: songs.map((s) => s.id), shuffle }))
         )
       )
     )
@@ -112,7 +110,7 @@ export class HelperEffects implements OnRunEffects {
           map((songs) =>
             shuffleArray(songs)
               .slice(0, 50)
-              .map((s) => s.entryPath)
+              .map((s) => s.id)
           ),
           map((songs) => playSongs({ songs, shuffle: false }))
         )
@@ -129,7 +127,7 @@ export class HelperEffects implements OnRunEffects {
           first(),
           map((songs) =>
             addSongsToQueue({
-              songs: songs.map((s) => s.entryPath),
+              songs: songs.map((s) => s.id),
               next,
               message: next ? 'Album will play next' : 'Album added to queue',
             })
@@ -203,9 +201,7 @@ export class HelperEffects implements OnRunEffects {
         this.songs.getByAlbumKey(id).pipe(
           filter((songs): songs is Song[] => !!songs),
           first(),
-          map((songs) =>
-            addSongsToPlaylist({ songs: songs.map((s) => s.entryPath) })
-          )
+          map((songs) => addSongsToPlaylist({ songs: songs.map((s) => s.id) }))
         )
       )
     )
@@ -264,7 +260,7 @@ export class HelperEffects implements OnRunEffects {
         ]).pipe(
           first(),
           map(([playlist, index]) => {
-            // const indexToDelete = playlist.indexOf(song.entryPath);
+            // const indexToDelete = playlist.indexOf(song.id);
             const newPlaylist = [...playlist];
             newPlaylist.splice(indexToDelete ?? index, 1);
             return setQueue({

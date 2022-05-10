@@ -153,7 +153,7 @@
 //   // }
 //   // toggleSongFavorite(song: Song): Observable<Song> {
 //   //   const update = { likedOn: !!song.likedOn ? undefined : new Date() };
-//   //   return this.storage.update$<Song>('songs', update, song.entryPath).pipe(
+//   //   return this.storage.update$<Song>('songs', update, song.id).pipe(
 //   //     map(() => ({
 //   //       ...song,
 //   //       ...update,
@@ -217,7 +217,7 @@
 //   // }
 //   // createTempPlaylist(songs: Song[]): Observable<IDBValidKey> {
 //   //   const playlist: TempPlaylist = {
-//   //     songs: songs.map((s) => s.entryPath),
+//   //     songs: songs.map((s) => s.id),
 //   //     createdOn: new Date(),
 //   //     hash: hash(new Date().toISOString()),
 //   //   };
@@ -239,7 +239,7 @@
 //   //       this.storage.update$(
 //   //         'playlists',
 //   //         {
-//   //           songs: [...playlist.songs, ...songs.map((song) => song.entryPath)],
+//   //           songs: [...playlist.songs, ...songs.map((song) => song.id)],
 //   //           pictureKey:
 //   //             playlist.pictureKey ||
 //   //             songs.find((song) => song.pictureKey)?.pictureKey,

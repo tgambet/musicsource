@@ -11,7 +11,7 @@ import { PlayerFacade } from '@app/player/store/player.facade';
       [song]="song"
       [queue]="getIds(songs)"
       cdkMonitorSubtreeFocus
-      [class.selected]="(currentSongPath$ | async) === song.entryPath"
+      [class.selected]="(currentSongPath$ | async) === song.id"
     ></app-song-list-item>
   `,
   styles: [
@@ -43,10 +43,10 @@ export class SongListComponent {
   constructor(private player: PlayerFacade) {}
 
   trackBy(index: number, song: Song): string {
-    return song.entryPath;
+    return song.id;
   }
 
   getIds(songs: Song[]): SongId[] {
-    return songs.map((s) => s.entryPath);
+    return songs.map((s) => s.id);
   }
 }

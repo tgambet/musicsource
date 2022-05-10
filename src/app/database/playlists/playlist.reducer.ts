@@ -32,7 +32,7 @@ export const playlistReducer = createReducer(
   on(removeAllPlaylists, (state) => playlistAdapter.removeAll(state)),
   on(loadPlaylists, (state) => state),
   on(loadPlaylistsSuccess, (state, action) =>
-    playlistAdapter.addMany(action.data, state)
+    playlistAdapter.setAll(action.data, state)
   ),
   on(loadPlaylistsFailure, (state) => state),
   on(updatePlaylist, (state, action) =>

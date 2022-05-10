@@ -1,7 +1,14 @@
 import { from, Observable, of, throwError } from 'rxjs';
 import { concatMap } from 'rxjs/operators';
+import { Opaque } from 'type-fest';
+import { hash } from '@app/core/utils';
+
+export type EntryId = Opaque<string, Entry>;
+
+export const getEntryId = (path: string): EntryId => hash(path) as EntryId;
 
 export type FileEntry = {
+  id: EntryId;
   kind: 'file';
   name: string;
   path: string;
@@ -10,6 +17,7 @@ export type FileEntry = {
 };
 
 export type DirectoryEntry = {
+  id: EntryId;
   kind: 'directory';
   name: string;
   path: string;
@@ -19,17 +27,17 @@ export type DirectoryEntry = {
 
 export type Entry = FileEntry | DirectoryEntry;
 
-export const isFile = (entry: Entry): entry is FileEntry =>
-  entry.kind === 'file';
-
-export const isDirectory = (entry: Entry): entry is DirectoryEntry =>
-  entry.kind === 'directory';
-
-export const isDirectChild = (parent: DirectoryEntry, child: Entry): boolean =>
-  parent.path === child.parent;
-
-export const isChild = (parent: DirectoryEntry, child: Entry): boolean =>
-  !!child.path?.startsWith(parent.path + '/');
+// export const isFile = (entry: Entry): entry is FileEntry =>
+//   entry.kind === 'file';
+//
+// export const isDirectory = (entry: Entry): entry is DirectoryEntry =>
+//   entry.kind === 'directory';
+//
+// export const isDirectChild = (parent: DirectoryEntry, child: Entry): boolean =>
+//   parent.path === child.parent;
+//
+// export const isChild = (parent: DirectoryEntry, child: Entry): boolean =>
+//   !!child.path?.startsWith(parent.path + '/');
 
 export const requestPermissionPromise = async (
   fileHandle: FileSystemHandle,
@@ -65,10 +73,15 @@ export const requestPermission = (handle: FileSystemHandle): Observable<void> =>
 export const entryFromHandle = (
   handle: FileSystemHandle,
   parent?: string
-): Entry => ({
-  kind: handle.kind,
-  name: handle.name,
-  parent: parent as any,
-  path: parent ? `${parent}/${handle.name}` : handle.name,
-  handle: handle as any,
-});
+): Entry => {
+  const path = parent ? `${parent}/${handle.name}` : handle.name;
+
+  return {
+    id: getEntryId(path),
+    kind: handle.kind,
+    name: handle.name,
+    parent: parent as any,
+    path,
+    handle: handle as any,
+  };
+};
