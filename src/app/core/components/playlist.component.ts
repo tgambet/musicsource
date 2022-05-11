@@ -6,7 +6,7 @@ import {
 } from '@angular/core';
 import { Icons } from '@app/core/utils';
 import { Playlist } from '@app/database/playlists/playlist.model';
-import { EMPTY, Observable, of } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 import { MenuItem } from '@app/core/components/menu.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -32,10 +32,15 @@ import { SongId } from '@app/database/songs/song.model';
           <div class="inner-cover" [style.backgroundColor]="color">
             <img [src]="cover" alt="cover" />
           </div>
+          <app-icon class="icon-cover" [path]="icons.playlistMusic"></app-icon>
         </ng-container>
       </ng-container>
       <ng-template #icon>
-        <app-icon [path]="icons.playlistPlay" [size]="72"></app-icon>
+        <app-icon
+          class="icon-replace"
+          [path]="icons.playlistPlay"
+          [size]="72"
+        ></app-icon>
       </ng-template>
     </app-cover>
     <app-label
@@ -57,7 +62,7 @@ import { SongId } from '@app/database/songs/song.model';
         margin-bottom: 16px;
         background-color: #4f4f4f;
       }
-      app-icon {
+      .icon-replace {
         color: rgba(0, 0, 0, 0.2);
       }
       img {
@@ -72,6 +77,13 @@ import { SongId } from '@app/database/songs/song.model';
         height: 100%;
         box-sizing: border-box;
         padding: 16.6%;
+      }
+      .icon-cover {
+        position: absolute;
+        left: 50%;
+        bottom: 1px;
+        transform: translateX(-50%);
+        opacity: 0.66;
       }
     `,
   ],
@@ -101,10 +113,10 @@ export class PlaylistComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.cover$ = EMPTY; // TODO this.pictures.getCover(this.playlist.pictureKey);
+    this.cover$ = this.pictures.getPlaylistCover(this.playlist, 160);
 
     // TODO
-    this.color$ = of('red');
+    this.color$ = of('rgba(0,0,0,0.66)');
 
     this.menuItems$ = this.playlists.getByKey(this.playlist.id).pipe(
       filter((playlist): playlist is Playlist => !!playlist),

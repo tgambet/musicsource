@@ -53,6 +53,8 @@ export class HelperFacade {
         filter((data): data is PlaylistData => !!data),
         map((data) => ({
           songs: [],
+          albums: [],
+          artists: [],
           createdOn: new Date().getTime(),
           id: getPlaylistId(data.title + Date.now()),
           title: data.title,

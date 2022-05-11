@@ -94,7 +94,7 @@ export class AlbumComponent implements OnInit {
     );
 
     this.cover$ = this.pictures.getAlbumCover(
-      this.album,
+      this.album.id,
       this.size === 'small' ? 160 : 226
     );
 

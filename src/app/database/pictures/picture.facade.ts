@@ -3,10 +3,10 @@ import { Store } from '@ngrx/store';
 import { concatMap, Observable, of } from 'rxjs';
 import { Picture } from '@app/database/pictures/picture.model';
 import { catchError, filter, first, map, switchMap, tap } from 'rxjs/operators';
-import { Album } from '@app/database/albums/album.model';
+import { AlbumId } from '@app/database/albums/album.model';
 import { SongFacade } from '@app/database/songs/song.facade';
 import { Song } from '@app/database/songs/song.model';
-import { Artist } from '@app/database/artists/artist.model';
+import { ArtistId } from '@app/database/artists/artist.model';
 import { ArtistFacade } from '@app/database/artists/artist.facade';
 import { AlbumFacade } from '@app/database/albums/album.facade';
 import { DatabaseService } from '@app/database/database.service';
@@ -20,6 +20,7 @@ import {
   selectPicturesLoaded,
 } from '@app/database/pictures/picture.selectors';
 import { uniq } from '@app/core/utils/uniq.util';
+import { Playlist } from '@app/database/playlists/playlist.model';
 
 export type PictureSize = 0 | 32 | 40 | 56 | 160 | 226 | 264 | 1100;
 
@@ -68,17 +69,17 @@ export class PictureFacade {
   }
 
   getAlbumCover(
-    album: Album,
+    albumId: AlbumId,
     size: PictureSize
   ): Observable<string | undefined> {
     return this.waitForPicturesLoaded().pipe(
-      switchMap(() => this.store.select(selectPictureByAlbum(album.id))),
+      switchMap(() => this.store.select(selectPictureByAlbum(albumId))),
       first(),
       concatMap((picture) =>
         picture
           ? of(picture)
           : this.database
-              .get$<Picture>('pictures', album.id, 'albums')
+              .get$<Picture>('pictures', albumId, 'albums')
               .pipe(
                 tap(
                   (p) => p && this.store.dispatch(upsertPicture({ picture: p }))
@@ -113,18 +114,18 @@ export class PictureFacade {
   }
 
   getArtistCover(
-    artist: Artist,
+    artistId: ArtistId,
     size: PictureSize
     // names = ['folder', 'cover', 'fanart']
   ): Observable<string | undefined> {
     return this.waitForPicturesLoaded().pipe(
-      switchMap(() => this.store.select(selectPicturesByArtist(artist.id))),
+      switchMap(() => this.store.select(selectPicturesByArtist(artistId))),
       first(),
       concatMap((pictures) =>
         pictures
           ? of(pictures[Math.floor(Math.random() * pictures.length)])
           : this.database
-              .getAll$<Picture>('pictures', 'artists', artist.id)
+              .getAll$<Picture>('pictures', 'artists', artistId)
               .pipe(
                 map((picts) => picts[Math.floor(Math.random() * picts.length)]),
                 tap(
@@ -135,6 +136,24 @@ export class PictureFacade {
       this.getPictureBySize(size),
       tapError((err) => console.error(err)),
       catchError(() => of(undefined))
+    );
+  }
+
+  getPlaylistCover(
+    playlist: Playlist,
+    size: PictureSize
+  ): Observable<string | undefined> {
+    return this.waitForPicturesLoaded().pipe(
+      switchMap(() => {
+        const albums = playlist.albums.filter(uniq());
+        const artists = playlist.artists.filter(uniq());
+
+        if (artists.length === 1 && albums.length > 1) {
+          return this.getArtistCover(artists[0], size);
+        } else {
+          return this.getAlbumCover(albums[0], size);
+        }
+      })
     );
   }
 

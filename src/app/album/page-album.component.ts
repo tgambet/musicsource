@@ -168,7 +168,7 @@ export class PageAlbumComponent implements OnInit {
       .pipe(filter((a): a is Album => !!a));
 
     this.cover$ = this.album$.pipe(
-      switchMap((album) => this.pictures.getAlbumCover(album, 264))
+      switchMap((album) => this.pictures.getAlbumCover(album.id, 264))
     );
 
     this.songs$ = this.album$.pipe(

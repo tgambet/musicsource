@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { Playlist, PlaylistId } from '@app/database/playlists/playlist.model';
-import { EMPTY, Observable, of, switchMap } from 'rxjs';
+import { Observable, of, switchMap } from 'rxjs';
 import { Song } from '@app/database/songs/song.model';
 import { ActivatedRoute } from '@angular/router';
 import { Icons } from '@app/core/utils/icons.util';
@@ -26,10 +26,18 @@ import { MenuItem } from '@app/core/components/menu.component';
                   <div class="inner-cover" [style.backgroundColor]="color">
                     <img [src]="cover" alt="cover" />
                   </div>
+                  <app-icon
+                    class="icon-cover"
+                    [path]="icons.playlistMusic"
+                  ></app-icon>
                 </ng-container>
               </ng-container>
               <ng-template #icon>
-                <app-icon [path]="icons.playlistPlay" [size]="144"></app-icon>
+                <app-icon
+                  class="icon-replace"
+                  [path]="icons.playlistPlay"
+                  [size]="144"
+                ></app-icon>
               </ng-template>
             </div>
             <div class="metadata">
@@ -107,7 +115,7 @@ import { MenuItem } from '@app/core/components/menu.component';
       .cover {
         background-color: #4f4f4f;
       }
-      .cover app-icon {
+      .icon-replace {
         color: rgba(0, 0, 0, 0.2);
       }
       .inner-cover {
@@ -118,6 +126,13 @@ import { MenuItem } from '@app/core/components/menu.component';
         height: 100%;
         box-sizing: border-box;
         padding: 16.6%;
+      }
+      .icon-cover {
+        position: absolute;
+        left: 50%;
+        bottom: 10px;
+        transform: translateX(-50%);
+        opacity: 0.66;
       }
       img {
         width: 100%;
@@ -153,10 +168,10 @@ export class PagePlaylistComponent implements OnInit {
       .pipe(filter((playlist): playlist is Playlist => !!playlist));
 
     this.cover$ = this.playlist$.pipe(
-      switchMap(() => EMPTY) // TODO this.pictures.getCover(playlist.pictureKey))
+      switchMap((playlist) => this.pictures.getPlaylistCover(playlist, 264))
     );
 
-    this.color$ = of('red');
+    this.color$ = of('rgba(0,0,0,0.66)');
 
     this.songs$ = this.playlist$.pipe(
       switchMap((playlist) => this.songs.getByKeys(playlist.songs))
