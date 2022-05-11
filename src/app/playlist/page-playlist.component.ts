@@ -41,7 +41,7 @@ import { MenuItem } from '@app/core/components/menu.component';
               </ng-template>
             </div>
             <div class="metadata">
-              <app-title>{{ playlist.title }}</app-title>
+              <h1>{{ playlist.title }}</h1>
               <p>
                 <span>Playlist</span> • <span>{{ '2020' }}</span>
               </p>

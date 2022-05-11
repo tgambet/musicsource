@@ -93,8 +93,6 @@ import {
         align-items: baseline;
         margin: 0;
         font-family: 'YT Sans', sans-serif;
-        font-size: 45px;
-        line-height: 54px;
         /*letter-spacing: -0.45px;*/
       }
       p {
@@ -117,9 +115,23 @@ import {
       a:hover {
         text-decoration: underline;
       }
+      :host.large h1 {
+        font-size: 45px;
+        line-height: 54px;
+      }
       :host.small h1 {
-        font-size: 24px;
-        line-height: 28px;
+        font-size: 20px;
+        line-height: 24px;
+      }
+      @media (min-width: 1150px) {
+        :host.large h1 {
+          font-size: 45px;
+          line-height: 54px;
+        }
+        :host.small h1 {
+          font-size: 24px;
+          line-height: 28px;
+        }
       }
     `,
   ],

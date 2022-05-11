@@ -56,6 +56,7 @@ import { HelperFacade } from '@app/helper/helper.facade';
       img {
         display: block;
         max-height: 100%;
+        width: 100%;
       }
       app-cover {
         margin-bottom: 16px;

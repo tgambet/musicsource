@@ -167,6 +167,13 @@ html {
   overflow-x: hidden;
   overflow-y: scroll; // TODO ?
   height: 100%;
+  font-size: 14px;
+}
+
+@media (min-width: 1290px) {
+  html {
+    font-size: 16px;
+  }
 }
 
 body {

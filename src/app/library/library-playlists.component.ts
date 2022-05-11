@@ -25,7 +25,12 @@ import { HelperFacade } from '@app/helper/helper.facade';
     >
       <div class="playlists">
         <div class="playlist new">
-          <a class="cover" matRipple (click)="newPlaylist()">
+          <a
+            class="cover"
+            matRipple
+            (click)="newPlaylist()"
+            style="--aspect-ratio: 1"
+          >
             <app-icon [path]="icons.plus" [size]="36"></app-icon>
           </a>
           <app-label [topLabel]="'New playlist'" size="small"></app-label>
@@ -50,23 +55,39 @@ import { HelperFacade } from '@app/helper/helper.facade';
       .playlists {
         display: flex;
         flex-wrap: wrap;
-        margin: 0 -12px;
+        justify-content: space-between;
+        margin: 0 0;
         padding: 0 0 64px;
       }
       .playlist {
-        margin: 0 12px 32px;
-        width: 160px;
+        margin: 0 0 32px;
+        width: calc(31%);
+        max-width: 160px;
+      }
+      app-playlist,
+      app-playlist-likes {
+        width: 100%;
       }
       .new .cover {
         cursor: pointer;
-        width: 160px;
-        height: 160px;
+
+        /*height: 160px;*/
         display: flex;
         align-items: center;
         justify-content: center;
         margin-bottom: 16px;
         background-color: #212121;
         border-radius: 4px;
+      }
+      @media (min-width: 588px) {
+        .playlists {
+          justify-content: left;
+          margin: 0 -12px;
+        }
+        .playlist {
+          width: 160px;
+          margin: 0 12px 32px;
+        }
       }
     `,
   ],

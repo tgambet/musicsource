@@ -38,7 +38,7 @@ import { HelperFacade } from '@app/helper/helper.facade';
               </ng-template>
             </div>
             <div class="metadata">
-              <app-title>{{ album.title }}</app-title>
+              <h1>{{ album.title }}</h1>
               <p>
                 <span>Album</span> •
                 <a [routerLink]="['/', 'artist', album.albumArtist.id]">{{

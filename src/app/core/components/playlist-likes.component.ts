@@ -65,6 +65,7 @@ export class PlaylistLikesComponent implements OnInit {
               songs.map((s) => s.id),
               true
             ),
+          disabled: songs.length === 0,
         },
         {
           text: 'Play next',
@@ -75,6 +76,7 @@ export class PlaylistLikesComponent implements OnInit {
               true,
               'Your likes will play next'
             ),
+          disabled: songs.length === 0,
         },
         {
           text: 'Add to queue',
@@ -85,6 +87,7 @@ export class PlaylistLikesComponent implements OnInit {
               false,
               'Your likes have been added to queue'
             ),
+          disabled: songs.length === 0,
         },
       ])
     );
