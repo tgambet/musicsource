@@ -103,6 +103,10 @@ import { HelperFacade } from '@app/helper/helper.facade';
       }
       .title {
         flex: 1 1 auto;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        margin-right: 16px;
       }
       .title span {
         cursor: pointer;
@@ -111,12 +115,31 @@ import { HelperFacade } from '@app/helper/helper.facade';
         flex: 0 0 auto;
         margin-left: 16px;
         color: #aaa;
+        display: flex;
       }
-      .controls button:not(.liked) {
-        opacity: 0;
+      .controls button {
+        justify-content: center;
+      }
+      .controls button {
+        display: none;
+      }
+      .controls button.liked {
+        color: white;
+      }
+      @media (min-width: 935px) {
+        .controls button.liked {
+          display: flex;
+        }
+        .controls button.liked ~ button {
+          display: flex;
+          opacity: 0;
+        }
       }
       :host:hover .controls button,
-      :host.cdk-focused .controls button,
+      :host.cdk-focused .controls button {
+        display: flex;
+        opacity: 1 !important;
+      }
       :host:hover app-player-button,
       :host.cdk-focused app-player-button,
       :host.selected app-player-button {
@@ -128,7 +151,6 @@ import { HelperFacade } from '@app/helper/helper.facade';
       .duration {
         color: #aaa;
         flex: 0 0 54px;
-        margin-left: 16px;
         text-align: right;
       }
       .mat-menu-item app-icon {
