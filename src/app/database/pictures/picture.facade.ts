@@ -151,7 +151,10 @@ export class PictureFacade {
         if (artists.length === 1 && albums.length > 1) {
           return this.getArtistCover(artists[0], size);
         } else {
-          return this.getAlbumCover(albums[0], size);
+          return this.getAlbumCover(
+            albums[Math.floor(Math.random() * albums.length)],
+            size
+          );
         }
       })
     );
