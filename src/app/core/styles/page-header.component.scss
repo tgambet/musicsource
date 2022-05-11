@@ -125,6 +125,15 @@ button app-icon {
   }
 }
 
+@media (min-width: 1044px) {
+  .header-container {
+    padding-left: 288px;
+  }
+  .cover {
+    left: 0;
+  }
+}
+
 @media (min-width: 1150px) {
   .header-container {
     margin-top: 48px;
