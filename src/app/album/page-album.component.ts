@@ -78,7 +78,7 @@ import { HelperFacade } from '@app/helper/helper.facade';
       <app-container-page>
         <div class="track-list" *ngIf="disks$ | async as disks">
           <ng-container *ngFor="let disk of disks; trackBy: trackByDisk">
-            <app-title size="small" *ngIf="disks.length > 1">
+            <app-title size="small" *ngIf="disks.length > 1" class="disk-title">
               Disk {{ disk.key }}
             </app-title>
             <div class="track-list-container">
@@ -108,10 +108,16 @@ import { HelperFacade } from '@app/helper/helper.facade';
       .track-list-container {
         display: flex;
         flex-direction: column;
-        margin-bottom: 1em;
+        margin-bottom: 2em;
+      }
+      .track-list-container:last-of-type {
+        margin-bottom: 0;
       }
       app-track-list-item.selected {
         background-color: rgba(255, 255, 255, 0.1);
+      }
+      .disk-title {
+        margin-bottom: 16px;
       }
     `,
   ],
@@ -175,7 +181,9 @@ export class PageAlbumComponent implements OnInit {
       switchMap((album) => this.songs.getByAlbumKey(album.id)),
       filter((songs): songs is Song[] => !!songs),
       map((songs) =>
-        songs.sort((s1, s2) => (s1.tags.disk.no || 0) - (s2.tags.disk.no || 0))
+        [...songs].sort(
+          (s1, s2) => (s1.tags.disk.no || 0) - (s2.tags.disk.no || 0)
+        )
       ),
       share({
         connector: () => new ReplaySubject(1),

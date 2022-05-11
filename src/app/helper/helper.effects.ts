@@ -81,6 +81,11 @@ export class HelperEffects implements OnRunEffects {
         this.songs.getByAlbumKey(id).pipe(
           filter((songs): songs is Song[] => !!songs),
           first(),
+          map((songs) =>
+            [...songs].sort(
+              (s1, s2) => (s1.tags.disk.no || 0) - (s2.tags.disk.no || 0)
+            )
+          ),
           map((songs) => playSongs({ songs: songs.map((s) => s.id), shuffle }))
         )
       )

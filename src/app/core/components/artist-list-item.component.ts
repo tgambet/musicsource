@@ -35,6 +35,7 @@ import { PictureFacade } from '@app/database/pictures/picture.facade';
         mat-icon-button
         [disableRipple]="true"
         (click)="toggleLiked.emit()"
+        class="liked"
       >
         <app-icon
           [path]="!!artist.likedOn ? icons.heart : icons.heartOutline"
@@ -94,6 +95,9 @@ import { PictureFacade } from '@app/database/pictures/picture.facade';
       }
       app-icon {
         color: grey;
+      }
+      .liked app-icon {
+        color: white;
       }
       .meta {
         display: flex;
