@@ -65,14 +65,7 @@ export type BottomLabel =
       :host.center p {
         justify-content: center;
       }
-      .large {
-        font-size: 16px;
-        line-height: 19px;
-      }
-      .small {
-        font-size: 14px;
-        line-height: 17px;
-      }
+
       .large.top {
         max-height: 38px;
       }
@@ -96,6 +89,24 @@ export type BottomLabel =
       }
       .cursor {
         cursor: pointer;
+      }
+      .large {
+        font-size: 14px;
+        line-height: 17px;
+      }
+      .small {
+        font-size: 12px;
+        line-height: 15px;
+      }
+      @media (min-width: 1290px) {
+        .large {
+          font-size: 16px;
+          line-height: 19px;
+        }
+        .small {
+          font-size: 14px;
+          line-height: 17px;
+        }
       }
     `,
   ],

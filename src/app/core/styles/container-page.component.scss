@@ -3,17 +3,29 @@ $container-margin: 24px;
 
 :host {
   display: block;
-  width: 100%;
-  margin-left: auto;
-  margin-right: auto;
+  width: calc(100% - 32px);
+  margin-left: 16px;
+  margin-right: 16px;
   transition: width 200ms ease;
 }
 
-@for $n from 3 through 6 {
+@media (min-width: 615px) {
+  :host {
+    padding-left: 32px;
+    padding-right: 32px;
+    box-sizing: border-box;
+  }
+}
+
+@for $n from 4 through 6 {
   $width: $n * $base-item-width;
   @media (min-width: $width + 2 * $container-margin + 12px) {
     :host {
       width: $width;
+      margin-left: auto;
+      margin-right: auto;
+      padding-left: 0;
+      padding-right: 0;
     }
   }
 }

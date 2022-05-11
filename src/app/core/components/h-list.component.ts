@@ -32,12 +32,17 @@ import { DOCUMENT } from '@angular/common';
       (click)="scrollLeft()"
       [disabled]="isPrevDisabled"
       [style.top]="this.buttonsTopPosition"
+      [style.left]="overflow === 'visible' ? '0' : '-20px'"
       #prevButton
       aria-label="Previous"
     >
       <app-icon [path]="icons.chevronLeft"></app-icon>
     </button>
-    <div class="container" [style.borderRadius.px]="borderRadius">
+    <div
+      class="container"
+      [style.borderRadius.px]="borderRadius"
+      [style.overflow-x]="overflow"
+    >
       <div
         #content
         [style.transform]="'translate(' + this.translation + 'px)'"
@@ -52,6 +57,7 @@ import { DOCUMENT } from '@angular/common';
       (click)="scrollRight()"
       [disabled]="isNextDisabled"
       [style.top]="this.buttonsTopPosition"
+      [style.right]="overflow === 'visible' ? '0' : '-20px'"
       #nextButton
       aria-label="Next"
     >
@@ -66,7 +72,7 @@ import { DOCUMENT } from '@angular/common';
       }
       .container {
         display: flex;
-        overflow-x: hidden;
+        /*overflow-x: hidden;*/
         height: 100%;
       }
       .content {
@@ -106,9 +112,11 @@ import { DOCUMENT } from '@angular/common';
 })
 export class HListComponent implements OnInit, OnDestroy, AfterContentInit {
   @Input()
-  buttonsTopPosition?: string;
+  buttonsTopPosition: string | null = null;
   @Input()
   borderRadius = 0;
+  @Input()
+  overflow: 'visible' | 'hidden' | null = 'hidden';
 
   @ViewChild('prevButton', { static: true })
   prevButton!: MatButton;

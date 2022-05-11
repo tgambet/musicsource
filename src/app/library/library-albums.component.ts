@@ -37,14 +37,27 @@ import { AlbumFacade } from '@app/database/albums/album.facade';
       .albums {
         display: flex;
         flex-wrap: wrap;
-        margin: 0 -12px;
+        justify-content: space-between;
+        margin: 0 0;
         padding: 0 0 64px;
       }
       .album {
-        margin: 0 12px 32px;
+        margin: 0 0 32px;
+        width: calc(31%);
+        max-width: 160px;
       }
       app-album {
-        width: 160px;
+        width: 100%;
+      }
+      @media (min-width: 588px) {
+        .albums {
+          justify-content: left;
+          margin: 0 -12px;
+        }
+        .album {
+          width: 160px;
+          margin: 0 12px 32px;
+        }
       }
     `,
   ],

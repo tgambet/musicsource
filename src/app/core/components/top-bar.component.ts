@@ -76,7 +76,7 @@ import { ScannerFacade } from '@app/scanner/store/scanner.facade';
         display: flex;
         align-items: center;
       }
-      h1 span {
+      h1 a {
         display: none;
       }
       h1 app-icon {
@@ -117,7 +117,7 @@ import { ScannerFacade } from '@app/scanner/store/scanner.facade';
         }
       }
       @media (min-width: 755px) {
-        h1 span {
+        h1 a {
           display: initial;
         }
         app-menu {

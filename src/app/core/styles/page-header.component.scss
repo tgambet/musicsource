@@ -2,83 +2,160 @@
   display: block;
   padding-bottom: 64px;
 }
+
 header {
   display: flex;
   margin-top: -64px;
   padding-top: 64px;
 }
+
 .header-container {
-  min-height: 264px;
-  margin-top: 64px;
-  margin-bottom: 64px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   position: relative;
   box-sizing: border-box;
+  margin-top: 16px;
+  margin-bottom: 16px;
 }
+
 .cover {
-  width: 264px;
-  margin-right: 64px;
+  width: 160px;
+  margin-right: 16px;
   border-radius: 4px;
   overflow: hidden;
 }
+
 .info {
   display: flex;
   align-items: center;
 }
+
+.metadata h1 {
+  font-family: "YT Sans", sans-serif;
+  font-size: 24px;
+  line-height: 28px;
+  margin-bottom: 16px;
+}
+
 .metadata p {
   color: #aaa;
+  font-size: 14px;
 }
+
 .metadata p a {
   text-decoration: none;
 }
+
 .metadata p a:hover {
   text-decoration: underline;
 }
+
 .stats {
   margin-top: 4px;
 }
+
 .description {
   font-size: 14px;
   margin-top: 16px;
 }
-app-title {
-  margin-bottom: 16px;
-}
+
 .actions {
-  margin-top: 32px;
+  margin-top: 16px;
 }
-@media (min-width: 936px) {
-  .header-container {
-    padding-left: 312px;
-  }
-  .cover {
-    position: absolute;
-    top: 0;
-    left: 0;
-  }
+
+.actions app-menu {
+  height: 38px;
 }
+
 button {
-  padding: 0 32px;
+  padding: 0 24px;
   border-radius: 2px;
   text-transform: uppercase;
 }
+
 button span {
   display: inline-block;
   line-height: 24px;
 }
+
 button app-icon {
   margin-right: 8px;
 }
+
 .actions button:not(:last-of-type) {
   margin-right: 16px;
 }
+
 .mat-stroked-button {
   border-color: rgb(170, 170, 170);
 }
+
 .empty {
   color: #717171;
   text-align: center;
   font-size: 20px;
+}
+
+@media (min-width: 615px) {
+  .header-container {
+    margin-bottom: 24px;
+  }
+  .cover {
+    width: 200px;
+    margin-right: 32px;
+  }
+  .actions {
+    margin-top: 32px;
+  }
+}
+
+@media (min-width: 935px) {
+  .header-container {
+    padding-left: 320px;
+    min-height: 240px;
+    margin-top: 32px;
+  }
+
+  .cover {
+    width: 240px;
+    position: absolute;
+    top: 0;
+    left: 32px;
+  }
+}
+
+@media (min-width: 1150px) {
+  .header-container {
+    margin-top: 48px;
+    margin-bottom: 48px;
+  }
+
+  .metadata h1 {
+    font-size: 28px;
+    line-height: 34px;
+    margin-bottom: 16px;
+  }
+}
+
+@media (min-width: 1290px) {
+  .header-container {
+    padding-left: 344px;
+    min-height: 264px;
+    margin-bottom: 64px;
+  }
+
+  .metadata h1 {
+    font-size: 34px;
+    line-height: 40px;
+    margin-bottom: 16px;
+  }
+
+  .metadata p {
+    font-size: 16px;
+  }
+
+  .cover {
+    width: 264px;
+  }
 }

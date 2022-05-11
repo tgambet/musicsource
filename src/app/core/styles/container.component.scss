@@ -3,9 +3,18 @@ $container-margin: 24px;
 
 :host {
   display: block;
-  width: 100%;
-  margin-left: auto;
-  margin-right: auto;
+  width: calc(100% - 32px);
+  margin-left: 16px;
+  margin-right: 16px;
+  //transition: width 200ms ease;
+}
+
+@media (min-width: 615px) {
+  :host {
+    padding-left: 0;
+    padding-right: 0;
+    box-sizing: border-box;
+  }
 }
 
 @for $n from 3 through 9 {
@@ -13,6 +22,8 @@ $container-margin: 24px;
   @media (min-width: $width + 2 * $container-margin + 12px) {
     :host {
       width: $width;
+      margin-left: auto;
+      margin-right: auto;
     }
   }
 }

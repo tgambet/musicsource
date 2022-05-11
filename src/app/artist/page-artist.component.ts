@@ -15,7 +15,8 @@ import { ArtistFacade } from '@app/database/artists/artist.facade';
 import { AlbumFacade } from '@app/database/albums/album.facade';
 import { PictureFacade } from '@app/database/pictures/picture.facade';
 import { HelperFacade } from '@app/helper/helper.facade';
-import { first } from 'rxjs/operators';
+import { first, map } from 'rxjs/operators';
+import { BreakpointObserver } from '@angular/cdk/layout';
 
 @Component({
   selector: 'app-page-artist',
@@ -29,7 +30,7 @@ import { first } from 'rxjs/operators';
         ></div>
         <div class="shadow"></div>
         <app-container-page class="header-container">
-          <app-title>{{ artist.name }}</app-title>
+          <h1>{{ artist.name }}</h1>
           <div class="actions">
             <button
               mat-raised-button
@@ -61,7 +62,11 @@ import { first } from 'rxjs/operators';
         </ng-container>
         <ng-container *ngIf="albums$ | async as albums">
           <app-title size="small" *ngIf="albums.length > 0">Albums</app-title>
-          <app-h-list buttonsTopPosition="113px" *ngIf="albums.length > 0">
+          <app-h-list
+            [buttonsTopPosition]="buttonTopPosition$ | async"
+            *ngIf="albums.length > 0"
+            [overflow]="overflow$ | async"
+          >
             <app-album
               appHListItem
               class="album"
@@ -73,7 +78,11 @@ import { first } from 'rxjs/operators';
         </ng-container>
         <ng-container *ngIf="foundOn$ | async as albums">
           <app-title size="small" *ngIf="albums.length > 0">Found in</app-title>
-          <app-h-list buttonsTopPosition="113px" *ngIf="albums.length > 0">
+          <app-h-list
+            [buttonsTopPosition]="buttonTopPosition$ | async"
+            *ngIf="albums.length > 0"
+            [overflow]="overflow$ | async"
+          >
             <app-album
               appHListItem
               class="album"
@@ -95,16 +104,22 @@ import { first } from 'rxjs/operators';
       header {
         display: flex;
         margin-top: -64px;
-        margin-bottom: 64px;
+        margin-bottom: 48px;
         padding-top: 64px;
         background-color: #1d1d1d;
         box-sizing: border-box;
         position: relative;
         overflow: hidden;
       }
+      h1 {
+        font-family: 'YT Sans', sans-serif;
+        font-size: 24px;
+        line-height: 28px;
+        margin-bottom: 16px;
+      }
       .header-container {
-        padding-top: 332px;
-        margin-bottom: 8px;
+        transition: padding-top 200ms ease, width 200ms ease;
+        padding-top: 64px;
         display: flex;
         flex-direction: column;
         justify-content: flex-end;
@@ -118,13 +133,14 @@ import { first } from 'rxjs/operators';
         position: absolute;
         top: 0;
         z-index: 1;
-        background: linear-gradient(
-          to top,
-          rgba(0, 0, 0, 1),
-          transparent 33%,
-          transparent 87%,
-          rgba(0, 0, 0, 0.5) 100%
+        background-image: linear-gradient(
+          to bottom,
+          rgba(0, 0, 0, 0.5),
+          transparent 64px,
+          rgba(0, 0, 0, 0) 60%,
+          rgba(0, 0, 0, 1) 100%
         );
+        background-color: rgba(0, 0, 0, 0.4);
       }
       .cover {
         position: absolute;
@@ -140,7 +156,7 @@ import { first } from 'rxjs/operators';
         width: 100%;
       }
       app-title {
-        margin-top: 64px;
+        margin-top: 48px;
         margin-bottom: 16px;
       }
       button {
@@ -160,14 +176,54 @@ import { first } from 'rxjs/operators';
         margin-right: 8px;
       }
       .album {
-        margin: 0 24px 0 0;
-        width: 226px;
+        margin: 0 16px 0 0;
+        /*width: 226px;*/
+        width: 160px;
       }
       .album:last-of-type {
         margin-right: 0;
       }
       .content {
         padding-bottom: 128px;
+      }
+      @media (min-width: 615px) {
+        .header-container {
+          padding-top: 146px;
+        }
+        .album {
+          width: 180px;
+        }
+      }
+      @media (min-width: 1150px) {
+        .header-container {
+          padding-top: 228px;
+        }
+        h1 {
+          font-size: 28px;
+          line-height: 32px;
+        }
+        .album {
+          margin: 0 24px 0 0;
+          width: 226px;
+        }
+      }
+      @media (min-width: 1290px) {
+        h1 {
+          font-size: 34px;
+          line-height: 40px;
+        }
+        .header-container {
+          padding-top: 300px;
+        }
+      }
+      @media (min-width: 1536px) {
+        h1 {
+          font-size: 45px;
+          line-height: 54px;
+        }
+        .header-container {
+          padding-top: 400px;
+        }
       }
     `,
   ],
@@ -182,6 +238,9 @@ export class PageArtistComponent implements OnInit {
   foundOn$!: Observable<Album[] | undefined>;
   songs$!: Observable<Song[] | undefined>;
 
+  buttonTopPosition$: Observable<string>;
+  overflow$!: Observable<'visible' | 'hidden'>;
+
   constructor(
     private route: ActivatedRoute,
     private cdr: ChangeDetectorRef,
@@ -189,8 +248,46 @@ export class PageArtistComponent implements OnInit {
     private artists: ArtistFacade,
     private pictures: PictureFacade,
     private albums: AlbumFacade,
-    private helper: HelperFacade
-  ) {}
+    private helper: HelperFacade,
+    private breakpointObserver: BreakpointObserver
+  ) {
+    /*
+    const Breakpoints = {
+    XSmall: '(max-width: 599.98px)',
+    Small: '(min-width: 600px) and (max-width: 959.98px)',
+    Medium: '(min-width: 960px) and (max-width: 1279.98px)',
+    Large: '(min-width: 1280px) and (max-width: 1919.98px)',
+    XLarge: '(min-width: 1920px)',
+    Handset: '(max-width: 599.98px) and (orientation: portrait), ' +
+        '(max-width: 959.98px) and (orientation: landscape)',
+    Tablet: '(min-width: 600px) and (max-width: 839.98px) and (orientation: portrait), ' +
+        '(min-width: 960px) and (max-width: 1279.98px) and (orientation: landscape)',
+    Web: '(min-width: 840px) and (orientation: portrait), ' +
+        '(min-width: 1280px) and (orientation: landscape)',
+    HandsetPortrait: '(max-width: 599.98px) and (orientation: portrait)',
+    TabletPortrait: '(min-width: 600px) and (max-width: 839.98px) and (orientation: portrait)',
+    WebPortrait: '(min-width: 840px) and (orientation: portrait)',
+    HandsetLandscape: '(max-width: 959.98px) and (orientation: landscape)',
+    TabletLandscape: '(min-width: 960px) and (max-width: 1279.98px) and (orientation: landscape)',
+    WebLandscape: '(min-width: 1280px) and (orientation: landscape)',
+    };
+    */
+    this.buttonTopPosition$ = breakpointObserver
+      .observe(['(min-width: 615px)', '(min-width: 1150px)'])
+      .pipe(
+        map((state) =>
+          state.breakpoints[Object.keys(state.breakpoints)[1]]
+            ? '113px'
+            : state.breakpoints[Object.keys(state.breakpoints)[0]]
+            ? '90px'
+            : '80px'
+        )
+      );
+
+    this.overflow$ = breakpointObserver
+      .observe(['(min-width: 1150px)'])
+      .pipe(map((state) => (state.matches ? 'hidden' : 'visible')));
+  }
 
   ngOnInit(): void {
     const artistKey = this.route.snapshot.data.info as ArtistId;

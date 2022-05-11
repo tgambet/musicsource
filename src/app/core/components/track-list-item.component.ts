@@ -74,6 +74,7 @@ import { HelperFacade } from '@app/helper/helper.facade';
         box-sizing: border-box;
         border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         padding: 0 8px;
+        font-size: 14px;
       }
       :host:last-of-type {
         border: none;
@@ -132,6 +133,11 @@ import { HelperFacade } from '@app/helper/helper.facade';
       }
       .mat-menu-item app-icon {
         margin-right: 16px;
+      }
+      @media (min-width: 1290px) {
+        :host {
+          font-size: 16px;
+        }
       }
     `,
   ],
