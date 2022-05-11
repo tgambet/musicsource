@@ -5,9 +5,9 @@ import { PlaylistIndex } from '@app/database/playlists/playlist.reducer';
 import { Playlist, PlaylistId } from '@app/database/playlists/playlist.model';
 import {
   selectPlaylistAll,
-  selectPlaylistsByIndexKey,
   selectPlaylistByKey,
   selectPlaylistIndexAll,
+  selectPlaylistsByIndexKey,
   selectPlaylistTotal,
 } from '@app/database/playlists/playlist.selectors';
 import {
@@ -15,8 +15,10 @@ import {
   deletePlaylist,
   updatePlaylist,
 } from '@app/database/playlists/playlist.actions';
-import { SongId } from '@app/database/songs/song.model';
+import { Song } from '@app/database/songs/song.model';
 import { IdUpdate } from '@app/core/utils';
+import { reduceArray } from '@app/core/utils/reduce-array.util';
+import { uniq } from '@app/core/utils/uniq.util';
 
 @Injectable()
 export class PlaylistFacade {
@@ -48,10 +50,22 @@ export class PlaylistFacade {
     this.store.dispatch(addPlaylist({ playlist }));
   }
 
-  addSongsTo(playlist: Playlist, songs: SongId[]): void {
-    const changes = {
-      songs: [...songs, ...playlist.songs],
+  addSongsTo(playlist: Playlist, songs: Song[]): void {
+    const changes: Partial<Playlist> = {
+      songs: [...songs.map((s) => s.id), ...playlist.songs],
+      artists: [
+        ...songs
+          .map((s) => s.artists.map((a) => a.id))
+          .reduce(reduceArray(), []),
+        ...playlist.artists,
+      ].filter(uniq()),
+      albums: [...songs.map((s) => s.album.id), ...playlist.albums].filter(
+        uniq()
+      ),
     };
+
+    console.log(changes);
+
     this.update({ key: playlist.id, changes });
   }
 

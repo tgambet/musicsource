@@ -181,7 +181,15 @@ export class HelperEffects implements OnRunEffects {
               result === null ? this.helper.newPlaylist() : of(result)
             ),
             filter((result): result is Playlist => !!result),
-            tap((result) => this.playlists.addSongsTo(result, songs)),
+            concatTap((result) =>
+              this.songs
+                .getByKeys(songs)
+                .pipe(
+                  tap((songModels) =>
+                    this.playlists.addSongsTo(result, songModels)
+                  )
+                )
+            ),
             map((result) =>
               openSnack({
                 message: `Added to ${result.title}`,

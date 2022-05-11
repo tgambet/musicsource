@@ -1,7 +1,8 @@
 import { Opaque } from 'type-fest';
 import { hash } from '@app/core/utils';
-import { PictureId } from '@app/database/pictures/picture.model';
 import { SongId } from '@app/database/songs/song.model';
+import { AlbumId } from '@app/database/albums/album.model';
+import { ArtistId } from '@app/database/artists/artist.model';
 
 export type PlaylistId = Opaque<string, Playlist>;
 
@@ -13,7 +14,8 @@ export interface Playlist {
   title: string;
   description?: string;
   songs: SongId[];
-  pictureKey?: PictureId;
+  albums: AlbumId[];
+  artists: ArtistId[];
   createdOn: number; // TODO updatedOn
   likedOn?: number;
 }

@@ -233,7 +233,7 @@ export class LibraryLikesComponent implements OnInit {
             },
             album.year?.toString(),
           ],
-          cover$: this.pictures.getAlbumCover(album, 56),
+          cover$: this.pictures.getAlbumCover(album.id, 56),
           routerLink: ['/album', album.id],
           menuItems: [
             {
@@ -339,7 +339,7 @@ export class LibraryLikesComponent implements OnInit {
         artists.map((a) => ({
           title: a.name,
           label: ['Artist'],
-          cover$: this.pictures.getArtistCover(a, 56),
+          cover$: this.pictures.getArtistCover(a.id, 56),
           routerLink: ['/artist', a.id],
           menuItems: [
             {

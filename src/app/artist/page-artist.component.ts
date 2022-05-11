@@ -199,7 +199,7 @@ export class PageArtistComponent implements OnInit {
 
     this.cover$ = this.artist$.pipe(
       first(),
-      switchMap((artist) => this.pictures.getArtistCover(artist, 0))
+      switchMap((artist) => this.pictures.getArtistCover(artist.id, 0))
     );
 
     this.albums$ = this.albums.getByArtistKey(artistKey); // TODO hash vs name
