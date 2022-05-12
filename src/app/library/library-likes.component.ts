@@ -7,7 +7,7 @@ import {
 import { SelectOption } from '@app/core/components/select.component';
 import { Filter } from '@app/core/components/filters.component';
 import { ActivatedRoute, Router } from '@angular/router';
-import { filter, first, map } from 'rxjs/operators';
+import { concatMap, filter, first, map } from 'rxjs/operators';
 import { combineLatest, distinctUntilChanged, Observable, of } from 'rxjs';
 import { PlaylistFacade } from '@app/database/playlists/playlist.facade';
 import { AlbumFacade } from '@app/database/albums/album.facade';
@@ -167,7 +167,13 @@ export class LibraryLikesComponent implements OnInit {
         playlists.map((playlist) => ({
           title: playlist.title,
           label: ['Playlist', `${playlist.songs.length} songs`],
-          cover$: of(undefined),
+          cover$: this.pictures.getPlaylistCover(playlist, 56),
+          border$: this.pictures.getPlaylistCover(playlist, 56).pipe(
+            concatMap((cover) =>
+              cover ? this.pictures.getCoverColor(cover) : of(undefined)
+            ),
+            map((rgb) => rgb && `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, 0.5)`)
+          ),
           routerLink: ['/playlist', playlist.id],
           menuItems: [
             {
