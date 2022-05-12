@@ -16,7 +16,6 @@ import { PlaylistFacade } from '@app/database/playlists/playlist.facade';
 import { SongFacade } from '@app/database/songs/song.facade';
 import { HelperFacade } from '@app/helper/helper.facade';
 import { SongId } from '@app/database/songs/song.model';
-import { Vec3 } from 'node-vibrant/lib/color';
 
 @Component({
   selector: 'app-playlist',
@@ -119,7 +118,7 @@ export class PlaylistComponent implements OnInit {
     this.color$ = this.pictures.getPlaylistCover(this.playlist, 56).pipe(
       filter((cover): cover is string => !!cover),
       concatMap((cover) => this.pictures.getCoverColor(cover)),
-      filter((rgb): rgb is Vec3 => !!rgb),
+      filter((rgb): rgb is [number, number, number] => !!rgb),
       map((rgb) => `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, 0.50)`)
     );
 
