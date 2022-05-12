@@ -21,6 +21,7 @@ export interface ListItem {
   routerLink?: any[] | null;
   menuItems: MenuItem[];
   queue$?: Observable<SongId[]>;
+  border$?: Observable<string | undefined>;
 }
 
 @Directive({
@@ -48,11 +49,16 @@ export class OptMatRippleDirective extends MatRipple implements OnInit {
     >
       <div class="cover">
         <div class="inner-cover" [class.round]="round">
-          <img
-            *ngIf="item.cover$ | async as cover; else icon"
-            [src]="cover"
-            alt="cover"
-          />
+          <ng-container *ngIf="item.cover$ | async as cover; else icon">
+            <div
+              class="back-cover"
+              [style.backgroundColor]="item.border$ | async"
+              *ngIf="!!item.border$"
+            >
+              <img [src]="cover" alt="cover" />
+            </div>
+            <img [src]="cover" alt="cover" />
+          </ng-container>
           <ng-template #icon>
             <app-icon [path]="defaultIcon" [size]="26"></app-icon>
           </ng-template>
@@ -160,6 +166,18 @@ export class OptMatRippleDirective extends MatRipple implements OnInit {
       }
       .item:hover .controls {
         display: initial;
+      }
+      .back-cover {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        box-sizing: border-box;
+        padding: 16.6%;
+      }
+      .back-cover img {
+        width: 100%;
       }
     `,
   ],

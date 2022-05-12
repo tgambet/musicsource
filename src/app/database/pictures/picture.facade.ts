@@ -150,8 +150,10 @@ export class PictureFacade {
 
         if (artists.length === 1 && albums.length > 1) {
           return this.getArtistCover(artists[0], size);
-        } else {
+        } else if (albums.length > 0) {
           return this.getAlbumCover(albums[0], size);
+        } else {
+          return of(undefined);
         }
       })
     );

@@ -9,7 +9,7 @@ import { PictureFacade } from '@app/database/pictures/picture.facade';
 import { SongFacade } from '@app/database/songs/song.facade';
 import { PlaylistFacade } from '@app/database/playlists/playlist.facade';
 import { HelperFacade } from '@app/helper/helper.facade';
-import { filter, first, map } from 'rxjs/operators';
+import { filter, map } from 'rxjs/operators';
 import { MenuItem } from '@app/core/components/menu.component';
 
 @Component({
@@ -164,7 +164,6 @@ export class PagePlaylistComponent implements OnInit {
     const playlistKey = this.route.snapshot.data.info as PlaylistId;
 
     this.playlist$ = this.playlists.getByKey(playlistKey).pipe(
-      first(),
       filter((playlist): playlist is Playlist => !!playlist),
       shareReplay(1)
     );
