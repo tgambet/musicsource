@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { Playlist, PlaylistId } from '@app/database/playlists/playlist.model';
-import { Observable, of, switchMap } from 'rxjs';
+import { concatMap, Observable, shareReplay, switchMap } from 'rxjs';
 import { Song } from '@app/database/songs/song.model';
 import { ActivatedRoute } from '@angular/router';
 import { Icons } from '@app/core/utils/icons.util';
@@ -9,7 +9,7 @@ import { PictureFacade } from '@app/database/pictures/picture.facade';
 import { SongFacade } from '@app/database/songs/song.facade';
 import { PlaylistFacade } from '@app/database/playlists/playlist.facade';
 import { HelperFacade } from '@app/helper/helper.facade';
-import { filter, map } from 'rxjs/operators';
+import { filter, first, map } from 'rxjs/operators';
 import { MenuItem } from '@app/core/components/menu.component';
 
 @Component({
@@ -26,10 +26,10 @@ import { MenuItem } from '@app/core/components/menu.component';
                   <div class="inner-cover" [style.backgroundColor]="color">
                     <img [src]="cover" alt="cover" />
                   </div>
-                  <app-icon
+                  <!--<app-icon
                     class="icon-cover"
                     [path]="icons.playlistMusic"
-                  ></app-icon>
+                  ></app-icon>-->
                 </ng-container>
               </ng-container>
               <ng-template #icon>
@@ -163,15 +163,23 @@ export class PagePlaylistComponent implements OnInit {
   ngOnInit(): void {
     const playlistKey = this.route.snapshot.data.info as PlaylistId;
 
-    this.playlist$ = this.playlists
-      .getByKey(playlistKey)
-      .pipe(filter((playlist): playlist is Playlist => !!playlist));
+    this.playlist$ = this.playlists.getByKey(playlistKey).pipe(
+      first(),
+      filter((playlist): playlist is Playlist => !!playlist),
+      shareReplay(1)
+    );
 
     this.cover$ = this.playlist$.pipe(
       switchMap((playlist) => this.pictures.getPlaylistCover(playlist, 264))
     );
 
-    this.color$ = of('rgba(0,0,0,0.66)');
+    this.color$ = this.playlist$.pipe(
+      switchMap((playlist) => this.pictures.getPlaylistCover(playlist, 56)),
+      filter((cover): cover is string => !!cover),
+      concatMap((cover) => this.pictures.getCoverColor(cover)),
+      filter((rgb): rgb is [number, number, number] => !!rgb),
+      map((rgb) => `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, 0.50)`)
+    );
 
     this.songs$ = this.playlist$.pipe(
       switchMap((playlist) => this.songs.getByKeys(playlist.songs))

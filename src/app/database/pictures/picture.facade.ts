@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { concatMap, Observable, of } from 'rxjs';
+import { concatMap, from, Observable, of } from 'rxjs';
 import { Picture } from '@app/database/pictures/picture.model';
 import { catchError, filter, first, map, switchMap, tap } from 'rxjs/operators';
 import { AlbumId } from '@app/database/albums/album.model';
@@ -151,12 +151,18 @@ export class PictureFacade {
         if (artists.length === 1 && albums.length > 1) {
           return this.getArtistCover(artists[0], size);
         } else {
-          return this.getAlbumCover(
-            albums[Math.floor(Math.random() * albums.length)],
-            size
-          );
+          return this.getAlbumCover(albums[0], size);
         }
       })
+    );
+  }
+
+  getCoverColor(
+    cover: string
+  ): Observable<[number, number, number] | undefined> {
+    return from(import('node-vibrant')).pipe(
+      concatMap((vibrant) => vibrant.default.from(cover).getPalette()),
+      map((palette) => palette.Muted?.getRgb())
     );
   }
 
