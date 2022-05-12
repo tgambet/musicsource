@@ -26,6 +26,7 @@ import {
   mdiHome,
   mdiMagnify,
   mdiMenuDown,
+  mdiMenuLeft,
   mdiMenuUp,
   mdiMinusCircleOutline,
   mdiMusicBoxMultiple,
@@ -84,6 +85,7 @@ export class Icons {
   static home = mdiHome;
   static library = mdiMusicBoxMultiple;
   static menuDown = mdiMenuDown;
+  static menuLeft = mdiMenuLeft;
   static menuUp = mdiMenuUp;
   static minusCircleOutline = mdiMinusCircleOutline;
   static pause = mdiPause;

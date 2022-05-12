@@ -17,7 +17,7 @@ import { HelperFacade } from '@app/helper/helper.facade';
             <app-icon-likes2 [fullWidth]="true"></app-icon-likes2>
           </div>
           <div class="metadata">
-            <app-title>Your Likes</app-title>
+            <h1>Your Likes</h1>
             <p>
               <span>Auto playlist</span>
             </p>
