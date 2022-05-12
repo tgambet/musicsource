@@ -25,6 +25,7 @@ import { MenuItem } from '@app/core/components/menu.component';
 import { PictureFacade } from '@app/database/pictures/picture.facade';
 import { SongFacade } from '@app/database/songs/song.facade';
 import { HelperFacade } from '@app/helper/helper.facade';
+import { BreakpointObserver } from '@angular/cdk/layout';
 
 @Component({
   selector: 'app-player',
@@ -70,9 +71,9 @@ import { HelperFacade } from '@app/helper/helper.facade';
       >
         <app-icon
           [path]="playing.value ? icons.pause : icons.play"
-          [size]="40"
+          [size]="isLargeDisplay.matches ? 40 : 34"
+          *ngIf="isLargeDisplay$ | async as isLargeDisplay"
         ></app-icon>
-        <!-- TODO 34px on small screen-->
       </button>
       <button
         mat-icon-button
@@ -114,6 +115,8 @@ import { HelperFacade } from '@app/helper/helper.facade';
           [disableRipple]="true"
           color="accent"
           (click)="toggleLiked(song)"
+          [class.liked]="!!song.likedOn"
+          class="toggle"
         >
           <app-icon
             [path]="!!song.likedOn ? icons.heart : icons.heartOutline"
@@ -126,57 +129,71 @@ import { HelperFacade } from '@app/helper/helper.facade';
       </div>
     </div>
     <div class="right" (click)="toggleMenu()">
-      <div class="volume">
-        <button
-          mat-icon-button
-          [disableRipple]="true"
-          color="accent"
-          (mouseenter)="showVolume()"
-          (click)="toggleMute(); $event.stopPropagation()"
-          (mouseup)="$event.stopPropagation()"
-        >
-          <app-icon
-            [path]="icons.volumeHigh"
-            *ngIf="(muted$ | async) === false"
-          ></app-icon>
-          <app-icon
-            [path]="icons.volumeOff"
-            *ngIf="(muted$ | async) === true"
-          ></app-icon>
-        </button>
-        <mat-slider
-          [class.hidden]="!isVolumeShown"
-          [min]="0"
-          [max]="1"
-          [step]="0.01"
-          (input)="setVolume($event.value === null ? 1 : $event.value)"
-          [value]="volume$ | async"
-          (click)="$event.stopPropagation()"
-        ></mat-slider>
-      </div>
-      <ng-container *ngIf="repeat$ | async as repeat">
-        <button
-          mat-icon-button
-          [disableRipple]="true"
-          color="accent"
-          (click)="setRepeat(repeat); $event.stopPropagation()"
-          [class.active]="repeat !== 'none'"
-        >
-          <app-icon
-            [path]="repeat === 'once' ? icons.repeatOnce : icons.repeat"
-          ></app-icon>
-        </button>
-      </ng-container>
       <button
-        class="shuffle"
-        [class.rotate]="shuffleRotate"
         mat-icon-button
         [disableRipple]="true"
         color="accent"
-        (click)="shuffle(); $event.stopPropagation()"
+        class="expand"
       >
-        <app-icon [path]="icons.shuffle"></app-icon>
+        <app-icon
+          [path]="icons.menuLeft"
+          [size]="isLargeDisplay.matches ? 36 : 24"
+          *ngIf="isLargeDisplay$ | async as isLargeDisplay"
+        ></app-icon>
       </button>
+      <div class="right-controls">
+        <div class="volume">
+          <button
+            mat-icon-button
+            [disableRipple]="true"
+            color="accent"
+            (mouseenter)="showVolume()"
+            (click)="toggleMute(); $event.stopPropagation()"
+            (mouseup)="$event.stopPropagation()"
+          >
+            <app-icon
+              [path]="icons.volumeHigh"
+              *ngIf="(muted$ | async) === false"
+            ></app-icon>
+            <app-icon
+              [path]="icons.volumeOff"
+              *ngIf="(muted$ | async) === true"
+            ></app-icon>
+          </button>
+          <mat-slider
+            [class.hidden]="!isVolumeShown"
+            [min]="0"
+            [max]="1"
+            [step]="0.01"
+            (input)="setVolume($event.value === null ? 1 : $event.value)"
+            [value]="volume$ | async"
+            (click)="$event.stopPropagation()"
+          ></mat-slider>
+        </div>
+        <ng-container *ngIf="repeat$ | async as repeat">
+          <button
+            mat-icon-button
+            [disableRipple]="true"
+            color="accent"
+            (click)="setRepeat(repeat); $event.stopPropagation()"
+            [class.active]="repeat !== 'none'"
+          >
+            <app-icon
+              [path]="repeat === 'once' ? icons.repeatOnce : icons.repeat"
+            ></app-icon>
+          </button>
+        </ng-container>
+        <button
+          class="shuffle"
+          [class.rotate]="shuffleRotate"
+          mat-icon-button
+          [disableRipple]="true"
+          color="accent"
+          (click)="shuffle(); $event.stopPropagation()"
+        >
+          <app-icon [path]="icons.shuffle"></app-icon>
+        </button>
+      </div>
       <button
         mat-icon-button
         [disableRipple]="true"
@@ -186,8 +203,9 @@ import { HelperFacade } from '@app/helper/helper.facade';
       >
         <app-icon
           [path]="icons.menuUp"
-          [size]="36"
           [class.up]="isPlayRoute"
+          [size]="isLargeDisplay.matches ? 36 : 24"
+          *ngIf="isLargeDisplay$ | async as isLargeDisplay"
         ></app-icon>
       </button>
     </div>
@@ -199,7 +217,7 @@ import { HelperFacade } from '@app/helper/helper.facade';
         align-items: center;
         background-color: #212121;
         white-space: nowrap;
-        padding-right: 12px;
+        padding-right: 8px;
         height: 66px;
         position: relative;
         transition: height 300ms ease;
@@ -226,6 +244,9 @@ import { HelperFacade } from '@app/helper/helper.facade';
         cursor: pointer;
       }
       @media (min-width: 950px) {
+        :host {
+          padding-right: 12px;
+        }
         :host mat-slider.main {
           width: calc(100% - 12px);
         }
@@ -244,6 +265,7 @@ import { HelperFacade } from '@app/helper/helper.facade';
         margin-right: auto;
       }
       .left button {
+        width: 38px;
       }
       .time {
         color: rgb(170, 170, 170);
@@ -268,7 +290,7 @@ import { HelperFacade } from '@app/helper/helper.facade';
       .meta {
         display: flex;
         flex-direction: column;
-        margin: 0 0 0 16px;
+        margin: 0 0 0 8px;
         overflow: hidden;
       }
       .meta .top {
@@ -276,27 +298,62 @@ import { HelperFacade } from '@app/helper/helper.facade';
       }
       .meta .sub {
         color: #aaa;
+        font-size: 14px;
       }
       .meta span {
         text-overflow: ellipsis;
         overflow: hidden;
       }
-      .controls button {
+      .controls {
+        color: #aaa;
+      }
+      .controls .toggle {
         display: none;
+      }
+      .controls .liked {
+        color: white;
       }
       .right {
         margin-left: auto;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
       }
-      .right button {
+      .right button,
+      .right app-menu {
         color: #aaa;
+      }
+      .right-controls {
         display: none;
       }
       .right button.active {
         color: white;
       }
+      .right .menu,
+      .right .expand {
+        width: 32px;
+        display: initial;
+      }
       .right .menu {
         color: white;
-        display: initial;
+      }
+      .right-controls button {
+        width: 34px;
+      }
+      .right-controls:hover,
+      .expand:hover ~ .right-controls {
+        display: flex;
+        align-items: center;
+        position: absolute;
+        right: 32px;
+        top: -4px;
+        z-index: 10;
+        background: linear-gradient(
+          to right,
+          transparent,
+          #212121 12px,
+          #212121
+        );
       }
       .menu app-icon {
         transition: transform 300ms ease;
@@ -307,20 +364,20 @@ import { HelperFacade } from '@app/helper/helper.facade';
       }
       .volume {
         position: relative;
-        display: none;
+        display: flex;
+        align-items: center;
+        /*display: none;*/
       }
       .volume mat-slider {
-        position: absolute;
+        /*position: absolute;
         right: 54px;
-        top: -4px;
+        top: -4px;*/
         transition: opacity 300ms ease;
         cursor: pointer;
         min-width: 80px;
         width: 80px;
-      }
-      .volume mat-slider.hidden {
-        opacity: 0;
-        display: none;
+        order: -1;
+        margin: 0 8px;
       }
       a[href] {
         text-decoration: none;
@@ -336,9 +393,13 @@ import { HelperFacade } from '@app/helper/helper.facade';
         .left button {
           padding: 8px;
           box-sizing: content-box;
+          width: 40px;
         }
         .time {
           display: inline-block;
+        }
+        .meta {
+          margin-left: 16px;
         }
         .cover {
           display: initial;
@@ -346,7 +407,7 @@ import { HelperFacade } from '@app/helper/helper.facade';
         .meta {
           margin-right: 8px;
         }
-        .controls button {
+        .controls .toggle {
           display: initial;
         }
         .right {
@@ -356,8 +417,40 @@ import { HelperFacade } from '@app/helper/helper.facade';
           display: initial;
           margin-right: 8px;
         }
+        .right-controls:hover,
+        .expand:hover ~ .right-controls {
+          right: 40px;
+        }
         .volume {
           display: inline-flex;
+        }
+        .volume mat-slider {
+          margin: 0 12px;
+        }
+      }
+      @media (min-width: 1150px) {
+        .right {
+          padding-left: 0;
+        }
+        .right .expand {
+          display: none;
+        }
+        .right-controls,
+        .right-controls:hover {
+          display: flex;
+          align-items: center;
+          position: initial;
+        }
+        .right button {
+          width: 40px;
+        }
+        .volume mat-slider {
+          position: absolute;
+          right: 54px;
+          top: -4px;
+        }
+        .volume mat-slider.hidden {
+          display: none;
         }
       }
       .shuffle.rotate app-icon {
@@ -406,6 +499,8 @@ export class PlayerComponent implements OnInit, OnDestroy {
   subscription = new Subscription();
   shuffleRotate = false;
 
+  isLargeDisplay$ = this.breakpointObserver.observe(['(min-width: 950px)']);
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -413,7 +508,8 @@ export class PlayerComponent implements OnInit, OnDestroy {
     private pictures: PictureFacade,
     private songs: SongFacade,
     private helper: HelperFacade,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private breakpointObserver: BreakpointObserver
   ) {}
 
   @HostListener('mouseleave')
