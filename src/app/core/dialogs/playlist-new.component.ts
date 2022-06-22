@@ -2,8 +2,8 @@ import { ChangeDetectionStrategy, Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import {
   AbstractControl,
-  FormControl,
-  FormGroup,
+  UntypedFormControl,
+  UntypedFormGroup,
   ValidationErrors,
   Validators,
 } from '@angular/forms';
@@ -91,15 +91,15 @@ export interface PlaylistData {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PlaylistNewComponent {
-  form: FormGroup;
+  form: UntypedFormGroup;
 
   constructor(
     private playlists: PlaylistFacade,
     private dialog: MatDialogRef<PlaylistNewComponent>,
     @Inject(MAT_DIALOG_DATA) public data?: PlaylistData
   ) {
-    this.form = new FormGroup({
-      title: new FormControl(data?.title, {
+    this.form = new UntypedFormGroup({
+      title: new UntypedFormControl(data?.title, {
         validators: [Validators.required],
         asyncValidators: (
           control: AbstractControl
@@ -112,7 +112,7 @@ export class PlaylistNewComponent {
           ),
         updateOn: 'change',
       }),
-      description: new FormControl(data?.description),
+      description: new UntypedFormControl(data?.description),
     });
   }
 
