@@ -1,11 +1,27 @@
 {
   "name": "MusicSource",
   "short_name": "MusicSource",
+  "description": "A modern desktop player for your personal music library.",
   "theme_color": "#000000",
   "background_color": "#131313",
   "display": "minimal-ui",
   "scope": "./",
   "start_url": "/index.html",
+  "orientation": "any",
+  "screenshots": [
+    {
+      "src": "assets/welcome/w2.webp",
+      "sizes": "1025x804",
+      "type": "image/webp",
+      "label": "MusicSource - Artist view"
+    },
+    {
+      "src": "assets/welcome/w4.webp",
+      "sizes": "1025x804",
+      "type": "image/webp",
+      "label": "MusicSource - Library view"
+    }
+  ],
   "icons": [
     {
       "src": "assets/icons/icon-72x72.png",
@@ -54,6 +70,13 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable any"
+    },
+    {
+      "src": "assets/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
     }
-  ]
+  ],
+  "shortcuts": []
 }
