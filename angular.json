@@ -52,7 +52,8 @@
               "typedarray-to-buffer",
               "debug",
               "readable-web-to-node-stream",
-              "node-vibrant"
+              "node-vibrant",
+              "process"
             ],
             "vendorChunk": true,
             "extractLicenses": false,
