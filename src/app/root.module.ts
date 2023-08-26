@@ -41,12 +41,11 @@ export const metaReducers: MetaReducer<any>[] = [];
       enabled: environment.production,
     }),
     RouterModule.forRoot(routes, {
-      relativeLinkResolution: 'corrected',
-      scrollPositionRestoration: 'disabled',
-      // anchorScrolling: 'enabled',
-      // onSameUrlNavigation: 'reload',
-      preloadingStrategy: PreloadAllModules,
-    }),
+    scrollPositionRestoration: 'disabled',
+    // anchorScrolling: 'enabled',
+    // onSameUrlNavigation: 'reload',
+    preloadingStrategy: PreloadAllModules
+}),
     StoreModule.forRoot(
       {},
       {
