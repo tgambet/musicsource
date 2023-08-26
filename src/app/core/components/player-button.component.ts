@@ -136,13 +136,11 @@ export class PlayerButtonComponent implements OnInit {
 
   ngOnInit(): void {
     this.isCurrent$ = this.currentIfMatchAllQueue
-      ? this.player
-          .getQueue$()
-          .pipe(
-            map((queue) => ({
-              value: arrayEqualsUnordered(queue, this.queue),
-            })),
-          )
+      ? this.player.getQueue$().pipe(
+          map((queue) => ({
+            value: arrayEqualsUnordered(queue, this.queue),
+          })),
+        )
       : this.player.getCurrentSong$().pipe(
           map((current) => ({
             value: this.queue.length > 0 && current === this.queue[this.index],
