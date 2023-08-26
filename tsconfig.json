@@ -29,6 +29,9 @@
       ],
       "@env/*": [
         "src/environments/*"
+      ],
+      "ngrx-idb": [
+        "dist/ngrx-idb"
       ]
     },
     "useDefineForClassFields": false
