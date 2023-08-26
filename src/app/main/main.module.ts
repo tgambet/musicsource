@@ -25,7 +25,7 @@ const routes: Routes = [
         redirectTo: 'library',
         pathMatch: 'full',
         data: { animation: 'default' },
-        canActivate: [MainGuard],
+        // canActivate: [MainGuard],
       },
       {
         path: 'library',
