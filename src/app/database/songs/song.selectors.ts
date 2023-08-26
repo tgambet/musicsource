@@ -23,19 +23,19 @@ export const selectSongByKey = (key: string) =>
 
 export const selectSongByKeys = (keys: string[]) =>
   createSelector(selectSongEntities, (entities) =>
-    keys.map((k) => entities[k]).filter((s): s is Song => !!s)
+    keys.map((k) => entities[k]).filter((s): s is Song => !!s),
   );
 
 export const selectSongByAlbumKey = (key: AlbumId) =>
   createSelector(
     selectSongEntities,
     selectSongIndexEntities('albumId'),
-    (entities, index) => index[key]?.map((k) => entities[k as any] as Song)
+    (entities, index) => index[key]?.map((k) => entities[k as any] as Song),
   );
 
 export const selectSongByArtistKey = (key: ArtistId) =>
   createSelector(
     selectSongEntities,
     selectSongIndexEntities('artists'),
-    (entities, index) => index[key]?.map((k) => entities[k as any] as Song)
+    (entities, index) => index[key]?.map((k) => entities[k as any] as Song),
   );

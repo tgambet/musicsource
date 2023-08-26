@@ -13,7 +13,7 @@ export class FileService {
   openDirectory(): Observable<DirectoryEntry> {
     return defer(() => showDirectoryPicker()).pipe(
       tapError((err) => console.log(err)),
-      map((handle) => entryFromHandle(handle) as DirectoryEntry)
+      map((handle) => entryFromHandle(handle) as DirectoryEntry),
       // If user has aborted then complete
       // catchError(e => e.code === 20 ? EMPTY : throwError(e))
     );
@@ -21,9 +21,9 @@ export class FileService {
 
   iterate(dir: DirectoryEntry): Observable<Entry> {
     const generator: (
-      directory: DirectoryEntry
+      directory: DirectoryEntry,
     ) => AsyncGenerator<Entry, void, void> = async function* (
-      directory: DirectoryEntry
+      directory: DirectoryEntry,
     ) {
       for await (const handle of directory.handle.values()) {
         const entry = entryFromHandle(handle, directory.path);

@@ -2,7 +2,7 @@ import { ActionReducer, createReducer } from '@ngrx/store';
 import { CoreState, initialState } from '@app/core/store/core.state';
 
 export const coreReducer: ActionReducer<CoreState> = createReducer(
-  initialState
+  initialState,
   // on(setSpotifyToken, (state, { token, expiresAt }) => ({
   //   ...state,
   //   spotify: { token, expiresAt },

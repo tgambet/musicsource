@@ -111,7 +111,7 @@ export class LibraryPlaylistsComponent implements OnInit {
     private helper: HelperFacade,
     private playlists: PlaylistFacade,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
   ) {}
 
   ngOnInit(): void {
@@ -121,7 +121,7 @@ export class LibraryPlaylistsComponent implements OnInit {
         direction: ((params.get('dir') || 'desc') === 'asc'
           ? 'next'
           : 'prev') as IDBCursorDirection,
-      }))
+      })),
     );
 
     this.playlists$ = sort$.pipe(
@@ -137,12 +137,12 @@ export class LibraryPlaylistsComponent implements OnInit {
               ? of(...mods).pipe(
                   mergeMap((model, index) => of(model).pipe(delay(10 * index))),
                   bufferWhen(() => scheduled(of(1), animationFrameScheduler)),
-                  scan((acc, curr) => [...acc, ...curr])
+                  scan((acc, curr) => [...acc, ...curr]),
                 )
               : of(mods);
-          })
-        )
-      )
+          }),
+        ),
+      ),
 
       // switchMap((sort) => {
       //   const predicate = sort.likes

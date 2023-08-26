@@ -1,6 +1,6 @@
 import { createReducer, on } from '@ngrx/store';
 import { Song } from '@app/database/songs/song.model';
-import { createIDBEntityAdapter, IDBEntityState } from '@creasource/ngrx-idb';
+import { createIDBEntityAdapter, IDBEntityState } from 'ngrx-idb';
 import {
   addSong,
   loadSongs,
@@ -30,7 +30,7 @@ const indexes = [
 
 const indexNames = indexes.map((i) => i.name);
 
-export type SongIndex = typeof indexNames[number];
+export type SongIndex = (typeof indexNames)[number];
 
 export const songAdapter = createIDBEntityAdapter<Song, SongIndex>({
   keySelector: (model) => model.id,
@@ -47,12 +47,12 @@ export const songReducer = createReducer(
   on(removeAllSongs, (state) => songAdapter.removeAll(state)),
   on(loadSongs, (state) => state),
   on(loadSongsSuccess, (state, action) =>
-    songAdapter.setAll(action.data, state)
+    songAdapter.setAll(action.data, state),
   ),
   on(loadSongsFailure, (state) => state),
   on(updateSong, (state, action) =>
-    songAdapter.updateOne(action.update, state)
+    songAdapter.updateOne(action.update, state),
   ),
   on(addSong, (state, action) => songAdapter.addOne(action.song, state)),
-  on(upsertSong, (state, action) => songAdapter.upsertOne(action.song, state))
+  on(upsertSong, (state, action) => songAdapter.upsertOne(action.song, state)),
 );

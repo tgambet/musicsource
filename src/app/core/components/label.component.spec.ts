@@ -55,7 +55,7 @@ describe('LabelComponent', () => {
     expect(elem.querySelectorAll('p.bottom a')[1].href).toContain('dest2');
     expect(elem.querySelectorAll('span.separator')).toHaveSize(2);
     expect(
-      elem.querySelector('p.bottom span:not(.separator)').textContent
+      elem.querySelector('p.bottom span:not(.separator)').textContent,
     ).toContain('text3');
   });
 });

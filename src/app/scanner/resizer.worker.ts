@@ -17,7 +17,7 @@ addEventListener('message', async ({ data }) => {
 
   if (height === 0) {
     const src = await firstValueFrom(
-      readAsDataURL(new Blob([picture.data], { type: picture.format }))
+      readAsDataURL(new Blob([picture.data], { type: picture.format })),
     );
     postMessage({ id, result: { src, width, height } });
     return;
@@ -43,7 +43,7 @@ addEventListener('message', async ({ data }) => {
         // resizeHeight: height * 2,
         // resizeWidth: width * 2,
         resizeQuality: 'high',
-      }
+      },
     );
     ctx.drawImage(bitmap, 0, 0, width, height);
   } catch (e) {

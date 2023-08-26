@@ -1,6 +1,6 @@
 import { createReducer, on } from '@ngrx/store';
 import { Entry } from '@app/database/entries/entry.model';
-import { createIDBEntityAdapter, IDBEntityState } from '@creasource/ngrx-idb';
+import { createIDBEntityAdapter, IDBEntityState } from 'ngrx-idb';
 import {
   addEntry,
   loadEntries,
@@ -13,7 +13,7 @@ export const entryFeatureKey = 'entries';
 
 export const indexes = ['parent'] as const;
 
-export type EntryIndex = typeof indexes[number];
+export type EntryIndex = (typeof indexes)[number];
 
 export type EntryState = IDBEntityState<Entry, EntryIndex>;
 
@@ -30,8 +30,8 @@ export const entryReducer = createReducer(
   on(removeAllEntries, (state) => entryAdapter.removeAll(state)),
   on(loadEntries, (state) => state),
   on(loadEntriesSuccess, (state, action) =>
-    entryAdapter.setAll(action.data, state)
+    entryAdapter.setAll(action.data, state),
   ),
   on(loadEntriesFailure, (state) => state),
-  on(addEntry, (state, { entry }) => entryAdapter.addOne(entry, state))
+  on(addEntry, (state, { entry }) => entryAdapter.addOne(entry, state)),
 );

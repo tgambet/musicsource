@@ -19,7 +19,10 @@ import {
   removeSongFromQueue,
   togglePlay,
 } from './helper.actions';
-import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import {
+  MatLegacyDialog as MatDialog,
+  MatLegacyDialogRef as MatDialogRef,
+} from '@angular/material/legacy-dialog';
 import {
   PlaylistData,
   PlaylistNewComponent,
@@ -43,7 +46,7 @@ export class HelperFacade {
   constructor(
     private router: Router,
     private store: Store,
-    private dialog: MatDialog
+    private dialog: MatDialog,
   ) {}
 
   newPlaylist(): Observable<Playlist> {
@@ -61,13 +64,13 @@ export class HelperFacade {
           description: data.description,
         })),
         tap((playlist) =>
-          this.store.dispatch(PlaylistsActions.addPlaylist({ playlist }))
-        )
+          this.store.dispatch(PlaylistsActions.addPlaylist({ playlist })),
+        ),
       );
   }
 
   newPlaylistDialog(
-    data?: PlaylistData
+    data?: PlaylistData,
   ): MatDialogRef<PlaylistNewComponent, null | PlaylistData> {
     return this.dialog.open(PlaylistNewComponent, {
       width: '90%',
@@ -89,7 +92,7 @@ export class HelperFacade {
         height: 'auto',
         panelClass: 'playlists-dialog',
         scrollStrategy: new NoopScrollStrategy(),
-      }
+      },
     );
   }
 
@@ -117,7 +120,7 @@ export class HelperFacade {
     this.addSongsToQueue(
       [song],
       next,
-      next ? 'Song will play next' : 'Song added to Queue'
+      next ? 'Song will play next' : 'Song added to Queue',
     );
   }
 

@@ -128,14 +128,14 @@ export class LibrarySongsComponent implements OnInit {
   currentSongPath$ = this.player.getCurrentSong$().pipe(
     filter((id): id is SongId => !!id),
     switchMap((path) => this.songs.getByKey(path)),
-    map((song) => song?.id)
+    map((song) => song?.id),
   );
 
   constructor(
     private route: ActivatedRoute,
     private player: PlayerFacade,
     private songs: SongFacade,
-    private scroller: ScrollerService
+    private scroller: ScrollerService,
   ) {}
 
   ngOnInit(): void {
@@ -165,7 +165,7 @@ export class LibrarySongsComponent implements OnInit {
         direction: ((params.get('dir') || 'desc') === 'asc'
           ? 'next'
           : 'prev') as IDBCursorDirection,
-      }))
+      })),
     );
     const songs$ = sort$.pipe(
       switchMap((sort) =>
@@ -173,10 +173,10 @@ export class LibrarySongsComponent implements OnInit {
           .getAll(sort.index as SongIndex)
           .pipe(
             map((songs) =>
-              sort.direction === 'next' ? songs : [...songs].reverse()
-            )
-          )
-      )
+              sort.direction === 'next' ? songs : [...songs].reverse(),
+            ),
+          ),
+      ),
     );
 
     const a$ = combineLatest([
@@ -190,7 +190,7 @@ export class LibrarySongsComponent implements OnInit {
 
         const topCount = Math.max(
           0,
-          Math.min(Math.floor(scrollTop / 49), total - 35)
+          Math.min(Math.floor(scrollTop / 49), total - 35),
         );
         const bottomCount = Math.max(0, total - 35 - topCount);
 
@@ -205,20 +205,20 @@ export class LibrarySongsComponent implements OnInit {
       share({
         connector: () => new ReplaySubject(1),
         resetOnRefCountZero: true,
-      })
+      }),
     );
 
     this.top$ = a$.pipe(
       map(({ top }) => top),
-      observeOn(animationFrameScheduler)
+      observeOn(animationFrameScheduler),
     );
     this.bottom$ = a$.pipe(
       map(({ bottom }) => bottom),
-      observeOn(animationFrameScheduler)
+      observeOn(animationFrameScheduler),
     );
     this.songs$ = a$.pipe(
       map(({ songs }) => songs),
-      observeOn(animationFrameScheduler)
+      observeOn(animationFrameScheduler),
     );
   }
 

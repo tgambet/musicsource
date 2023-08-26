@@ -6,7 +6,7 @@ import { DOCUMENT } from '@angular/common';
 export class SupportService {
   constructor(
     private platform: Platform,
-    @Inject(DOCUMENT) private document: Document
+    @Inject(DOCUMENT) private document: Document,
   ) {}
 
   checkFileSystemSupport(): boolean {

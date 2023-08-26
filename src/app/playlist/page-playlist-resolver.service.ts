@@ -11,7 +11,7 @@ export class PagePlaylistResolver implements Resolve<PlaylistId> {
   constructor(
     private router: Router,
     private storage: DatabaseService,
-    private playlists: PlaylistFacade
+    private playlists: PlaylistFacade,
   ) {}
 
   resolve(route: ActivatedRouteSnapshot): Observable<PlaylistId> {
@@ -25,15 +25,15 @@ export class PagePlaylistResolver implements Resolve<PlaylistId> {
     return this.playlists.getByKey(id as PlaylistId).pipe(
       first(),
       concatMap((stored) =>
-        stored ? of(stored) : this.storage.get$<Playlist>('playlists', id)
+        stored ? of(stored) : this.storage.get$<Playlist>('playlists', id),
       ),
       concatMap((model) =>
-        model ? of(model.id) : throwError(() => 'not found')
+        model ? of(model.id) : throwError(() => 'not found'),
       ),
       catchError(() => {
         this.router.navigate(['/library/playlists']);
         return EMPTY;
-      })
+      }),
     );
 
     // return this.library.getPlaylistByHash(id).pipe(

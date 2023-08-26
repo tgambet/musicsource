@@ -9,13 +9,13 @@ import {
   updatePlaylist,
 } from './playlist.actions';
 import { Playlist } from '@app/database/playlists/playlist.model';
-import { createIDBEntityAdapter, IDBEntityState } from '@creasource/ngrx-idb';
+import { createIDBEntityAdapter, IDBEntityState } from 'ngrx-idb';
 
 export const playlistFeatureKey = 'playlists';
 
 const indexes = ['title', 'createdOn', 'likedOn'] as const;
 
-export type PlaylistIndex = typeof indexes[number];
+export type PlaylistIndex = (typeof indexes)[number];
 
 export type PlaylistState = IDBEntityState<Playlist, PlaylistIndex>;
 
@@ -32,16 +32,16 @@ export const playlistReducer = createReducer(
   on(removeAllPlaylists, (state) => playlistAdapter.removeAll(state)),
   on(loadPlaylists, (state) => state),
   on(loadPlaylistsSuccess, (state, action) =>
-    playlistAdapter.setAll(action.data, state)
+    playlistAdapter.setAll(action.data, state),
   ),
   on(loadPlaylistsFailure, (state) => state),
   on(updatePlaylist, (state, action) =>
-    playlistAdapter.updateOne(action.update, state)
+    playlistAdapter.updateOne(action.update, state),
   ),
   on(addPlaylist, (state, action) =>
-    playlistAdapter.addOne(action.playlist, state)
+    playlistAdapter.addOne(action.playlist, state),
   ),
   on(deletePlaylist, (state, action) =>
-    playlistAdapter.removeOne(action.id, state)
-  )
+    playlistAdapter.removeOne(action.id, state),
+  ),
 );

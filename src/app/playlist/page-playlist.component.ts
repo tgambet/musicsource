@@ -157,7 +157,7 @@ export class PagePlaylistComponent implements OnInit {
     private pictures: PictureFacade,
     private playlists: PlaylistFacade,
     private songs: SongFacade,
-    private helper: HelperFacade
+    private helper: HelperFacade,
   ) {}
 
   ngOnInit(): void {
@@ -165,11 +165,11 @@ export class PagePlaylistComponent implements OnInit {
 
     this.playlist$ = this.playlists.getByKey(playlistKey).pipe(
       filter((playlist): playlist is Playlist => !!playlist),
-      shareReplay(1)
+      shareReplay(1),
     );
 
     this.cover$ = this.playlist$.pipe(
-      switchMap((playlist) => this.pictures.getPlaylistCover(playlist, 264))
+      switchMap((playlist) => this.pictures.getPlaylistCover(playlist, 264)),
     );
 
     this.color$ = this.playlist$.pipe(
@@ -177,11 +177,11 @@ export class PagePlaylistComponent implements OnInit {
       filter((cover): cover is string => !!cover),
       concatMap((cover) => this.pictures.getCoverColor(cover)),
       filter((rgb): rgb is [number, number, number] => !!rgb),
-      map((rgb) => `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, 0.50)`)
+      map((rgb) => `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, 0.50)`),
     );
 
     this.songs$ = this.playlist$.pipe(
-      switchMap((playlist) => this.songs.getByKeys(playlist.songs))
+      switchMap((playlist) => this.songs.getByKeys(playlist.songs)),
     );
 
     this.menuItems$ = this.playlist$.pipe(
@@ -211,7 +211,7 @@ export class PagePlaylistComponent implements OnInit {
           icon: this.icons.delete,
           click: () => this.helper.deletePlaylist(playlist.id),
         },
-      ])
+      ]),
     );
 
     // this.songs$ = this.info$.pipe(

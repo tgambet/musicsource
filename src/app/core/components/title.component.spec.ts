@@ -28,7 +28,7 @@ describe('TitleComponent', () => {
     // component.title = 'Title';
     fixture.detectChanges();
     expect(fixture.nativeElement.querySelector('h1').textContent).toContain(
-      'Title'
+      'Title',
     );
   });
 
@@ -37,7 +37,7 @@ describe('TitleComponent', () => {
     component.head = 'Head';
     fixture.detectChanges();
     expect(fixture.nativeElement.querySelector('p').textContent).toContain(
-      'Head'
+      'Head',
     );
   });
 
@@ -54,7 +54,7 @@ describe('TitleComponent', () => {
     expect(fixture.nativeElement.querySelectorAll('a')).toHaveSize(1);
     expect(fixture.nativeElement.querySelector('a')).not.toBeNull();
     expect(fixture.nativeElement.querySelector('a').href).toContain(
-      'destination'
+      'destination',
     );
   });
 
@@ -67,7 +67,7 @@ describe('TitleComponent', () => {
     fixture.nativeElement
       .querySelectorAll('a')
       .forEach((a: HTMLAnchorElement) =>
-        expect(a.href).toContain('destination')
+        expect(a.href).toContain('destination'),
       );
   });
 
@@ -83,7 +83,7 @@ describe('TitleComponent', () => {
     fixture.detectChanges();
     expect(fixture.nativeElement.querySelector('img')).not.toBeNull();
     expect(fixture.nativeElement.querySelector('img').src).toContain(
-      '/assets/avatar.jpg'
+      '/assets/avatar.jpg',
     );
   });
 });

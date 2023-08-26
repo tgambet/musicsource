@@ -79,7 +79,10 @@ export class PagePlaylistLikesComponent implements OnInit {
 
   menuItems$!: Observable<MenuItem[]>;
 
-  constructor(private songs: SongFacade, private helper: HelperFacade) {}
+  constructor(
+    private songs: SongFacade,
+    private helper: HelperFacade,
+  ) {}
 
   ngOnInit(): void {
     this.songs$ = this.songs
@@ -95,7 +98,7 @@ export class PagePlaylistLikesComponent implements OnInit {
             this.helper.addSongsToQueue(
               songs.map((s) => s.id),
               true,
-              'Your likes will play next'
+              'Your likes will play next',
             ),
         },
         {
@@ -105,10 +108,10 @@ export class PagePlaylistLikesComponent implements OnInit {
             this.helper.addSongsToQueue(
               songs.map((s) => s.id),
               false,
-              'Your likes have been added to queue'
+              'Your likes have been added to queue',
             ),
         },
-      ])
+      ]),
     );
   }
 
@@ -120,7 +123,7 @@ export class PagePlaylistLikesComponent implements OnInit {
   shuffle(songs: Song[]): void {
     this.helper.playSongs(
       songs.map((s) => s.id),
-      true
+      true,
     );
   }
 }

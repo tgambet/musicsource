@@ -39,7 +39,10 @@ import { AudioService } from '@app/player/audio.service';
 
 @Injectable()
 export class PlayerFacade {
-  constructor(private store: Store, private audio: AudioService) {}
+  constructor(
+    private store: Store,
+    private audio: AudioService,
+  ) {}
 
   seek(n: number): void {
     this.audio.seek(n);

@@ -9,7 +9,7 @@ import { Playlist } from '@app/database/playlists/playlist.model';
 import { concatMap, Observable } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 import { MenuItem } from '@app/core/components/menu.component';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatLegacySnackBar as MatSnackBar } from '@angular/material/legacy-snack-bar';
 import { PlayerFacade } from '@app/player/store/player.facade';
 import { PictureFacade } from '@app/database/pictures/picture.facade';
 import { PlaylistFacade } from '@app/database/playlists/playlist.facade';
@@ -109,7 +109,7 @@ export class PlaylistComponent implements OnInit {
     private pictures: PictureFacade,
     private snack: MatSnackBar,
     private player: PlayerFacade,
-    private helper: HelperFacade
+    private helper: HelperFacade,
   ) {}
 
   ngOnInit(): void {
@@ -119,7 +119,7 @@ export class PlaylistComponent implements OnInit {
       filter((cover): cover is string => !!cover),
       concatMap((cover) => this.pictures.getCoverColor(cover)),
       filter((rgb): rgb is [number, number, number] => !!rgb),
-      map((rgb) => `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, 0.50)`)
+      map((rgb) => `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, 0.50)`),
     );
 
     this.menuItems$ = this.playlists.getByKey(this.playlist.id).pipe(
@@ -170,12 +170,12 @@ export class PlaylistComponent implements OnInit {
           text: 'Delete playlist',
           click: () => this.helper.deletePlaylist(playlist.id),
         },
-      ])
+      ]),
     );
 
     this.songs$ = this.playlists.getByKey(this.playlist.id).pipe(
       filter((playlist): playlist is Playlist => !!playlist),
-      map((playlist) => playlist.songs)
+      map((playlist) => playlist.songs),
     );
 
     // this.color$ = this.cover$.pipe(

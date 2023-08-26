@@ -169,7 +169,7 @@ export class TopBarComponent {
     private storage: DatabaseService,
     private player: PlayerFacade,
     private settings: SettingsFacade,
-    private scanner: ScannerFacade
+    private scanner: ScannerFacade,
   ) {}
 
   // scan(): void {

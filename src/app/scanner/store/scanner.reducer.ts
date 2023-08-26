@@ -13,5 +13,5 @@ export const scannerReducer: ActionReducer<ScannerState> = createReducer(
     ...state,
     error,
     state: 'error',
-  }))
+  })),
 );

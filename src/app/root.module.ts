@@ -6,7 +6,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '@env/environment';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
-import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatLegacySnackBarModule as MatSnackBarModule } from '@angular/material/legacy-snack-bar';
 import { ActionReducer, MetaReducer, StoreModule } from '@ngrx/store';
 import { EffectsModule } from '@ngrx/effects';
 
@@ -41,7 +41,6 @@ export const metaReducers: MetaReducer<any>[] = [];
       enabled: environment.production,
     }),
     RouterModule.forRoot(routes, {
-      relativeLinkResolution: 'corrected',
       scrollPositionRestoration: 'disabled',
       // anchorScrolling: 'enabled',
       // onSameUrlNavigation: 'reload',
@@ -59,7 +58,7 @@ export const metaReducers: MetaReducer<any>[] = [];
           strictActionWithinNgZone: false,
           strictActionTypeUniqueness: false,
         },
-      }
+      },
     ),
     EffectsModule.forRoot([]),
     // StoreDevtoolsModule.instrument({

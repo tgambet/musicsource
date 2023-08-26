@@ -304,7 +304,10 @@ export class WelcomeComponent {
   supported = this.support.checkFileSystemSupport();
   available = this.support.isAppAvailable();
 
-  constructor(private store: Store, private support: SupportService) {}
+  constructor(
+    private store: Store,
+    private support: SupportService,
+  ) {}
 
   scan(): void {
     this.store.dispatch(openDirectory({}));

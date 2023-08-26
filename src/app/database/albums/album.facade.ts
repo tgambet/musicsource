@@ -23,7 +23,10 @@ import { uniq } from '@app/core/utils/uniq.util';
 
 @Injectable()
 export class AlbumFacade {
-  constructor(private store: Store, private database: DatabaseService) {}
+  constructor(
+    private store: Store,
+    private database: DatabaseService,
+  ) {}
 
   add(album: Album): Observable<IDBValidKey> {
     return this.database
@@ -45,14 +48,14 @@ export class AlbumFacade {
                   entries: [...stored.entries, ...album.entries].filter(uniq()),
                   updatedOn: Math.max(stored.updatedOn, album.updatedOn),
                 }
-              : album
+              : album,
           ),
           tap((updated) =>
-            this.store.dispatch(upsertAlbum({ album: updated }))
+            this.store.dispatch(upsertAlbum({ album: updated })),
           ),
-          concatMap((updated) => store.put$(updated))
-        )
-      )
+          concatMap((updated) => store.put$(updated)),
+        ),
+      ),
     );
   }
 

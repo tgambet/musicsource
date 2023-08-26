@@ -13,7 +13,7 @@ import { hide, pause } from '@app/player/store/player.actions';
 import { DatabaseService } from '@app/database/database.service';
 import { Router } from '@angular/router';
 import { ConfirmComponent } from '@app/core/dialogs/confirm.component';
-import { MatDialog } from '@angular/material/dialog';
+import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
 import { from } from 'rxjs';
 
 @Injectable()
@@ -45,16 +45,16 @@ export class SettingsEffects {
               removeAllPictures(),
               removeAllPlaylists(),
               removeAllSongs(),
-            ])
-          )
-      )
-    )
+            ]),
+          ),
+      ),
+    ),
   );
 
   constructor(
     private router: Router,
     private dialog: MatDialog,
     private actions$: Actions,
-    private database: DatabaseService
+    private database: DatabaseService,
   ) {}
 }

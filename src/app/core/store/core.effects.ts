@@ -187,7 +187,7 @@ export class CoreEffects implements OnRunEffects {
   // {}
 
   ngrxOnRunEffects(
-    resolvedEffects$: Observable<EffectNotification>
+    resolvedEffects$: Observable<EffectNotification>,
   ): Observable<EffectNotification> {
     /*return this.appRef.isStable.pipe(
       first(isStable => isStable),

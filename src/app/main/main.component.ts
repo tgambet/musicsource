@@ -55,7 +55,7 @@ export const playerAnimation: AnimationTriggerMetadata = trigger(
       }),
       animate('300ms ease-out', style({ transform: 'translateY(72px)' })),
     ]),
-  ]
+  ],
 );
 
 export const slideInAnimation: AnimationTriggerMetadata = trigger(
@@ -104,7 +104,7 @@ export const slideInAnimation: AnimationTriggerMetadata = trigger(
         optional: true,
       }),
     ]),
-  ]
+  ],
 );
 
 @Component({
@@ -170,7 +170,7 @@ export class MainComponent implements OnInit {
     private appRef: ApplicationRef,
     private zone: NgZone,
     private navigator: NavigationService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
   ) {}
 
   // @HostListener('window:scroll', ['$event'])
@@ -193,7 +193,7 @@ export class MainComponent implements OnInit {
             this.store.dispatch(loadSongs());
             this.store.dispatch(loadPictures());
           });
-        })
+        }),
       )
       .subscribe();
 

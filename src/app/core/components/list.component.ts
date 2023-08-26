@@ -190,7 +190,10 @@ export class ListComponent {
 
   icons = Icons;
 
-  constructor(private router: Router, private helper: HelperFacade) {}
+  constructor(
+    private router: Router,
+    private helper: HelperFacade,
+  ) {}
 
   goTo(routerLink: any[] | null | undefined) {
     if (routerLink) {

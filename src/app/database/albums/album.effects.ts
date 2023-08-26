@@ -20,10 +20,10 @@ export class AlbumEffects {
       concatMap(() =>
         this.database.getAll$<Album>('albums').pipe(
           map((data) => loadAlbumsSuccess({ data })),
-          catchError((error) => of(loadAlbumsFailure({ error })))
-        )
-      )
-    )
+          catchError((error) => of(loadAlbumsFailure({ error }))),
+        ),
+      ),
+    ),
   );
 
   // upsertAlbum$ = createEffect(
@@ -46,11 +46,14 @@ export class AlbumEffects {
         concatMap(({ update: { changes, key } }) =>
           this.database
             .update$<Album>('albums', changes, key)
-            .pipe(catchError(() => EMPTY))
-        )
+            .pipe(catchError(() => EMPTY)),
+        ),
       ),
-    { dispatch: false }
+    { dispatch: false },
   );
 
-  constructor(private actions$: Actions, private database: DatabaseService) {}
+  constructor(
+    private actions$: Actions,
+    private database: DatabaseService,
+  ) {}
 }

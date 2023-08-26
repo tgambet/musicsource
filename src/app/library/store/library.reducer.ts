@@ -2,7 +2,7 @@ import { ActionReducer, createReducer } from '@ngrx/store';
 import { initialState, LibraryState } from './library.state';
 
 export const libraryReducer: ActionReducer<LibraryState> = createReducer(
-  initialState
+  initialState,
   // on(addEntry, (state, { entry }) => ({
   //   ...state,
   //   entries: entryAdapter.addOne(entry, state.entries),

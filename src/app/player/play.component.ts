@@ -33,7 +33,7 @@ export const fadeAnimation: AnimationTriggerMetadata = trigger(
       animate('200ms', style({ opacity: 1 })),
     ]),
     transition(':leave', [animate('200ms', style({ opacity: 0 }))]),
-  ]
+  ],
 );
 
 @Component({
@@ -155,13 +155,13 @@ export class PlayComponent implements OnInit, AfterViewInit {
 
   currentSong$ = this.player.getCurrentSong$().pipe(
     filter((id): id is SongId => !!id),
-    switchMap((id) => this.songs.getByKey(id))
+    switchMap((id) => this.songs.getByKey(id)),
   );
   currentIndex$ = this.player.getCurrentIndex$();
   currentCover$: Observable<string | undefined> = this.currentSong$.pipe(
     filter((s): s is Song => !!s),
     switchMap((song) => this.pictures.getSongCover(song, 0)),
-    tap((cover) => this.analyzer.setCoverColors(cover))
+    tap((cover) => this.analyzer.setCoverColors(cover)),
   );
 
   queue$ = this.player
@@ -178,7 +178,7 @@ export class PlayComponent implements OnInit, AfterViewInit {
     private player: PlayerFacade,
     private pictures: PictureFacade,
     private songs: SongFacade,
-    private analyzer: AnalyzerService
+    private analyzer: AnalyzerService,
   ) {}
 
   ngOnInit(): void {
@@ -189,7 +189,7 @@ export class PlayComponent implements OnInit, AfterViewInit {
           if (queue.length === 0) {
             this.router.navigate(['/', 'library']);
           }
-        })
+        }),
       )
       .subscribe();
   }

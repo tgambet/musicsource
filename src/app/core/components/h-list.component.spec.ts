@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { HListComponent } from './h-list.component';
 import { IconComponent } from './icon.component';
-import { MatButtonModule } from '@angular/material/button';
+import { MatLegacyButtonModule as MatButtonModule } from '@angular/material/legacy-button';
 
 describe('HListComponent', () => {
   let component: HListComponent;

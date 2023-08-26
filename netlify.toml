@@ -1,5 +1,5 @@
 [build]
-  command = "yarn build --configuration production"
+  command = "yarn build ngrx-idb && yarn build ngx-idb && yarn build"
   publish = "dist/musicsource"
 
 [[redirects]]

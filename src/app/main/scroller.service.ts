@@ -27,7 +27,7 @@ export class ScrollerService {
       share({
         connector: () => new ReplaySubject(1),
         resetOnRefCountZero: true,
-      })
+      }),
     );
   }
 }

@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 
 import { MainComponent } from './main.component';
-import { MAT_SNACK_BAR_DEFAULT_OPTIONS } from '@angular/material/snack-bar';
+import { MAT_LEGACY_SNACK_BAR_DEFAULT_OPTIONS as MAT_SNACK_BAR_DEFAULT_OPTIONS } from '@angular/material/legacy-snack-bar';
 import { CoreModule } from '@app/core/core.module';
 import { PlayerModule } from '@app/player/player.module';
 import { RouterModule, Routes } from '@angular/router';
@@ -25,7 +25,7 @@ const routes: Routes = [
         redirectTo: 'library',
         pathMatch: 'full',
         data: { animation: 'default' },
-        canActivate: [MainGuard],
+        // canActivate: [MainGuard],
       },
       {
         path: 'library',

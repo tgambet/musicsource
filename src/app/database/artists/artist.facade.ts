@@ -20,7 +20,10 @@ import { uniq } from '@app/core/utils/uniq.util';
 
 @Injectable()
 export class ArtistFacade {
-  constructor(private store: Store, private database: DatabaseService) {}
+  constructor(
+    private store: Store,
+    private database: DatabaseService,
+  ) {}
 
   add(artist: Artist): Observable<IDBValidKey> {
     return this.database
@@ -39,18 +42,18 @@ export class ArtistFacade {
               ? {
                   ...stored,
                   entries: [...stored.entries, ...artist.entries].filter(
-                    uniq()
+                    uniq(),
                   ),
                   updatedOn: Math.max(stored.updatedOn, artist.updatedOn),
                 }
-              : artist
+              : artist,
           ),
           tap((updated) =>
-            this.store.dispatch(upsertArtist({ artist: updated }))
+            this.store.dispatch(upsertArtist({ artist: updated })),
           ),
-          concatMap((updated) => store.put$(updated))
-        )
-      )
+          concatMap((updated) => store.put$(updated)),
+        ),
+      ),
     );
   }
 

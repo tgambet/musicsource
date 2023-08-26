@@ -6,7 +6,16 @@
 // Include the common styles for Angular Material. We include this here so that you only
 // have to load a single css file for Angular Material in your app.
 // Be sure that you only ever include this mixin once!
-@include mat.core();
+// TODO(v15): As of v15 mat.legacy-core no longer includes default typography styles.
+//  The following line adds:
+//    1. Default typography styles for all components
+//    2. Styles for typography hierarchy classes (e.g. .mat-headline-1)
+//  If you specify typography styles for the components you use elsewhere, you should delete this line.
+//  If you don't need the default component typographies but still want the hierarchy styles,
+//  you can delete this line and instead use:
+//    `@include mat.legacy-typography-hierarchy(mat.define-legacy-typography-config());`
+@include mat.all-legacy-component-typographies();
+@include mat.legacy-core();
 
 // Define the palettes for your theme using the Material Design palettes available in palette.scss
 // (imported above). For each palette, you can optionally specify a default, lighter, and darker
@@ -89,7 +98,7 @@ $musicsource-theme: (
 // Alternatively, you can import and @include the theme mixins for each component
 // that you are using.
 // TODO
-@include mat.all-component-themes($musicsource-theme);
+@include mat.all-legacy-component-themes($musicsource-theme);
 
 /* You can add global styles to this file, and also import other style files */
 
@@ -100,7 +109,8 @@ $musicsource-theme: (
   font-family: "YT Sans";
   font-style: normal;
   font-weight: 700;
-  src: local("YouTube Sans"),
+  src:
+    local("YouTube Sans"),
     url("/assets/fonts/youtube-sans-bold.ttf") format("truetype");
   font-display: block;
 }
@@ -110,7 +120,9 @@ $musicsource-theme: (
   font-family: "Roboto";
   font-style: normal;
   font-weight: 300;
-  src: local("Roboto Light"), local("Roboto-Light"),
+  src:
+    local("Roboto Light"),
+    local("Roboto-Light"),
     url("/assets/fonts/roboto-v19-latin-300.woff2") format("woff2"),
     /* Chrome 26+, Opera 23+, Firefox 39+ */
       url("/assets/fonts/roboto-v19-latin-300.woff") format("woff"); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
@@ -122,7 +134,9 @@ $musicsource-theme: (
   font-family: "Roboto";
   font-style: normal;
   font-weight: 400;
-  src: local("Roboto"), local("Roboto-Regular"),
+  src:
+    local("Roboto"),
+    local("Roboto-Regular"),
     url("/assets/fonts/roboto-v19-latin-regular.woff2") format("woff2"),
     /* Chrome 26+, Opera 23+, Firefox 39+ */
       url("/assets/fonts/roboto-v19-latin-regular.woff") format("woff"); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
@@ -134,7 +148,9 @@ $musicsource-theme: (
   font-family: "Roboto";
   font-style: normal;
   font-weight: 500;
-  src: local("Roboto Medium"), local("Roboto-Medium"),
+  src:
+    local("Roboto Medium"),
+    local("Roboto-Medium"),
     url("/assets/fonts/roboto-v19-latin-500.woff2") format("woff2"),
     /* Chrome 26+, Opera 23+, Firefox 39+ */
       url("/assets/fonts/roboto-v19-latin-500.woff") format("woff"); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */
@@ -146,7 +162,9 @@ $musicsource-theme: (
   font-family: "Roboto";
   font-style: normal;
   font-weight: 700;
-  src: local("Roboto Bold"), local("Roboto-Bold"),
+  src:
+    local("Roboto Bold"),
+    local("Roboto-Bold"),
     url("/assets/fonts/roboto-v19-latin-700.woff2") format("woff2"),
     /* Chrome 26+, Opera 23+, Firefox 39+ */
       url("/assets/fonts/roboto-v19-latin-700.woff") format("woff"); /* Chrome 6+, Firefox 3.6+, IE 9+, Safari 5.1+ */

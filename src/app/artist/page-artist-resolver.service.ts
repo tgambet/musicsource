@@ -15,11 +15,11 @@ export class PageArtistResolverService implements Resolve<ArtistId> {
     private pictures: PictureFacade,
     private artists: ArtistFacade,
     private albums: AlbumFacade,
-    private router: Router
+    private router: Router,
   ) {}
 
   resolve(
-    route: ActivatedRouteSnapshot
+    route: ActivatedRouteSnapshot,
     // state: RouterStateSnapshot
   ): Observable<ArtistId> | Observable<never> {
     const id = route.paramMap.get('id');
@@ -32,15 +32,15 @@ export class PageArtistResolverService implements Resolve<ArtistId> {
     return this.artists.getByKey(id as ArtistId).pipe(
       first(),
       concatMap((stored) =>
-        stored ? of(stored) : this.storage.get$<Artist>('artists', id)
+        stored ? of(stored) : this.storage.get$<Artist>('artists', id),
       ),
       concatMap((model) =>
-        model ? of(model.id) : throwError(() => 'not found')
+        model ? of(model.id) : throwError(() => 'not found'),
       ),
       catchError(() => {
         this.router.navigate(['/library/artists']);
         return EMPTY;
-      })
+      }),
     );
 
     //   concatMap((artist) =>
