@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { IndexedDBModule } from '@creasource/ngx-idb';
+import { IndexedDBModule } from 'ngx-idb';
 import { DatabaseService } from '@app/database/database.service';
 import { ReactiveIDBDatabaseOptions } from '@creasource/reactive-idb';
 import { EffectsModule } from '@ngrx/effects';

@@ -1,6 +1,6 @@
 import { createReducer, on } from '@ngrx/store';
 import { Song } from '@app/database/songs/song.model';
-import { createIDBEntityAdapter, IDBEntityState } from '@creasource/ngrx-idb';
+import { createIDBEntityAdapter, IDBEntityState } from 'ngrx-idb';
 import {
   addSong,
   loadSongs,

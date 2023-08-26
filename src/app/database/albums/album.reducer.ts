@@ -1,6 +1,6 @@
 import { createReducer, on } from '@ngrx/store';
 import { Album } from '@app/database/albums/album.model';
-import { createIDBEntityAdapter, IDBEntityState } from '@creasource/ngrx-idb';
+import { createIDBEntityAdapter, IDBEntityState } from 'ngrx-idb';
 import {
   addAlbum,
   loadAlbums,

@@ -12,7 +12,7 @@ import {
   ReactiveIDBDatabase,
   ReactiveIDBTransaction,
 } from '@creasource/reactive-idb';
-import { Database, IndexedDBService } from '@creasource/ngx-idb';
+import { Database, IndexedDBService } from 'ngx-idb';
 import { IdUpdate } from '@app/core/utils';
 import { merge } from 'rxjs';
 

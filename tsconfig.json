@@ -32,6 +32,9 @@
       ],
       "ngrx-idb": [
         "dist/ngrx-idb"
+      ],
+      "ngx-idb": [
+        "dist/ngx-idb"
       ]
     },
     "useDefineForClassFields": false

@@ -1,6 +1,6 @@
 import { createReducer, on } from '@ngrx/store';
 import { Entry } from '@app/database/entries/entry.model';
-import { createIDBEntityAdapter, IDBEntityState } from '@creasource/ngrx-idb';
+import { createIDBEntityAdapter, IDBEntityState } from 'ngrx-idb';
 import {
   addEntry,
   loadEntries,

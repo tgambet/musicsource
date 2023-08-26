@@ -9,7 +9,7 @@ import {
   upsertPicture,
 } from './picture.actions';
 import { Picture } from '@app/database/pictures/picture.model';
-import { createIDBEntityAdapter, IDBEntityState } from '@creasource/ngrx-idb';
+import { createIDBEntityAdapter, IDBEntityState } from 'ngrx-idb';
 
 export const pictureFeatureKey = 'pictures';
 

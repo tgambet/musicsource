@@ -11,7 +11,7 @@ import {
   selectSongIndexAll,
   selectSongTotal,
 } from '@app/database/songs/song.selectors';
-import { Update } from '@creasource/ngrx-idb';
+import { Update } from 'ngrx-idb';
 import {
   addSong,
   updateSong,

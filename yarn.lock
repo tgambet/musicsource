@@ -2217,13 +2217,6 @@
     dot "^1.1.3"
     fs-extra "^9.0.1"
 
-"@creasource/ngrx-idb@0.1.0":
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/@creasource/ngrx-idb/-/ngrx-idb-0.1.0.tgz#3f04fe0224ded805db4f3682f150a6989c58b427"
-  integrity sha512-lTTohvuRKph0s4LXiqbyXe6XwraHPM3guHO8ZgvHb5WJfehAYB+uDCRtYRqjtK/LmRX9cFBrGnOL9zCXs8GIqQ==
-  dependencies:
-    tslib "^2.4.0"
-
 "@creasource/ngx-idb@0.1.0":
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/@creasource/ngx-idb/-/ngx-idb-0.1.0.tgz#c86846fec0c06634d7c6b8128ae6b5c2b405a005"

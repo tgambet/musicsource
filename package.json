@@ -26,8 +26,6 @@
     "@angular/platform-browser-dynamic": "^15.2.9",
     "@angular/router": "^15.2.9",
     "@angular/service-worker": "^15.2.9",
-    "@creasource/ngrx-idb": "0.1.0",
-    "@creasource/ngx-idb": "0.1.0",
     "@creasource/reactive-idb": "^1.2.1",
     "@mdi/js": "^6.6.96",
     "@ngrx/effects": "^14.0.0",
