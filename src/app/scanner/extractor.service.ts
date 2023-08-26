@@ -36,19 +36,19 @@ export class ExtractorService {
         () =>
           new Worker(new URL('./extractor.worker', import.meta.url), {
             name: 'extractor',
-          })
+          }),
       );
       console.log('Extractor workers created');
       observer.next(workers);
       return () => workers.forEach((worker) => worker.terminate());
-    }
+    },
   ).pipe(
     share({
       resetOnComplete: false,
       resetOnRefCountZero: true,
       resetOnError: false,
       connector: () => new ReplaySubject(1),
-    })
+    }),
   );
 
   private readonly workerCount = navigator.hardwareConcurrency;
@@ -63,14 +63,14 @@ export class ExtractorService {
       }),
       concatMap(([worker, random]) =>
         fromEvent<MessageEvent<ExtractorWorkerMessage>>(worker, 'message').pipe(
-          first(({ data: { id } }) => id === random)
-        )
+          first(({ data: { id } }) => id === random),
+        ),
       ),
       first(),
       map(({ data }) => data),
       concatMap((result) =>
-        'error' in result ? throwError(() => result.error) : of(result.result)
-      )
+        'error' in result ? throwError(() => result.error) : of(result.result),
+      ),
     );
   }
 }

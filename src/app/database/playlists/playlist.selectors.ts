@@ -27,11 +27,11 @@ export const selectPlaylistByKey = (key: PlaylistId) =>
 
 export const selectPlaylistsByIndexKey = (
   key: PlaylistId,
-  index: PlaylistIndex
+  index: PlaylistIndex,
 ) =>
   createSelector(
     selectPlaylistEntities,
     selectPlaylistIndexEntities(index),
     (entities, indexKeys) =>
-      (indexKeys[key] || []).map((k) => entities[k as any] as Playlist)
+      (indexKeys[key] || []).map((k) => entities[k as any] as Playlist),
   );

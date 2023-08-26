@@ -176,7 +176,7 @@ export class TrackListItemComponent {
   constructor(
     private player: PlayerFacade,
     private helper: HelperFacade,
-    private songs: SongFacade
+    private songs: SongFacade,
   ) {}
 
   toggleLiked(song: Song): void {

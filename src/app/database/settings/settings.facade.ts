@@ -7,7 +7,10 @@ import { clearDatabase } from '@app/database/settings/settings.actions';
 
 @Injectable()
 export class SettingsFacade {
-  constructor(private store: Store, private database: DatabaseService) {}
+  constructor(
+    private store: Store,
+    private database: DatabaseService,
+  ) {}
 
   clearDatabase(): void {
     this.store.dispatch(clearDatabase());
@@ -16,12 +19,12 @@ export class SettingsFacade {
   getRootDirectory(): Observable<Settings['rootDirectory'] | undefined> {
     return this.database.get$<Settings['rootDirectory']>(
       'settings',
-      'rootDirectory'
+      'rootDirectory',
     );
   }
 
   setRootDirectory(
-    directory: Settings['rootDirectory']
+    directory: Settings['rootDirectory'],
   ): Observable<IDBValidKey> {
     return this.database.put$('settings', directory, 'rootDirectory');
   }

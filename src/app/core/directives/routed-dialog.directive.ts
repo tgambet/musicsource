@@ -30,7 +30,7 @@ export class RoutedDialogDirective implements OnInit, OnDestroy {
     private template: TemplateRef<any>,
     private elementRef: ElementRef,
     private dialog: MatDialog,
-    private router: Router
+    private router: Router,
   ) {}
 
   // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -51,11 +51,11 @@ export class RoutedDialogDirective implements OnInit, OnDestroy {
             this.router.navigate([{ outlets: { [this.outlet]: null } }], {
               preserveFragment: true,
               queryParamsHandling: 'preserve',
-            })
+            }),
           ),
-          tap((result) => this.afterClose(result))
+          tap((result) => this.afterClose(result)),
         )
-        .subscribe()
+        .subscribe(),
     );
 
     this.subscription.add(
@@ -67,12 +67,12 @@ export class RoutedDialogDirective implements OnInit, OnDestroy {
             return elem
               ? fromEvent(elem, 'click')
               : throwError(
-                  () => 'cannot find element with id: ' + this.dialogRef.id
+                  () => 'cannot find element with id: ' + this.dialogRef.id,
                 );
           }),
-          tap(() => this.focus())
+          tap(() => this.focus()),
         )
-        .subscribe()
+        .subscribe(),
     );
   }
 
@@ -92,7 +92,7 @@ export class RoutedDialogDirective implements OnInit, OnDestroy {
         return;
       }
       const wrapper = dialog.closest(
-        '.cdk-global-overlay-wrapper'
+        '.cdk-global-overlay-wrapper',
       ) as HTMLElement;
       wrapper.style.zIndex = this.dialogRef.id === id ? '1000' : '999';
     });

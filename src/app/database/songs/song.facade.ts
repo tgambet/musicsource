@@ -26,7 +26,10 @@ import { uniq } from '@app/core/utils/uniq.util';
 
 @Injectable()
 export class SongFacade {
-  constructor(private store: Store, private database: DatabaseService) {}
+  constructor(
+    private store: Store,
+    private database: DatabaseService,
+  ) {}
 
   add(song: Song): Observable<IDBValidKey> {
     return this.database
@@ -46,12 +49,12 @@ export class SongFacade {
                   ...stored,
                   entries: [...stored.entries, ...song.entries].filter(uniq()),
                 }
-              : song
+              : song,
           ),
           tap((updated) => this.store.dispatch(upsertSong({ song: updated }))),
-          concatMap((updated) => store.put$(updated))
-        )
-      )
+          concatMap((updated) => store.put$(updated)),
+        ),
+      ),
     );
   }
 
@@ -81,9 +84,9 @@ export class SongFacade {
           (songs) =>
             songs &&
             songs.sort(
-              (s1, s2) => (s1.tags.track.no || 0) - (s2.tags.track.no || 0)
-            )
-        )
+              (s1, s2) => (s1.tags.track.no || 0) - (s2.tags.track.no || 0),
+            ),
+        ),
       );
     // getAlbumTitles = (album: Album): Observable<Song> =>
     //   this.getSongs('albumHash', album.hash).pipe(map(({ value }) => value));

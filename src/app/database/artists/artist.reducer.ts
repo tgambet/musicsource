@@ -21,7 +21,7 @@ export const artistIndexes = [
 
 const indexNames = artistIndexes.map((i) => i.name);
 
-export type ArtistIndex = typeof indexNames[number];
+export type ArtistIndex = (typeof indexNames)[number];
 
 export const artistAdapter = createIDBEntityAdapter({
   keySelector: (artist: Artist) => artist.id,
@@ -38,14 +38,14 @@ export const artistReducer = createReducer(
   on(removeAllArtists, (state) => artistAdapter.removeAll(state)),
   on(loadArtists, (state) => state),
   on(loadArtistsSuccess, (state, action) =>
-    artistAdapter.setAll(action.data, state)
+    artistAdapter.setAll(action.data, state),
   ),
   on(loadArtistsFailure, (state) => state),
   on(addArtist, (state, action) => artistAdapter.addOne(action.artist, state)),
   on(updateArtist, (state, action) =>
-    artistAdapter.updateOne(action.update, state)
+    artistAdapter.updateOne(action.update, state),
   ),
   on(upsertArtist, (state, action) =>
-    artistAdapter.upsertOne(action.artist, state)
-  )
+    artistAdapter.upsertOne(action.artist, state),
+  ),
 );

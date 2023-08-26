@@ -34,7 +34,7 @@ export class PlaylistFacade {
 
   getAll(index?: PlaylistIndex): Observable<Playlist[]> {
     return this.store.select(
-      index ? selectPlaylistIndexAll(index) : selectPlaylistAll
+      index ? selectPlaylistIndexAll(index) : selectPlaylistAll,
     );
   }
 
@@ -60,7 +60,7 @@ export class PlaylistFacade {
         ...playlist.artists,
       ].filter(uniq()),
       albums: [...songs.map((s) => s.album.id), ...playlist.albums].filter(
-        uniq()
+        uniq(),
       ),
     };
 

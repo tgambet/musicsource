@@ -7,7 +7,10 @@ import { combineLatest, Observable, of } from 'rxjs';
 
 @Injectable()
 export class MediaSessionService {
-  constructor(private player: PlayerFacade, private pictures: PictureFacade) {}
+  constructor(
+    private player: PlayerFacade,
+    private pictures: PictureFacade,
+  ) {}
 
   setMetadata(song: Song): Observable<void> {
     if (!('mediaSession' in navigator)) {
@@ -45,7 +48,7 @@ export class MediaSessionService {
           mediaSession.setActionHandler('nexttrack', null);
         }
       }),
-      map(() => void 0)
+      map(() => void 0),
     );
   }
 }

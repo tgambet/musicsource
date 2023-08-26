@@ -25,10 +25,10 @@ export class ArtistEffects {
           // filter((arr) => arr.length > 0),
           //toArray(),
           map((data) => loadArtistsSuccess({ data })),
-          catchError((error) => of(loadArtistsFailure({ error })))
-        )
-      )
-    )
+          catchError((error) => of(loadArtistsFailure({ error }))),
+        ),
+      ),
+    ),
   );
 
   // upsertArtist$ = createEffect(
@@ -49,12 +49,15 @@ export class ArtistEffects {
         ofType(updateArtist),
         concatMap(({ update: { changes, key } }) =>
           this.database.update$<Artist>('artists', changes, key).pipe(
-            catchError(() => EMPTY) // TODO
-          )
-        )
+            catchError(() => EMPTY), // TODO
+          ),
+        ),
       ),
-    { dispatch: false }
+    { dispatch: false },
   );
 
-  constructor(private actions$: Actions, private database: DatabaseService) {}
+  constructor(
+    private actions$: Actions,
+    private database: DatabaseService,
+  ) {}
 }

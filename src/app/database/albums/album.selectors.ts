@@ -29,12 +29,12 @@ export const selectAlbumByAlbumArtistKey = (key: ArtistId) =>
   createSelector(
     selectAlbumEntities,
     selectAlbumIndexEntities('albumArtist'),
-    (entities, index) => index[key]?.map((k) => entities[k as any] as Album)
+    (entities, index) => index[key]?.map((k) => entities[k as any] as Album),
   );
 
 export const selectAlbumByArtistKey = (key: ArtistId) =>
   createSelector(
     selectAlbumEntities,
     selectAlbumIndexEntities('artists'),
-    (entities, index) => index[key]?.map((k) => entities[k as any] as Album)
+    (entities, index) => index[key]?.map((k) => entities[k as any] as Album),
   );

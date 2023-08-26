@@ -8,22 +8,22 @@ export const loadSongs = createAction('[Song] Load Songs');
 
 export const loadSongsSuccess = createAction(
   '[Song] Load Songs Success',
-  props<{ data: Song[] }>()
+  props<{ data: Song[] }>(),
 );
 
 export const loadSongsFailure = createAction(
   '[Song] Load Songs Failure',
-  props<{ error: any }>()
+  props<{ error: any }>(),
 );
 
 export const updateSong = createAction(
   '[Song] Update Song',
-  props<{ update: Update<Song> }>()
+  props<{ update: Update<Song> }>(),
 );
 
 export const addSong = createAction('[Song] Add Song', props<{ song: Song }>());
 
 export const upsertSong = createAction(
   '[Song] Upsert Song',
-  props<{ song: Song }>()
+  props<{ song: Song }>(),
 );

@@ -32,7 +32,7 @@ export class PictureFacade {
     private artists: ArtistFacade,
     private albums: AlbumFacade,
     private database: DatabaseService,
-    private resizer: ResizerService
+    private resizer: ResizerService,
   ) {}
 
   put(picture: Picture): Observable<IDBValidKey> {
@@ -46,31 +46,31 @@ export class PictureFacade {
               ? {
                   ...stored,
                   sources: [...stored.sources, ...picture.sources].filter(
-                    uniq((e) => e.height)
+                    uniq((e) => e.height),
                   ),
                   entries: [...stored.entries, ...picture.entries].filter(
-                    uniq()
+                    uniq(),
                   ),
                   songs: [...stored.songs, ...picture.songs].filter(uniq()),
                   artists: [...stored.artists, ...picture.artists].filter(
-                    uniq()
+                    uniq(),
                   ),
                   albums: [...stored.albums, ...picture.albums].filter(uniq()),
                 }
-              : picture
+              : picture,
           ),
           tap((updated) =>
-            this.store.dispatch(upsertPicture({ picture: updated }))
+            this.store.dispatch(upsertPicture({ picture: updated })),
           ),
-          concatMap((updated) => store.put$(updated))
-        )
-      )
+          concatMap((updated) => store.put$(updated)),
+        ),
+      ),
     );
   }
 
   getAlbumCover(
     albumId: AlbumId,
-    size: PictureSize
+    size: PictureSize,
   ): Observable<string | undefined> {
     return this.waitForPicturesLoaded().pipe(
       switchMap(() => this.store.select(selectPictureByAlbum(albumId))),
@@ -82,13 +82,14 @@ export class PictureFacade {
               .get$<Picture>('pictures', albumId, 'albums')
               .pipe(
                 tap(
-                  (p) => p && this.store.dispatch(upsertPicture({ picture: p }))
-                )
-              )
+                  (p) =>
+                    p && this.store.dispatch(upsertPicture({ picture: p })),
+                ),
+              ),
       ),
       this.getPictureBySize(size),
       tapError((err) => console.error(err)),
-      catchError(() => of(undefined))
+      catchError(() => of(undefined)),
     );
   }
 
@@ -103,19 +104,20 @@ export class PictureFacade {
               .get$<Picture>('pictures', song.id, 'songs')
               .pipe(
                 tap(
-                  (p) => p && this.store.dispatch(upsertPicture({ picture: p }))
-                )
-              )
+                  (p) =>
+                    p && this.store.dispatch(upsertPicture({ picture: p })),
+                ),
+              ),
       ),
       this.getPictureBySize(size),
       tapError((err) => console.error(err)),
-      catchError(() => of(undefined))
+      catchError(() => of(undefined)),
     );
   }
 
   getArtistCover(
     artistId: ArtistId,
-    size: PictureSize
+    size: PictureSize,
     // names = ['folder', 'cover', 'fanart']
   ): Observable<string | undefined> {
     return this.waitForPicturesLoaded().pipe(
@@ -129,19 +131,20 @@ export class PictureFacade {
               .pipe(
                 map((picts) => picts[Math.floor(Math.random() * picts.length)]),
                 tap(
-                  (p) => p && this.store.dispatch(upsertPicture({ picture: p }))
-                )
-              )
+                  (p) =>
+                    p && this.store.dispatch(upsertPicture({ picture: p })),
+                ),
+              ),
       ),
       this.getPictureBySize(size),
       tapError((err) => console.error(err)),
-      catchError(() => of(undefined))
+      catchError(() => of(undefined)),
     );
   }
 
   getPlaylistCover(
     playlist: Playlist,
-    size: PictureSize
+    size: PictureSize,
   ): Observable<string | undefined> {
     return this.waitForPicturesLoaded().pipe(
       switchMap(() => {
@@ -155,16 +158,16 @@ export class PictureFacade {
         } else {
           return of(undefined);
         }
-      })
+      }),
     );
   }
 
   getCoverColor(
-    cover: string
+    cover: string,
   ): Observable<[number, number, number] | undefined> {
     return from(import('node-vibrant')).pipe(
       concatMap((vibrant) => vibrant.default.from(cover).getPalette()),
-      map((palette) => palette.Muted?.getRgb())
+      map((palette) => palette.Muted?.getRgb()),
     );
   }
 
@@ -247,10 +250,10 @@ export class PictureFacade {
                         concatTap((result) =>
                           this.database.db$.pipe(
                             concatMap((db) =>
-                              db.transaction$('pictures', 'readwrite')
+                              db.transaction$('pictures', 'readwrite'),
                             ),
                             concatMap((transaction) =>
-                              transaction.objectStore$<Picture>('pictures')
+                              transaction.objectStore$<Picture>('pictures'),
                             ),
                             concatMap((store) =>
                               store.get$(picture.id).pipe(
@@ -260,25 +263,25 @@ export class PictureFacade {
                                   sources: [...pict.sources, result].filter(
                                     (value, index, arr) =>
                                       arr.findIndex(
-                                        (v) => v.height === value.height
-                                      ) === index
+                                        (v) => v.height === value.height,
+                                      ) === index,
                                   ),
                                 })),
                                 tap((p) =>
                                   this.store.dispatch(
-                                    upsertPicture({ picture: p })
-                                  )
+                                    upsertPicture({ picture: p }),
+                                  ),
                                 ),
-                                concatMap((pict: Picture) => store.put$(pict))
-                              )
-                            )
-                          )
+                                concatMap((pict: Picture) => store.put$(pict)),
+                              ),
+                            ),
+                          ),
                         ),
-                        map((result) => result.src)
-                      )
-              )
+                        map((result) => result.src),
+                      ),
+              ),
             )
-          : of(undefined) // throwError(() => 'picture not found')
+          : of(undefined), // throwError(() => 'picture not found')
     );
 
   private waitForPicturesLoaded(): Observable<boolean> {

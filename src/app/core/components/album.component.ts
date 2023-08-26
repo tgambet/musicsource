@@ -85,18 +85,18 @@ export class AlbumComponent implements OnInit {
     private albums: AlbumFacade,
     private songs: SongFacade,
     private pictures: PictureFacade,
-    private helper: HelperFacade
+    private helper: HelperFacade,
   ) {}
 
   ngOnInit(): void {
     this.queue$ = this.songs.getByAlbumKey(this.album.id).pipe(
       map((songs) => songs ?? []),
-      map((songs) => songs.map((s) => s.id))
+      map((songs) => songs.map((s) => s.id)),
     );
 
     this.cover$ = this.pictures.getAlbumCover(
       this.album.id,
-      this.size === 'small' ? 160 : 226
+      this.size === 'small' ? 160 : 226,
     );
 
     this.menuItems$ = this.albums.getByKey(this.album.id).pipe(
@@ -133,7 +133,7 @@ export class AlbumComponent implements OnInit {
           routerLink: ['/', 'artist', album.albumArtist?.id],
           disabled: !album.albumArtist,
         },
-      ])
+      ]),
     );
   }
 }

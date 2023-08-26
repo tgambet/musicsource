@@ -135,26 +135,26 @@ export class LibraryLikesComponent implements OnInit {
     private songs: SongFacade,
     private artists: ArtistFacade,
     private pictures: PictureFacade,
-    private helper: HelperFacade
+    private helper: HelperFacade,
   ) {}
 
   ngOnInit() {
     this.routeParam$ = this.route.paramMap.pipe(
-      map((params) => params.get('type'))
+      map((params) => params.get('type')),
     );
 
     const obs$ = <T>(obs: Observable<T[]>, key: string) =>
       combineLatest([
         this.routeParam$,
         obs.pipe(
-          distinctUntilChanged((prev, curr) => prev.length === curr.length)
+          distinctUntilChanged((prev, curr) => prev.length === curr.length),
         ),
       ]).pipe(
         map(([type, models]) =>
           type === key || type === 'all'
             ? [...models].reverse().slice(0, type === key ? Infinity : 3)
-            : []
-        )
+            : [],
+        ),
       );
 
     const playlists$ = obs$(this.playlists.getAll('likedOn'), 'playlists');
@@ -170,9 +170,9 @@ export class LibraryLikesComponent implements OnInit {
           cover$: this.pictures.getPlaylistCover(playlist, 56),
           border$: this.pictures.getPlaylistCover(playlist, 56).pipe(
             concatMap((cover) =>
-              cover ? this.pictures.getCoverColor(cover) : of(undefined)
+              cover ? this.pictures.getCoverColor(cover) : of(undefined),
             ),
-            map((rgb) => rgb && `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, 0.5)`)
+            map((rgb) => rgb && `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, 0.5)`),
           ),
           routerLink: ['/playlist', playlist.id],
           menuItems: [
@@ -223,8 +223,8 @@ export class LibraryLikesComponent implements OnInit {
             },
           ],
           queue$: of(playlist.songs),
-        }))
-      )
+        })),
+      ),
     );
 
     this.albumsItems$ = albums$.pipe(
@@ -279,10 +279,10 @@ export class LibraryLikesComponent implements OnInit {
           queue$: this.songs.getByAlbumKey(album.id).pipe(
             filter((songs): songs is Song[] => !!songs),
             first(),
-            map((songs) => songs.map((s) => s.id))
+            map((songs) => songs.map((s) => s.id)),
           ),
-        }))
-      )
+        })),
+      ),
     );
 
     this.songsItems$ = songs$.pipe(
@@ -336,8 +336,8 @@ export class LibraryLikesComponent implements OnInit {
             },
           ],
           queue$: of([song.id]),
-        }))
-      )
+        })),
+      ),
     );
 
     this.artistsItems$ = artists$.pipe(
@@ -354,8 +354,8 @@ export class LibraryLikesComponent implements OnInit {
               click: () => this.helper.playArtist(a.id),
             },
           ],
-        }))
-      )
+        })),
+      ),
     );
 
     this.selectedFilterIndex$ = this.route.paramMap.pipe(
@@ -372,7 +372,7 @@ export class LibraryLikesComponent implements OnInit {
           default:
             return null;
         }
-      })
+      }),
     );
   }
 }

@@ -25,18 +25,18 @@ export class ResizerService {
         () =>
           new Worker(new URL('./resizer.worker', import.meta.url), {
             name: 'resizer',
-          })
+          }),
       );
       observer.next(workers);
       return () => workers.forEach((worker) => worker.terminate());
-    }
+    },
   ).pipe(
     share({
       resetOnComplete: false,
       resetOnRefCountZero: true,
       resetOnError: false,
       connector: () => new ReplaySubject(1),
-    })
+    }),
   );
 
   private readonly workerCount = navigator.hardwareConcurrency;
@@ -74,7 +74,7 @@ export class ResizerService {
 
   resizeOne(
     picture: Picture,
-    size: { height: number; width?: number }
+    size: { height: number; width?: number },
   ): Observable<Result> {
     return this.workers.pipe(
       map((workers) => workers[Math.floor(Math.random() * this.workerCount)]),
@@ -95,13 +95,13 @@ export class ResizerService {
             result: any;
             error?: any;
           }>
-        >(worker, 'message').pipe(first(({ data: { id } }) => id === random))
+        >(worker, 'message').pipe(first(({ data: { id } }) => id === random)),
       ),
       first(),
       map(({ data }) => data),
       concatMap((result) =>
-        'error' in result ? throwError(() => result.error) : of(result.result)
-      )
+        'error' in result ? throwError(() => result.error) : of(result.result),
+      ),
     );
   }
 }

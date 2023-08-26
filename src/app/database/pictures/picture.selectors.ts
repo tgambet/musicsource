@@ -29,28 +29,28 @@ export const selectPictureByKey = (key: PictureId) =>
 
 export const selectPicturesLoaded = createSelector(
   selectPictureState,
-  (state) => state.loaded
+  (state) => state.loaded,
 );
 
 export const selectPictureByAlbum = (id: AlbumId) =>
   createSelector(
     selectPictureEntities,
     selectPictureIndexEntities('albums'),
-    (entities, index) => index[id]?.map((key) => entities[key])[0]
+    (entities, index) => index[id]?.map((key) => entities[key])[0],
   );
 
 export const selectPictureBySong = (id: SongId) =>
   createSelector(
     selectPictureEntities,
     selectPictureIndexEntities('songs'),
-    (entities, index) => index[id]?.map((key) => entities[key])[0]
+    (entities, index) => index[id]?.map((key) => entities[key])[0],
   );
 
 export const selectPicturesByArtist = (id: ArtistId) =>
   createSelector(
     selectPictureEntities,
     selectPictureIndexEntities('artists'),
-    (entities, index) => index[id]?.map((key) => entities[key])
+    (entities, index) => index[id]?.map((key) => entities[key]),
   );
 
 // export const selectPictureByFolder = (folder: string, fileNames: string[]) =>

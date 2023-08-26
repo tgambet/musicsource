@@ -15,7 +15,7 @@ export class AnalyzerService {
     window.addEventListener('resize', () => {
       this.audioMotion.setCanvasSize(
         this.container?.offsetWidth || 100,
-        this.container?.offsetHeight || 100
+        this.container?.offsetHeight || 100,
       );
     });
   }
@@ -29,8 +29,8 @@ export class AnalyzerService {
     setTimeout(() =>
       this.audioMotion.setCanvasSize(
         container.offsetWidth,
-        container.offsetHeight
-      )
+        container.offsetHeight,
+      ),
     );
     this.audioMotion.toggleAnalyzer(true);
   }

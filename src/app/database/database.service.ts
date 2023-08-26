@@ -19,7 +19,7 @@ import { merge } from 'rxjs';
 @Injectable()
 export class DatabaseService {
   constructor(
-    @Inject(Database('musicsource')) private databaseService: IndexedDBService
+    @Inject(Database('musicsource')) private databaseService: IndexedDBService,
   ) {
     // databaseService.database.subscribe();
   }
@@ -30,7 +30,7 @@ export class DatabaseService {
 
   open$(
     stores: string[],
-    mode: IDBTransactionMode = 'readonly'
+    mode: IDBTransactionMode = 'readonly',
   ): Observable<ReactiveIDBTransaction> {
     return this.db$.pipe(concatMap((db) => db.transaction$(stores, mode)));
   }
@@ -38,7 +38,7 @@ export class DatabaseService {
   update$<T>(
     store: string,
     value: Partial<T>,
-    key: IDBValidKey
+    key: IDBValidKey,
   ): Observable<IDBValidKey> {
     return this.db$.pipe(
       concatMap((db) => db.transaction$(store, 'readwrite')),
@@ -50,10 +50,10 @@ export class DatabaseService {
             concatMap((obj) =>
               obj
                 ? objStore.put$({ ...obj, ...value })
-                : throwError(() => 'Could not find key: ' + key)
-            )
-          )
-      )
+                : throwError(() => 'Could not find key: ' + key),
+            ),
+          ),
+      ),
     );
   }
 
@@ -61,13 +61,13 @@ export class DatabaseService {
     return this.db$.pipe(
       concatMap((db) => db.transaction$(store, 'readwrite')),
       map((transaction) => transaction.objectStore<T>(store)),
-      concatMap((objStore) => objStore.delete$(key))
+      concatMap((objStore) => objStore.delete$(key)),
     );
   }
 
   updateMany$<T extends { id: T['id'] }>(
     store: string,
-    updates: IdUpdate<T>[]
+    updates: IdUpdate<T>[],
   ): Observable<IDBValidKey> {
     return this.db$.pipe(
       concatMap((db) => db.transaction$(store, 'readwrite')),
@@ -83,11 +83,11 @@ export class DatabaseService {
                   return update
                     ? objStore.put$({ ...obj, ...update.changes })
                     : EMPTY;
-                })
-              )
-            )
-          )
-      )
+                }),
+              ),
+            ),
+          ),
+      ),
     );
   }
 
@@ -111,18 +111,18 @@ export class DatabaseService {
   getAllValues$<T>(
     keys: IDBValidKey[],
     store: string,
-    index?: string
+    index?: string,
   ): Observable<T> {
     return this.db$.pipe(
       concatMap((db) => db.transaction$(store)),
       map((transaction) => transaction.objectStore<T>(store)),
       concatMap((objStore) =>
         keys.map((key) =>
-          index ? objStore.index(index).get$(key) : objStore.get$(key)
-        )
+          index ? objStore.index(index).get$(key) : objStore.get$(key),
+        ),
       ),
       mergeAll(),
-      filter((v): v is T => !!v)
+      filter((v): v is T => !!v),
     );
   }
 
@@ -131,14 +131,14 @@ export class DatabaseService {
     index?: string,
     query?: IDBValidKey | IDBKeyRange | null,
     direction?: IDBCursorDirection,
-    predicate?: (_: T) => boolean
+    predicate?: (_: T) => boolean,
   ): Observable<{ value: T; key: IDBValidKey; primaryKey: IDBValidKey }> {
     return this.db$.pipe(
       concatMap((db) => db.transaction$(store)),
       map((transaction: ReactiveIDBTransaction) =>
         index
           ? transaction.objectStore<T>(store).index(index)
-          : transaction.objectStore<T>(store)
+          : transaction.objectStore<T>(store),
       ),
       concatMap((o) => o.openCursor$(query, direction || 'next')),
       takeWhile((cursor): cursor is IDBCursorWithValue => !!cursor),
@@ -148,7 +148,7 @@ export class DatabaseService {
         value: cursor.value as T,
         key: cursor.key,
         primaryKey: cursor.primaryKey,
-      }))
+      })),
     );
   }
 
@@ -156,7 +156,7 @@ export class DatabaseService {
     return this.db$.pipe(
       concatMap((db) => db.transaction$(store, 'readwrite')),
       map((transaction) => transaction.objectStore<T>(store)),
-      concatMap((s) => s.add$(value, key))
+      concatMap((s) => s.add$(value, key)),
     );
   }
 
@@ -165,7 +165,7 @@ export class DatabaseService {
       concatMap((db) => db.transaction$(store, 'readwrite')),
       map((transaction) => transaction.objectStore<T>(store)),
       concatMap((s) => values.map((value) => s.add$(value))),
-      mergeAll()
+      mergeAll(),
     );
   }
 
@@ -173,7 +173,7 @@ export class DatabaseService {
     return this.db$.pipe(
       concatMap((db) => db.transaction$(store, 'readwrite')),
       map((transaction) => transaction.objectStore<T>(store)),
-      concatMap((s) => s.put$(value, key))
+      concatMap((s) => s.put$(value, key)),
     );
   }
 
@@ -182,39 +182,39 @@ export class DatabaseService {
       concatMap((db) => db.transaction$(store, 'readwrite')),
       map((transaction) => transaction.objectStore<T>(store)),
       concatMap((s) => values.map((value) => s.put$(value))),
-      mergeAll()
+      mergeAll(),
     );
   }
 
   get$<T>(
     store: string,
     key: IDBValidKey,
-    index?: string
+    index?: string,
   ): Observable<T | undefined> {
     return this.db$.pipe(
       concatMap((db) => db.transaction$(store)),
       map((transaction) =>
         index
           ? transaction.objectStore<T>(store).index(index)
-          : transaction.objectStore<T>(store)
+          : transaction.objectStore<T>(store),
       ),
-      concatMap((s) => s.get$(key))
+      concatMap((s) => s.get$(key)),
     );
   }
 
   getKey$<T>(
     store: string,
     key: IDBValidKey,
-    index?: string
+    index?: string,
   ): Observable<IDBValidKey | undefined> {
     return this.db$.pipe(
       concatMap((db) => db.transaction$(store)),
       map((transaction) =>
         index
           ? transaction.objectStore<T>(store).index(index)
-          : transaction.objectStore<T>(store)
+          : transaction.objectStore<T>(store),
       ),
-      concatMap((s) => s.getKey$(key))
+      concatMap((s) => s.getKey$(key)),
     );
   }
 
@@ -222,16 +222,16 @@ export class DatabaseService {
     store: string,
     index?: string,
     query?: IDBValidKey | IDBKeyRange | null,
-    count?: number
+    count?: number,
   ): Observable<T[]> {
     return this.db$.pipe(
       concatMap((db) => db.transaction$(store)),
       map((transaction) =>
         index
           ? transaction.objectStore<T>(store).index(index)
-          : transaction.objectStore<T>(store)
+          : transaction.objectStore<T>(store),
       ),
-      concatMap((s) => s.getAll$(query, count))
+      concatMap((s) => s.getAll$(query, count)),
     );
   }
 
@@ -239,16 +239,16 @@ export class DatabaseService {
     store: string,
     index?: string,
     query?: IDBValidKey | IDBKeyRange | null,
-    count?: number
+    count?: number,
   ): Observable<IDBValidKey[]> {
     return this.db$.pipe(
       concatMap((db) => db.transaction$(store)),
       map((transaction) =>
         index
           ? transaction.objectStore<T>(store).index(index)
-          : transaction.objectStore<T>(store)
+          : transaction.objectStore<T>(store),
       ),
-      concatMap((s) => s.getAllKeys$(query, count))
+      concatMap((s) => s.getAllKeys$(query, count)),
     );
   }
 

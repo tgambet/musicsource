@@ -41,16 +41,16 @@ export const pictureReducer = createReducer<PictureState>(
   on(removeAllPictures, (state) => pictureAdapter.removeAll(state)),
   on(loadPictures, (state) => state),
   on(loadPicturesSuccess, (state, { data }) =>
-    pictureAdapter.setAll(data, { ...state, loaded: true })
+    pictureAdapter.setAll(data, { ...state, loaded: true }),
   ),
   on(loadPicturesFailure, (state, { error }) => ({ ...state, error })),
   on(addPicture, (state, action) =>
-    pictureAdapter.addOne(action.picture, state)
+    pictureAdapter.addOne(action.picture, state),
   ),
   on(upsertPicture, (state, action) =>
-    pictureAdapter.upsertOne(action.picture, state)
+    pictureAdapter.upsertOne(action.picture, state),
   ),
   on(updatePicture, (state, action) =>
-    pictureAdapter.updateOne(action.update, state)
-  )
+    pictureAdapter.updateOne(action.update, state),
+  ),
 );

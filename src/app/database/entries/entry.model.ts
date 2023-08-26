@@ -41,7 +41,7 @@ export type Entry = FileEntry | DirectoryEntry;
 
 export const requestPermissionPromise = async (
   fileHandle: FileSystemHandle,
-  readWrite = false
+  readWrite = false,
 ): Promise<boolean> => {
   let options = {};
   if (readWrite) {
@@ -66,13 +66,13 @@ export const requestPermissionPromise = async (
 export const requestPermission = (handle: FileSystemHandle): Observable<void> =>
   from(requestPermissionPromise(handle)).pipe(
     concatMap((perm) =>
-      perm ? of(void 0) : throwError(() => 'Permission denied')
-    )
+      perm ? of(void 0) : throwError(() => 'Permission denied'),
+    ),
   );
 
 export const entryFromHandle = (
   handle: FileSystemHandle,
-  parent?: string
+  parent?: string,
 ): Entry => {
   const path = parent ? `${parent}/${handle.name}` : handle.name;
 

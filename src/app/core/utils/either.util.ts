@@ -28,13 +28,13 @@ export const toEither =
   (obs) =>
     obs.pipe(
       map((result) => right(result)),
-      catchError((error) => of(left(error)))
+      catchError((error) => of(left(error))),
     );
 
 export const foldEither = <T, R>(
   rightMap: OperatorFunction<T, R>,
-  leftMap: OperatorFunction<any, R>
+  leftMap: OperatorFunction<any, R>,
 ): OperatorFunction<Either<T>, R> =>
   connect((m$) =>
-    merge(m$.pipe(collectRight(), rightMap), m$.pipe(collectLeft(), leftMap))
+    merge(m$.pipe(collectRight(), rightMap), m$.pipe(collectLeft(), leftMap)),
   );

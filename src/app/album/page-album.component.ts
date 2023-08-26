@@ -140,7 +140,7 @@ export class PageAlbumComponent implements OnInit {
   currentSongPath$ = this.player.getCurrentSong$().pipe(
     filter((id): id is SongId => !!id),
     switchMap((path) => this.songs.getByKey(path)),
-    map((song) => song?.id)
+    map((song) => song?.id),
   );
 
   cover$!: Observable<string | undefined>;
@@ -155,7 +155,7 @@ export class PageAlbumComponent implements OnInit {
     private helper: HelperFacade,
     private albums: AlbumFacade,
     private pictures: PictureFacade,
-    private songs: SongFacade
+    private songs: SongFacade,
   ) {}
 
   trackBy(index: number, song: Song): string {
@@ -174,7 +174,7 @@ export class PageAlbumComponent implements OnInit {
       .pipe(filter((a): a is Album => !!a));
 
     this.cover$ = this.album$.pipe(
-      switchMap((album) => this.pictures.getAlbumCover(album.id, 264))
+      switchMap((album) => this.pictures.getAlbumCover(album.id, 264)),
     );
 
     this.songs$ = this.album$.pipe(
@@ -182,20 +182,20 @@ export class PageAlbumComponent implements OnInit {
       filter((songs): songs is Song[] => !!songs),
       map((songs) =>
         [...songs].sort(
-          (s1, s2) => (s1.tags.disk.no || 0) - (s2.tags.disk.no || 0)
-        )
+          (s1, s2) => (s1.tags.disk.no || 0) - (s2.tags.disk.no || 0),
+        ),
       ),
       share({
         connector: () => new ReplaySubject(1),
         resetOnRefCountZero: true,
-      })
+      }),
     );
 
     this.stats$ = this.songs$.pipe(
       map((songs) => ({
         length: this.getLength(songs),
         n: songs.length,
-      }))
+      })),
     );
 
     this.disks$ = this.songs$.pipe(
@@ -205,15 +205,15 @@ export class PageAlbumComponent implements OnInit {
           mergeMap((group$) =>
             group$.pipe(
               reduce((acc, cur) => [...acc, cur], [] as Song[]),
-              map((songs) => ({ key: group$.key, songs }))
-            )
+              map((songs) => ({ key: group$.key, songs })),
+            ),
           ),
           reduce(
             (acc, cur) => [...acc, cur],
-            [] as { key: number | null; songs: Song[] }[]
-          )
-        )
-      )
+            [] as { key: number | null; songs: Song[] }[],
+          ),
+        ),
+      ),
     );
 
     this.menuItems$ = this.album$.pipe(
@@ -238,7 +238,7 @@ export class PageAlbumComponent implements OnInit {
           icon: this.icons.playlistPlus,
           click: () => this.helper.addAlbumToPlaylist(album.id),
         },
-      ])
+      ]),
     );
   }
 

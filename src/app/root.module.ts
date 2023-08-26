@@ -41,11 +41,11 @@ export const metaReducers: MetaReducer<any>[] = [];
       enabled: environment.production,
     }),
     RouterModule.forRoot(routes, {
-    scrollPositionRestoration: 'disabled',
-    // anchorScrolling: 'enabled',
-    // onSameUrlNavigation: 'reload',
-    preloadingStrategy: PreloadAllModules
-}),
+      scrollPositionRestoration: 'disabled',
+      // anchorScrolling: 'enabled',
+      // onSameUrlNavigation: 'reload',
+      preloadingStrategy: PreloadAllModules,
+    }),
     StoreModule.forRoot(
       {},
       {
@@ -58,7 +58,7 @@ export const metaReducers: MetaReducer<any>[] = [];
           strictActionWithinNgZone: false,
           strictActionTypeUniqueness: false,
         },
-      }
+      },
     ),
     EffectsModule.forRoot([]),
     // StoreDevtoolsModule.instrument({

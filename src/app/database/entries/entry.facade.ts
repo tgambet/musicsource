@@ -15,7 +15,10 @@ import { map, tap } from 'rxjs/operators';
 
 @Injectable()
 export class EntryFacade {
-  constructor(private store: Store, private database: DatabaseService) {}
+  constructor(
+    private store: Store,
+    private database: DatabaseService,
+  ) {}
 
   put(entry: Entry): Observable<IDBValidKey> {
     return this.database

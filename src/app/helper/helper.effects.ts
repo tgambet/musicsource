@@ -68,10 +68,10 @@ export class HelperEffects implements OnRunEffects {
             queue: shuffle ? shuffleArray(songs) : songs,
             currentIndex: 0,
           }),
-          show()
-        )
-      )
-    )
+          show(),
+        ),
+      ),
+    ),
   );
 
   playAlbum$ = createEffect(() =>
@@ -83,13 +83,13 @@ export class HelperEffects implements OnRunEffects {
           first(),
           map((songs) =>
             [...songs].sort(
-              (s1, s2) => (s1.tags.disk.no || 0) - (s2.tags.disk.no || 0)
-            )
+              (s1, s2) => (s1.tags.disk.no || 0) - (s2.tags.disk.no || 0),
+            ),
           ),
-          map((songs) => playSongs({ songs: songs.map((s) => s.id), shuffle }))
-        )
-      )
-    )
+          map((songs) => playSongs({ songs: songs.map((s) => s.id), shuffle })),
+        ),
+      ),
+    ),
   );
 
   playPlaylist$ = createEffect(() =>
@@ -99,10 +99,10 @@ export class HelperEffects implements OnRunEffects {
         this.playlists.getByKey(id).pipe(
           filter((playlist): playlist is Playlist => !!playlist),
           first(),
-          map((playlist) => playSongs({ songs: playlist.songs, shuffle }))
-        )
-      )
-    )
+          map((playlist) => playSongs({ songs: playlist.songs, shuffle })),
+        ),
+      ),
+    ),
   );
 
   playArtist$ = createEffect(() =>
@@ -115,12 +115,12 @@ export class HelperEffects implements OnRunEffects {
           map((songs) =>
             shuffleArray(songs)
               .slice(0, 50)
-              .map((s) => s.id)
+              .map((s) => s.id),
           ),
-          map((songs) => playSongs({ songs, shuffle: false }))
-        )
-      )
-    )
+          map((songs) => playSongs({ songs, shuffle: false })),
+        ),
+      ),
+    ),
   );
 
   addAlbumToQueue$ = createEffect(() =>
@@ -135,11 +135,11 @@ export class HelperEffects implements OnRunEffects {
               songs: songs.map((s) => s.id),
               next,
               message: next ? 'Album will play next' : 'Album added to queue',
-            })
-          )
-        )
-      )
-    )
+            }),
+          ),
+        ),
+      ),
+    ),
   );
 
   createEmptyPlaylist$ = createEffect(() =>
@@ -147,9 +147,9 @@ export class HelperEffects implements OnRunEffects {
       ofType(createPlaylist),
       concatMap(() => this.helper.newPlaylist()),
       map((playlist) =>
-        openSnack({ message: `Playlist ${playlist.title} created` })
-      )
-    )
+        openSnack({ message: `Playlist ${playlist.title} created` }),
+      ),
+    ),
   );
 
   addPlaylistToQueue$ = createEffect(() =>
@@ -166,11 +166,11 @@ export class HelperEffects implements OnRunEffects {
               message: next
                 ? 'Playlist will play next'
                 : 'Playlist added to queue',
-            })
-          )
-        )
-      )
-    )
+            }),
+          ),
+        ),
+      ),
+    ),
   );
 
   addSongsToPlaylist$ = createEffect(() =>
@@ -183,27 +183,27 @@ export class HelperEffects implements OnRunEffects {
           .pipe(
             filter((result): result is null | Playlist => result !== undefined),
             concatMap((result) =>
-              result === null ? this.helper.newPlaylist() : of(result)
+              result === null ? this.helper.newPlaylist() : of(result),
             ),
             filter((result): result is Playlist => !!result),
             concatTap((result) =>
               this.songs.getByKeys(songs).pipe(
                 first(),
                 tap((songModels) =>
-                  this.playlists.addSongsTo(result, songModels)
-                )
-              )
+                  this.playlists.addSongsTo(result, songModels),
+                ),
+              ),
             ),
             map((result) =>
               openSnack({
                 message: `Added to ${result.title}`,
                 action: 'VIEW',
                 cb: () => this.router.navigate(['/', 'playlist', result.id]),
-              })
-            )
-          )
-      )
-    )
+              }),
+            ),
+          ),
+      ),
+    ),
   );
 
   addAlbumToPlaylist$ = createEffect(() =>
@@ -213,10 +213,10 @@ export class HelperEffects implements OnRunEffects {
         this.songs.getByAlbumKey(id).pipe(
           filter((songs): songs is Song[] => !!songs),
           first(),
-          map((songs) => addSongsToPlaylist({ songs: songs.map((s) => s.id) }))
-        )
-      )
-    )
+          map((songs) => addSongsToPlaylist({ songs: songs.map((s) => s.id) })),
+        ),
+      ),
+    ),
   );
 
   addPlaylistToPlaylist$ = createEffect(() =>
@@ -226,10 +226,10 @@ export class HelperEffects implements OnRunEffects {
         this.playlists.getByKey(id).pipe(
           filter((playlist): playlist is Playlist => !!playlist),
           first(),
-          map((playlist) => addSongsToPlaylist({ songs: playlist.songs }))
-        )
-      )
-    )
+          map((playlist) => addSongsToPlaylist({ songs: playlist.songs })),
+        ),
+      ),
+    ),
   );
 
   openSnack$ = createEffect(
@@ -244,22 +244,22 @@ export class HelperEffects implements OnRunEffects {
                 .open(message, action, {
                   panelClass: shown ? 'snack-top' : 'snack',
                 })
-                .onAction()
+                .onAction(),
             ),
-            tap(() => cb && cb())
-          )
-        )
+            tap(() => cb && cb()),
+          ),
+        ),
       ),
-    { dispatch: false }
+    { dispatch: false },
   );
 
   addSongsToQueue$ = createEffect(() =>
     this.actions$.pipe(
       ofType(addSongsToQueue),
       concatMap(({ songs, next, message }) =>
-        of(addToQueue({ queue: songs, next }), show(), openSnack({ message }))
-      )
-    )
+        of(addToQueue({ queue: songs, next }), show(), openSnack({ message })),
+      ),
+    ),
   );
 
   removeSongFromQueue$ = createEffect(() =>
@@ -281,10 +281,10 @@ export class HelperEffects implements OnRunEffects {
                 Math.min(index, newPlaylist.length - 1) -
                 ((indexToDelete ?? index) < index ? 1 : 0),
             });
-          })
-        )
-      )
-    )
+          }),
+        ),
+      ),
+    ),
   );
 
   deletePlaylist$ = createEffect(() =>
@@ -305,18 +305,18 @@ export class HelperEffects implements OnRunEffects {
               from(
                 this.router.navigate(['/', 'library', 'playlists'], {
                   preserveFragment: true,
-                })
-              )
+                }),
+              ),
             ),
             concatMap(() =>
               of(
                 PlaylistActions.deletePlaylist({ id }),
-                openSnack({ message: 'Playlist deleted' })
-              )
-            )
-          )
-      )
-    )
+                openSnack({ message: 'Playlist deleted' }),
+              ),
+            ),
+          ),
+      ),
+    ),
   );
 
   editPlaylist$ = createEffect(() =>
@@ -339,13 +339,13 @@ export class HelperEffects implements OnRunEffects {
                 map((data) =>
                   PlaylistActions.updatePlaylist({
                     update: { key: playlist.id, changes: data },
-                  })
-                )
-              )
-          )
-        )
-      )
-    )
+                  }),
+                ),
+              ),
+          ),
+        ),
+      ),
+    ),
   );
 
   playQueue$ = createEffect(
@@ -356,9 +356,9 @@ export class HelperEffects implements OnRunEffects {
           this.player.setPlaying();
           this.player.setQueue(queue, index);
           this.player.show();
-        })
+        }),
       ),
-    { dispatch: false }
+    { dispatch: false },
   );
 
   togglePlay$ = createEffect(
@@ -374,11 +374,11 @@ export class HelperEffects implements OnRunEffects {
               } else {
                 this.player.resume();
               }
-            })
-          )
-        )
+            }),
+          ),
+        ),
       ),
-    { dispatch: false }
+    { dispatch: false },
   );
 
   constructor(
@@ -390,11 +390,11 @@ export class HelperEffects implements OnRunEffects {
     private playlists: PlaylistFacade,
     private helper: HelperFacade,
     private player: PlayerFacade,
-    private dialog: MatDialog
+    private dialog: MatDialog,
   ) {}
 
   ngrxOnRunEffects(
-    resolvedEffects$: Observable<EffectNotification>
+    resolvedEffects$: Observable<EffectNotification>,
   ): Observable<EffectNotification> {
     return resolvedEffects$;
   }

@@ -1,5 +1,8 @@
 import { ChangeDetectionStrategy, Component, Inject } from '@angular/core';
-import { MAT_LEGACY_DIALOG_DATA as MAT_DIALOG_DATA, MatLegacyDialogRef as MatDialogRef } from '@angular/material/legacy-dialog';
+import {
+  MAT_LEGACY_DIALOG_DATA as MAT_DIALOG_DATA,
+  MatLegacyDialogRef as MatDialogRef,
+} from '@angular/material/legacy-dialog';
 import {
   AbstractControl,
   UntypedFormControl,
@@ -96,19 +99,19 @@ export class PlaylistNewComponent {
   constructor(
     private playlists: PlaylistFacade,
     private dialog: MatDialogRef<PlaylistNewComponent>,
-    @Inject(MAT_DIALOG_DATA) public data?: PlaylistData
+    @Inject(MAT_DIALOG_DATA) public data?: PlaylistData,
   ) {
     this.form = new UntypedFormGroup({
       title: new UntypedFormControl(data?.title, {
         validators: [Validators.required],
         asyncValidators: (
-          control: AbstractControl
+          control: AbstractControl,
         ): Observable<ValidationErrors | null> =>
           this.playlists.getByIndexKey(control.value, 'title').pipe(
             first(),
             map((p) =>
-              p.length > 0 && p[0].id !== data?.id ? { taken: 'title' } : null
-            )
+              p.length > 0 && p[0].id !== data?.id ? { taken: 'title' } : null,
+            ),
           ),
         updateOn: 'change',
       }),

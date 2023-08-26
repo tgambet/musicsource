@@ -118,7 +118,9 @@ import { BreakpointObserver } from '@angular/cdk/layout';
         margin-bottom: 16px;
       }
       .header-container {
-        transition: padding-top 200ms ease, width 200ms ease;
+        transition:
+          padding-top 200ms ease,
+          width 200ms ease;
         padding-top: 64px;
         display: flex;
         flex-direction: column;
@@ -249,7 +251,7 @@ export class PageArtistComponent implements OnInit {
     private pictures: PictureFacade,
     private albums: AlbumFacade,
     private helper: HelperFacade,
-    private breakpointObserver: BreakpointObserver
+    private breakpointObserver: BreakpointObserver,
   ) {
     /*
     const Breakpoints = {
@@ -280,8 +282,8 @@ export class PageArtistComponent implements OnInit {
             ? '113px'
             : state.breakpoints[Object.keys(state.breakpoints)[0]]
             ? '90px'
-            : '80px'
-        )
+            : '80px',
+        ),
       );
 
     this.overflow$ = breakpointObserver
@@ -296,7 +298,7 @@ export class PageArtistComponent implements OnInit {
 
     this.cover$ = this.artist$.pipe(
       first(),
-      switchMap((artist) => this.pictures.getArtistCover(artist.id, 0))
+      switchMap((artist) => this.pictures.getArtistCover(artist.id, 0)),
     );
 
     this.albums$ = this.albums.getByArtistKey(artistKey); // TODO hash vs name

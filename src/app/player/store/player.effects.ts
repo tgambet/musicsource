@@ -60,7 +60,7 @@ export class PlayerEffects implements OnRunEffects {
           this.songs.getByKey(songId).pipe(
             first(),
             concatMap((song) =>
-              song ? of(song) : throwError(() => new Error('Song not found'))
+              song ? of(song) : throwError(() => new Error('Song not found')),
             ),
             concatMap((song) =>
               this.entries.getByKey(song.entries[0]).pipe(
@@ -68,7 +68,7 @@ export class PlayerEffects implements OnRunEffects {
                 concatMap((entry) =>
                   entry && entry.kind === 'file'
                     ? of(entry)
-                    : throwError(() => new Error('Entry not found'))
+                    : throwError(() => new Error('Entry not found')),
                 ),
                 tap((entry) => (this.handle = entry.handle)),
                 concatMap((entry) =>
@@ -80,13 +80,13 @@ export class PlayerEffects implements OnRunEffects {
                     concatTap(() => this.media.setMetadata(song)),
                     tap(() =>
                       this.title.setTitle(
-                        `${song.title} • ${song.artists[0].name}`
-                      )
+                        `${song.title} • ${song.artists[0].name}`,
+                      ),
                     ),
-                    concatMap(() => from(this.audio.resume()))
-                  )
-                )
-              )
+                    concatMap(() => from(this.audio.resume())),
+                  ),
+                ),
+              ),
             ),
             tapError((err) => {
               this.snack.open(err.message, undefined, {
@@ -97,20 +97,20 @@ export class PlayerEffects implements OnRunEffects {
               this.player.hide();
               console.error(err);
             }),
-            catchError(() => EMPTY)
-          )
-        )
+            catchError(() => EMPTY),
+          ),
+        ),
       ),
-    { dispatch: false }
+    { dispatch: false },
   );
 
   reset$ = createEffect(
     () =>
       this.actions$.pipe(
         ofType(reset),
-        concatTap(() => from(this.audio.reset()))
+        concatTap(() => from(this.audio.reset())),
       ),
-    { dispatch: false }
+    { dispatch: false },
   );
 
   nextSong$ = createEffect(() =>
@@ -132,14 +132,14 @@ export class PlayerEffects implements OnRunEffects {
             if (repeat === 'all') {
               return of(
                 setPlaying({ playing: true }),
-                setCurrentIndex({ index: 0 })
+                setCurrentIndex({ index: 0 }),
               );
             }
             return EMPTY;
-          })
-        )
-      )
-    )
+          }),
+        ),
+      ),
+    ),
   );
 
   resume$ = createEffect(
@@ -151,64 +151,64 @@ export class PlayerEffects implements OnRunEffects {
             tapError((err) =>
               this.snack.open(err.message, undefined, {
                 panelClass: 'snack-top',
-              })
+              }),
             ),
-            catchError(() => EMPTY)
-          )
-        )
+            catchError(() => EMPTY),
+          ),
+        ),
       ),
     {
       dispatch: false,
-    }
+    },
   );
 
   pause$ = createEffect(
     () =>
       this.actions$.pipe(
         ofType(pause),
-        tap(() => this.audio.pause())
+        tap(() => this.audio.pause()),
       ),
     {
       dispatch: false,
-    }
+    },
   );
 
   volume$ = createEffect(
     () =>
       this.actions$.pipe(
         ofType(setVolume),
-        tap(({ volume }) => this.audio.setVolume(volume))
+        tap(({ volume }) => this.audio.setVolume(volume)),
       ),
     {
       dispatch: false,
-    }
+    },
   );
 
   volume2$ = createEffect(() =>
-    this.audio.volume$.pipe(map((volume) => setVolume({ volume })))
+    this.audio.volume$.pipe(map((volume) => setVolume({ volume }))),
   );
 
   mute$ = createEffect(
     () =>
       this.actions$.pipe(
         ofType(toggleMute),
-        tap(() => this.audio.toggleMute())
+        tap(() => this.audio.toggleMute()),
       ),
     {
       dispatch: false,
-    }
+    },
   );
 
   playing$ = createEffect(() =>
-    this.audio.playing$.pipe(map((playing) => setPlaying({ playing })))
+    this.audio.playing$.pipe(map((playing) => setPlaying({ playing }))),
   );
 
   duration$ = createEffect(() =>
-    this.audio.duration$.pipe(map((duration) => setDuration({ duration })))
+    this.audio.duration$.pipe(map((duration) => setDuration({ duration }))),
   );
 
   loading$ = createEffect(() =>
-    this.audio.loading$.pipe(map((loading) => setLoading({ loading })))
+    this.audio.loading$.pipe(map((loading) => setLoading({ loading }))),
   );
 
   shuffle$ = createEffect(() =>
@@ -218,7 +218,7 @@ export class PlayerEffects implements OnRunEffects {
         combineLatest([
           this.player.getQueue$(),
           this.player.getCurrentIndex$(),
-        ]).pipe(first())
+        ]).pipe(first()),
       ),
       map(([queue, currentIndex]) => {
         const current = queue[currentIndex];
@@ -226,8 +226,8 @@ export class PlayerEffects implements OnRunEffects {
         newQueue.splice(currentIndex, 1);
         newQueue = [current, ...shuffleArray(newQueue)];
         return setQueue({ queue: newQueue, currentIndex: 0 });
-      })
-    )
+      }),
+    ),
   );
 
   // analyzer$ = createEffect(() => this.actions$.pipe(ofType()));
@@ -241,11 +241,11 @@ export class PlayerEffects implements OnRunEffects {
     private songs: SongFacade,
     private media: MediaSessionService,
     private title: Title,
-    private snack: MatSnackBar
+    private snack: MatSnackBar,
   ) {}
 
   ngrxOnRunEffects(
-    resolvedEffects$: Observable<EffectNotification>
+    resolvedEffects$: Observable<EffectNotification>,
   ): Observable<EffectNotification> {
     return resolvedEffects$;
   }

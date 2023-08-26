@@ -13,11 +13,11 @@ export class PageAlbumResolverService implements Resolve<AlbumId> {
     private pictures: PictureFacade,
     private storage: DatabaseService,
     private albums: AlbumFacade,
-    private router: Router
+    private router: Router,
   ) {}
 
   resolve(
-    route: ActivatedRouteSnapshot
+    route: ActivatedRouteSnapshot,
     // state: RouterStateSnapshot
   ): Observable<AlbumId> | Observable<never> {
     const id = route.paramMap.get('id');
@@ -30,15 +30,15 @@ export class PageAlbumResolverService implements Resolve<AlbumId> {
     return this.albums.getByKey(id as AlbumId).pipe(
       first(),
       concatMap((stored) =>
-        stored ? of(stored) : this.storage.get$<Album>('albums', id)
+        stored ? of(stored) : this.storage.get$<Album>('albums', id),
       ),
       concatMap((model) =>
-        model ? of(model.id) : throwError(() => 'not found')
+        model ? of(model.id) : throwError(() => 'not found'),
       ),
       catchError(() => {
         this.router.navigate(['/library/albums']);
         return EMPTY;
-      })
+      }),
     );
 
     // return this.albums.getByKey(id).pipe(

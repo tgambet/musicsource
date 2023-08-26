@@ -20,10 +20,10 @@ export class PictureEffects {
         this.database.getAll$<Picture>('pictures').pipe(
           // tap((data) => data.forEach((d) => delete d.data)),
           map((data) => loadPicturesSuccess({ data })),
-          catchError((error) => of(loadPicturesFailure({ error })))
-        )
-      )
-    )
+          catchError((error) => of(loadPicturesFailure({ error }))),
+        ),
+      ),
+    ),
   );
 
   // addPicture$ = createEffect(
@@ -66,5 +66,8 @@ export class PictureEffects {
   //   { dispatch: false }
   // );
 
-  constructor(private actions$: Actions, private database: DatabaseService) {}
+  constructor(
+    private actions$: Actions,
+    private database: DatabaseService,
+  ) {}
 }

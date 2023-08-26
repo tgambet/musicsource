@@ -63,5 +63,5 @@ export const playerReducer: ActionReducer<PlayerState> = createReducer(
   on(toggleMute, (state) => ({ ...state, muted: !state.muted })),
   on(setVolume, (state, { volume }) => ({ ...state, volume })),
   on(setRepeat, (state, { value }) => ({ ...state, repeat: value })),
-  on(toggleAnalyzer, (state) => ({ ...state, analyzer: !state.analyzer }))
+  on(toggleAnalyzer, (state) => ({ ...state, analyzer: !state.analyzer })),
 );

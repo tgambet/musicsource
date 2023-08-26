@@ -147,7 +147,7 @@ export class HListComponent implements OnInit, OnDestroy, AfterContentInit {
   constructor(
     private rootRef: ElementRef<HTMLElement>,
     private cdr: ChangeDetectorRef,
-    private zone: NgZone
+    private zone: NgZone,
   ) {}
 
   get translation(): number {
@@ -178,7 +178,7 @@ export class HListComponent implements OnInit, OnDestroy, AfterContentInit {
     if (!this.isNextDisabled) {
       const items = this.items.toArray().reverse();
       const firstVisibleIndex = items.findIndex((item) =>
-        this.isItemVisible(item.nativeElement)
+        this.isItemVisible(item.nativeElement),
       );
       const elementToScroll = items[firstVisibleIndex - 1];
       if (elementToScroll) {
@@ -192,7 +192,7 @@ export class HListComponent implements OnInit, OnDestroy, AfterContentInit {
     if (!this.isPrevDisabled) {
       const items = this.items.toArray();
       const firstVisibleIndex = items.findIndex((item) =>
-        this.isItemVisible(item.nativeElement)
+        this.isItemVisible(item.nativeElement),
       );
       const elementToScroll = items[firstVisibleIndex - 1];
       if (elementToScroll) {
@@ -212,12 +212,12 @@ export class HListComponent implements OnInit, OnDestroy, AfterContentInit {
     // eslint-disable-next-line no-underscore-dangle
     this.nextButton._elementRef.nativeElement.removeEventListener(
       'keydown',
-      this.nextListener
+      this.nextListener,
     );
     // eslint-disable-next-line no-underscore-dangle
     this.prevButton._elementRef.nativeElement.removeEventListener(
       'keydown',
-      this.prevListener
+      this.prevListener,
     );
     this.subscription.unsubscribe();
   }
@@ -225,7 +225,7 @@ export class HListComponent implements OnInit, OnDestroy, AfterContentInit {
   ngAfterContentInit(): void {
     this.translation = 0;
     this.subscription.add(
-      this.items.changes.subscribe(() => (this.translation = 0))
+      this.items.changes.subscribe(() => (this.translation = 0)),
     );
     setTimeout(() => this.update(), 100);
   }
@@ -233,7 +233,7 @@ export class HListComponent implements OnInit, OnDestroy, AfterContentInit {
   focusNextItem(
     event: KeyboardEvent,
     current: HListItemDirective,
-    scroll = false
+    scroll = false,
   ): void | boolean {
     const index = this.items.toArray().indexOf(current);
     const next = this.items.toArray()[index + 1];
@@ -254,7 +254,7 @@ export class HListComponent implements OnInit, OnDestroy, AfterContentInit {
   focusPreviousItem(
     event: KeyboardEvent,
     current: HListItemDirective,
-    scroll = false
+    scroll = false,
   ): void | boolean {
     const index = this.items.toArray().indexOf(current);
     const prev = this.items.toArray()[index - 1];
@@ -277,7 +277,7 @@ export class HListComponent implements OnInit, OnDestroy, AfterContentInit {
       if (e.shiftKey && e.key === 'Tab') {
         const items = this.items.toArray().reverse();
         const firstVisible = items.find((item) =>
-          this.isItemVisible(item.nativeElement)
+          this.isItemVisible(item.nativeElement),
         );
         if (firstVisible) {
           firstVisible.focusLastTabbable();
@@ -291,7 +291,7 @@ export class HListComponent implements OnInit, OnDestroy, AfterContentInit {
     this.prevListener = (e) => {
       if (!e.shiftKey && e.key === 'Tab') {
         const firstVisible = this.items.find((item) =>
-          this.isItemVisible(item.nativeElement)
+          this.isItemVisible(item.nativeElement),
         );
         if (firstVisible) {
           firstVisible.focusFirstTabbable();
@@ -305,12 +305,12 @@ export class HListComponent implements OnInit, OnDestroy, AfterContentInit {
       // eslint-disable-next-line no-underscore-dangle
       this.nextButton._elementRef.nativeElement.addEventListener(
         'keydown',
-        this.nextListener
+        this.nextListener,
       );
       // eslint-disable-next-line no-underscore-dangle
       this.prevButton._elementRef.nativeElement.addEventListener(
         'keydown',
-        this.prevListener
+        this.prevListener,
       );
     });
   }
@@ -359,7 +359,7 @@ export class HListItemDirective
     @Inject(HListComponent) private parent: HListComponent,
     private checker: InteractivityChecker,
     private zone: NgZone,
-    @Inject(DOCUMENT) private document: Document
+    @Inject(DOCUMENT) private document: Document,
   ) {
     super(element.nativeElement);
   }

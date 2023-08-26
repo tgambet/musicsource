@@ -80,7 +80,7 @@ export class LibraryArtistsComponent implements OnInit {
     private cdr: ChangeDetectorRef,
     private history: HistoryService,
     private artists: ArtistFacade,
-    private helper: HelperFacade
+    private helper: HelperFacade,
   ) {}
 
   ngOnInit(): void {
@@ -91,7 +91,7 @@ export class LibraryArtistsComponent implements OnInit {
           ? 'next'
           : 'prev') as IDBCursorDirection,
         likes: params.get('likes') === '1',
-      }))
+      })),
     );
 
     // this.artists$ = sort$.pipe(
@@ -129,9 +129,9 @@ export class LibraryArtistsComponent implements OnInit {
             //       scan((acc, curr) => [...acc, ...curr])
             //     )
             //   : of(mods);
-          })
-        )
-      )
+          }),
+        ),
+      ),
     );
   }
 

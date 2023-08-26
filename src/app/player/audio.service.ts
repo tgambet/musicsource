@@ -20,10 +20,10 @@ export class AudioService {
   constructor(@Inject(DOCUMENT) document: Document) {
     const audio = document.createElement('audio');
     audio.addEventListener('timeupdate', () =>
-      this.timeUpdate$.next(audio.currentTime)
+      this.timeUpdate$.next(audio.currentTime),
     );
     audio.addEventListener('durationchange', () =>
-      this.duration$.next(audio.duration)
+      this.duration$.next(audio.duration),
     );
     audio.addEventListener('pause', () => this.playing$.next(false));
     audio.addEventListener('play', () => this.playing$.next(true));
@@ -31,7 +31,7 @@ export class AudioService {
     audio.addEventListener('loadstart', () => this.loading$.next(true));
     audio.addEventListener('canplay', () => this.loading$.next(false));
     audio.addEventListener('volumechange', (event) =>
-      this.volume$.next((event.target as HTMLMediaElement)?.volume)
+      this.volume$.next((event.target as HTMLMediaElement)?.volume),
     );
     const body = document.querySelector('body');
     if (!body) {

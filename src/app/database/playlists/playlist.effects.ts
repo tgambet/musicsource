@@ -22,10 +22,10 @@ export class PlaylistEffects {
       concatMap(() =>
         this.database.getAll$<Playlist>('playlists').pipe(
           map((data) => loadPlaylistsSuccess({ data })),
-          catchError((error) => of(loadPlaylistsFailure({ error })))
-        )
-      )
-    )
+          catchError((error) => of(loadPlaylistsFailure({ error }))),
+        ),
+      ),
+    ),
   );
 
   addPlaylist$ = createEffect(
@@ -35,10 +35,10 @@ export class PlaylistEffects {
         concatMap(({ playlist }) =>
           this.database
             .add$<Playlist>('playlists', playlist)
-            .pipe(catchError(() => EMPTY))
-        )
+            .pipe(catchError(() => EMPTY)),
+        ),
       ),
-    { dispatch: false }
+    { dispatch: false },
   );
 
   updatePlaylist$ = createEffect(
@@ -48,10 +48,10 @@ export class PlaylistEffects {
         concatMap(({ update }) =>
           this.database
             .update$<Playlist>('playlists', update.changes, update.key)
-            .pipe(catchError(() => EMPTY))
-        )
+            .pipe(catchError(() => EMPTY)),
+        ),
       ),
-    { dispatch: false }
+    { dispatch: false },
   );
 
   deletePlaylist$ = createEffect(
@@ -59,11 +59,14 @@ export class PlaylistEffects {
       this.actions$.pipe(
         ofType(deletePlaylist),
         concatMap(({ id }) =>
-          this.database.delete$('playlists', id).pipe(catchError(() => EMPTY))
-        )
+          this.database.delete$('playlists', id).pipe(catchError(() => EMPTY)),
+        ),
       ),
-    { dispatch: false }
+    { dispatch: false },
   );
 
-  constructor(private actions$: Actions, private database: DatabaseService) {}
+  constructor(
+    private actions$: Actions,
+    private database: DatabaseService,
+  ) {}
 }

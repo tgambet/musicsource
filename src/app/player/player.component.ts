@@ -10,7 +10,10 @@ import {
 import { Icons } from '@app/core/utils/icons.util';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { filter, map, mapTo, switchMap, tap } from 'rxjs/operators';
-import { MatLegacySlider as MatSlider, MatLegacySliderChange as MatSliderChange } from '@angular/material/legacy-slider';
+import {
+  MatLegacySlider as MatSlider,
+  MatLegacySliderChange as MatSliderChange,
+} from '@angular/material/legacy-slider';
 import {
   merge,
   Observable,
@@ -509,7 +512,7 @@ export class PlayerComponent implements OnInit, OnDestroy {
     private songs: SongFacade,
     private helper: HelperFacade,
     private cdr: ChangeDetectorRef,
-    private breakpointObserver: BreakpointObserver
+    private breakpointObserver: BreakpointObserver,
   ) {}
 
   @HostListener('mouseleave')
@@ -525,7 +528,7 @@ export class PlayerComponent implements OnInit, OnDestroy {
     const r1$ = this.router.events
       .pipe(
         filter(
-          (event): event is NavigationEnd => event instanceof NavigationEnd
+          (event): event is NavigationEnd => event instanceof NavigationEnd,
         ),
         // filter((event) => event.snapshot.outlet === 'primary'),
         // tap(
@@ -533,9 +536,9 @@ export class PlayerComponent implements OnInit, OnDestroy {
         // ),
         tap(
           (event) =>
-            (this.isPlayRoute = /\/play$/.test(event.urlAfterRedirects))
+            (this.isPlayRoute = /\/play$/.test(event.urlAfterRedirects)),
         ),
-        tap(() => this.cdr.markForCheck())
+        tap(() => this.cdr.markForCheck()),
       )
       .subscribe();
 
@@ -548,19 +551,19 @@ export class PlayerComponent implements OnInit, OnDestroy {
       share({
         connector: () => new ReplaySubject(1),
         resetOnRefCountZero: true,
-      })
+      }),
     );
     const change$ = this.seeker.change.asObservable();
     this.value$ = merge(
       of(true),
       input$.pipe(mapTo(false)),
-      change$.pipe(mapTo(true))
+      change$.pipe(mapTo(true)),
     ).pipe(
       switchMap((doUpdate) =>
         doUpdate
           ? this.player.getTimeUpdate$()
-          : input$.pipe(map((e) => e.value || 0))
-      )
+          : input$.pipe(map((e) => e.value || 0)),
+      ),
     );
 
     this.max$ = this.player.getDuration$();
@@ -578,7 +581,7 @@ export class PlayerComponent implements OnInit, OnDestroy {
     this.currentSong$ = this.player.getCurrentSong$().pipe(
       filter((song): song is SongId => !!song),
       switchMap((id) => this.songs.getByKey(id)),
-      filter((song): song is Song => !!song)
+      filter((song): song is Song => !!song),
     );
 
     this.menuItems$ = this.currentSong$.pipe(
@@ -618,11 +621,11 @@ export class PlayerComponent implements OnInit, OnDestroy {
           icon: this.icons.accountMusic,
           routerLink: ['/artist', song.artists[0].id],
         },
-      ])
+      ]),
     );
 
     this.currentSongCover$ = this.currentSong$.pipe(
-      switchMap((song) => this.pictures.getSongCover(song, 40))
+      switchMap((song) => this.pictures.getSongCover(song, 40)),
     );
   }
 

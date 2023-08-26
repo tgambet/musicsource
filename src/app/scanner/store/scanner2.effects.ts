@@ -82,8 +82,8 @@ const logDuration =
   (obs: Observable<T>) =>
     defer(() => of(Date.now())).pipe(
       concatMap((start) =>
-        obs.pipe(finalize(() => console.log(log, (Date.now() - start) / 1000)))
-      )
+        obs.pipe(finalize(() => console.log(log, (Date.now() - start) / 1000))),
+      ),
     );
 
 // noinspection JSUnusedGlobalSymbols
@@ -103,15 +103,15 @@ export class ScannerEffects2 /*implements OnRunEffects*/ {
             concatMap(() =>
               dirOpt
                 ? of(dirOpt).pipe(
-                    concatTap((dir) => requestPermission(dir.handle))
+                    concatTap((dir) => requestPermission(dir.handle)),
                   )
                 : this.files
                     .openDirectory()
                     .pipe(
                       concatTap((directory) =>
-                        this.settings.setRootDirectory(directory)
-                      )
-                    )
+                        this.settings.setRootDirectory(directory),
+                      ),
+                    ),
             ),
             tap(() => this.router.navigateByUrl('/library')),
             this.beforeScan(),
@@ -119,11 +119,11 @@ export class ScannerEffects2 /*implements OnRunEffects*/ {
             logDuration('iterate'),
             this.extractAndSave,
             logDuration('extract'),
-            this.afterScan
-          )
-        )
+            this.afterScan,
+          ),
+        ),
       ),
-    { dispatch: false }
+    { dispatch: false },
   );
 
   sync$ = createEffect(
@@ -142,11 +142,11 @@ export class ScannerEffects2 /*implements OnRunEffects*/ {
               this.store.dispatch(loadPlaylists());
               this.store.dispatch(loadSongs());
               this.store.dispatch(loadPictures());
-            })
-          )
-        )
+            }),
+          ),
+        ),
       ),
-    { dispatch: false }
+    { dispatch: false },
   );
 
   position$ = createEffect(
@@ -157,9 +157,9 @@ export class ScannerEffects2 /*implements OnRunEffects*/ {
             this.position?.bottom('98px');
             this.position?.apply();
           }
-        })
+        }),
       ),
-    { dispatch: false }
+    { dispatch: false },
   );
 
   constructor(
@@ -179,7 +179,7 @@ export class ScannerEffects2 /*implements OnRunEffects*/ {
     private pictures: PictureFacade,
     private database: DatabaseService,
     private settings: SettingsFacade,
-    private store: Store
+    private store: Store,
   ) {}
 
   openScanDialog(): void {
@@ -206,12 +206,14 @@ export class ScannerEffects2 /*implements OnRunEffects*/ {
       concatTap((dir) => requestPermission(dir.handle)),
       concatMap((directory) => this.files.iterate(directory)),
       mergeMap((entry) =>
-        this.entries.exists(entry.id).pipe(map((exists) => ({ exists, entry })))
+        this.entries
+          .exists(entry.id)
+          .pipe(map((exists) => ({ exists, entry }))),
       ),
       filter(({ exists }) => !exists),
       map(({ entry }) => entry),
       this.extractAndSave,
-      logDuration('added')
+      logDuration('added'),
     );
 
   syncDeleted = () =>
@@ -225,14 +227,14 @@ export class ScannerEffects2 /*implements OnRunEffects*/ {
               ? from(r.value.handle.getFile()).pipe(
                   map(() => undefined),
                   catchError(() => of(r.key)),
-                  filter((key): key is IDBValidKey => !!key)
+                  filter((key): key is IDBValidKey => !!key),
                 )
               : from(r.value.handle.keys()).pipe(
                   first(),
                   map(() => undefined),
                   catchError(() => of(r.key)),
-                  filter((key): key is IDBValidKey => !!key)
-                )
+                  filter((key): key is IDBValidKey => !!key),
+                ),
           ),
           concatTap((entryKey) => this.database.delete$('entries', entryKey)),
           concatMap((entryKey) =>
@@ -240,23 +242,23 @@ export class ScannerEffects2 /*implements OnRunEffects*/ {
               concatMap((db) =>
                 db.transaction$(
                   ['pictures', 'songs', 'albums', 'artists'],
-                  'readwrite'
-                )
+                  'readwrite',
+                ),
               ),
               concatMap((transaction) =>
                 ['pictures', 'songs', 'albums', 'artists'].map((storeName) =>
                   this.updateEntries(
                     entryKey as EntryId,
-                    storeName
-                  )(transaction)
-                )
-              )
-            )
+                    storeName,
+                  )(transaction),
+                ),
+              ),
+            ),
           ),
-          mergeAll()
-        )
+          mergeAll(),
+        ),
       ),
-      logDuration('deleted')
+      logDuration('deleted'),
     );
 
   updateEntries =
@@ -279,30 +281,30 @@ export class ScannerEffects2 /*implements OnRunEffects*/ {
                     concatMap((updated) =>
                       updated.entries.length === 0
                         ? store.delete$(key)
-                        : store.put$(updated)
-                    )
-                  )
-                )
+                        : store.put$(updated),
+                    ),
+                  ),
+                ),
               ),
-              mergeAll()
-            )
-        )
+              mergeAll(),
+            ),
+        ),
       );
 
   extractAndSave: OperatorFunction<Entry, IDBValidKey> = (obs) =>
     obs.pipe(
       concatTap((entry) => this.entries.put(entry)),
       filter(
-        (entry): entry is FileEntry => entry.kind === 'file' && isAudio(entry)
+        (entry): entry is FileEntry => entry.kind === 'file' && isAudio(entry),
       ),
       mergeMap((entry) =>
         this.extractor.extract(entry).pipe(
           tapError((err) => console.warn(entry.path, err)),
-          catchError(() => EMPTY)
-        )
+          catchError(() => EMPTY),
+        ),
       ),
       tap(({ song }) =>
-        this.scanner.setLabel(`${song.artists[0]?.name} - ${song.title}`)
+        this.scanner.setLabel(`${song.artists[0]?.name} - ${song.title}`),
       ),
       mergeMap(({ song, album, artists, pictures }) => [
         ...pictures.map((picture) => this.pictures.put(picture)),
@@ -310,7 +312,7 @@ export class ScannerEffects2 /*implements OnRunEffects*/ {
         this.albums.put(album),
         this.songs.put(song),
       ]),
-      mergeAll()
+      mergeAll(),
     );
 
   beforeScan = <T>() =>
@@ -334,7 +336,7 @@ export class ScannerEffects2 /*implements OnRunEffects*/ {
         this.overlayRef?.dispose();
         window.removeEventListener('beforeunload', this.unloadListener);
         this.subscription.unsubscribe();
-      })
+      }),
     );
 
   unloadListener(e: BeforeUnloadEvent): void {

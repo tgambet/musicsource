@@ -45,16 +45,16 @@ export class SettingsEffects {
               removeAllPictures(),
               removeAllPlaylists(),
               removeAllSongs(),
-            ])
-          )
-      )
-    )
+            ]),
+          ),
+      ),
+    ),
   );
 
   constructor(
     private router: Router,
     private dialog: MatDialog,
     private actions$: Actions,
-    private database: DatabaseService
+    private database: DatabaseService,
   ) {}
 }

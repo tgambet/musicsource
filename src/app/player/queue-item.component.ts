@@ -182,7 +182,7 @@ export class QueueItemComponent implements OnInit {
   constructor(
     private helper: HelperFacade,
     private pictures: PictureFacade,
-    private songs: SongFacade
+    private songs: SongFacade,
   ) {}
 
   ngOnInit(): void {

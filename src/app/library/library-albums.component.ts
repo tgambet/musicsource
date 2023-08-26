@@ -81,7 +81,7 @@ export class LibraryAlbumsComponent
     private router: Router,
     private route: ActivatedRoute,
     private cdr: ChangeDetectorRef,
-    private albums: AlbumFacade
+    private albums: AlbumFacade,
   ) {}
 
   ngAfterViewInit(): void {
@@ -109,7 +109,7 @@ export class LibraryAlbumsComponent
         direction: ((params.get('dir') || 'desc') === 'asc'
           ? 'next'
           : 'prev') as IDBCursorDirection,
-      }))
+      })),
     );
 
     this.albums$ = sort$.pipe(
@@ -129,9 +129,9 @@ export class LibraryAlbumsComponent
             //       scan((acc, curr) => [...acc, ...curr])
             //     )
             //   : of(albs);
-          })
-        )
-      )
+          }),
+        ),
+      ),
     );
   }
 

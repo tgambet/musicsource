@@ -8,25 +8,25 @@ export const loadPlaylists = createAction('[Playlist] Load Playlists');
 
 export const loadPlaylistsSuccess = createAction(
   '[Playlist] Load Playlists Success',
-  props<{ data: Playlist[] }>()
+  props<{ data: Playlist[] }>(),
 );
 
 export const loadPlaylistsFailure = createAction(
   '[Playlist] Load Playlists Failure',
-  props<{ error: any }>()
+  props<{ error: any }>(),
 );
 
 export const updatePlaylist = createAction(
   '[Playlist] Update Playlist',
-  props<{ update: IdUpdate<Playlist> }>()
+  props<{ update: IdUpdate<Playlist> }>(),
 );
 
 export const addPlaylist = createAction(
   '[Playlist] Create Playlist',
-  props<{ playlist: Playlist }>()
+  props<{ playlist: Playlist }>(),
 );
 
 export const deletePlaylist = createAction(
   '[Playlist] Delete Playlist',
-  props<{ id: PlaylistId }>()
+  props<{ id: PlaylistId }>(),
 );

@@ -129,26 +129,31 @@ export class PlayerButtonComponent implements OnInit {
 
   icons = Icons;
 
-  constructor(private player: PlayerFacade, private helper: HelperFacade) {}
+  constructor(
+    private player: PlayerFacade,
+    private helper: HelperFacade,
+  ) {}
 
   ngOnInit(): void {
     this.isCurrent$ = this.currentIfMatchAllQueue
       ? this.player
           .getQueue$()
           .pipe(
-            map((queue) => ({ value: arrayEqualsUnordered(queue, this.queue) }))
+            map((queue) => ({
+              value: arrayEqualsUnordered(queue, this.queue),
+            })),
           )
       : this.player.getCurrentSong$().pipe(
           map((current) => ({
             value: this.queue.length > 0 && current === this.queue[this.index],
-          }))
+          })),
         );
 
     this.isPlaying$ = this.isCurrent$.pipe(
       switchMap((current) =>
-        current.value ? this.player.getPlaying$() : of(false)
+        current.value ? this.player.getPlaying$() : of(false),
       ),
-      tap((playing) => (this.stopped = !playing))
+      tap((playing) => (this.stopped = !playing)),
     );
 
     this.isLoading$ = this.isCurrent$.pipe(
@@ -157,8 +162,8 @@ export class PlayerButtonComponent implements OnInit {
           ? this.player
               .getLoading$()
               .pipe(throttleTime(50, undefined, { trailing: true }))
-          : of(false)
-      )
+          : of(false),
+      ),
     );
   }
 

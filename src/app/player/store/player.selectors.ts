@@ -5,68 +5,68 @@ export const selectPlayerState = createFeatureSelector<PlayerState>('player');
 
 export const selectShow = createSelector(
   selectPlayerState,
-  (state) => state.show
+  (state) => state.show,
 );
 
 export const selectQueue = createSelector(
   selectPlayerState,
-  (state) => state.queue
+  (state) => state.queue,
 );
 
 export const selectCurrentIndex = createSelector(
   selectPlayerState,
-  (state) => state.currentIndex
+  (state) => state.currentIndex,
 );
 
 export const selectCurrentSong = createSelector(
   selectQueue,
   selectCurrentIndex,
-  (playlist, index) => playlist[index]
+  (playlist, index) => playlist[index],
 );
 
 export const selectHasNextSong = createSelector(
   selectQueue,
   selectCurrentIndex,
-  (playlist, index) => playlist[index + 1] !== undefined
+  (playlist, index) => playlist[index + 1] !== undefined,
 );
 
 export const selectHasPrevSong = createSelector(
   selectQueue,
   selectCurrentIndex,
-  (playlist, index) => playlist[index - 1] !== undefined
+  (playlist, index) => playlist[index - 1] !== undefined,
 );
 
 export const selectPlaying = createSelector(
   selectPlayerState,
-  (state) => state.playing
+  (state) => state.playing,
 );
 
 export const selectLoading = createSelector(
   selectPlayerState,
-  (state) => state.loading
+  (state) => state.loading,
 );
 
 export const selectDuration = createSelector(
   selectPlayerState,
-  (state) => state.duration || 0
+  (state) => state.duration || 0,
 );
 
 export const selectMuted = createSelector(
   selectPlayerState,
-  (state) => state.muted
+  (state) => state.muted,
 );
 
 export const selectVolume = createSelector(
   selectPlayerState,
-  (state) => state.volume
+  (state) => state.volume,
 );
 
 export const selectRepeat = createSelector(
   selectPlayerState,
-  (state) => state.repeat
+  (state) => state.repeat,
 );
 
 export const selectAnalyzer = createSelector(
   selectPlayerState,
-  (state) => state.analyzer
+  (state) => state.analyzer,
 );
