@@ -12,7 +12,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: bahmutov/npm-install@v1
-      - run: yarn build --configuration production
+      - run: yarn build ngrx-idb && yarn build ngx-idb && yarn build
 
   test-eslint:
     name: Lint
