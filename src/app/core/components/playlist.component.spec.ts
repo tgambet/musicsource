@@ -4,7 +4,7 @@ import { PlaylistComponent } from './playlist.component';
 import { CoverComponent } from './cover.component';
 import { LabelComponent } from './label.component';
 import { MenuComponent } from './menu.component';
-import { MatMenuModule } from '@angular/material/menu';
+import { MatLegacyMenuModule as MatMenuModule } from '@angular/material/legacy-menu';
 import { IconComponent } from './icon.component';
 import { PlayerButtonComponent } from './player-button.component';
 import { RouterTestingModule } from '@angular/router/testing';

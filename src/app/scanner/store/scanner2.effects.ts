@@ -40,7 +40,7 @@ import {
   scanEnd,
 } from '@app/scanner/store/scanner.actions';
 import { Router } from '@angular/router';
-import { MatDialog } from '@angular/material/dialog';
+import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
 import { ScanComponent } from '@app/scanner/scan.component';
 import {
   GlobalPositionStrategy,

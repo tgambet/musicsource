@@ -4,7 +4,7 @@ import {
   OnInit,
   ViewChild,
 } from '@angular/core';
-import { MatTabNav } from '@angular/material/tabs';
+import { MatLegacyTabNav as MatTabNav } from '@angular/material/legacy-tabs';
 
 @Component({
   selector: 'app-library',

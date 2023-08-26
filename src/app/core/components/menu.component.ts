@@ -6,7 +6,7 @@ import {
   ViewChild,
 } from '@angular/core';
 import { Icons } from '@app/core/utils';
-import { MatMenu } from '@angular/material/menu';
+import { MatLegacyMenu as MatMenu } from '@angular/material/legacy-menu';
 
 @Component({
   selector: 'app-menu',

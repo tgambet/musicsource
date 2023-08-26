@@ -7,10 +7,10 @@ import {
   TemplateRef,
 } from '@angular/core';
 import {
-  MatDialog,
-  MatDialogConfig,
-  MatDialogRef,
-} from '@angular/material/dialog';
+  MatLegacyDialog as MatDialog,
+  MatLegacyDialogConfig as MatDialogConfig,
+  MatLegacyDialogRef as MatDialogRef,
+} from '@angular/material/legacy-dialog';
 import { fromEvent, Subscription, throwError } from 'rxjs';
 import { concatMap, tap } from 'rxjs/operators';
 import { Router } from '@angular/router';

@@ -10,7 +10,7 @@ import {
 import { Icons } from '@app/core/utils/icons.util';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { filter, map, mapTo, switchMap, tap } from 'rxjs/operators';
-import { MatSlider, MatSliderChange } from '@angular/material/slider';
+import { MatLegacySlider as MatSlider, MatLegacySliderChange as MatSliderChange } from '@angular/material/legacy-slider';
 import {
   merge,
   Observable,

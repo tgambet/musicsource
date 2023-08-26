@@ -17,7 +17,7 @@ import {
   QueryList,
   ViewChild,
 } from '@angular/core';
-import { MatButton } from '@angular/material/button';
+import { MatLegacyButton as MatButton } from '@angular/material/legacy-button';
 import { Subscription } from 'rxjs';
 import { Icons } from '@app/core/utils';
 import { InteractivityChecker } from '@angular/cdk/a11y';

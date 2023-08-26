@@ -4,7 +4,7 @@ import { CoverComponent } from './cover.component';
 import { MenuComponent } from './menu.component';
 import { PlayerButtonComponent } from './player-button.component';
 import { IconComponent } from './icon.component';
-import { MatMenuModule } from '@angular/material/menu';
+import { MatLegacyMenuModule as MatMenuModule } from '@angular/material/legacy-menu';
 import { RouterTestingModule } from '@angular/router/testing';
 
 describe('CoverComponent', () => {

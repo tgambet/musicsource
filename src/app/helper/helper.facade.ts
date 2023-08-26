@@ -19,7 +19,7 @@ import {
   removeSongFromQueue,
   togglePlay,
 } from './helper.actions';
-import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { MatLegacyDialog as MatDialog, MatLegacyDialogRef as MatDialogRef } from '@angular/material/legacy-dialog';
 import {
   PlaylistData,
   PlaylistNewComponent,

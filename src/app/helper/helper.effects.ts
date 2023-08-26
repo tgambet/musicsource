@@ -46,11 +46,11 @@ import {
   togglePlay,
 } from '@app/helper/helper.actions';
 import { Playlist } from '@app/database/playlists/playlist.model';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatLegacySnackBar as MatSnackBar } from '@angular/material/legacy-snack-bar';
 import { PlaylistFacade } from '@app/database/playlists/playlist.facade';
 import { HelperFacade } from '@app/helper/helper.facade';
 import { PlayerFacade } from '@app/player/store/player.facade';
-import { MatDialog } from '@angular/material/dialog';
+import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
 import { ConfirmComponent } from '@app/core/dialogs/confirm.component';
 import { PlaylistData } from '@app/core/dialogs/playlist-new.component';
 import { ArtistFacade } from '@app/database/artists/artist.facade';

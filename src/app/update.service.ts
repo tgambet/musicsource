@@ -1,6 +1,6 @@
 import { ApplicationRef, Inject, Injectable } from '@angular/core';
 import { SwUpdate, VersionReadyEvent } from '@angular/service-worker';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatLegacySnackBar as MatSnackBar } from '@angular/material/legacy-snack-bar';
 import { concatMap, filter, first, tap } from 'rxjs/operators';
 import { interval } from 'rxjs';
 import { DOCUMENT } from '@angular/common';

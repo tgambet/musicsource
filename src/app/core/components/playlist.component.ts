@@ -9,7 +9,7 @@ import { Playlist } from '@app/database/playlists/playlist.model';
 import { concatMap, Observable } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 import { MenuItem } from '@app/core/components/menu.component';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatLegacySnackBar as MatSnackBar } from '@angular/material/legacy-snack-bar';
 import { PlayerFacade } from '@app/player/store/player.facade';
 import { PictureFacade } from '@app/database/pictures/picture.facade';
 import { PlaylistFacade } from '@app/database/playlists/playlist.facade';

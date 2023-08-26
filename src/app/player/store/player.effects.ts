@@ -41,7 +41,7 @@ import { Title } from '@angular/platform-browser';
 import { EntryFacade } from '@app/database/entries/entry.facade';
 import { SongFacade } from '@app/database/songs/song.facade';
 import { concatTap, shuffleArray } from '@app/core/utils';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatLegacySnackBar as MatSnackBar } from '@angular/material/legacy-snack-bar';
 
 // noinspection JSUnusedGlobalSymbols
 @Injectable()
